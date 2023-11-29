@@ -1,5 +1,4 @@
 // https://github.com/ChainAgnostic/caip-js
-
 const CHAIN_ID = {
   Mainnet: "eip155:1",
   Localhost: "eip155:539",
