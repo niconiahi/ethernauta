@@ -10,6 +10,7 @@ type Eip1102Call = {
   [M in Eip1102Method]: [M, ...Eip1102Params[M]];
 }[Eip1102Method];
 
+// this is what Metamask implements
 // https://eips.ethereum.org/EIPS/eip-1102
 export function createEip1102Client() {
   function send(call: [typeof EIP1102_METHOD.REQUEST_ACCOUNTS]): string[];

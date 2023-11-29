@@ -1,7 +1,9 @@
 {
   "name": "@ethernauta/core",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "valibot": "^0.21.0"
+  },
   "main": "./index.js",
   "module": "./index.mjs",
   "typings": "./index.d.ts"
