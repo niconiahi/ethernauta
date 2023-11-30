@@ -41,7 +41,7 @@ const jsonRpcNotificationSchema = object({
   method: methodSchema,
   params: optional(jsonRpcSchema),
 })
-export  type JsonRpcNotification = Input<typeof jsonRpcNotificationSchema>
+export type JsonRpcNotification = Input<typeof jsonRpcNotificationSchema>
 // https://www.jsonrpc.org/specification#error_object
 const jsonRpcResponseErrorSchema = object({
   data: optional(unknown()),
@@ -115,7 +115,7 @@ export function runJsonRpcBatch(
       data: "_omg",
     },
   };
- // align the order of the responses with the requests, based on the "id" used
+  // align the order of the responses with the requests, based on the "id" used
 
   return [successful, error];
 }
@@ -345,15 +345,6 @@ export function createJsonRpcClient(transport: HttpTransport) {
   return { send };
 }
 
-const blockSchema = union([hexadecimalSchema, literal('latest'), literal('earliest'), literal('pending')])
-type Block= Input<typeof blockSchema>
-const web3ClientVersionSchema = tuple([literal("web3_clientVersion")])
-const web3Sha3Schema = tuple([literal("web3_sha3"), tuple([string()])])
-const netVersionSchema = tuple([literal("net_version")])
-const netListeningSchema = tuple([literal("net_listening")])
-const netPeerCountSchema = tuple([literal("net_peerCount")])
-const ethProtocolVersionSchema = tuple([literal("eth_protocolVersion")]);
-const ethSyncingSchema = tuple([literal("eth_syncing")]);
 const syncingSchema = object({
   startingBlock: string(),
   currentBlock: string(),
@@ -380,6 +371,15 @@ const sendTransactionSchema = object({
   nonce: optional(hexadecimalSchema)
 })
 type SendTransaction = Input<typeof sendTransactionSchema>
+const blockSchema = union([hexadecimalSchema, literal('latest'), literal('earliest'), literal('pending')])
+type Block = Input<typeof blockSchema>
+const web3ClientVersionSchema = tuple([literal("web3_clientVersion")])
+const web3Sha3Schema = tuple([literal("web3_sha3"), tuple([string()])])
+const netVersionSchema = tuple([literal("net_version")])
+const netListeningSchema = tuple([literal("net_listening")])
+const netPeerCountSchema = tuple([literal("net_peerCount")])
+const ethProtocolVersionSchema = tuple([literal("eth_protocolVersion")]);
+const ethSyncingSchema = tuple([literal("eth_syncing")]);
 const ethCoinbaseSchema = tuple([literal("eth_coinbase")]);
 const ethChainIdSchema = tuple([literal("eth_chainId")]);
 const ethMiningSchema = tuple([literal("eth_mining")]);
