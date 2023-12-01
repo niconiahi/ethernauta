@@ -5,10 +5,16 @@
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { http, mainnet, rinkeby, sendTransaction, createWalletConnect, createWriter } from "@ethernauta/core";
+import { http, mainnet, rinkeby, sendTransaction } from "@ethernauta/core";
+import { mainnet, rinkeby } from "@ethernauta/chain";
+import { sendTransaction } from "@ethernauta/method";
+import { http, createWriter } from "@ethernauta/transport";
+import { createWalletConnect } from "@ethernauta/connectors";
 
 const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
-const writer = createWriter(http(walletConnect(env.ENVIRONMENT === 'production' ? mainnet : rinkeby)))
+const writer = createWriter(
+  http(walletConnect(env.ENVIRONMENT === 'production' ? mainnet : rinkeby))
+)
 const sendTransactionResponse = await writer(
   sendTransaction([{
     from: '0xF344B01DA08b142D2466dae9e47E333f22e64588',
@@ -38,7 +44,10 @@ const hash = await client.sendTransaction({
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { http, mainnet, rinkeby, chain, blockNumber, createAlchemy, createInfura, createReader } from "@ethernauta/core";
+import { mainnet, rinkeby } from "@ethernauta/chain";
+import { blockNumber, chain } from "@ethernauta/method";
+import { http, createReader } from "@ethernauta/transport";
+import { createAlchemy, createInfura } from "@ethernauta/connectors";
 
 const alchemy = createAlchemy(env.WALLET_CONNECT_PROJECT_ID)
 const infura = createInfura(env.INFURA_ID)
