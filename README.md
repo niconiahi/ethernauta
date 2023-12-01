@@ -43,7 +43,7 @@ import { http, sendTransaction, mainnet, chain } from "@ethernauta/core";
 const alchemy = createAlchemy(env.WALLET_CONNECT_PROJECT_ID)
 const infura = createInfura(env.INFURA_ID)
 const reader =  createReader([
-  http(infura(env.ENVIRONMENT === 'production' ? mainnet : rinkeby))
+  http(infura(env.ENVIRONMENT === 'production' ? mainnet : rinkeby)),
   http(alchemy(env.ENVIRONMENT === 'production' ? mainnet : rinkeby))
 ])
 const blockNumber = await reader.send(blockNumber())
