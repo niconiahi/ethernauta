@@ -8,7 +8,7 @@
 import { httpTransport, sendTransaction, http, createWalletConnect } from "@ethernauta/core";
 
 const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
-const writer = http(walletConnect(mainnet))
+const writer = createWriter(http(walletConnect(mainnet)))
 const sendTransactionResponse = await writer(
   sendTransaction([{
     from: '0xF344B01DA08b142D2466dae9e47E333f22e64588',
