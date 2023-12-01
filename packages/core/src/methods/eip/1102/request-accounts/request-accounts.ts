@@ -1,8 +1,6 @@
-import { Hexadecimal, addressSchema, hexadecimalSchema, Reader } from "@ethernauta/core";
-import { Input, literal, object, optional, parse, tuple } from "valibot";
+import { Hexadecimal, hexadecimalSchema, Reader } from "@ethernauta/core";
+import { Input, literal, parse, tuple } from "valibot";
 
-// this is what Metamask implements
-// https://eips.ethereum.org/EIPS/eip-1102
 export async function requestAccounts(reader: Reader): Promise<Hexadecimal> {
   const method = 'eth_requestAccounts'
   const call = parse(requestAccountsSchema, [method])
