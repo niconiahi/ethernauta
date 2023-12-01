@@ -5,10 +5,10 @@
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { http, sendTransaction, createWalletConnect } from "@ethernauta/core";
+import { http, mainnet, rinkeby, sendTransaction, createWalletConnect, createWriter } from "@ethernauta/core";
 
 const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
-const writer = createWriter(http(walletConnect(mainnet)))
+const writer = createWriter(http(walletConnect(env.ENVIRONMENT === 'production' ? mainnet : rinkeby)))
 const sendTransactionResponse = await writer(
   sendTransaction([{
     from: '0xF344B01DA08b142D2466dae9e47E333f22e64588',
@@ -38,7 +38,7 @@ const hash = await client.sendTransaction({
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { http, mainnet, chain } from "@ethernauta/core";
+import { http, mainnet, rinkeby, chain, blockNumber, createAlchemy, createInfura, createReader } from "@ethernauta/core";
 
 const alchemy = createAlchemy(env.WALLET_CONNECT_PROJECT_ID)
 const infura = createInfura(env.INFURA_ID)
@@ -46,8 +46,8 @@ const reader =  createReader([
   http(infura(env.ENVIRONMENT === 'production' ? mainnet : rinkeby)),
   http(alchemy(env.ENVIRONMENT === 'production' ? mainnet : rinkeby))
 ])
-const blockNumber = await reader.send(blockNumber())
-const chain = await reader.send(chain())
+const blockNumber_ = await reader.send(blockNumber())
+const chain_ = await reader.send(chain())
 ```
 
 #### in Viem
