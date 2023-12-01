@@ -16,8 +16,6 @@ import {
   undefined_,
   variant,
   boolean,
-  special,
-  nullable
 } from "valibot";
 import {
   HttpTransport,
@@ -25,10 +23,13 @@ import {
   base16Schema,
   Address,
   addressSchema,
-  base20Schema,
-  base8Schema,
+  blockSchema,
+  Block,
+  blockParameterSchema,
+  BlockParameter,
   base32Schema,
-  base256Schema,
+  Base32,
+  BaseTransaction,
 } from "@ethernauta/core";
 
 // https://www.jsonrpc.org/specification#extensions
@@ -159,8 +160,9 @@ export function createJsonRpcClient(transport: HttpTransport) {
   async function send(call: ['eth_call', [CallTransaction, BlockParameter]]): Promise<Base16>;
   async function send(call: ['eth_estimateGas', [EstimateGasTransaction, BlockParameter]]): Promise<Base16>;
   async function send(call: ['eth_getBlockByHash', [Base16, boolean]]): Promise<Block>;
+  async function send(call: ['eth_getTransactionByHash', [Base32]]): Promise<BaseTransaction>;
   // TODO: support "batch calls" by accepting an array of calls
-  async function send(_call: JsonRpcCall): Promise<number | string | boolean | Syncing | Base16 | Address | Address[] | Block> {
+  async function send(_call: JsonRpcCall): Promise<number | string | boolean | Syncing | Base16 | Address | Address[] | Block | BaseTransaction> {
     const call = parse(jsonRpcCallSchema, _call)
     const method = call[0];
     const response = await transport(call)
@@ -368,6 +370,20 @@ export function createJsonRpcClient(transport: HttpTransport) {
         }
         return parse(blockSchema, response.result)
       }
+      // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getblockbynumber
+      case "eth_getBlockByNumber": {
+        if (response.error) {
+          throw new Error(response.error.message)
+        }
+        return parse(blockSchema, response.result)
+      }
+      // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactionbyhash
+      case "eth_getTransactionByHash": {
+        if (response.error) {
+          throw new Error(response.error.message)
+        }
+        return parse(blockSchema, response.result)
+      }
       default: {
         const _exhaustiveCheck: never = method;
         return _exhaustiveCheck; // this will cause a compile-time error if any method is unhandled
@@ -378,30 +394,6 @@ export function createJsonRpcClient(transport: HttpTransport) {
   return { send };
 }
 
-const blockSchema = nullable(
-  object({
-    number: base16Schema,
-    hash: base16Schema,
-    parentHash: base16Schema,
-    nonce: base8Schema,
-    sha3Uncles: base20Schema,
-    logsBloom: base256Schema,
-    transactionsRoot: base20Schema,
-    stateRoot: base20Schema,
-    receiptsRoot: base20Schema,
-    miner: addressSchema,
-    difficulty: base16Schema,
-    totalDifficulty: base16Schema,
-    extraData: base16Schema,
-    size: base16Schema,
-    gasLimit: base16Schema,
-    gasUsed: base16Schema,
-    timestamp: base16Schema,
-    transactions: array(base32Schema),
-    uncles: array(base16Schema)
-  })
-)
-type Block = Input<typeof blockSchema>
 const syncingSchema = object({
   startingBlock: string(),
   currentBlock: string(),
@@ -428,8 +420,6 @@ const sendTransactionSchema = object({
   nonce: optional(base16Schema)
 })
 type SendTransaction = Input<typeof sendTransactionSchema>
-const blockParameterSchema = union([base16Schema, literal('latest'), literal('earliest'), literal('pending')])
-type BlockParameter = Input<typeof blockParameterSchema>
 const callTransaction = object({
   from: optional(addressSchema),
   to: addressSchema,
@@ -476,7 +466,9 @@ const ethSendTransactionSchema = tuple([literal("eth_sendTransaction"), tuple([s
 const ethSendRawTransactionSchema = tuple([literal("eth_sendRawTransaction"), tuple([base16Schema])])
 const ethCallSchema = tuple([literal("eth_call"), tuple([callTransaction, blockParameterSchema])])
 const ethEstimateGasSchema = tuple([literal("eth_estimateGas"), tuple([estimateGasTransaction, blockParameterSchema])])
-const ethGetBlockHashSchema = tuple([literal("eth_getBlockByHash"), tuple([base16Schema, boolean()])])
+const ethGetBlockByHashSchema = tuple([literal("eth_getBlockByHash"), tuple([base16Schema, boolean()])])
+const ethGetBlockByNumberSchema = tuple([literal("eth_getBlockByNumber"), tuple([blockParameterSchema, boolean()])])
+const ethGetTransactionByHash = tuple([literal("eth_getTransactionByHash"), tuple([base32Schema])])
 const jsonRpcCallSchema = union([
   web3ClientVersionSchema,
   web3Sha3Schema,
@@ -506,6 +498,8 @@ const jsonRpcCallSchema = union([
   ethSendRawTransactionSchema,
   ethCallSchema,
   ethEstimateGasSchema,
-  ethGetBlockHashSchema,
+  ethGetBlockByHashSchema,
+  ethGetBlockByNumberSchema,
+  ethGetTransactionByHash,
 ])
 export type JsonRpcCall = Input<typeof jsonRpcCallSchema>;

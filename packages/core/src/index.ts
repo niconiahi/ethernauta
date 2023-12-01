@@ -1,4 +1,5 @@
 export * from "./base"
+export * from "./block"
 export * from "./chain"
 export * from "./method"
 export * from "./address"
