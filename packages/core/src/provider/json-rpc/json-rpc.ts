@@ -19,8 +19,17 @@ import {
   special,
   nullable
 } from "valibot";
-import { HttpTransport, Hexadecimal, hexadecimalSchema, Address, addressSchema, vigesimalSchema, octalSchema, duotrigesimalSchema } from "@ethernauta/core";
-import { octocentihexagesimalSchema } from "../../base/octocentihexagesimal";
+import {
+  HttpTransport,
+  Base16,
+  base16Schema,
+  Address,
+  addressSchema,
+  base20Schema,
+  base8Schema,
+  base32Schema,
+  base256Schema,
+} from "@ethernauta/core";
 
 // https://www.jsonrpc.org/specification#extensions
 const methodSchema = string([excludes('rpc.', 'method names that begin with "rpc." are reserved for system extensions')])
@@ -129,29 +138,29 @@ export function createJsonRpcClient(transport: HttpTransport) {
   async function send(call: ['eth_protocolVersion']): Promise<string>;
   async function send(call: ['eth_syncing']): Promise<false | Syncing>;
   async function send(call: ['eth_coinbase']): Promise<Address>;
-  async function send(call: ['eth_chainId']): Promise<Hexadecimal>;
+  async function send(call: ['eth_chainId']): Promise<Base16>;
   async function send(call: ['eth_mining']): Promise<boolean>;
-  async function send(call: ['eth_hashrate']): Promise<Hexadecimal>;
-  async function send(call: ['eth_gasPrice']): Promise<Hexadecimal>;
+  async function send(call: ['eth_hashrate']): Promise<Base16>;
+  async function send(call: ['eth_gasPrice']): Promise<Base16>;
   async function send(call: ['eth_accounts']): Promise<Address[]>;
   async function send(call: ['eth_blockNumber']): Promise<number>;
   async function send(call: ['eth_getBalance', [Address, BlockParameter]]): Promise<number>;
-  async function send(call: ['eth_getStorageAt', [Address, Hexadecimal, BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getTransactionCount', [Address, BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getBlockTransactionCountByHash', [Hexadecimal]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getBlockTransactionCountByNumber', [BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getUncleCountByBlockHash', [Hexadecimal]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getUncleCountByBlockNumber', [BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getCode', [Address, BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_sign', [Address, Hexadecimal]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_signTransaction', [SignTransaction]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_sendTransaction', [SendTransaction]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_sendRawTransaction', [Hexadecimal]]): Promise<string>;
-  async function send(call: ['eth_call', [CallTransaction, BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_estimateGas', [EstimateGasTransaction, BlockParameter]]): Promise<Hexadecimal>;
-  async function send(call: ['eth_getBlockByHash', [Hexadecimal, boolean]]): Promise<Block>;
+  async function send(call: ['eth_getStorageAt', [Address, Base16, BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_getTransactionCount', [Address, BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_getBlockTransactionCountByHash', [Base16]]): Promise<Base16>;
+  async function send(call: ['eth_getBlockTransactionCountByNumber', [BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_getUncleCountByBlockHash', [Base16]]): Promise<Base16>;
+  async function send(call: ['eth_getUncleCountByBlockNumber', [BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_getCode', [Address, BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_sign', [Address, Base16]]): Promise<Base16>;
+  async function send(call: ['eth_signTransaction', [SignTransaction]]): Promise<Base16>;
+  async function send(call: ['eth_sendTransaction', [SendTransaction]]): Promise<Base16>;
+  async function send(call: ['eth_sendRawTransaction', [Base16]]): Promise<string>;
+  async function send(call: ['eth_call', [CallTransaction, BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_estimateGas', [EstimateGasTransaction, BlockParameter]]): Promise<Base16>;
+  async function send(call: ['eth_getBlockByHash', [Base16, boolean]]): Promise<Block>;
   // TODO: support "batch calls" by accepting an array of calls
-  async function send(_call: JsonRpcCall): Promise<number | string | boolean | Syncing | Hexadecimal | Address | Address[] | Block> {
+  async function send(_call: JsonRpcCall): Promise<number | string | boolean | Syncing | Base16 | Address | Address[] | Block> {
     const call = parse(jsonRpcCallSchema, _call)
     const method = call[0];
     const response = await transport(call)
@@ -217,7 +226,7 @@ export function createJsonRpcClient(transport: HttpTransport) {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_mining
       case "eth_mining": {
@@ -231,21 +240,21 @@ export function createJsonRpcClient(transport: HttpTransport) {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gasprice
       case "eth_gasPrice": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_accounts
       case "eth_accounts": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(array(hexadecimalSchema), response.result)
+        return parse(array(base16Schema), response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_blocknumber
       case "eth_blockNumber": {
@@ -259,77 +268,77 @@ export function createJsonRpcClient(transport: HttpTransport) {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getstorageat
       case "eth_getStorageAt": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount
       case "eth_getTransactionCount": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getblocktransactioncountbyhash
       case "eth_getBlockTransactionCountByHash": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getblocktransactioncountbynumber
       case "eth_getBlockTransactionCountByNumber": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getunclecountbyblockhash
       case "eth_getUncleCountByBlockHash": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getunclecountbyblocknumber
       case "eth_getUncleCountByBlockNumber": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getcode
       case "eth_getCode": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sign
       case "eth_sign": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_signtransaction
       case "eth_signTransaction": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sendtransaction
       case "eth_sendTransaction": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sendrawtransaction
       case "eth_sendRawTransaction": {
@@ -343,14 +352,14 @@ export function createJsonRpcClient(transport: HttpTransport) {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_estimategas
       case "eth_estimateGas": {
         if (response.error) {
           throw new Error(response.error.message)
         }
-        return parse(hexadecimalSchema, response.result)
+        return parse(base16Schema, response.result)
       }
       // https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getblockbyhash
       case "eth_getBlockByHash": {
@@ -371,25 +380,25 @@ export function createJsonRpcClient(transport: HttpTransport) {
 
 const blockSchema = nullable(
   object({
-    number: hexadecimalSchema,
-    hash: hexadecimalSchema,
-    parentHash: hexadecimalSchema,
-    nonce: octalSchema,
-    sha3Uncles: vigesimalSchema,
-    logsBloom: octocentihexagesimalSchema,
-    transactionsRoot: vigesimalSchema,
-    stateRoot: vigesimalSchema,
-    receiptsRoot: vigesimalSchema,
+    number: base16Schema,
+    hash: base16Schema,
+    parentHash: base16Schema,
+    nonce: base8Schema,
+    sha3Uncles: base20Schema,
+    logsBloom: base256Schema,
+    transactionsRoot: base20Schema,
+    stateRoot: base20Schema,
+    receiptsRoot: base20Schema,
     miner: addressSchema,
-    difficulty: hexadecimalSchema,
-    totalDifficulty: hexadecimalSchema,
-    extraData: hexadecimalSchema,
-    size: hexadecimalSchema,
-    gasLimit: hexadecimalSchema,
-    gasUsed: hexadecimalSchema,
-    timestamp: hexadecimalSchema,
-    transactions: array(duotrigesimalSchema),
-    uncles: array(hexadecimalSchema)
+    difficulty: base16Schema,
+    totalDifficulty: base16Schema,
+    extraData: base16Schema,
+    size: base16Schema,
+    gasLimit: base16Schema,
+    gasUsed: base16Schema,
+    timestamp: base16Schema,
+    transactions: array(base32Schema),
+    uncles: array(base16Schema)
   })
 )
 type Block = Input<typeof blockSchema>
@@ -402,41 +411,41 @@ type Syncing = Input<typeof syncingSchema>
 const signTransactionSchema = object({
   from: addressSchema,
   to: optional(addressSchema),
-  gas: optional(hexadecimalSchema),
-  gasPrice: optional(hexadecimalSchema),
-  value: optional(hexadecimalSchema),
-  data: hexadecimalSchema,
-  nonce: optional(hexadecimalSchema)
+  gas: optional(base16Schema),
+  gasPrice: optional(base16Schema),
+  value: optional(base16Schema),
+  data: base16Schema,
+  nonce: optional(base16Schema)
 })
 type SignTransaction = Input<typeof signTransactionSchema>
 const sendTransactionSchema = object({
   from: addressSchema,
   to: optional(addressSchema),
-  gas: optional(hexadecimalSchema),
-  gasPrice: optional(hexadecimalSchema),
-  value: optional(hexadecimalSchema),
-  data: hexadecimalSchema,
-  nonce: optional(hexadecimalSchema)
+  gas: optional(base16Schema),
+  gasPrice: optional(base16Schema),
+  value: optional(base16Schema),
+  data: base16Schema,
+  nonce: optional(base16Schema)
 })
 type SendTransaction = Input<typeof sendTransactionSchema>
-const blockParameterSchema = union([hexadecimalSchema, literal('latest'), literal('earliest'), literal('pending')])
+const blockParameterSchema = union([base16Schema, literal('latest'), literal('earliest'), literal('pending')])
 type BlockParameter = Input<typeof blockParameterSchema>
 const callTransaction = object({
   from: optional(addressSchema),
   to: addressSchema,
-  gas: optional(hexadecimalSchema),
-  gasPrice: optional(hexadecimalSchema),
-  value: optional(hexadecimalSchema),
-  input: hexadecimalSchema,
+  gas: optional(base16Schema),
+  gasPrice: optional(base16Schema),
+  value: optional(base16Schema),
+  input: base16Schema,
 })
 type CallTransaction = Input<typeof callTransaction>
 const estimateGasTransaction = object({
   from: optional(addressSchema),
   to: optional(addressSchema),
-  gas: optional(hexadecimalSchema),
-  gasPrice: optional(hexadecimalSchema),
-  value: optional(hexadecimalSchema),
-  input: optional(hexadecimalSchema),
+  gas: optional(base16Schema),
+  gasPrice: optional(base16Schema),
+  value: optional(base16Schema),
+  input: optional(base16Schema),
 })
 type EstimateGasTransaction = Input<typeof estimateGasTransaction>
 const web3ClientVersionSchema = tuple([literal("web3_clientVersion")])
@@ -454,20 +463,20 @@ const ethGasPriceSchema = tuple([literal("eth_gasPrice")]);
 const ethAccountsSchema = tuple([literal("eth_accounts")]);
 const ethBlockNumberSchema = tuple([literal("eth_blockNumber")]);
 const ethGetBalanceSchema = tuple([literal("eth_getBalance"), tuple([addressSchema, blockParameterSchema])]);
-const ethGetStorageAtSchema = tuple([literal("eth_getStorageAt"), tuple([addressSchema, hexadecimalSchema, blockParameterSchema])]);
+const ethGetStorageAtSchema = tuple([literal("eth_getStorageAt"), tuple([addressSchema, base16Schema, blockParameterSchema])]);
 const ethGetTransactionCountSchema = tuple([literal("eth_getTransactionCount"), tuple([addressSchema, blockParameterSchema])]);
-const ethGetBlockTransactionCountByHashSchema = tuple([literal("eth_getBlockTransactionCountByHash"), tuple([hexadecimalSchema])]);
+const ethGetBlockTransactionCountByHashSchema = tuple([literal("eth_getBlockTransactionCountByHash"), tuple([base16Schema])]);
 const ethGetBlockTransactionCountByNumberSchema = tuple([literal("eth_getBlockTransactionCountByNumber"), tuple([blockParameterSchema])]);
-const ethGetUncleCountByBlockHashSchema = tuple([literal("eth_getUncleCountByBlockHash"), tuple([hexadecimalSchema])]);
+const ethGetUncleCountByBlockHashSchema = tuple([literal("eth_getUncleCountByBlockHash"), tuple([base16Schema])]);
 const ethGetUncleCountByBlockNumberSchema = tuple([literal("eth_getUncleCountByBlockNumber"), tuple([blockParameterSchema])]);
 const ethGetCodeSchema = tuple([literal("eth_getCode"), tuple([addressSchema, blockParameterSchema])]);
-const ethSignSchema = tuple([literal("eth_sign"), tuple([addressSchema, hexadecimalSchema])]);
+const ethSignSchema = tuple([literal("eth_sign"), tuple([addressSchema, base16Schema])]);
 const ethSignTransactionSchema = tuple([literal("eth_signTransaction"), tuple([signTransactionSchema])]);
 const ethSendTransactionSchema = tuple([literal("eth_sendTransaction"), tuple([sendTransactionSchema])]);
-const ethSendRawTransactionSchema = tuple([literal("eth_sendRawTransaction"), tuple([hexadecimalSchema])])
+const ethSendRawTransactionSchema = tuple([literal("eth_sendRawTransaction"), tuple([base16Schema])])
 const ethCallSchema = tuple([literal("eth_call"), tuple([callTransaction, blockParameterSchema])])
 const ethEstimateGasSchema = tuple([literal("eth_estimateGas"), tuple([estimateGasTransaction, blockParameterSchema])])
-const ethGetBlockHashSchema = tuple([literal("eth_getBlockByHash"), tuple([hexadecimalSchema, boolean()])])
+const ethGetBlockHashSchema = tuple([literal("eth_getBlockByHash"), tuple([base16Schema, boolean()])])
 const jsonRpcCallSchema = union([
   web3ClientVersionSchema,
   web3Sha3Schema,

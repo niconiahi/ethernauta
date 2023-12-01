@@ -1,24 +1,24 @@
 
-import { Hexadecimal, Writer, addressSchema, hexadecimalSchema } from "@ethernauta/core";
+import { Base16, Writer, addressSchema, base16Schema } from "@ethernauta/core";
 import { Input, literal, object, optional, parse, tuple } from "valibot";
 
 
-export async function sendTransaction(writer: Writer, parameters: [Parameters]): Promise<Hexadecimal> {
+export async function sendTransaction(writer: Writer, parameters: [Parameters]): Promise<Base16> {
   const method = 'eth_sendTransaction'
   const call = parse(sendTransactionSchema, [method, parameters])
   const response = await writer(call)
 
-  return parse(hexadecimalSchema, response.result)
+  return parse(base16Schema, response.result)
 }
 
 const parametersSchema = object({
   from: addressSchema,
   to: optional(addressSchema),
-  gas: optional(hexadecimalSchema),
-  gasPrice: optional(hexadecimalSchema),
-  value: optional(hexadecimalSchema),
-  data: hexadecimalSchema,
-  nonce: optional(hexadecimalSchema)
+  gas: optional(base16Schema),
+  gasPrice: optional(base16Schema),
+  value: optional(base16Schema),
+  data: base16Schema,
+  nonce: optional(base16Schema)
 })
 type Parameters = Input<typeof parametersSchema>
 const sendTransactionSchema = tuple([

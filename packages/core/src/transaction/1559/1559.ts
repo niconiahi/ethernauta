@@ -1,22 +1,22 @@
-import { Address, Hexadecimal, AccessList } from "@ethernauta/core";
+import { Address, Base16, AccessList } from "@ethernauta/core";
 
 export interface Transaction1559Unsigned {
   type: string; // pattern: ^0x2$
-  nonce: Hexadecimal;
+  nonce: Base16;
   to: Address | null; // Contract Creation or Address
-  gas: Hexadecimal;
-  value: Hexadecimal;
-  input: Hexadecimal;
-  maxPriorityFeePerGas: Hexadecimal;
-  maxFeePerGas: Hexadecimal;
-  gasPrice: Hexadecimal;
+  gas: Base16;
+  value: Base16;
+  input: Base16;
+  maxPriorityFeePerGas: Base16;
+  maxFeePerGas: Base16;
+  gasPrice: Base16;
   accessList: AccessList;
-  chainId: Hexadecimal;
+  chainId: Base16;
 }
 
 export interface Transaction1559Signed extends Transaction1559Unsigned {
-  yParity: Hexadecimal;
-  // v?: Hexadecimal; // Deprecated, use yParity
-  r: Hexadecimal;
-  s: Hexadecimal;
+  yParity: Base16;
+  // v?: Base16; // Deprecated, use yParity
+  r: Base16;
+  s: Base16;
 }
