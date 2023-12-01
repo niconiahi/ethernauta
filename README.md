@@ -5,7 +5,7 @@
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { httpTransport, sendTransaction, http, createWalletConnect } from "@ethernauta/core";
+import { http, sendTransaction, createWalletConnect } from "@ethernauta/core";
 
 const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
 const writer = createWriter(http(walletConnect(mainnet)))
@@ -38,7 +38,7 @@ const hash = await client.sendTransaction({
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { http, sendTransaction, mainnet, chain } from "@ethernauta/core";
+import { http, mainnet, chain } from "@ethernauta/core";
 
 const alchemy = createAlchemy(env.WALLET_CONNECT_PROJECT_ID)
 const infura = createInfura(env.INFURA_ID)
