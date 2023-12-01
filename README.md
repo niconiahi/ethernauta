@@ -5,7 +5,6 @@
 #### in Ethernauta
 ```tsx
 // these are surgically imported to make the bundle size as low as possible
-import { http, mainnet, rinkeby, sendTransaction } from "@ethernauta/core";
 import { mainnet, rinkeby } from "@ethernauta/chain";
 import { sendTransaction } from "@ethernauta/method";
 import { http, createWriter } from "@ethernauta/transport";
