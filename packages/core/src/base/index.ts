@@ -1,1 +1,5 @@
+export * from './octal'
+export * from './binary'
+export * from './vigesimal'
 export * from './hexadecimal'
+export * from './duotrigesimal'
