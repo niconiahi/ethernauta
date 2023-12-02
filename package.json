@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
+  "type": "module",
   "dependencies": {},
   "devDependencies": {
     "@nx/eslint": "17.1.3",
@@ -20,6 +21,7 @@
     "@vitest/ui": "~0.34.6",
     "eslint": "~8.46.0",
     "nx": "17.1.3",
+    "prettier": "^2.6.2",
     "typescript": "~5.3.2",
     "vite": "~4.3.9",
     "vite-plugin-dts": "~2.3.0",

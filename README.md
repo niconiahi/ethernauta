@@ -22,7 +22,7 @@ const chain_ = await reader.send(chain())
 
 #### in Viem
 ```tsx
-import { createPublicClient, http } from 'viem'
+import { createPublicClient, http, fallback } from 'viem'
 import { mainnet, rinkeby } from 'viem/chains'
 
 const client = createPublicClient({ 

@@ -1,21 +1,26 @@
-import { Address, Base16, AccessList } from "@ethernauta/core";
+import { Address, Uint, Bytes } from "../../base";
+import { AccessList } from "../../transaction";
 
+/**
+ * Unsigned EIP-2930 transaction.
+ */
 export interface Transaction2930Unsigned {
-  type: Base16;
-  nonce: Base16;
-  to: Address | null; // Contract Creation or Address
-  gas: Base16;
-  value: Base16;
-  input: Base16;
-  gasPrice: Base16;
+  type: string;
+  nonce: Uint;
+  to: Address | null;
+  gas: Uint;
+  value: Uint;
+  input: Bytes;
+  gasPrice: Uint;
   accessList: AccessList;
-  chainId: Base16;
+  chainId: Uint;
 }
 
-
+/**
+ * Signed EIP-2930 transaction.
+ */
 export interface Transaction2930Signed extends Transaction2930Unsigned {
-  yParity: Base16;
-  // v?: Base16; // Deprecated, use yParity
-  r: Base16;
-  s: Base16;
+  yParity: Uint;
+  r: Uint;
+  s: Uint;
 }
