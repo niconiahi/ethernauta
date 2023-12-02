@@ -4,12 +4,13 @@ import { callSchema } from "@ethernauta/transport";
 import { parse, union } from 'valibot'
 
 /**
- * Signs and submits a transaction to the Ethereum network.
- * @param transaction The transaction object to be sent.
- * @returns The transaction hash as a promise.
+ * Returns information about a transaction by block hash and transaction index position
+ * @param blockHash The transaction hash to be sent
+ * @param transactionIndex The index of the transaction within the block
+ * @returns The transaction information or null if not found
  */
-export async function getTransactionByHash(writer: Writer, parameters: [Hash32, Uint]): Promise<TransactionInfo | NotFound> {
-  const method = 'eth_getTransactionByHash'
+export async function getTransactionByHashAndIndex(writer: Writer, parameters: [Hash32, Uint]): Promise<TransactionInfo | NotFound> {
+  const method = 'eth_getTransactionByHashAndIndex'
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
   const result = parse(union([transactionInfoSchema, notFoundSchema]), response.result)
