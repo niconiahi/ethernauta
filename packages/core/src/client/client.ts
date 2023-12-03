@@ -1,5 +1,5 @@
 import { uintSchema } from "../base";
-import { Input, boolean, object, union } from "valibot";
+import { Input, literal, object, union } from "valibot";
 
 export const syncingProgressSchema = object({
   startingBlock: uintSchema,
@@ -8,5 +8,5 @@ export const syncingProgressSchema = object({
 })
 export type SyncingProgress = Input<typeof syncingProgressSchema>
 
-export const syncingSchema = union([syncingProgressSchema, boolean()])
-export type SyncingStatus = Input<typeof syncingSchema>
+export const syncingStatusSchema = union([syncingProgressSchema, literal(false)])
+export type SyncingStatus = Input<typeof syncingStatusSchema>
