@@ -1,8 +1,8 @@
 import { Call, HttpTransport } from "../http";
-import { JsonRpcFailedResponse, JsonRpcSuccesfulResponse } from "../json-rpc";
+import { FailedResponse, SuccesfulResponse } from "../json-rpc";
 
 export function reader(transports: HttpTransport[]):
-  (call: Call) => Promise<JsonRpcFailedResponse | JsonRpcSuccesfulResponse> {
+  (call: Call) => Promise<FailedResponse | SuccesfulResponse> {
   // for now, just pick the first transport and use it
   return transports[0]
 }

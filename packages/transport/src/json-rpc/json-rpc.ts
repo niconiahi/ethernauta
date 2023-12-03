@@ -20,28 +20,28 @@ import {
 const methodSchema = string([excludes('rpc.', 'method names that begin with "rpc." are reserved for system extensions')])
 
 // https://www.jsonrpc.org/specification#parameter_structures
-const jsonRpcParametersSchema = union([array(unknown()), record(unknown())])
-export type JsonRpcParameters = Input<typeof jsonRpcParametersSchema>;
+const parametersSchema = union([array(unknown()), record(unknown())])
+export type Parameters = Input<typeof parametersSchema>;
 
 // https://www.jsonrpc.org/specification#request_object
-export const jsonRpcRequestSchema = object({
+export const requestSchema = object({
   jsonrpc: literal('2.0'),
   method: methodSchema,
-  params: optional(jsonRpcParametersSchema),
+  params: optional(parametersSchema),
   id: union([string(), number(), null_()])
 })
-export type JsonRpcRequest = Input<typeof jsonRpcRequestSchema>
+export type Request = Input<typeof requestSchema>
 
 // https://www.jsonrpc.org/specification#notification
-const jsonRpcNotificationSchema = object({
+const notificationSchema = object({
   jsonrpc: literal('2.0'),
   method: methodSchema,
-  params: optional(jsonRpcParametersSchema),
+  params: optional(parametersSchema),
 })
-export type JsonRpcNotification = Input<typeof jsonRpcNotificationSchema>
+export type Notification = Input<typeof notificationSchema>
 
 // https://www.jsonrpc.org/specification#error_object
-const jsonRpcResponseErrorSchema = object({
+const errorSchema = object({
   data: optional(unknown()),
   message: string(),
   code: union([
@@ -58,31 +58,31 @@ const jsonRpcResponseErrorSchema = object({
   ]),
 })
 // https://www.jsonrpc.org/specification#response_object
-const jsonRpcFailedResponseSchema = object({
+const failedResponseSchema = object({
   jsonrpc: literal('2.0'),
   result: undefined_(),
-  error: jsonRpcResponseErrorSchema
+  error: errorSchema
 })
-export type JsonRpcFailedResponse = Input<typeof jsonRpcFailedResponseSchema>
+export type FailedResponse = Input<typeof failedResponseSchema>
 
-const jsonRpcSuccesfulResponse = object({
+const succesfulResponseSchema = object({
   jsonrpc: literal('2.0'),
   result: unknown(),
   error: undefined_(),
 })
-export type JsonRpcSuccesfulResponse = Input<typeof jsonRpcSuccesfulResponse>
+export type SuccesfulResponse = Input<typeof succesfulResponseSchema>
 
-export const jsonRpcResponseSchema = variant('jsonrpc', [
-  jsonRpcSuccesfulResponse,
-  jsonRpcFailedResponseSchema
+export const responseSchema = variant('jsonrpc', [
+  failedResponseSchema,
+  succesfulResponseSchema,
 ])
-export type JsonRpcResponse = Input<typeof jsonRpcResponseSchema>
+export type Response = Input<typeof responseSchema>
 
 // https://www.jsonrpc.org/specification#request_object
 export function runJsonRpcRequest(
-  request: JsonRpcRequest,
-): JsonRpcFailedResponse | JsonRpcSuccesfulResponse {
-  const successful: JsonRpcSuccesfulResponse = {
+  request: Request,
+): FailedResponse | SuccesfulResponse {
+  const successful: SuccesfulResponse = {
     jsonrpc: "2.0",
     result: "something",
   };
@@ -92,9 +92,9 @@ export function runJsonRpcRequest(
 
 // https://www.jsonrpc.org/specification#notification
 export function runJsonRpcNotification(
-  notification: JsonRpcNotification,
-): JsonRpcFailedResponse | JsonRpcSuccesfulResponse {
-  const successful: JsonRpcSuccesfulResponse = {
+  notification: Notification,
+): FailedResponse | SuccesfulResponse {
+  const successful: SuccesfulResponse = {
     jsonrpc: "2.0",
     result: "something",
   };
@@ -104,13 +104,13 @@ export function runJsonRpcNotification(
 
 // https://www.jsonrpc.org/specification#batch
 export function runJsonRpcBatch(
-  batch: (JsonRpcRequest | JsonRpcNotification)[],
-): (JsonRpcFailedResponse | JsonRpcSuccesfulResponse)[] | JsonRpcFailedResponse {
-  const successful: JsonRpcSuccesfulResponse = {
+  batch: (Request | Notification)[],
+): (FailedResponse | SuccesfulResponse)[] | FailedResponse {
+  const successful: SuccesfulResponse = {
     jsonrpc: "2.0",
     result: "something",
   };
-  const error: JsonRpcFailedResponse = {
+  const error: FailedResponse = {
     jsonrpc: "2.0",
     error: {
       code: 32600,
