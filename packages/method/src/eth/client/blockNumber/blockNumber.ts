@@ -7,11 +7,13 @@ import { parse } from 'valibot'
  * Returns the number of most recent block
  * @returns The block number
  */
-export async function blockNumber(reader: Reader): Promise<Uint> {
-  const method = 'eth_blockNumber'
-  const call = parse(callSchema, [method])
-  const response = await reader(call)
-  const result = parse(uintSchema, response.result)
+export function blockNumber(): (reader: Reader) => Promise<Uint> {
+  return async (reader: Reader): Promise<Uint> => {
+    const method = 'eth_blockNumber'
+    const call = parse(callSchema, [method])
+    const response = await reader(call)
+    const result = parse(uintSchema, response.result)
 
-  return result
+    return result
+  }
 }
