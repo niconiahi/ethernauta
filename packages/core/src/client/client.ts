@@ -1,26 +1,12 @@
-import { Uint } from "../base";
+import { uintSchema } from "../base";
+import { Input, boolean, object, union } from "valibot";
 
-/**
- * Syncing progress object.
- */
-export interface SyncingProgress {
-  /**
-   * The number of the earliest block in the syncing process.
-   */
-  startingBlock: Uint;
+export const syncingProgressSchema = object({
+  startingBlock: uintSchema,
+  currentBlock: uintSchema,
+  highestBlock: uintSchema,
+})
+export type SyncingProgress = Input<typeof syncingProgressSchema>
 
-  /**
-   * The number of the current block where syncing is at.
-   */
-  currentBlock: Uint;
-
-  /**
-   * The number of the highest known block.
-   */
-  highestBlock: Uint;
-}
-
-/**
- * Represents the syncing status, which can either be the progress of syncing or a boolean indicating whether syncing is happening or not.
- */
-export type SyncingStatus = SyncingProgress | boolean;
+export const syncingSchema = union([syncingProgressSchema, boolean()])
+export type SyncingStatus = Input<typeof syncingSchema>
