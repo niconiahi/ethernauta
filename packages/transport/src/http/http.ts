@@ -9,7 +9,10 @@ import {
   responseSchema,
 } from "../json-rpc";
 
-export const callSchema = union([tuple([string(), array(any())]), tuple([string()])])
+export const callSchema = union([
+  tuple([string(), array(any())]),
+  tuple([string()]),
+])
 export type Call = Input<typeof callSchema>
 
 export function httpTransport(
