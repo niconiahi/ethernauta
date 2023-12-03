@@ -18,24 +18,28 @@ import {
 
 // https://www.jsonrpc.org/specification#extensions
 const methodSchema = string([excludes('rpc.', 'method names that begin with "rpc." are reserved for system extensions')])
+
 // https://www.jsonrpc.org/specification#parameter_structures
-const jsonRpcSchema = union([array(unknown()), record(unknown())])
-export type JsonRpcParameters = Input<typeof jsonRpcSchema>;
+const jsonRpcParametersSchema = union([array(unknown()), record(unknown())])
+export type JsonRpcParameters = Input<typeof jsonRpcParametersSchema>;
+
 // https://www.jsonrpc.org/specification#request_object
 export const jsonRpcRequestSchema = object({
   jsonrpc: literal('2.0'),
   method: methodSchema,
-  params: optional(jsonRpcSchema),
+  params: optional(jsonRpcParametersSchema),
   id: union([string(), number(), null_()])
 })
 export type JsonRpcRequest = Input<typeof jsonRpcRequestSchema>
+
 // https://www.jsonrpc.org/specification#notification
 const jsonRpcNotificationSchema = object({
   jsonrpc: literal('2.0'),
   method: methodSchema,
-  params: optional(jsonRpcSchema),
+  params: optional(jsonRpcParametersSchema),
 })
 export type JsonRpcNotification = Input<typeof jsonRpcNotificationSchema>
+
 // https://www.jsonrpc.org/specification#error_object
 const jsonRpcResponseErrorSchema = object({
   data: optional(unknown()),
@@ -60,17 +64,20 @@ const jsonRpcFailedResponseSchema = object({
   error: jsonRpcResponseErrorSchema
 })
 export type JsonRpcFailedResponse = Input<typeof jsonRpcFailedResponseSchema>
+
 const jsonRpcSuccesfulResponse = object({
   jsonrpc: literal('2.0'),
   result: unknown(),
   error: undefined_(),
 })
 export type JsonRpcSuccesfulResponse = Input<typeof jsonRpcSuccesfulResponse>
+
 export const jsonRpcResponseSchema = variant('jsonrpc', [
   jsonRpcSuccesfulResponse,
   jsonRpcFailedResponseSchema
 ])
 export type JsonRpcResponse = Input<typeof jsonRpcResponseSchema>
+
 // https://www.jsonrpc.org/specification#request_object
 export function runJsonRpcRequest(
   request: JsonRpcRequest,
@@ -82,6 +89,7 @@ export function runJsonRpcRequest(
 
   return successful;
 }
+
 // https://www.jsonrpc.org/specification#notification
 export function runJsonRpcNotification(
   notification: JsonRpcNotification,
@@ -93,6 +101,7 @@ export function runJsonRpcNotification(
 
   return successful;
 }
+
 // https://www.jsonrpc.org/specification#batch
 export function runJsonRpcBatch(
   batch: (JsonRpcRequest | JsonRpcNotification)[],

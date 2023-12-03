@@ -1,17 +1,6 @@
-import { Address, Bytes, Hash32, Uint, Bytes32, Byte, byteSchema, hash32Schema, uintSchema, addressSchema, bytesSchema, bytes32Schema } from "../base";
+import { byteSchema, hash32Schema, uintSchema, addressSchema, bytesSchema, bytes32Schema } from "../base";
 import { Input, array, boolean, nullable, object, optional } from "valibot";
 
-export interface Log {
-  removed: boolean;
-  logIndex: Uint;
-  transactionIndex: Uint;
-  transactionHash: Hash32;
-  blockHash: Hash32;
-  blockNumber: Uint;
-  address: Address;
-  data: Bytes;
-  topics: Bytes32[];
-}
 export const logSchema = object({
   removed: boolean(),
   logIndex: uintSchema,
@@ -23,6 +12,7 @@ export const logSchema = object({
   data: bytesSchema,
   topics: array(bytes32Schema),
 })
+export type Log = Input<typeof logSchema>
 
 export const receiptInfoSchema = object({
   type: optional(byteSchema), // Optional: might not be present in all receipts

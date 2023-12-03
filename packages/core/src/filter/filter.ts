@@ -6,13 +6,13 @@ import { array, null_, object, union, Input } from "valibot";
  * Represents a filter topic, which can be a null, a single topic, or an array of topics.
  */
 export const filterTopicSchema = union([null_(), bytes32Schema, array(bytes32Schema)])
-export type FilterTopic = null | Bytes32 | Bytes32[];
+export type FilterTopic = Input<typeof filterTopicSchema>
 
 /**
  * Array of filter topics.
  */
 export const filterTopicsSchema = array(filterTopicSchema)
-export type FilterTopics = FilterTopic[];
+export type FilterTopics = Input<typeof filterTopicsSchema>
 
 /**
  * Filter object used to specify block range, address(es), and topics for a filter.
