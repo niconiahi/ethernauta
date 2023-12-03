@@ -72,7 +72,7 @@ const succesfulResponseSchema = object({
 })
 export type SuccesfulResponse = Input<typeof succesfulResponseSchema>
 
-export const responseSchema = variant('jsonrpc', [
+export const responseSchema = union([
   failedResponseSchema,
   succesfulResponseSchema,
 ])

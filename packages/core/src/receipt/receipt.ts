@@ -15,7 +15,7 @@ export const logSchema = object({
 export type Log = Input<typeof logSchema>
 
 export const receiptInfoSchema = object({
-  type: optional(byteSchema), // Optional: might not be present in all receipts
+  type: optional(byteSchema), // might not be present in all receipts
   transactionHash: hash32Schema,
   transactionIndex: uintSchema,
   blockHash: hash32Schema,
@@ -24,13 +24,13 @@ export const receiptInfoSchema = object({
   to: nullable(addressSchema),
   cumulativeGasUsed: uintSchema,
   gasUsed: uintSchema,
-  blobGasUsed: optional(uintSchema), // Optional: only for blob transactions
+  blobGasUsed: optional(uintSchema), // only for blob transactions
   contractAddress: nullable(addressSchema),
   logs: array(logSchema),
   logsBloom: bytesSchema,
-  root: optional(hash32Schema), // Optional: only for pre-Byzantium transactions
-  status: optional(uintSchema), // Optional: only for post-Byzantium transactions
+  root: optional(hash32Schema), // only for pre-Byzantium transactions
+  status: optional(uintSchema), // only for post-Byzantium transactions
   effectiveGasPrice: uintSchema,
-  blobGasPrice: optional(uintSchema) // Optional: only for blob transactions
+  blobGasPrice: optional(uintSchema) // only for blob transactions
 })
 export type ReceiptInfo = Input<typeof receiptInfoSchema>

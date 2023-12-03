@@ -1,1 +1,1 @@
-export * from './bytes48'
+export * from './bytes-48'
