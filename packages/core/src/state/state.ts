@@ -1,53 +1,20 @@
-import { Address, Bytes, BytesMax32, Hash32, Uint256, Uint64 } from "../base";
+import { addressSchema, bytes32Schema, bytesSchema, hash32Schema, uint256Schema, uint64Schema } from "../base";
+import { Input, array, object } from "valibot";
 
-/**
- * Storage proof object.
- */
-export interface StorageProof {
-  /**
-   * The key in the storage of the contract.
-   */
-  key: BytesMax32;
-  /**
-   * The value associated with the key in the contract's storage.
-   */
-  value: Uint256;
-  /**
-   * Array of bytes that proves the value is in the trie.
-   */
-  proof: Bytes[];
-}
+const storageProofSchema = object({
+  key: bytes32Schema,
+  value: uint256Schema,
+  proof: array(bytesSchema)
+})
+export type StorageProof = Input<typeof storageProofSchema>
 
-/**
- * Account proof object.
- */
-export interface AccountProof {
-  /**
-   * Ethereum address of the account.
-   */
-  address: Address;
-  /**
-   * Array of bytes that proves the account is in the trie.
-   */
-  accountProof: Bytes[];
-  /**
-   * Balance of the account in Wei.
-   */
-  balance: Uint256;
-  /**
-   * Hash of the EVM bytecode of the account's contract.
-   */
-  codeHash: Hash32;
-  /**
-   * Number of transactions sent from this account.
-   */
-  nonce: Uint64;
-  /**
-   * Hash of the root of the storage trie of the account.
-   */
-  storageHash: Hash32;
-  /**
-   * Array of storage proofs for the account.
-   */
-  storageProof: StorageProof[];
-}
+export const accountProofSchema = object({
+  address: addressSchema,
+  accountProof: array(bytesSchema),
+  balance: uint256Schema,
+  codeHash: hash32Schema,
+  nonce: uint64Schema,
+  storageHash: hash32Schema,
+  storageProof: array(storageProofSchema)
+})
+export type AccountProof = Input<typeof accountProofSchema>

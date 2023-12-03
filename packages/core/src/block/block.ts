@@ -1,10 +1,14 @@
-import { Address, Bytes, Hash32, Uint, Bytes256, Bytes8 } from "../base";
+import { Address, Bytes, Hash32, Uint, Bytes256, Bytes8, uintSchema, hash32Schema } from "../base";
 import { TransactionInfo } from "../transaction";
 import { Withdrawal } from "../withdrawal";
+import { Input, literal, union } from "valibot";
 
-export type BlockTag = 'earliest' | 'finalized' | 'safe' | 'latest' | 'pending';
-export type BlockNumberOrTag = Uint | BlockTag;
-export type BlockNumberOrTagOrHash = Uint | BlockTag | Hash32;
+export const blockTagSchema = union([literal("earliest"), literal("finalized"), literal("safe"), literal("latest"), literal("pending")])
+export type BlockTag = Input<typeof blockTagSchema>
+export const blockNumberOrTag = union([uintSchema, blockTagSchema])
+export type BlockNumberOrTag = Input<typeof blockNumberOrTag>
+export const blockNumberOrTagOrHash = union([uintSchema, blockTagSchema, hash32Schema])
+export type BlockNumberOrTagOrHash = Input<typeof blockNumberOrTagOrHash>
 export interface Block {
   hash: Hash32;
   parentHash: Hash32;
