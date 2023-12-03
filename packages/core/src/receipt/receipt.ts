@@ -1,9 +1,6 @@
 import { Address, Bytes, Hash32, Uint, Bytes32, Byte, byteSchema, hash32Schema, uintSchema, addressSchema, bytesSchema, bytes32Schema } from "../base";
-import { array, boolean, nullable, object, optional } from "valibot";
+import { Input, array, boolean, nullable, object, optional } from "valibot";
 
-/**
- * Log object representing a single log entry in a transaction.
- */
 export interface Log {
   removed: boolean;
   logIndex: Uint;
@@ -27,29 +24,6 @@ export const logSchema = object({
   topics: array(bytes32Schema),
 })
 
-/**
- * Receipt information object for a transaction.
- */
-export interface ReceiptInfo {
-  type?: Byte; // Optional as it might not be present in all receipts
-  transactionHash: Hash32;
-  transactionIndex: Uint;
-  blockHash: Hash32;
-  blockNumber: Uint;
-  from: Address;
-  to: Address | null;
-  cumulativeGasUsed: Uint;
-  gasUsed: Uint;
-  blobGasUsed?: Uint; // Optional, only for blob transactions
-  contractAddress: Address | null;
-  logs: Log[];
-  logsBloom: Bytes;
-  root?: Hash32; // Optional, only for pre-Byzantium transactions
-  status?: Uint; // Optional, only for post-Byzantium transactions
-  effectiveGasPrice: Uint;
-  blobGasPrice?: Uint; // Optional, only for blob transactions
-}
-
 export const receiptInfoSchema = object({
   type: optional(byteSchema), // Optional: might not be present in all receipts
   transactionHash: hash32Schema,
@@ -69,3 +43,4 @@ export const receiptInfoSchema = object({
   effectiveGasPrice: uintSchema,
   blobGasPrice: optional(uintSchema) // Optional: only for blob transactions
 })
+export type ReceiptInfo = Input<typeof receiptInfoSchema>

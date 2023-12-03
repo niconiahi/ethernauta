@@ -1,3 +1,4 @@
+export * from './block'
 export * from './client'
 export * from './execute'
 export * from './fee-market'
