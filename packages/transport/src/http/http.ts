@@ -1,7 +1,7 @@
-import { parse } from "valibot";
-import type { Response } from "../json-rpc";
-import { requestSchema, responseSchema } from "../json-rpc";
-import { Call } from "../base";
+import { parse } from 'valibot'
+import type { Response } from '../json-rpc'
+import { requestSchema, responseSchema } from '../json-rpc'
+import type { Call } from '../base'
 
 export function httpTransport(
   url: string,
@@ -12,11 +12,11 @@ export function httpTransport(
     const [method, params] = call
     const request = parse(requestSchema, { jsonrpc: '2.0', id: generateId(), method, params })
     const _response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(request),
       // maybe adding abort signal
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     })
       .then((response) => {
@@ -24,15 +24,14 @@ export function httpTransport(
       })
       .catch((error) => {
         throw new Error(error)
-      });
+      })
     const response = parse(responseSchema, _response)
 
-    return response;
+    return response
   }
 }
-export type HttpTransport = ReturnType<typeof httpTransport>;
+export type HttpTransport = ReturnType<typeof httpTransport>
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 9)
 }
-

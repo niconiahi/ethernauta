@@ -1,8 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
+import type {
   Input,
+} from 'valibot'
+import {
   array,
+  excludes,
   literal,
+  null_,
   number,
   object,
   optional,
@@ -10,16 +13,14 @@ import {
   string,
   union,
   unknown,
-  excludes,
-  null_,
-} from "valibot";
+} from 'valibot'
 
 // https://www.jsonrpc.org/specification#extensions
 export const methodSchema = string([excludes('rpc.', 'method names that begin with "rpc." are reserved for system extensions')])
 
 // https://www.jsonrpc.org/specification#parameter_structures
 export const parametersSchema = union([array(unknown()), record(unknown())])
-export type Parameters = Input<typeof parametersSchema>;
+export type Parameters = Input<typeof parametersSchema>
 
 const idSchema = union([string(), number(), null_()])
 
@@ -28,7 +29,7 @@ export const requestSchema = object({
   jsonrpc: literal('2.0'),
   method: methodSchema,
   params: optional(parametersSchema),
-  id: idSchema
+  id: idSchema,
 })
 export type Request = Input<typeof requestSchema>
 
@@ -54,14 +55,14 @@ const errorSchema = object({
     literal(-32603),
     literal(-32500),
     literal(-32400),
-    literal(-32300)
+    literal(-32300),
   ]),
 })
 // https://www.jsonrpc.org/specification#response_object
 const failedResponseSchema = object({
   id: idSchema,
   jsonrpc: literal('2.0'),
-  error: errorSchema
+  error: errorSchema,
 })
 export type FailedResponse = Input<typeof failedResponseSchema>
 
@@ -78,51 +79,40 @@ export const responseSchema = union([
 ])
 export type Response = Input<typeof responseSchema>
 
-// https://www.jsonrpc.org/specification#request_object
-export function runJsonRpcRequest(
-  request: Request,
-): FailedResponse | SuccesfulResponse {
-  const successful: SuccesfulResponse = {
-    id: 'some-id',
-    jsonrpc: "2.0",
-    result: "something",
-  };
-
-  return successful;
-}
-
 // https://www.jsonrpc.org/specification#notification
 export function runJsonRpcNotification(
+  // eslint-disable-next-line unused-imports/no-unused-vars
   notification: Notification,
 ): FailedResponse | SuccesfulResponse {
   const successful: SuccesfulResponse = {
     id: 'some-id',
-    jsonrpc: "2.0",
-    result: "something",
-  };
+    jsonrpc: '2.0',
+    result: 'something',
+  }
 
-  return successful;
+  return successful
 }
 
 // https://www.jsonrpc.org/specification#batch
 export function runJsonRpcBatch(
+  // eslint-disable-next-line unused-imports/no-unused-vars
   batch: (Request | Notification)[],
 ): (FailedResponse | SuccesfulResponse)[] | FailedResponse {
   const successful: SuccesfulResponse = {
     id: 'some-id',
-    jsonrpc: "2.0",
-    result: "something",
-  };
+    jsonrpc: '2.0',
+    result: 'something',
+  }
   const error: FailedResponse = {
     id: 'some-id',
-    jsonrpc: "2.0",
+    jsonrpc: '2.0',
     error: {
       code: -32600,
-      message: "omg",
-      data: "_omg",
+      message: 'omg',
+      data: '_omg',
     },
-  };
+  }
   // align the order of the responses with the requests, based on the "id" used
 
-  return [successful, error];
+  return [successful, error]
 }
