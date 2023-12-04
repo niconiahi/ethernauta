@@ -1,25 +1,25 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
+    "target": "es2015",
+    "lib": ["es2020", "dom"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "rootDir": ".",
+    "module": "esnext",
+    "moduleResolution": "node",
     "paths": {
       "@ethernauta/core": ["packages/core/src/index.ts"],
       "@ethernauta/legacy": ["packages/legacy/src/index.ts"],
       "@ethernauta/method": ["packages/method/src/index.ts"],
       "@ethernauta/transport": ["packages/transport/src/index.ts"]
-    }
+    },
+    "declaration": false,
+    "importHelpers": true,
+    "sourceMap": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "tmp"]
 }

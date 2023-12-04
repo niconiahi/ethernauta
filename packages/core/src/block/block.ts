@@ -1,22 +1,17 @@
+import type { Input } from 'valibot'
+import { array, literal, object, optional, union } from 'valibot'
 import {
-  Address,
-  Bytes,
-  Hash32,
-  Uint,
-  Bytes256,
-  Bytes8,
-  uintSchema,
-  hash32Schema,
   addressSchema,
   bytes256Schema,
+  bytes8Schema,
   bytesSchema,
-  bytes8Schema
-} from "../base";
-import { TransactionInfo, transactionInfoSchema } from "../transaction";
-import { Withdrawal, withdrawalSchema } from "../withdrawal";
-import { Input, array, literal, object, optional, union } from "valibot";
+  hash32Schema,
+  uintSchema,
+} from '../base'
+import { transactionInfoSchema } from '../transaction'
+import { withdrawalSchema } from '../withdrawal'
 
-export const blockTagSchema = union([literal("earliest"), literal("finalized"), literal("safe"), literal("latest"), literal("pending")])
+export const blockTagSchema = union([literal('earliest'), literal('finalized'), literal('safe'), literal('latest'), literal('pending')])
 export type BlockTag = Input<typeof blockTagSchema>
 
 export const blockNumberOrTag = union([uintSchema, blockTagSchema])
@@ -58,6 +53,6 @@ export type Block = Input<typeof blockSchema>
 export const badBlockSchema = object({
   block: blockSchema,
   hash: hash32Schema,
-  rlp: bytesSchema
+  rlp: bytesSchema,
 })
 export type BadBlock = Input<typeof badBlockSchema>

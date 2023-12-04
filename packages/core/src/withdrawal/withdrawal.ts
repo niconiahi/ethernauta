@@ -1,10 +1,11 @@
-import { Address, Uint256, Uint64, addressSchema, uint256Schema, uint64Schema } from "../base";
-import { Input, object } from "valibot";
+import type { Input } from 'valibot'
+import { object } from 'valibot'
+import { addressSchema, uint256Schema, uint64Schema } from '../base'
 
 export const withdrawalSchema = object({
   index: uint64Schema,
   validatorIndex: uint64Schema,
   address: addressSchema,
-  amount: uint256Schema
+  amount: uint256Schema,
 })
 export type Withdrawal = Input<typeof withdrawalSchema>

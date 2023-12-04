@@ -1,15 +1,16 @@
-import { Address, Hash32, Uint, addressSchema, hash32Schema, uintSchema } from "../../base";
 import { object } from 'valibot'
+import type { Address, Hash32, Uint } from '../../base'
+import { addressSchema, hash32Schema, uintSchema } from '../../base'
 
 /**
  * Transaction information object.
  */
 export interface TransactionInfo {
-  blockHash: Hash32;
-  blockNumber: Uint;
-  from: Address;
-  hash: Hash32;
-  transactionIndex: Uint;
+  blockHash: Hash32
+  blockNumber: Uint
+  from: Address
+  hash: Hash32
+  transactionIndex: Uint
 }
 
 export const transactionInfoSchema = object({
@@ -17,5 +18,5 @@ export const transactionInfoSchema = object({
   blockNumber: uintSchema,
   from: addressSchema,
   hash: hash32Schema,
-  transactionIndex: uintSchema
+  transactionIndex: uintSchema,
 })

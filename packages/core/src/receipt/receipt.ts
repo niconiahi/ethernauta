@@ -1,5 +1,6 @@
-import { byteSchema, hash32Schema, uintSchema, addressSchema, bytesSchema, bytes32Schema } from "../base";
-import { Input, array, boolean, nullable, object, optional } from "valibot";
+import type { Input } from 'valibot'
+import { array, boolean, nullable, object, optional } from 'valibot'
+import { addressSchema, byteSchema, bytes32Schema, bytesSchema, hash32Schema, uintSchema } from '../base'
 
 export const logSchema = object({
   removed: boolean(),
@@ -31,6 +32,6 @@ export const receiptInfoSchema = object({
   root: optional(hash32Schema), // only for pre-Byzantium transactions
   status: optional(uintSchema), // only for post-Byzantium transactions
   effectiveGasPrice: uintSchema,
-  blobGasPrice: optional(uintSchema) // only for blob transactions
+  blobGasPrice: optional(uintSchema), // only for blob transactions
 })
 export type ReceiptInfo = Input<typeof receiptInfoSchema>

@@ -1,6 +1,6 @@
-import { Address, Byte, Bytes, Uint, Hash32, byteSchema, uintSchema, addressSchema, bytesSchema, hash32Schema } from "../../base";
-import { AccessList, accessListSchema } from "../../transaction";
-import { Input, array, nullable, object } from "valibot";
+import { array, nullable, object } from 'valibot'
+import { addressSchema, byteSchema, bytesSchema, hash32Schema, uintSchema } from '../../base'
+import { accessListSchema } from '../../transaction'
 
 /**
  * Generic transaction object applicable to all types.
@@ -22,4 +22,3 @@ export const genericTransactionSchema = object({
   blobs: array(bytesSchema),
   chainId: uintSchema,
 })
-type GenericTransaction = Input<typeof genericTransactionSchema>

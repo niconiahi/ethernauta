@@ -1,10 +1,14 @@
 {
   "name": "@ethernauta/core",
   "version": "0.0.1",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
   "dependencies": {
     "valibot": "^0.21.0"
   },
-  "main": "./index.js",
-  "module": "./index.mjs",
   "typings": "./index.d.ts"
 }

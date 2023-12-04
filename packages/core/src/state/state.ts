@@ -1,10 +1,11 @@
-import { addressSchema, bytes32Schema, bytesSchema, hash32Schema, uint256Schema, uint64Schema } from "../base";
-import { Input, array, object } from "valibot";
+import type { Input } from 'valibot'
+import { array, object } from 'valibot'
+import { addressSchema, bytes32Schema, bytesSchema, hash32Schema, uint256Schema, uint64Schema } from '../base'
 
 const storageProofSchema = object({
   key: bytes32Schema,
   value: uint256Schema,
-  proof: array(bytesSchema)
+  proof: array(bytesSchema),
 })
 export type StorageProof = Input<typeof storageProofSchema>
 
@@ -15,6 +16,6 @@ export const accountProofSchema = object({
   codeHash: hash32Schema,
   nonce: uint64Schema,
   storageHash: hash32Schema,
-  storageProof: array(storageProofSchema)
+  storageProof: array(storageProofSchema),
 })
 export type AccountProof = Input<typeof accountProofSchema>
