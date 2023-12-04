@@ -1,7 +1,8 @@
-import { uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, boolean, parse, tuple } from 'valibot'
+import { uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { boolean, parse, tuple } from 'valibot'
 
 const parametersSchema = tuple([uintSchema])
 type Parameters = Input<typeof parametersSchema>
@@ -15,9 +16,9 @@ export async function uninstallFilter(writer: Writer, _parameters: Parameters): 
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(boolean(), response.result)
 
   return result

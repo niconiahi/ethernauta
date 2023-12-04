@@ -1,7 +1,9 @@
-import { Hash32, genericTransactionSchema, hash32Schema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple } from 'valibot'
+import type { Hash32 } from '@ethernauta/core'
+import { genericTransactionSchema, hash32Schema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple } from 'valibot'
 
 const parametersSchema = tuple([genericTransactionSchema])
 type Parameters = Input<typeof parametersSchema>
@@ -15,9 +17,9 @@ export async function sendTransaction(writer: Writer, _parameters: Parameters): 
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(hash32Schema, response.result)
 
   return result

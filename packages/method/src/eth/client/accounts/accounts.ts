@@ -1,6 +1,7 @@
-import { Addresses, addressesSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
+import type { Addresses } from '@ethernauta/core'
+import { addressesSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
 import { parse } from 'valibot'
 
 /**

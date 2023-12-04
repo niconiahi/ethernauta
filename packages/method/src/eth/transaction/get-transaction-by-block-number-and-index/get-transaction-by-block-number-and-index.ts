@@ -1,7 +1,9 @@
-import { NotFound, TransactionInfo, blockNumberOrTag, notFoundSchema, transactionInfoSchema, uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple, union } from 'valibot'
+import type { NotFound, TransactionInfo } from '@ethernauta/core'
+import { blockNumberOrTag, notFoundSchema, transactionInfoSchema, uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple, union } from 'valibot'
 
 const parametersSchema = tuple([blockNumberOrTag, uintSchema])
 type Parameters = Input<typeof parametersSchema>
@@ -16,9 +18,9 @@ export async function getTransactionByBlockNumberAndIndex(writer: Writer, _param
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(union([transactionInfoSchema, notFoundSchema]), response.result)
 
   return result

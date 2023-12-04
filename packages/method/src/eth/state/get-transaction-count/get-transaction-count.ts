@@ -1,11 +1,13 @@
-import { Uint, blockNumberOrTag, hash32Schema, uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple, union } from 'valibot'
+import type { Uint } from '@ethernauta/core'
+import { blockNumberOrTag, hash32Schema, uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple, union } from 'valibot'
 
 const parametersSchema = union([
   tuple([hash32Schema]),
-  tuple([hash32Schema, blockNumberOrTag])
+  tuple([hash32Schema, blockNumberOrTag]),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
@@ -19,9 +21,9 @@ export async function getTransactionCount(writer: Writer, _parameters: Parameter
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(uintSchema, response.result)
 
   return result

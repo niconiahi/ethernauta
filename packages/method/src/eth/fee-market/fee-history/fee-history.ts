@@ -1,7 +1,8 @@
-import { blockNumberOrTag, ratioSchema, uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, array, maxValue, minValue, number, object, parse, tuple } from 'valibot'
+import { blockNumberOrTag, ratioSchema, uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { array, maxValue, minValue, number, object, parse, tuple } from 'valibot'
 
 const percentileSchema = number([minValue(0), maxValue(100)])
 const rewardsSchema = array(percentileSchema)
@@ -26,9 +27,9 @@ export async function feeHistory(writer: Writer, _parameters: Parameters): Promi
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(feeHistoryResultsSchema, response.result)
 
   return result

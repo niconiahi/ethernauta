@@ -1,6 +1,7 @@
-import { Uint, uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
+import type { Uint } from '@ethernauta/core'
+import { uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
 import { parse } from 'valibot'
 
 /**
@@ -11,9 +12,9 @@ export async function maxPriorityFeePerGas(writer: Writer): Promise<Uint> {
   const method = 'eth_maxPriorityFeePerGas'
   const call = parse(callSchema, [method])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(uintSchema, response.result)
 
   return result

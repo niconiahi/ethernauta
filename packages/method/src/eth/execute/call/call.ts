@@ -1,11 +1,13 @@
-import { Bytes, blockNumberOrTagOrHash, bytesSchema, genericTransactionSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple, union } from 'valibot'
+import type { Bytes } from '@ethernauta/core'
+import { blockNumberOrTagOrHash, bytesSchema, genericTransactionSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple, union } from 'valibot'
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
-  tuple([genericTransactionSchema, blockNumberOrTagOrHash])
+  tuple([genericTransactionSchema, blockNumberOrTagOrHash]),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
@@ -19,9 +21,9 @@ export async function call(writer: Writer, _parameters: Parameters): Promise<Byt
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(bytesSchema, response.result)
 
   return result

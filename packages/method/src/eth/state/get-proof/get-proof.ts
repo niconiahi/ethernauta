@@ -1,12 +1,14 @@
-import { AccountProof, accountProofSchema, addressSchema, blockNumberOrTagOrHash, bytesMax32Schema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, array, parse, tuple } from 'valibot'
+import type { AccountProof } from '@ethernauta/core'
+import { accountProofSchema, addressSchema, blockNumberOrTagOrHash, bytesMax32Schema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { array, parse, tuple } from 'valibot'
 
 const parametersSchema = tuple([
   addressSchema,
   array(bytesMax32Schema),
-  blockNumberOrTagOrHash
+  blockNumberOrTagOrHash,
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
@@ -21,9 +23,9 @@ export async function getProof(writer: Writer, _parameters: Parameters): Promise
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(accountProofSchema, response.result)
 
   return result

@@ -1,6 +1,9 @@
-import { Block, NotFound, blockSchema, hash32Schema, notFoundSchema } from "@ethernauta/core";
-import { Reader, callSchema } from "@ethernauta/transport";
-import { Input, boolean, parse, tuple, union } from 'valibot'
+import type { Block, NotFound } from '@ethernauta/core'
+import { blockSchema, hash32Schema, notFoundSchema } from '@ethernauta/core'
+import type { Reader } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { boolean, parse, tuple, union } from 'valibot'
 
 const parametersSchema = tuple([hash32Schema, boolean()])
 type Parameters = Input<typeof parametersSchema>
@@ -16,9 +19,9 @@ export function getBlockByHash(_parameters: Parameters): (reader: Reader) => Pro
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
     const response = await reader(call)
-    if ('error' in response) {
+    if ('error' in response)
       throw new Error(response.error.message)
-    }
+
     const result = parse(union([blockSchema, notFoundSchema]), response.result)
 
     return result

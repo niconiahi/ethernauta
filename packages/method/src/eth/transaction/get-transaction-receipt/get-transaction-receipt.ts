@@ -1,7 +1,9 @@
-import { NotFound, ReceiptInfo, hash32Schema, notFoundSchema, receiptInfoSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple, union } from 'valibot'
+import type { NotFound, ReceiptInfo } from '@ethernauta/core'
+import { hash32Schema, notFoundSchema, receiptInfoSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple, union } from 'valibot'
 
 const parametersSchema = tuple([hash32Schema])
 type Parameters = Input<typeof parametersSchema>
@@ -15,9 +17,9 @@ export async function getTransactionReceipt(writer: Writer, _parameters: Paramet
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(union([receiptInfoSchema, notFoundSchema]), response.result)
 
   return result

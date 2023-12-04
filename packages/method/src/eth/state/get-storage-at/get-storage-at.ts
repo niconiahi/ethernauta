@@ -1,11 +1,13 @@
-import { Uint, blockNumberOrTagOrHash, hash32Schema, uint256Schema, uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple, union } from 'valibot'
+import type { Uint } from '@ethernauta/core'
+import { blockNumberOrTagOrHash, hash32Schema, uint256Schema, uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple, union } from 'valibot'
 
 const parametersSchema = union([
   tuple([hash32Schema, uint256Schema]),
-  tuple([hash32Schema, uint256Schema, blockNumberOrTagOrHash])
+  tuple([hash32Schema, uint256Schema, blockNumberOrTagOrHash]),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
@@ -20,9 +22,9 @@ export async function getStorageAt(writer: Writer, _parameters: Parameters): Pro
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(uintSchema, response.result)
 
   return result

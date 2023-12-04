@@ -1,11 +1,13 @@
-import { Uint, blockNumberOrTag, genericTransactionSchema, uintSchema } from "@ethernauta/core";
-import type { Writer } from "@ethernauta/transport";
-import { callSchema } from "@ethernauta/transport";
-import { Input, parse, tuple, union } from 'valibot'
+import type { Uint } from '@ethernauta/core'
+import { blockNumberOrTag, genericTransactionSchema, uintSchema } from '@ethernauta/core'
+import type { Writer } from '@ethernauta/transport'
+import { callSchema } from '@ethernauta/transport'
+import type { Input } from 'valibot'
+import { parse, tuple, union } from 'valibot'
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
-  tuple([genericTransactionSchema, blockNumberOrTag])
+  tuple([genericTransactionSchema, blockNumberOrTag]),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
@@ -19,9 +21,9 @@ export async function estimateGas(writer: Writer, _parameters: Parameters): Prom
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ('error' in response)
     throw new Error(response.error.message)
-  }
+
   const result = parse(uintSchema, response.result)
 
   return result
