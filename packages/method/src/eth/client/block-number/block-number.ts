@@ -12,6 +12,9 @@ export function blockNumber(): (reader: Reader) => Promise<Uint> {
     const method = 'eth_blockNumber'
     const call = parse(callSchema, [method])
     const response = await reader(call)
+    if ('error' in response) {
+      throw new Error(response.error.message)
+    }
     const result = parse(uintSchema, response.result)
 
     return result

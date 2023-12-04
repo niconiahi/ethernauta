@@ -11,6 +11,9 @@ export async function coinbase(writer: Writer): Promise<Address> {
   const method = 'eth_coinbase'
   const call = parse(callSchema, [method])
   const response = await writer(call)
+  if ('error' in response) {
+    throw new Error(response.error.message)
+  }
   const result = parse(addressSchema, response.result)
 
   return result

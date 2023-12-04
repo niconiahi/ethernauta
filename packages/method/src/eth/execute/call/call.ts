@@ -19,6 +19,9 @@ export async function call(writer: Writer, _parameters: Parameters): Promise<Byt
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
+  if ('error' in response) {
+    throw new Error(response.error.message)
+  }
   const result = parse(bytesSchema, response.result)
 
   return result

@@ -20,6 +20,9 @@ export async function getStorageAt(writer: Writer, _parameters: Parameters): Pro
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
+  if ('error' in response) {
+    throw new Error(response.error.message)
+  }
   const result = parse(uintSchema, response.result)
 
   return result

@@ -1,4 +1,5 @@
-import { Call, HttpTransport } from "../http";
+import { Call } from "../base";
+import { HttpTransport } from "../http";
 import { FailedResponse, SuccesfulResponse } from "../json-rpc";
 
 export function createWriter(transports: HttpTransport[]):

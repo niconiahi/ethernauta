@@ -1,23 +1,11 @@
-import { Input, any, array, parse, string, tuple, union } from "valibot";
-import type {
-  Response,
-  FailedResponse,
-  SuccesfulResponse,
-} from "../json-rpc";
-import {
-  requestSchema,
-  responseSchema,
-} from "../json-rpc";
-
-export const callSchema = union([
-  tuple([string(), array(any())]),
-  tuple([string()]),
-])
-export type Call = Input<typeof callSchema>
+import { parse } from "valibot";
+import type { Response } from "../json-rpc";
+import { requestSchema, responseSchema } from "../json-rpc";
+import { Call } from "../base";
 
 export function httpTransport(
   url: string,
-): (call: Call) => Promise<FailedResponse | SuccesfulResponse> {
+): (call: Call) => Promise<Response> {
   return async function (
     call: Call,
   ): Promise<Response> {

@@ -1,5 +1,5 @@
-export * from './chainId'
 export * from './syncing'
+export * from './chain-id'
 export * from './accounts'
 export * from './coinbase'
-export * from './blockNumber'
+export * from './block-number'

@@ -11,6 +11,9 @@ export async function newPendingTransactionFilter(writer: Writer): Promise<Uint>
   const method = 'eth_newFilter'
   const call = parse(callSchema, [method])
   const response = await writer(call)
+  if ('error' in response) {
+    throw new Error(response.error.message)
+  }
   const result = parse(uintSchema, response.result)
 
   return result
