@@ -8,6 +8,6 @@ export default antfu({
     "curly": ["error", "all"],
     "brace-style": ["error", "1tbs", { allowSingleLine: false }],
     "unused-imports/no-unused-imports": "error",
-    "no-unused-vars": ["error", { vars: "all", args: "all" }],
+    "no-unused-vars": ["error", { vars: "all", args: "all", ignoreRestSiblings: false, argsIgnorePattern: "^_" }],
   },
 })
