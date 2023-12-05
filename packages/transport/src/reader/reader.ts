@@ -9,3 +9,4 @@ export function createReader(transports: HttpTransport[]):
 }
 
 export type Reader = ReturnType<typeof createReader>
+export type Readable<T> = (reader: Reader) => Promise<T>

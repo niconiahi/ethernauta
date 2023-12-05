@@ -9,8 +9,8 @@ describe('eth_blockNumber', () => {
     const reader = createReader([
       httpTransport('https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/'),
     ])
-    const call = blockNumber()
-    const blockNumber_ = await call(reader)
+    const readable = blockNumber()
+    const blockNumber_ = await readable(reader)
     expect(blockNumber_).toSatisfy(value => safeParse(uintSchema, value).success)
   })
 })
