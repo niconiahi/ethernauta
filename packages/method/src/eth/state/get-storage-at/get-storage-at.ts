@@ -1,6 +1,6 @@
 import type { Uint } from "@ethernauta/core"
 import { blockNumberOrTagOrHash, hash32Schema, uint256Schema, uintSchema } from "@ethernauta/core"
-import type { Writer } from "@ethernauta/transport"
+import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
 import { parse, tuple, union } from "valibot"
@@ -17,16 +17,16 @@ type Parameters = Input<typeof parametersSchema>
  * @param blockNumberOrTagOrHash The block number or tag or hash being requested
  * @returns The account's balance
  */
-export async function getStorageAt(writer: Writer, _parameters: Parameters): Promise<Uint> {
-  const method = "eth_getStorageAt"
-  const parameters = parse(parametersSchema, _parameters)
-  const call = parse(callSchema, [method, parameters])
-  const response = await writer(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function getStorageAt(_parameters: Parameters): Readable<Uint> {
+  return async (reader: Reader): Promise<Uint> => {
+    const method = "eth_getStorageAt"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await reader(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(uintSchema, response.result)
+    return result
   }
-
-  const result = parse(uintSchema, response.result)
-
-  return result
 }

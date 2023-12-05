@@ -1,6 +1,6 @@
 import type { AccountProof } from "@ethernauta/core"
 import { accountProofSchema, addressSchema, blockNumberOrTagOrHash, bytesMax32Schema } from "@ethernauta/core"
-import type { Writer } from "@ethernauta/transport"
+import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
 import { array, parse, tuple } from "valibot"
@@ -18,16 +18,16 @@ type Parameters = Input<typeof parametersSchema>
  * @param blockNumberOrTagOrHash The block number or tag or hash being requested
  * @returns The account's balance
  */
-export async function getProof(writer: Writer, _parameters: Parameters): Promise<AccountProof> {
-  const method = "eth_getStorageAt"
-  const parameters = parse(parametersSchema, _parameters)
-  const call = parse(callSchema, [method, parameters])
-  const response = await writer(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function getProof(_parameters: Parameters): Readable<AccountProof> {
+  return async (reader: Reader): Promise<AccountProof> => {
+    const method = "eth_getProof"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await reader(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(accountProofSchema, response.result)
+    return result
   }
-
-  const result = parse(accountProofSchema, response.result)
-
-  return result
 }
