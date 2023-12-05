@@ -1,24 +1,30 @@
-import type { Address, Bytes, Uint } from "../../base"
+import type { Input } from "valibot"
+import { nullable, object, string } from "valibot"
+import { addressSchema, bytesSchema, uintSchema } from "../../base"
 
-/**
- * Unsigned Legacy transaction.
- */
-export interface TransactionLegacyUnsigned {
-  type: string
-  nonce: Uint
-  to: Address | null
-  gas: Uint
-  value: Uint
-  input: Bytes
-  gasPrice: Uint
-  chainId: Uint
-}
+const transactionLegacyUnsignedSchema = object({
+  type: string(),
+  nonce: uintSchema,
+  to: nullable(addressSchema),
+  gas: uintSchema,
+  value: uintSchema,
+  input: bytesSchema,
+  gasPrice: uintSchema,
+  chainId: uintSchema,
+})
+export type TransactionLegacyUnsigned = Input<typeof transactionLegacyUnsignedSchema>
 
-/**
- * Signed Legacy transaction.
- */
-export interface TransactionLegacySigned extends TransactionLegacyUnsigned {
-  v: Uint
-  r: Uint
-  s: Uint
-}
+const transactionLegacySignedSchema = object({
+  type: string(),
+  nonce: uintSchema,
+  to: nullable(addressSchema),
+  gas: uintSchema,
+  value: uintSchema,
+  input: bytesSchema,
+  gasPrice: uintSchema,
+  chainId: uintSchema,
+  yParity: uintSchema,
+  r: uintSchema,
+  s: uintSchema,
+})
+export type TransactionLegacySigned = Input<typeof transactionLegacySignedSchema>

@@ -1,28 +1,37 @@
-import type { Address, Bytes, Uint } from "../../base"
-import type { AccessList } from "../../transaction"
+import type { Input } from "valibot"
+import { nullable, object, string } from "valibot"
+import { addressSchema, bytesSchema, uintSchema } from "../../base"
+import { accessListSchema } from "../../transaction"
 
-/**
- * Unsigned EIP-1559 transaction.
- */
-export interface Transaction1559Unsigned {
-  type: string
-  nonce: Uint
-  to: Address | null
-  gas: Uint
-  value: Uint
-  input: Bytes
-  maxPriorityFeePerGas: Uint
-  maxFeePerGas: Uint
-  gasPrice: Uint
-  accessList: AccessList
-  chainId: Uint
-}
+export const transaction1559UnsignedSchema = object({
+  type: string(),
+  nonce: uintSchema,
+  to: nullable(addressSchema),
+  gas: uintSchema,
+  value: uintSchema,
+  input: bytesSchema,
+  maxPriorityFeePerGas: uintSchema,
+  maxFeePerGas: uintSchema,
+  gasPrice: uintSchema,
+  accessList: accessListSchema,
+  chainId: uintSchema,
+})
+export type Transaction1559Unsigned = Input<typeof transaction1559UnsignedSchema>
 
-/**
- * Signed EIP-1559 transaction.
- */
-export interface Transaction1559Signed extends Transaction1559Unsigned {
-  yParity: Uint
-  r: Uint
-  s: Uint
-}
+export const transaction1559SignedSchema = object({
+  type: string(),
+  nonce: uintSchema,
+  to: nullable(addressSchema),
+  gas: uintSchema,
+  value: uintSchema,
+  input: bytesSchema,
+  maxPriorityFeePerGas: uintSchema,
+  maxFeePerGas: uintSchema,
+  gasPrice: uintSchema,
+  accessList: accessListSchema,
+  chainId: uintSchema,
+  yParity: uintSchema,
+  r: uintSchema,
+  s: uintSchema,
+})
+export type Transaction1559Signed = Input<typeof transaction1559SignedSchema>

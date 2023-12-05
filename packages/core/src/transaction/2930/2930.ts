@@ -1,26 +1,33 @@
-import type { Address, Bytes, Uint } from "../../base"
-import type { AccessList } from "../../transaction"
+import type { Input } from "valibot"
+import { nullable, object, string } from "valibot"
+import { addressSchema, bytesSchema, uintSchema } from "../../base"
+import { accessListSchema } from "../../transaction"
 
-/**
- * Unsigned EIP-2930 transaction.
- */
-export interface Transaction2930Unsigned {
-  type: string
-  nonce: Uint
-  to: Address | null
-  gas: Uint
-  value: Uint
-  input: Bytes
-  gasPrice: Uint
-  accessList: AccessList
-  chainId: Uint
-}
+export const transaction2930UnsignedSchema = object({
+  type: string(),
+  nonce: uintSchema,
+  to: nullable(addressSchema),
+  gas: uintSchema,
+  value: uintSchema,
+  input: bytesSchema,
+  gasPrice: uintSchema,
+  accessList: accessListSchema,
+  chainId: uintSchema,
+})
+export type Transaction2930Unsigned = Input<typeof transaction2930UnsignedSchema>
 
-/**
- * Signed EIP-2930 transaction.
- */
-export interface Transaction2930Signed extends Transaction2930Unsigned {
-  yParity: Uint
-  r: Uint
-  s: Uint
-}
+export const transaction2930SignedSchema = object({
+  type: string(),
+  nonce: uintSchema,
+  to: nullable(addressSchema),
+  gas: uintSchema,
+  value: uintSchema,
+  input: bytesSchema,
+  gasPrice: uintSchema,
+  accessList: accessListSchema,
+  chainId: uintSchema,
+  yParity: uintSchema,
+  r: uintSchema,
+  s: uintSchema,
+})
+export type Transaction2930Signed = Input<typeof transaction2930SignedSchema>
