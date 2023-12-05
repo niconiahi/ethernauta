@@ -6,7 +6,3 @@ function isUint(input: unknown) {
 }
 export const uintSchema = special<`0x${string}`>(isUint)
 export type Uint = Input<typeof uintSchema>
-
-export function uintToNumber(uint: Uint): number {
-  return Number.parseInt(uint, 16)
-}

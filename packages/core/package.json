@@ -5,7 +5,8 @@
   "module": "./index.mjs",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test:unit": "vitest"
   },
   "dependencies": {
     "valibot": "^0.21.0"
