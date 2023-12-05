@@ -1,1 +1,1 @@
-export * from './coinbase'
+export * from "./coinbase"

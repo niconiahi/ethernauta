@@ -1,8 +1,8 @@
-import { accessListSchema, blockNumberOrTagOrHash, genericTransactionSchema, uintSchema } from '@ethernauta/core'
-import type { Writer } from '@ethernauta/transport'
-import { callSchema } from '@ethernauta/transport'
-import type { Input } from 'valibot'
-import { object, parse, string, tuple, union } from 'valibot'
+import { accessListSchema, blockNumberOrTagOrHash, genericTransactionSchema, uintSchema } from "@ethernauta/core"
+import type { Writer } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { Input } from "valibot"
+import { object, parse, string, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
@@ -22,11 +22,11 @@ type AccessListResult = Input<typeof accessListResultSchema>
  * @returns The returned data
  */
 export async function createAccessList(writer: Writer, _parameters: Parameters): Promise<AccessListResult> {
-  const method = 'eth_createAccessList'
+  const method = "eth_createAccessList"
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ("error" in response) {
     throw new Error(response.error.message)
   }
 

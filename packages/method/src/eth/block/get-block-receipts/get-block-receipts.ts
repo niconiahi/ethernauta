@@ -1,9 +1,9 @@
-import type { NotFound, ReceiptInfo } from '@ethernauta/core'
-import { blockNumberOrTag, notFoundSchema, receiptInfoSchema } from '@ethernauta/core'
-import type { Writer } from '@ethernauta/transport'
-import { callSchema } from '@ethernauta/transport'
-import type { Input } from 'valibot'
-import { array, parse, tuple, union } from 'valibot'
+import type { NotFound, ReceiptInfo } from "@ethernauta/core"
+import { blockNumberOrTag, notFoundSchema, receiptInfoSchema } from "@ethernauta/core"
+import type { Writer } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { Input } from "valibot"
+import { array, parse, tuple, union } from "valibot"
 
 const parametersSchema = tuple([blockNumberOrTag])
 type Parameters = Input<typeof parametersSchema>
@@ -13,11 +13,11 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The transaction count or null if not found
  */
 export async function getBlockReceipts(writer: Writer, _parameters: Parameters): Promise<ReceiptInfo[] | NotFound> {
-  const method = 'eth_getBlockReceipts'
+  const method = "eth_getBlockReceipts"
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ("error" in response) {
     throw new Error(response.error.message)
   }
 

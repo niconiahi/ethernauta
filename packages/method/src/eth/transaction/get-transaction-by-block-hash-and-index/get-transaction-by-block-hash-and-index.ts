@@ -1,9 +1,9 @@
-import type { NotFound, TransactionInfo } from '@ethernauta/core'
-import { hash32Schema, notFoundSchema, transactionInfoSchema, uintSchema } from '@ethernauta/core'
-import type { Writer } from '@ethernauta/transport'
-import { callSchema } from '@ethernauta/transport'
-import type { Input } from 'valibot'
-import { parse, tuple, union } from 'valibot'
+import type { NotFound, TransactionInfo } from "@ethernauta/core"
+import { hash32Schema, notFoundSchema, transactionInfoSchema, uintSchema } from "@ethernauta/core"
+import type { Writer } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { Input } from "valibot"
+import { parse, tuple, union } from "valibot"
 
 const parametersSchema = tuple([hash32Schema, uintSchema])
 type Parameters = Input<typeof parametersSchema>
@@ -14,11 +14,11 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The transaction information or null if not found
  */
 export async function getTransactionByHashAndIndex(writer: Writer, _parameters: Parameters): Promise<TransactionInfo | NotFound> {
-  const method = 'eth_getTransactionByHashAndIndex'
+  const method = "eth_getTransactionByHashAndIndex"
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ("error" in response) {
     throw new Error(response.error.message)
   }
 

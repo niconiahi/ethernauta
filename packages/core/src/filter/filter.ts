@@ -1,7 +1,7 @@
-import type { Input } from 'valibot'
-import { array, null_, object, union } from 'valibot'
-import { addressSchema, addressesSchema, bytes32Schema, hash32Schema, uintSchema } from '../base'
-import { logSchema } from '../receipt'
+import type { Input } from "valibot"
+import { array, null_, object, union } from "valibot"
+import { addressSchema, addressesSchema, bytes32Schema, hash32Schema, uintSchema } from "../base"
+import { logSchema } from "../receipt"
 
 /**
  * Represents a filter topic, which can be a null, a single topic, or an array of topics.

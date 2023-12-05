@@ -1,1 +1,1 @@
-export * from './uninstall-filter'
+export * from "./uninstall-filter"

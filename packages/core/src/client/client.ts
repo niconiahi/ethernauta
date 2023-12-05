@@ -1,6 +1,6 @@
-import type { Input } from 'valibot'
-import { literal, object, union } from 'valibot'
-import { uintSchema } from '../base'
+import type { Input } from "valibot"
+import { literal, object, union } from "valibot"
+import { uintSchema } from "../base"
 
 export const syncingProgressSchema = object({
   startingBlock: uintSchema,

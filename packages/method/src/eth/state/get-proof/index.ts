@@ -1,1 +1,1 @@
-export * from './get-proof'
+export * from "./get-proof"

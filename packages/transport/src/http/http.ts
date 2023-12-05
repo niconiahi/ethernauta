@@ -1,7 +1,7 @@
-import { parse } from 'valibot'
-import type { Response } from '../json-rpc'
-import { requestSchema, responseSchema } from '../json-rpc'
-import type { Call } from '../base'
+import { parse } from "valibot"
+import type { Response } from "../json-rpc"
+import { requestSchema, responseSchema } from "../json-rpc"
+import type { Call } from "../base"
 
 export function httpTransport(
   url: string,
@@ -10,13 +10,13 @@ export function httpTransport(
     call: Call,
   ): Promise<Response> {
     const [method, params] = call
-    const request = parse(requestSchema, { jsonrpc: '2.0', id: generateId(), method, params })
+    const request = parse(requestSchema, { jsonrpc: "2.0", id: generateId(), method, params })
     const _response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(request),
       // maybe adding abort signal
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     })
       .then((response) => {

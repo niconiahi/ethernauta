@@ -1,1 +1,1 @@
-export * from './get-filter-logs'
+export * from "./get-filter-logs"

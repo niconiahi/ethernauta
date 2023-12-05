@@ -1,5 +1,5 @@
-import type { Input } from 'valibot'
-import { array, literal, object, optional, union } from 'valibot'
+import type { Input } from "valibot"
+import { array, literal, object, optional, union } from "valibot"
 import {
   addressSchema,
   bytes256Schema,
@@ -7,11 +7,11 @@ import {
   bytesSchema,
   hash32Schema,
   uintSchema,
-} from '../base'
-import { transactionInfoSchema } from '../transaction'
-import { withdrawalSchema } from '../withdrawal'
+} from "../base"
+import { transactionInfoSchema } from "../transaction"
+import { withdrawalSchema } from "../withdrawal"
 
-export const blockTagSchema = union([literal('earliest'), literal('finalized'), literal('safe'), literal('latest'), literal('pending')])
+export const blockTagSchema = union([literal("earliest"), literal("finalized"), literal("safe"), literal("latest"), literal("pending")])
 export type BlockTag = Input<typeof blockTagSchema>
 
 export const blockNumberOrTag = union([uintSchema, blockTagSchema])

@@ -1,17 +1,17 @@
 /// <reference types='vitest' />
-import * as path from 'node:path'
-import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin'
+import * as path from "node:path"
+import { defineConfig } from "vite"
+import dts from "vite-plugin-dts"
+import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin"
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/method',
+  cacheDir: "../../node_modules/.vite/method",
 
   plugins: [
     nxViteTsPaths(),
     dts({
-      entryRoot: 'src',
-      tsConfigFilePath: path.join(__dirname, 'tsconfig.lib.json'),
+      entryRoot: "src",
+      tsConfigFilePath: path.join(__dirname, "tsconfig.lib.json"),
       skipDiagnostics: true,
     }),
   ],
@@ -26,12 +26,12 @@ export default defineConfig({
   build: {
     lib: {
       // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
-      name: 'method',
-      fileName: 'index',
+      entry: "src/index.ts",
+      name: "method",
+      fileName: "index",
       // Change this to the formats you want to support.
       // Don't forget to update your package.json as well.
-      formats: ['es', 'cjs'],
+      formats: ["es", "cjs"],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -42,9 +42,9 @@ export default defineConfig({
   test: {
     globals: true,
     cache: {
-      dir: '../../node_modules/.vitest',
+      dir: "../../node_modules/.vitest",
     },
-    environment: 'node',
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    environment: "node",
+    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
   },
 })

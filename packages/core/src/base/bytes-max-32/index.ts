@@ -1,1 +1,1 @@
-export * from './bytes-max-32'
+export * from "./bytes-max-32"

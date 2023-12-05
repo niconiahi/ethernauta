@@ -1,5 +1,5 @@
-import type { Address, Bytes, Uint } from '../../base'
-import type { AccessList } from '../../transaction'
+import type { Address, Bytes, Uint } from "../../base"
+import type { AccessList } from "../../transaction"
 
 /**
  * Unsigned EIP-2930 transaction.

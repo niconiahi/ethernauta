@@ -1,1 +1,1 @@
-export * from './gas-price'
+export * from "./gas-price"

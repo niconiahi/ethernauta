@@ -1,1 +1,1 @@
-export * from './hash-32'
+export * from "./hash-32"

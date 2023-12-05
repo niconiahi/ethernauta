@@ -1,9 +1,9 @@
-import type { NotFound, Uint } from '@ethernauta/core'
-import { blockNumberOrTag, notFoundSchema, uintSchema } from '@ethernauta/core'
-import type { Writer } from '@ethernauta/transport'
-import { callSchema } from '@ethernauta/transport'
-import type { Input } from 'valibot'
-import { boolean, parse, tuple, union } from 'valibot'
+import type { NotFound, Uint } from "@ethernauta/core"
+import { blockNumberOrTag, notFoundSchema, uintSchema } from "@ethernauta/core"
+import type { Writer } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { Input } from "valibot"
+import { boolean, parse, tuple, union } from "valibot"
 
 const parametersSchema = tuple([blockNumberOrTag, boolean()])
 type Parameters = Input<typeof parametersSchema>
@@ -13,11 +13,11 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The transaction count or null if not found
  */
 export async function getBlockTransactionCountByNumber(writer: Writer, _parameters: Parameters): Promise<Uint | NotFound> {
-  const method = 'eth_getBlockTransactionCountByNumber'
+  const method = "eth_getBlockTransactionCountByNumber"
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ("error" in response) {
     throw new Error(response.error.message)
   }
 

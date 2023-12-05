@@ -1,1 +1,1 @@
-export * from './2930'
+export * from "./2930"

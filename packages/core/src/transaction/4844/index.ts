@@ -1,1 +1,1 @@
-export * from './4844'
+export * from "./4844"

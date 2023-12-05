@@ -1,4 +1,4 @@
-import type { Address, Bytes, Uint } from '../../base'
+import type { Address, Bytes, Uint } from "../../base"
 
 /**
  * Unsigned Legacy transaction.

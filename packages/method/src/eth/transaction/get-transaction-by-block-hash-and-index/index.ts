@@ -1,1 +1,1 @@
-export * from './get-transaction-by-block-hash-and-index'
+export * from "./get-transaction-by-block-hash-and-index"

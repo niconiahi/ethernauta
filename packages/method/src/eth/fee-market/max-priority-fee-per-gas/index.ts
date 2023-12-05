@@ -1,1 +1,1 @@
-export * from './max-priority-fee-per-gas'
+export * from "./max-priority-fee-per-gas"

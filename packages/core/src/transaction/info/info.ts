@@ -1,6 +1,6 @@
-import { object } from 'valibot'
-import type { Address, Hash32, Uint } from '../../base'
-import { addressSchema, hash32Schema, uintSchema } from '../../base'
+import { object } from "valibot"
+import type { Address, Hash32, Uint } from "../../base"
+import { addressSchema, hash32Schema, uintSchema } from "../../base"
 
 /**
  * Transaction information object.

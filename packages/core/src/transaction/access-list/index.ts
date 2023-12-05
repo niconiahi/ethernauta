@@ -1,1 +1,1 @@
-export * from './access-list'
+export * from "./access-list"

@@ -1,9 +1,9 @@
-import type { Uint } from '@ethernauta/core'
-import { blockNumberOrTag, genericTransactionSchema, uintSchema } from '@ethernauta/core'
-import type { Writer } from '@ethernauta/transport'
-import { callSchema } from '@ethernauta/transport'
-import type { Input } from 'valibot'
-import { parse, tuple, union } from 'valibot'
+import type { Uint } from "@ethernauta/core"
+import { blockNumberOrTag, genericTransactionSchema, uintSchema } from "@ethernauta/core"
+import type { Writer } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { Input } from "valibot"
+import { parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
@@ -17,11 +17,11 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The gas used
  */
 export async function estimateGas(writer: Writer, _parameters: Parameters): Promise<Uint> {
-  const method = 'eth_estimateGas'
+  const method = "eth_estimateGas"
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ("error" in response) {
     throw new Error(response.error.message)
   }
 

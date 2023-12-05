@@ -1,9 +1,9 @@
-import type { Block, NotFound } from '@ethernauta/core'
-import { blockNumberOrTag, blockSchema, notFoundSchema } from '@ethernauta/core'
-import type { Writer } from '@ethernauta/transport'
-import { callSchema } from '@ethernauta/transport'
-import type { Input } from 'valibot'
-import { parse, tuple, union } from 'valibot'
+import type { Block, NotFound } from "@ethernauta/core"
+import { blockNumberOrTag, blockSchema, notFoundSchema } from "@ethernauta/core"
+import type { Writer } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { Input } from "valibot"
+import { parse, tuple, union } from "valibot"
 
 const parametersSchema = tuple([blockNumberOrTag])
 type Parameters = Input<typeof parametersSchema>
@@ -14,11 +14,11 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The transaction information or null if not found
  */
 export async function getBlockByNumber(writer: Writer, _parameters: Parameters): Promise<Block | NotFound> {
-  const method = 'eth_getBlockByNumber'
+  const method = "eth_getBlockByNumber"
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response) {
+  if ("error" in response) {
     throw new Error(response.error.message)
   }
 

@@ -1,6 +1,6 @@
-import type { Call } from '../base'
-import type { HttpTransport } from '../http'
-import type { FailedResponse, SuccesfulResponse } from '../json-rpc'
+import type { Call } from "../base"
+import type { HttpTransport } from "../http"
+import type { FailedResponse, SuccesfulResponse } from "../json-rpc"
 
 export function createReader(transports: HttpTransport[]):
 (call: Call) => Promise<FailedResponse | SuccesfulResponse> {

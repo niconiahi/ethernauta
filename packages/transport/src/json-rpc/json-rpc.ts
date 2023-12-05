@@ -1,6 +1,6 @@
 import type {
   Input,
-} from 'valibot'
+} from "valibot"
 import {
   array,
   excludes,
@@ -13,10 +13,10 @@ import {
   string,
   union,
   unknown,
-} from 'valibot'
+} from "valibot"
 
 // https://www.jsonrpc.org/specification#extensions
-export const methodSchema = string([excludes('rpc.', 'method names that begin with "rpc." are reserved for system extensions')])
+export const methodSchema = string([excludes("rpc.", "method names that begin with \"rpc.\" are reserved for system extensions")])
 
 // https://www.jsonrpc.org/specification#parameter_structures
 export const parametersSchema = union([array(unknown()), record(unknown())])
@@ -27,7 +27,7 @@ export type Id = Input<typeof idSchema>
 
 // https://www.jsonrpc.org/specification#request_object
 export const requestSchema = object({
-  jsonrpc: literal('2.0'),
+  jsonrpc: literal("2.0"),
   method: methodSchema,
   params: optional(parametersSchema),
   id: idSchema,
@@ -36,7 +36,7 @@ export type Request = Input<typeof requestSchema>
 
 // https://www.jsonrpc.org/specification#notification
 const notificationSchema = object({
-  jsonrpc: literal('2.0'),
+  jsonrpc: literal("2.0"),
   method: methodSchema,
   params: optional(parametersSchema),
 })
@@ -63,14 +63,14 @@ const errorSchema = object({
 // https://www.jsonrpc.org/specification#response_object
 const failedResponseSchema = object({
   id: idSchema,
-  jsonrpc: literal('2.0'),
+  jsonrpc: literal("2.0"),
   error: errorSchema,
 })
 export type FailedResponse = Input<typeof failedResponseSchema>
 
 const succesfulResponseSchema = object({
   id: idSchema,
-  jsonrpc: literal('2.0'),
+  jsonrpc: literal("2.0"),
   result: unknown(),
 })
 export type SuccesfulResponse = Input<typeof succesfulResponseSchema>
@@ -87,9 +87,9 @@ export function runJsonRpcNotification(
   notification: Notification,
 ): FailedResponse | SuccesfulResponse {
   const successful: SuccesfulResponse = {
-    id: 'some-id',
-    jsonrpc: '2.0',
-    result: 'something',
+    id: "some-id",
+    jsonrpc: "2.0",
+    result: "something",
   }
 
   return successful
@@ -101,17 +101,17 @@ export function runJsonRpcBatch(
   batch: (Request | Notification)[],
 ): (FailedResponse | SuccesfulResponse)[] | FailedResponse {
   const successful: SuccesfulResponse = {
-    id: 'some-id',
-    jsonrpc: '2.0',
-    result: 'something',
+    id: "some-id",
+    jsonrpc: "2.0",
+    result: "something",
   }
   const error: FailedResponse = {
-    id: 'some-id',
-    jsonrpc: '2.0',
+    id: "some-id",
+    jsonrpc: "2.0",
     error: {
       code: -32600,
-      message: 'omg',
-      data: '_omg',
+      message: "omg",
+      data: "_omg",
     },
   }
   // align the order of the responses with the requests, based on the "id" used
