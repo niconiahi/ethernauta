@@ -1,4 +1,8 @@
-### Next generation
+## Philosophy
+
+The monorepo is arquitectured as per described in [Valibot's thesis](https://valibot.dev/thesis.pdf) so that it takes full use of tree-shaking thus making the bundle size of the library much smaller than similar libraries. It comes with the burden of getting used to composing functions (of small bundle size) but this is helped with a clear API
+
+## API
 
 ### reader
 
