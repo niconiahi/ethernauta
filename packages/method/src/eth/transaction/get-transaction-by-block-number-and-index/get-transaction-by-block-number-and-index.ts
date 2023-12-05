@@ -1,6 +1,6 @@
 import type { NotFound, TransactionInfo } from "@ethernauta/core"
 import { blockNumberOrTag, notFoundSchema, transactionInfoSchema, uintSchema } from "@ethernauta/core"
-import type { Writer } from "@ethernauta/transport"
+import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
 import { parse, tuple, union } from "valibot"
@@ -13,16 +13,18 @@ type Parameters = Input<typeof parametersSchema>
  * @param transactionIndex The index of the transaction within the block
  * @returns The transaction information or null if not found
  */
-export async function getTransactionByBlockNumberAndIndex(writer: Writer, _parameters: Parameters): Promise<TransactionInfo | NotFound> {
-  const method = "eth_getTransactionByBlockNumberAndIndex"
-  const parameters = parse(parametersSchema, _parameters)
-  const call = parse(callSchema, [method, parameters])
-  const response = await writer(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function getTransactionByBlockNumberAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
+  return async (reader: Reader): Promise<TransactionInfo | NotFound> => {
+    const method = "eth_getTransactionByBlockNumberAndIndex"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await reader(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+
+    const result = parse(union([transactionInfoSchema, notFoundSchema]), response.result)
+
+    return result
   }
-
-  const result = parse(union([transactionInfoSchema, notFoundSchema]), response.result)
-
-  return result
 }
