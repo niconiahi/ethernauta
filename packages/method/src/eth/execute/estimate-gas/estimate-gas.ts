@@ -1,6 +1,6 @@
 import type { Uint } from "@ethernauta/core"
 import { blockNumberOrTag, genericTransactionSchema, uintSchema } from "@ethernauta/core"
-import type { Writer } from "@ethernauta/transport"
+import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
 import { parse, tuple, union } from "valibot"
@@ -16,16 +16,16 @@ type Parameters = Input<typeof parametersSchema>
  * @param blockNumberOrTag The block number or tag where to simulate
  * @returns The gas used
  */
-export async function estimateGas(writer: Writer, _parameters: Parameters): Promise<Uint> {
-  const method = "eth_estimateGas"
-  const parameters = parse(parametersSchema, _parameters)
-  const call = parse(callSchema, [method, parameters])
-  const response = await writer(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function estimateGas(_parameters: Parameters): Writable<Uint> {
+  return async (writer: Writer): Promise<Uint> => {
+    const method = "eth_estimateGas"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await writer(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(uintSchema, response.result)
+    return result
   }
-
-  const result = parse(uintSchema, response.result)
-
-  return result
 }
