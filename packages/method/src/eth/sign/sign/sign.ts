@@ -1,6 +1,6 @@
 import type { Bytes65 } from "@ethernauta/core"
 import { addressSchema, bytesSchema, uintSchema } from "@ethernauta/core"
-import type { Writer } from "@ethernauta/transport"
+import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
 import { parse, tuple } from "valibot"
@@ -13,16 +13,16 @@ type Parameters = Input<typeof parametersSchema>
  * @param message The message to be signed
  * @returns The signature
  */
-export async function sign(writer: Writer, _parameters: Parameters): Promise<Bytes65> {
-  const method = "eth_sign"
-  const parameters = parse(parametersSchema, _parameters)
-  const call = parse(callSchema, [method, parameters])
-  const response = await writer(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function sign(_parameters: Parameters): Writable<Bytes65> {
+  return async (writer: Writer): Promise<Bytes65> => {
+    const method = "eth_sign"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await writer(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(uintSchema, response.result)
+    return result
   }
-
-  const result = parse(uintSchema, response.result)
-
-  return result
 }
