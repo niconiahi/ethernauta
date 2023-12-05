@@ -1,5 +1,5 @@
 import { blockNumberOrTag, ratioSchema, uintSchema } from "@ethernauta/core"
-import type { Writer } from "@ethernauta/transport"
+import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
 import { array, maxValue, minValue, number, object, parse, tuple } from "valibot"
@@ -22,16 +22,16 @@ export type FeeHistoryResults = Input<typeof feeHistoryResultsSchema>
  * @param rewardPercentiles A monotonically increasing list of percentile values. For each block in the requested range, the transactions will be sorted in ascending order by effective tip per gas and the coresponding effective tip for the percentile will be determined, accounting for gas consumed
  * @returns Fee history for the returned block range. This can be a subsection of the requested range if not all blocks are available
  */
-export async function feeHistory(writer: Writer, _parameters: Parameters): Promise<FeeHistoryResults> {
-  const method = "eth_feeHistory"
-  const parameters = parse(parametersSchema, _parameters)
-  const call = parse(callSchema, [method, parameters])
-  const response = await writer(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function feeHistory(_parameters: Parameters): Readable<FeeHistoryResults> {
+  return async (reader: Reader): Promise<FeeHistoryResults> => {
+    const method = "eth_feeHistory"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await reader(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(feeHistoryResultsSchema, response.result)
+    return result
   }
-
-  const result = parse(feeHistoryResultsSchema, response.result)
-
-  return result
 }
