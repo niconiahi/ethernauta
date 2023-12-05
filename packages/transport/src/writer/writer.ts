@@ -9,3 +9,4 @@ export function createWriter(transports: HttpTransport[]):
 }
 
 export type Writer = ReturnType<typeof createWriter>
+export type Writable<T> = (reader: Writer) => Promise<T>
