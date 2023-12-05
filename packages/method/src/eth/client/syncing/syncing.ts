@@ -12,8 +12,9 @@ export async function syncing(writer: Writer): Promise<SyncingStatus> {
   const method = 'eth_syncing'
   const call = parse(callSchema, [method])
   const response = await writer(call)
-  if ('error' in response)
+  if ('error' in response) {
     throw new Error(response.error.message)
+  }
 
   const result = parse(union([syncingStatusSchema, literal(false)]), response.result)
 

@@ -17,8 +17,9 @@ export async function getFilterLogs(writer: Writer, _parameters: Parameters): Pr
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response)
+  if ('error' in response) {
     throw new Error(response.error.message)
+  }
 
   const result = parse(filterResultsSchema, response.result)
 

@@ -17,8 +17,9 @@ export async function getTransactionByHash(writer: Writer, _parameters: Paramete
   const parameters = parse(parametersSchema, _parameters)
   const call = parse(callSchema, [method, parameters])
   const response = await writer(call)
-  if ('error' in response)
+  if ('error' in response) {
     throw new Error(response.error.message)
+  }
 
   const result = parse(union([transactionInfoSchema, notFoundSchema]), response.result)
 

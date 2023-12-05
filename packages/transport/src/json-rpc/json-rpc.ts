@@ -22,7 +22,8 @@ export const methodSchema = string([excludes('rpc.', 'method names that begin wi
 export const parametersSchema = union([array(unknown()), record(unknown())])
 export type Parameters = Input<typeof parametersSchema>
 
-const idSchema = union([string(), number(), null_()])
+export const idSchema = union([string(), number(), null_()])
+export type Id = Input<typeof idSchema>
 
 // https://www.jsonrpc.org/specification#request_object
 export const requestSchema = object({
@@ -58,6 +59,7 @@ const errorSchema = object({
     literal(-32300),
   ]),
 })
+
 // https://www.jsonrpc.org/specification#response_object
 const failedResponseSchema = object({
   id: idSchema,
