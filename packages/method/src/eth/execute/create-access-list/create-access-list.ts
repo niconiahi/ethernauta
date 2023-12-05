@@ -30,9 +30,7 @@ export function createAccessList(_parameters: Parameters): Writable<Response> {
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(accessListResultSchema, response.result)
-
     return result
   }
 }

@@ -16,9 +16,7 @@ export function chainId(): Readable<Address> {
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(addressSchema, response.result)
-
     return result
   }
 }

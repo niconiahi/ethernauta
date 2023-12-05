@@ -17,7 +17,6 @@ export function acounts(): Readable<Addresses> {
       throw new Error(response.error.message)
     }
     const result = parse(addressesSchema, response.result)
-
     return result
   }
 }

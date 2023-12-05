@@ -21,9 +21,7 @@ export function getBlockReceipts(_parameters: Parameters): Readable<ReceiptInfo[
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(union([array(receiptInfoSchema), notFoundSchema]), response.result)
-
     return result
   }
 }

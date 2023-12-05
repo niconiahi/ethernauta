@@ -17,7 +17,6 @@ export function blockNumber(): Readable<Uint> {
       throw new Error(response.error.message)
     }
     const result = parse(uintSchema, response.result)
-
     return result
   }
 }

@@ -21,9 +21,7 @@ export function getBlockTransactionCountByNumber(_parameters: Parameters): Reada
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(union([uintSchema, notFoundSchema]), response.result)
-
     return result
   }
 }

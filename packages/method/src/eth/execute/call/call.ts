@@ -25,9 +25,7 @@ export function call(_parameters: Parameters): Writable<Bytes> {
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(bytesSchema, response.result)
-
     return result
   }
 }

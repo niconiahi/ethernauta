@@ -16,9 +16,7 @@ export function syncing(): Readable<SyncingStatus> {
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(union([syncingStatusSchema, literal(false)]), response.result)
-
     return result
   }
 }

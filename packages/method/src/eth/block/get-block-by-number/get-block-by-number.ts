@@ -22,9 +22,7 @@ export function getBlockByNumber(_parameters: Parameters): Readable<Block | NotF
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-
     const result = parse(union([blockSchema, notFoundSchema]), response.result)
-
     return result
   }
 }
