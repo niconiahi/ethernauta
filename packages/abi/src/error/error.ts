@@ -2,6 +2,7 @@ import { array, literal, merge, object, string, variant } from "valibot"
 import { tupleSchema, typeSchema } from "../shared"
 
 // TODO: this is the real type in need, but I have to solve the self-recursion problem
+//       for now, tuple are allowed to be only one-dimensional
 // export const error_tupleSchema = merge([
 //   tupleSchema,
 //   object({
