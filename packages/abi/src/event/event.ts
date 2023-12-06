@@ -1,10 +1,22 @@
 import { array, boolean, literal, merge, object, string, variant } from "valibot"
 import { tupleSchema, typeSchema } from "../shared"
 
+// export const event_tupleSchema = merge([
+//   tupleSchema,
+//   object({
+//     components: array(event_inputSchema),
+//     indexed: boolean(),
+//   }),
+// ])
 export const event_tupleSchema = merge([
   tupleSchema,
   object({
-    components: array(typeSchema),
+    components: array(
+      object({
+        name: string(),
+        type: typeSchema,
+      }),
+    ),
     indexed: boolean(),
   }),
 ])

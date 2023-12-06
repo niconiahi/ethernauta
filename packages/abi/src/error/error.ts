@@ -1,10 +1,21 @@
 import { array, literal, merge, object, string, variant } from "valibot"
 import { tupleSchema, typeSchema } from "../shared"
 
+// export const error_tupleSchema = merge([
+//   tupleSchema,
+//   object({
+//     components: array(error_inputSchema),
+//   }),
+// ])
 export const error_tupleSchema = merge([
   tupleSchema,
   object({
-    components: array(typeSchema),
+    components: array(
+      object({
+        name: string(),
+        type: typeSchema,
+      }),
+    ),
   }),
 ])
 export const error_inputSchema = variant("type", [
