@@ -1,14 +1,12 @@
-import { array, literal, object, string, union, variant } from "valibot"
-import { typeSchema } from "../shared"
+import { array, literal, merge, object, string, variant } from "valibot"
+import { tupleSchema, typeSchema } from "../shared"
 
-export const error_tupleSchema = object({
-  name: string(),
-  type: union([
-    literal("tuple"),
-    literal("tuple[]"),
-  ]),
-  components: array(typeSchema),
-})
+export const error_tupleSchema = merge([
+  tupleSchema,
+  object({
+    components: array(typeSchema),
+  }),
+])
 export const error_inputSchema = variant("type", [
   object({
     name: string(),

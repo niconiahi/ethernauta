@@ -1,4 +1,4 @@
-import { literal, union } from "valibot"
+import { literal, object, string, union } from "valibot"
 
 export const typeSchema = union([
   literal("address"),
@@ -28,3 +28,11 @@ export const typeSchema = union([
   literal("uint256"),
   literal("uint256[]"),
 ])
+
+export const tupleSchema = object({
+  name: string(),
+  type: union([
+    literal("tuple"),
+    literal("tuple[]"),
+  ]),
+})

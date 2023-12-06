@@ -1,5 +1,5 @@
-import { array, literal, object, string, union, variant } from "valibot"
-import { typeSchema } from "../../shared"
+import { array, literal, merge, object, string, union, variant } from "valibot"
+import { tupleSchema, typeSchema } from "../../shared"
 
 export const stateMutabilitySchema = union([
   literal("pure"), // specified to not read blockchain state
@@ -7,14 +7,12 @@ export const stateMutabilitySchema = union([
   literal("payable"), // function does not accept Ether
   literal("nonpayable"), // function accepts Ether
 ])
-export const function_tupleSchema = object({
-  name: string(),
-  type: union([
-    literal("tuple"),
-    literal("tuple[]"),
-  ]),
-  components: array(typeSchema),
-})
+export const function_tupleSchema = merge([
+  tupleSchema,
+  object({
+    components: array(typeSchema),
+  }),
+])
 export const function_inputSchema = variant("type", [
   object({
     name: string(),
@@ -22,4 +20,4 @@ export const function_inputSchema = variant("type", [
   }),
   function_tupleSchema,
 ])
-export const outputSchema = function_inputSchema
+export const function_outputSchema = function_inputSchema
