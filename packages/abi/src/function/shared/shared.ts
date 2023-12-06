@@ -1,6 +1,7 @@
 import { array, literal, merge, object, string, union, variant } from "valibot"
 import { tupleSchema, typeSchema } from "../../shared"
 
+// TODO: this is the real type in need, but I have to solve the self-recursion problem
 // export const function_tupleSchema = merge([
 //   tupleSchema,
 //   object({
