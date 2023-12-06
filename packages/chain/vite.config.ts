@@ -5,7 +5,7 @@ import dts from "vite-plugin-dts"
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin"
 
 export default defineConfig({
-  cacheDir: "../../node_modules/.vite/abi",
+  cacheDir: "../../node_modules/.vite/chain",
 
   plugins: [
     nxViteTsPaths(),
@@ -27,7 +27,7 @@ export default defineConfig({
     lib: {
       // Could also be a dictionary or array of multiple entry points.
       entry: "src/index.ts",
-      name: "abi",
+      name: "chain",
       fileName: "index",
       // Change this to the formats you want to support.
       // Don't forget to update your package.json as well.

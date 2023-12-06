@@ -1,5 +1,5 @@
 {
-  "name": "@ethernauta/abi",
+  "name": "@ethernauta/chain",
   "version": "0.0.1",
   "main": "./index.js",
   "module": "./index.mjs",

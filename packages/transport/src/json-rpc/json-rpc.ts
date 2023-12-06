@@ -83,8 +83,7 @@ export type Response = Input<typeof responseSchema>
 
 // https://www.jsonrpc.org/specification#notification
 export function runJsonRpcNotification(
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  notification: Notification,
+  _notification: Notification,
 ): FailedResponse | SuccesfulResponse {
   const successful: SuccesfulResponse = {
     id: "some-id",
@@ -97,8 +96,8 @@ export function runJsonRpcNotification(
 
 // https://www.jsonrpc.org/specification#batch
 export function runJsonRpcBatch(
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  batch: (Request | Notification)[],
+
+  _batch: (Request | Notification)[],
 ): (FailedResponse | SuccesfulResponse)[] | FailedResponse {
   const successful: SuccesfulResponse = {
     id: "some-id",

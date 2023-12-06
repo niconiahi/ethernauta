@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "lint:fix": "nx run-many -t lint:fix -p core method transport"
+    "lint:fix": "nx run-many -t lint:fix -p core method transport chain abi"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.2.2",
@@ -25,6 +25,5 @@
     "vite": "~4.3.9",
     "vite-plugin-dts": "~2.3.0",
     "vitest": "~0.34.6"
-  },
-  "dependencies": {}
+  }
 }

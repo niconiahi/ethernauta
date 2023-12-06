@@ -5,7 +5,7 @@ import type { Call } from "../base"
 
 export function httpTransport(
   url: string,
-): (call: Call) => Promise<Response> {
+): (_call: Call) => Promise<Response> {
   return async function (
     call: Call,
   ): Promise<Response> {
