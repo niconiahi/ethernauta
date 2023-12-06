@@ -1,9 +1,8 @@
-import { array, object } from "valibot"
+import { array, literal, object } from "valibot"
 import { function_inputSchema, stateMutabilitySchema } from "../shared"
-import { typeSchema } from "../../shared"
 
 export const constructorSchema = object({
-  type: typeSchema,
+  type: literal("constructor"),
   inputs: array(function_inputSchema),
   stateMutability: stateMutabilitySchema,
 })
