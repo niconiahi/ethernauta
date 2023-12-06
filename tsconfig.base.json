@@ -10,6 +10,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "paths": {
+      "@ethernauta/abi": ["packages/abi/src/index.ts"],
       "@ethernauta/core": ["packages/core/src/index.ts"],
       "@ethernauta/legacy": ["packages/legacy/src/index.ts"],
       "@ethernauta/method": ["packages/method/src/index.ts"],

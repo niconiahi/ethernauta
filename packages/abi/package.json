@@ -1,0 +1,10 @@
+{
+  "name": "@ethernauta/abi",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "dependencies": {
+    "valibot": "^0.22.0"
+  },
+  "typings": "./index.d.ts"
+}
