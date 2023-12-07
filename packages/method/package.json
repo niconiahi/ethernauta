@@ -1,5 +1,6 @@
 {
   "name": "@ethernauta/method",
+  "type": "module",
   "version": "0.0.1",
   "main": "./index.js",
   "module": "./index.mjs",
