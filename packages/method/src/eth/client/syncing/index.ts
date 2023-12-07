@@ -1,1 +1,1 @@
-export * from "./chainId"
+export * from "./syncing"

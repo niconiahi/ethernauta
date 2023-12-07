@@ -8,7 +8,7 @@ import { parse } from "valibot"
  * Returns the client coinbase address
  * @returns The coinbase address
  */
-export function chainId(): Readable<Address> {
+export function coinbase(): Readable<Address> {
   return async (reader: Reader): Promise<Address> => {
     const method = "eth_coinbase"
     const call = parse(callSchema, [method])

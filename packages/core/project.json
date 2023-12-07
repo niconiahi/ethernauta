@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/core/src",
   "projectType": "library",
   "targets": {
@@ -8,7 +8,7 @@
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/core"
+        "outputPath": "dist/packages/core"
       }
     },
     "test": {
@@ -16,14 +16,17 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../coverage/core"
+        "reportsDirectory": "../../coverage/packages/core"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/core/**/*.ts", "packages/core/package.json"]
+        "lintFilePatterns": [
+          "packages/core/**/*.ts",
+          "packages/core/package.json"
+        ]
       }
     }
   },

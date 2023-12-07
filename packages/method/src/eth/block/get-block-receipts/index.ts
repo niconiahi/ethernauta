@@ -1,1 +1,1 @@
-export * from "./get-block-transaction-count-by-number"
+export * from "./get-block-receipts"
