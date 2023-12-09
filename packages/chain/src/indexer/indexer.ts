@@ -2,8 +2,6 @@ import { existsSync, mkdirSync, readFile, readdir, rmdirSync, writeFile } from "
 import { extname, join, resolve } from "node:path"
 import simpleGit from "simple-git"
 import { array, literal, number, object, optional, parse, special, string } from "valibot"
-import camelCase from "camelcase"
-import kebabCase from "just-kebab-case"
 
 const featureSchema = object({
   name: string(),
@@ -97,17 +95,17 @@ export function runIndexer() {
 
             const jsonData = JSON.parse(data)
             const chain = parse(chainSchema, jsonData)
-            const kebabed = chain.shortName.includes(" ") ? kebabCase(chain.shortName) : chain.shortName.toLocaleLowerCase()
-            imports.push(`export * from "../chain/eip155/${kebabed}"`)
-            const fileName = kebabed
-            const file = `${fileName}.ts`
+            const fileId = `eip155-${chain.chainId}`
+            const nameId = `eip155_${chain.chainId}`
+            imports.push(`export * from "../chain/eip155/${fileId}"`)
+            const file = `${fileId}.ts`
 
             const chainPath = join(targetPath, "chain", "eip155")
             if (!existsSync(chainPath)) {
               mkdirSync(chainPath, { recursive: true })
             }
 
-            const fileFolderPath = join(chainPath, fileName)
+            const fileFolderPath = join(chainPath, fileId)
             if (!existsSync(fileFolderPath)) {
               mkdirSync(fileFolderPath, { recursive: true })
             }
@@ -116,13 +114,10 @@ export function runIndexer() {
             const fileFolderIndexFilePath = join(fileFolderPath, "index.ts")
 
             const regex = /\"([^\"]+)\":/g
-            const first = chain.shortName[0]
-            const isDisallowed = /^[0-9]/.test(first) || chain.shortName === "new" || chain.shortName === "CLASS" || chain.shortName.includes("_")
-            const camelcased = isDisallowed ? `_${camelCase(chain.shortName)}` : camelCase(chain.shortName)
-            const content = `/* eslint no-template-curly-in-string: 0 */ \nexport const ${camelcased} = ${JSON.stringify(chain, null, 2)} as const`
+            const content = `/* eslint no-template-curly-in-string: 0 */ \nexport const ${nameId} = ${JSON.stringify(chain, null, 2)} as const`
             content.replace(regex, "$1:")
 
-            writeFile(fileFolderIndexFilePath, `export * from "./${kebabed}"`, "utf8", (error) => {
+            writeFile(fileFolderIndexFilePath, `export * from "./${fileId}"`, "utf8", (error) => {
               if (error) {
                 throw new Error(error.message)
               }
@@ -148,7 +143,7 @@ export function runIndexer() {
     })
   })
     .then(() => {
-      rmdirSync(outputPath, { recursive: true })
+      // rmdirSync(outputPath, { recursive: true })
     })
     .catch((err) => {
       throw new Error(err)
