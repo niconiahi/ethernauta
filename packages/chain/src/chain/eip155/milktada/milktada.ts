@@ -1,0 +1,27 @@
+/* eslint no-template-curly-in-string: 0 */
+export const milkTada = {
+  name: "Milkomeda C1 Testnet",
+  shortName: "milkTAda",
+  chain: "milkTAda",
+  icon: "milkomeda",
+  rpc: [
+    "https://rpc-devnet-cardano-evm.c1.milkomeda.com",
+    "wss://rpc-devnet-cardano-evm.c1.milkomeda.com",
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: "milkTAda",
+    symbol: "mTAda",
+    decimals: 18,
+  },
+  infoURL: "https://milkomeda.com",
+  chainId: 200101,
+  networkId: 200101,
+  explorers: [
+    {
+      name: "Blockscout",
+      url: "https://explorer-devnet-cardano-evm.c1.milkomeda.com",
+      standard: "none",
+    },
+  ],
+} as const

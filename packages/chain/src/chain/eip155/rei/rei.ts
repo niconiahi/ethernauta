@@ -1,0 +1,26 @@
+/* eslint no-template-curly-in-string: 0 */
+export const rei = {
+  name: "REI Network",
+  shortName: "REI",
+  chain: "REI",
+  rpc: [
+    "https://rpc.rei.network",
+    "wss://rpc.rei.network",
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: "REI",
+    symbol: "REI",
+    decimals: 18,
+  },
+  infoURL: "https://rei.network/",
+  chainId: 47805,
+  networkId: 47805,
+  explorers: [
+    {
+      name: "rei-scan",
+      url: "https://scan.rei.network",
+      standard: "none",
+    },
+  ],
+} as const

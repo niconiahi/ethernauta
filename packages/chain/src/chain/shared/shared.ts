@@ -45,6 +45,7 @@ export type ShortName = Input<typeof shortNameSchema >
 
 const redFlagSchema = literal("reusedChainId")
 export type RedFlagSchema = Input<typeof redFlagSchema>
+
 export const chainSchema = object({
   name: string(),
   shortName: shortNameSchema,
@@ -65,5 +66,4 @@ export const chainSchema = object({
   status: optional(string()),
   redFlags: optional(array(redFlagSchema)),
 })
-
 export type Chain = Input<typeof chainSchema>

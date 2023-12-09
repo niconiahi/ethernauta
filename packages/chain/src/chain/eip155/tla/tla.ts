@@ -1,0 +1,26 @@
+/* eslint no-template-curly-in-string: 0 */
+export const tla = {
+  name: "LACHAIN Testnet",
+  shortName: "TLA",
+  chain: "TLA",
+  icon: "lachain-io",
+  rpc: [
+    "https://rpc-testnet.lachain.io",
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: "TLA",
+    symbol: "TLA",
+    decimals: 18,
+  },
+  infoURL: "https://lachain.io",
+  chainId: 226,
+  networkId: 226,
+  explorers: [
+    {
+      name: "blockscout",
+      url: "https://scan-test.lachain.io",
+      standard: "EIP3091",
+    },
+  ],
+} as const
