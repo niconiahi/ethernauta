@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2021 = {
+export const eip155_2021: Chain = {
   name: "Edgeware EdgeEVM Mainnet",
   shortName: "edg",
   chain: "EDG",
@@ -46,4 +48,4 @@ export const eip155_2021 = {
       standard: "none",
     },
   ],
-} as const
+}

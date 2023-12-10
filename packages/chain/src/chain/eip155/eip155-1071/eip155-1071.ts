@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1071 = {
+export const eip155_1071: Chain = {
   name: "ShimmerEVM Testnet Deprecated",
   shortName: "shimmerevm-testnet-deprecated",
   title: "ShimmerEVM Testnet Deprecated",
@@ -26,4 +28,4 @@ export const eip155_1071 = {
     },
   ],
   status: "deprecated",
-} as const
+}

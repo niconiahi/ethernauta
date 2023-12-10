@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_48 = {
+export const eip155_48: Chain = {
   name: "Ennothem Mainnet Proterozoic",
   shortName: "etmp",
   chain: "ETMP",
@@ -23,4 +25,4 @@ export const eip155_48 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

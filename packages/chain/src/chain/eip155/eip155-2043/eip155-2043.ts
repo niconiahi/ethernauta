@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2043 = {
+export const eip155_2043: Chain = {
   name: "OriginTrail Parachain",
   shortName: "otp",
   chain: "OTP",
@@ -16,4 +18,4 @@ export const eip155_2043 = {
   infoURL: "https://parachain.origintrail.io",
   chainId: 2043,
   networkId: 2043,
-} as const
+}

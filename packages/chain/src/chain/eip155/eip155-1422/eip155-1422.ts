@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1422 = {
+export const eip155_1422: Chain = {
   name: "Polygon zkEVM Testnet Pre Audit-Upgraded",
   shortName: "testnet-zkEVM-mango-pre-audit-upgraded",
   title: "Polygon zkEVM Testnet Pre Audit-Upgraded",
@@ -22,4 +24,4 @@ export const eip155_1422 = {
     },
   ],
   status: "deprecated",
-} as const
+}

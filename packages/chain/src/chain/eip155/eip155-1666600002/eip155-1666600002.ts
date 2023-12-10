@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1666600002 = {
+export const eip155_1666600002: Chain = {
   name: "Harmony Mainnet Shard 2",
   shortName: "hmy-s2",
   chain: "Harmony",
@@ -24,4 +26,4 @@ export const eip155_1666600002 = {
     },
   ],
   status: "deprecated",
-} as const
+}

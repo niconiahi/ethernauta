@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_298 = {
+export const eip155_298: Chain = {
   name: "Hedera Localnet",
   shortName: "hedera-localnet",
   chain: "Hedera",
@@ -24,4 +26,4 @@ export const eip155_298 = {
   networkId: 298,
   slip44: 3030,
   explorers: [],
-} as const
+}

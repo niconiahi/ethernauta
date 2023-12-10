@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_115 = {
+export const eip155_115: Chain = {
   name: "DeBank Testnet(Deprecated)",
   shortName: "debank-testnet",
   chain: "DeBank",
@@ -16,4 +18,4 @@ export const eip155_115 = {
   networkId: 115,
   explorers: [],
   status: "deprecated",
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_3885 = {
+export const eip155_3885: Chain = {
   name: "Firechain zkEVM Ghostrider",
   shortName: "firechain-zkEVM-ghostrider",
   title: "Firechain zkEVM Ghostrider",
@@ -19,4 +21,4 @@ export const eip155_3885 = {
   chainId: 3885,
   networkId: 3885,
   explorers: [],
-} as const
+}

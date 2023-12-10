@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_868455272153094 = {
+export const eip155_868455272153094: Chain = {
   name: "Godwoken Testnet (V1)",
   shortName: "gw-testnet-v1-deprecated",
   chain: "GWT",
@@ -25,4 +27,4 @@ export const eip155_868455272153094 = {
     },
   ],
   status: "deprecated",
-} as const
+}

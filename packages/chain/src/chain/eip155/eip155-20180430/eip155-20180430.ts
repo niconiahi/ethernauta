@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_20180430 = {
+export const eip155_20180430: Chain = {
   name: "SmartMesh Mainnet",
   shortName: "spectrum",
   chain: "Spectrum",
@@ -22,4 +24,4 @@ export const eip155_20180430 = {
       standard: "none",
     },
   ],
-} as const
+}

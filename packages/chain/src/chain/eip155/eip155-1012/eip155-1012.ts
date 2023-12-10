@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1012 = {
+export const eip155_1012: Chain = {
   name: "Newton",
   shortName: "new",
   chain: "NEW",
@@ -15,4 +17,4 @@ export const eip155_1012 = {
   infoURL: "https://www.newtonproject.org/",
   chainId: 1012,
   networkId: 1012,
-} as const
+}

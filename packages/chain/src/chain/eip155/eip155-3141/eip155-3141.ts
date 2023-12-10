@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_3141 = {
+export const eip155_3141: Chain = {
   name: "Filecoin - Hyperspace testnet",
   shortName: "filecoin-hyperspace",
   chain: "FIL",
@@ -17,4 +19,4 @@ export const eip155_3141 = {
   slip44: 1,
   explorers: [],
   status: "deprecated",
-} as const
+}

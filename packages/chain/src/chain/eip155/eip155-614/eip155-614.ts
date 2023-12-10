@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_614 = {
+export const eip155_614: Chain = {
   name: "Graphlinq Blockchain Mainnet",
   shortName: "glq",
   chain: "GLQ Blockchain",
@@ -22,4 +24,4 @@ export const eip155_614 = {
       standard: "none",
     },
   ],
-} as const
+}

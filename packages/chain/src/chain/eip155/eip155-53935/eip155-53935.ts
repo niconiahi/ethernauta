@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_53935 = {
+export const eip155_53935: Chain = {
   name: "DFK Chain",
   shortName: "DFK",
   chain: "DFK",
@@ -23,4 +25,4 @@ export const eip155_53935 = {
       standard: "none",
     },
   ],
-} as const
+}

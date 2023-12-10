@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1003 = {
+export const eip155_1003: Chain = {
   name: "Tectum Emission Token",
   shortName: "tet",
   chain: "TET",
@@ -22,4 +24,4 @@ export const eip155_1003 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_444 = {
+export const eip155_444: Chain = {
   name: "Synapse Chain Testnet",
   shortName: "synapse-sepolia",
   chain: "ETH",
@@ -35,4 +37,4 @@ export const eip155_444 = {
   redFlags: [
     "reusedChainId",
   ],
-} as const
+}

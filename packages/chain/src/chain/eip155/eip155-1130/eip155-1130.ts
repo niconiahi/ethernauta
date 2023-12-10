@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1130 = {
+export const eip155_1130: Chain = {
   name: "DeFiChain EVM Network Mainnet",
   shortName: "DFI",
   chain: "defichain-evm",
@@ -17,4 +19,4 @@ export const eip155_1130 = {
   slip44: 1130,
   explorers: [],
   status: "incubating",
-} as const
+}

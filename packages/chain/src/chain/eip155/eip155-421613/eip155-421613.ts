@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_421613 = {
+export const eip155_421613: Chain = {
   name: "Arbitrum Goerli",
   shortName: "arb-goerli",
   title: "Arbitrum Goerli Rollup Testnet",
@@ -34,4 +36,4 @@ export const eip155_421613 = {
       },
     ],
   },
-} as const
+}

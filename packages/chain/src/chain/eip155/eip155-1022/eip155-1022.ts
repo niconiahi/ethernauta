@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1022 = {
+export const eip155_1022: Chain = {
   name: "Sakura",
   shortName: "sku",
   chain: "Sakura",
@@ -13,4 +15,4 @@ export const eip155_1022 = {
   infoURL: "https://clover.finance/sakura",
   chainId: 1022,
   networkId: 1022,
-} as const
+}

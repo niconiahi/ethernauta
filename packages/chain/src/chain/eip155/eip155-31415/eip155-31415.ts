@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_31415 = {
+export const eip155_31415: Chain = {
   name: "Filecoin - Wallaby testnet",
   shortName: "filecoin-wallaby",
   chain: "FIL",
@@ -17,4 +19,4 @@ export const eip155_31415 = {
   slip44: 1,
   explorers: [],
   status: "deprecated",
-} as const
+}

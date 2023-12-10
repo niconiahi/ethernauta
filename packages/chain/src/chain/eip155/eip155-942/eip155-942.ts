@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_942 = {
+export const eip155_942: Chain = {
   name: "PulseChain Testnet v3",
   shortName: "t3pls",
   chain: "t3PLS",
@@ -19,4 +21,4 @@ export const eip155_942 = {
   chainId: 942,
   networkId: 942,
   status: "deprecated",
-} as const
+}

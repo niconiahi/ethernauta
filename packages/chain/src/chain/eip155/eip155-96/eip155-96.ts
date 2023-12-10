@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_96 = {
+export const eip155_96: Chain = {
   name: "Bitkub Chain",
   shortName: "bkc",
   chain: "BKC",
@@ -27,4 +29,4 @@ export const eip155_96 = {
   redFlags: [
     "reusedChainId",
   ],
-} as const
+}

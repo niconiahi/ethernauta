@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_59971 = {
+export const eip155_59971: Chain = {
   name: "Genesys Code Mainnet",
   shortName: "gcode",
   chain: "GCODE",
@@ -23,4 +25,4 @@ export const eip155_59971 = {
       standard: "none",
     },
   ],
-} as const
+}

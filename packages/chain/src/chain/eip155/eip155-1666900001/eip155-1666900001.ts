@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1666900001 = {
+export const eip155_1666900001: Chain = {
   name: "Harmony Devnet Shard 1",
   shortName: "hmy-ps-s1",
   chain: "Harmony",
@@ -16,4 +18,4 @@ export const eip155_1666900001 = {
   chainId: 1666900001,
   networkId: 1666900001,
   explorers: [],
-} as const
+}

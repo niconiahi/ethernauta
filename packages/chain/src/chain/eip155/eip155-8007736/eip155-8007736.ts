@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_8007736 = {
+export const eip155_8007736: Chain = {
   name: "Plian Mainnet Subchain 1",
   shortName: "plian-mainnet-l2",
   chain: "Plian",
@@ -26,4 +28,4 @@ export const eip155_8007736 = {
     type: "L2",
     chain: "eip155-2099156",
   },
-} as const
+}

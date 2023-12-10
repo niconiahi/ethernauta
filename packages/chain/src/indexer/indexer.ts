@@ -112,10 +112,10 @@ export function runIndexer() {
 
             const _filePath = join(fileFolderPath, file)
             const fileFolderIndexFilePath = join(fileFolderPath, "index.ts")
+            const content = `import type { Chain } from "../../shared"
 
-            const regex = /\"([^\"]+)\":/g
-            const content = `/* eslint no-template-curly-in-string: 0 */ \nexport const ${nameId} = ${JSON.stringify(chain, null, 2)} as const`
-            content.replace(regex, "$1:")
+/* eslint no-template-curly-in-string: 0 */
+export const ${nameId}: Chain = ${JSON.stringify(chain, null, 2)}`
 
             writeFile(fileFolderIndexFilePath, `export * from "./${fileId}"`, "utf8", (error) => {
               if (error) {

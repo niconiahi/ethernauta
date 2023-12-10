@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_90210 = {
+export const eip155_90210: Chain = {
   name: "Beverly Hills",
   shortName: "bvhl",
   title: "Ethereum multi-client Verkle Testnet Beverly Hills",
@@ -26,4 +28,4 @@ export const eip155_90210 = {
     },
   ],
   status: "incubating",
-} as const
+}

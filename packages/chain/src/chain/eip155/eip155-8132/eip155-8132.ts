@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_8132 = {
+export const eip155_8132: Chain = {
   name: "Qitmeer Network Mixnet",
   shortName: "meermix",
   chain: "MEER",
@@ -15,4 +17,4 @@ export const eip155_8132 = {
   chainId: 8132,
   networkId: 8132,
   status: "incubating",
-} as const
+}

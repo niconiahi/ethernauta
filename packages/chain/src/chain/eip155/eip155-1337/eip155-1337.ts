@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1337 = {
+export const eip155_1337: Chain = {
   name: "Geth Testnet",
   shortName: "geth",
   title: "Go Ethereum (Geth) Private Testnet",
@@ -16,4 +18,4 @@ export const eip155_1337 = {
   infoURL: "https://geth.ethereum.org",
   chainId: 1337,
   networkId: 1337,
-} as const
+}

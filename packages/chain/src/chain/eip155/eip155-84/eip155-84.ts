@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_84 = {
+export const eip155_84: Chain = {
   name: "Linqto Devnet",
   shortName: "linqto-devnet",
   chain: "LNQ",
@@ -22,4 +24,4 @@ export const eip155_84 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

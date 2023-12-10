@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_6022140761023 = {
+export const eip155_6022140761023: Chain = {
   name: "Molereum Network",
   shortName: "mole",
   chain: "ETH",
@@ -15,4 +17,4 @@ export const eip155_6022140761023 = {
   infoURL: "https://github.com/Jdubedition/molereum",
   chainId: 6022140761023,
   networkId: 6022140761023,
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_245022940 = {
+export const eip155_245022940: Chain = {
   name: "Neon EVM TestNet",
   shortName: "neonevm-testnet",
   chain: "Solana",
@@ -29,4 +31,4 @@ export const eip155_245022940 = {
     },
   ],
   status: "deprecated",
-} as const
+}

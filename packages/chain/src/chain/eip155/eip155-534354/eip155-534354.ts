@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_534354 = {
+export const eip155_534354: Chain = {
   name: "Scroll Pre-Alpha Testnet",
   shortName: "scr-prealpha",
   chain: "ETH",
@@ -15,4 +17,4 @@ export const eip155_534354 = {
   networkId: 534354,
   explorers: [],
   status: "deprecated",
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_8029 = {
+export const eip155_8029: Chain = {
   name: "MDGL Testnet",
   shortName: "mdgl",
   chain: "MDGL",
@@ -15,4 +17,4 @@ export const eip155_8029 = {
   infoURL: "https://mdgl.io",
   chainId: 8029,
   networkId: 8029,
-} as const
+}

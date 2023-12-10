@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_71393 = {
+export const eip155_71393: Chain = {
   name: "Polyjuice Testnet",
   shortName: "ckb",
   chain: "CKB",
@@ -19,4 +21,4 @@ export const eip155_71393 = {
   infoURL: "https://github.com/nervosnetwork/godwoken",
   chainId: 71393,
   networkId: 1,
-} as const
+}

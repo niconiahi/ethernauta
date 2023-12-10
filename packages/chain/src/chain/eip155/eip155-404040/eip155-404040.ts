@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_404040 = {
+export const eip155_404040: Chain = {
   name: "Tipboxcoin Mainnet",
   shortName: "TPBXm",
   chain: "TPBX",
@@ -25,4 +27,4 @@ export const eip155_404040 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

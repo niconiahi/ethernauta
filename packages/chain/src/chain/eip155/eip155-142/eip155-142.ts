@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_142 = {
+export const eip155_142: Chain = {
   name: "DAX CHAIN",
   shortName: "dax",
   chain: "DAX",
@@ -15,4 +17,4 @@ export const eip155_142 = {
   infoURL: "https://prodax.io/",
   chainId: 142,
   networkId: 142,
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2154 = {
+export const eip155_2154: Chain = {
   name: "Findora Forge",
   shortName: "findora-forge",
   chain: "Testnet-forge",
@@ -22,4 +24,4 @@ export const eip155_2154 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

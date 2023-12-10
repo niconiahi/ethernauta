@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_15551 = {
+export const eip155_15551: Chain = {
   name: "LoopNetwork Mainnet",
   shortName: "loop",
   chain: "LoopNetwork",
@@ -22,4 +24,4 @@ export const eip155_15551 = {
       standard: "none",
     },
   ],
-} as const
+}

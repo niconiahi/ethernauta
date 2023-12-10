@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_5290 = {
+export const eip155_5290: Chain = {
   name: "Firechain Mainnet Old",
   shortName: "_old_fire",
   chain: "FIRE",
@@ -18,4 +20,4 @@ export const eip155_5290 = {
   networkId: 5290,
   explorers: [],
   status: "deprecated",
-} as const
+}

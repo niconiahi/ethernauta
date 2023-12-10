@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2606 = {
+export const eip155_2606: Chain = {
   name: "PoCRNet",
   shortName: "pocrnet",
   title: "Proof of Climate awaReness mainnet",
@@ -26,4 +28,4 @@ export const eip155_2606 = {
     },
   ],
   status: "active",
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_33469 = {
+export const eip155_33469: Chain = {
   name: "Zilliqa 2 EVM Devnet",
   shortName: "zq2-devnet",
   chain: "ZIL",
@@ -25,4 +27,4 @@ export const eip155_33469 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

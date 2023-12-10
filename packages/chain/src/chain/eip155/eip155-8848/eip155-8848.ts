@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_8848 = {
+export const eip155_8848: Chain = {
   name: "MARO Blockchain Mainnet",
   shortName: "maro",
   chain: "MARO Blockchain",
@@ -23,4 +25,4 @@ export const eip155_8848 = {
       standard: "none",
     },
   ],
-} as const
+}

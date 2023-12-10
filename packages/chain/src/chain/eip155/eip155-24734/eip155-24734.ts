@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_24734 = {
+export const eip155_24734: Chain = {
   name: "MintMe.com Coin",
   shortName: "mintme",
   chain: "MINTME",
@@ -15,4 +17,4 @@ export const eip155_24734 = {
   infoURL: "https://www.mintme.com",
   chainId: 24734,
   networkId: 37480,
-} as const
+}

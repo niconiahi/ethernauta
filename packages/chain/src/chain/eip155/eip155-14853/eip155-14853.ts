@@ -1,8 +1,11 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_14853 = {
+export const eip155_14853: Chain = {
   name: "Humanode Testnet 5 Israfel",
   shortName: "hmnd-t5",
   chain: "Humanode Testnet 5",
+  icon: "humanode",
   rpc: [
     "https://explorer-rpc-http.testnet5.stages.humanode.io",
   ],
@@ -18,4 +21,4 @@ export const eip155_14853 = {
   chainId: 14853,
   networkId: 14853,
   explorers: [],
-} as const
+}

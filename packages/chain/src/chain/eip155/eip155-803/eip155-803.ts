@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_803 = {
+export const eip155_803: Chain = {
   name: "Haic",
   shortName: "haic",
   chain: "Haic",
@@ -15,4 +17,4 @@ export const eip155_803 = {
   infoURL: "https://www.haichain.io/",
   chainId: 803,
   networkId: 803,
-} as const
+}

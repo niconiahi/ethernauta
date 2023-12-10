@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_8086 = {
+export const eip155_8086: Chain = {
   name: "BitEth",
   shortName: "BitEth",
   chain: "BTE",
@@ -16,4 +18,4 @@ export const eip155_8086 = {
   chainId: 8086,
   networkId: 8086,
   explorers: [],
-} as const
+}

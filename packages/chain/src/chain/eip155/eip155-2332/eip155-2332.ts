@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2332 = {
+export const eip155_2332: Chain = {
   name: "SOMA Network Mainnet",
   shortName: "smam",
   chain: "SOMA",
@@ -29,4 +31,4 @@ export const eip155_2332 = {
     },
   ],
   status: "incubating",
-} as const
+}

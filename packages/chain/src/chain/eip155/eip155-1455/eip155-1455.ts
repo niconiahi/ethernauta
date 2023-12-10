@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1455 = {
+export const eip155_1455: Chain = {
   name: "Ctex Scan Blockchain",
   shortName: "CTEX",
   chain: "Ctex Scan Blockchain",
@@ -25,4 +27,4 @@ export const eip155_1455 = {
       standard: "none",
     },
   ],
-} as const
+}

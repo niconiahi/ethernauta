@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_4090 = {
+export const eip155_4090: Chain = {
   name: "Fastex Chain (Bahamut) Oasis Testnet",
   shortName: "Oasis",
   title: "Bahamut testnet Oasis",
@@ -34,4 +36,4 @@ export const eip155_4090 = {
       standard: "none",
     },
   ],
-} as const
+}

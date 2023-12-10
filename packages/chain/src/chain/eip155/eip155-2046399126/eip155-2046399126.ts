@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2046399126 = {
+export const eip155_2046399126: Chain = {
   name: "SKALE Europa Hub",
   shortName: "europa",
   chain: "europa",
@@ -36,4 +38,4 @@ export const eip155_2046399126 = {
       },
     ],
   },
-} as const
+}

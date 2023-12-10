@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_71401 = {
+export const eip155_71401: Chain = {
   name: "Godwoken Testnet v1",
   shortName: "gw-testnet-v1",
   chain: "GWT",
@@ -25,4 +27,4 @@ export const eip155_71401 = {
       standard: "none",
     },
   ],
-} as const
+}

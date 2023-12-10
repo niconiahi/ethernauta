@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_123 = {
+export const eip155_123: Chain = {
   name: "Fuse Sparknet",
   shortName: "spark",
   chain: "fuse",
@@ -17,4 +19,4 @@ export const eip155_123 = {
   infoURL: "https://docs.fuse.io/general/fuse-network-blockchain/fuse-testnet",
   chainId: 123,
   networkId: 123,
-} as const
+}

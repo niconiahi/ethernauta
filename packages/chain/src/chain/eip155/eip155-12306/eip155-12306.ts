@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_12306 = {
+export const eip155_12306: Chain = {
   name: "Fibonacci Mainnet",
   shortName: "fibo",
   chain: "FIBO",
@@ -38,4 +40,4 @@ export const eip155_12306 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

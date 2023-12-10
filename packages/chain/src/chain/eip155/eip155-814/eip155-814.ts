@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_814 = {
+export const eip155_814: Chain = {
   name: "Firechain zkEVM",
   shortName: "firechan-zkEVM",
   title: "Firechain zkEVM",
@@ -27,4 +29,4 @@ export const eip155_814 = {
       },
     ],
   },
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_910 = {
+export const eip155_910: Chain = {
   name: "DecentraBone Layer1 Testnet",
   shortName: "DBONE",
   chain: "DBONE",
@@ -15,4 +17,4 @@ export const eip155_910 = {
   infoURL: "https://decentrabone.com",
   chainId: 910,
   networkId: 910,
-} as const
+}

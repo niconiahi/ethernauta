@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1338 = {
+export const eip155_1338: Chain = {
   name: "Elysium Testnet",
   shortName: "ELST",
   title: "An L1, carbon-neutral, tree-planting, metaverse dedicated blockchain created by VulcanForged",
@@ -23,4 +25,4 @@ export const eip155_1338 = {
       standard: "none",
     },
   ],
-} as const
+}

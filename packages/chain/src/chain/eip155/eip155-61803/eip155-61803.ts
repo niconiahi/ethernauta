@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_61803 = {
+export const eip155_61803: Chain = {
   name: "Etica Mainnet",
   shortName: "Etica",
   chain: "Etica Protocol (ETI/EGAZ)",
@@ -31,4 +33,4 @@ export const eip155_61803 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

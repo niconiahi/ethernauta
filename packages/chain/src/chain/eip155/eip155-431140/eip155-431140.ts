@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_431140 = {
+export const eip155_431140: Chain = {
   name: "Markr Go",
   shortName: "markr-go",
   chain: "Unified",
@@ -18,4 +20,4 @@ export const eip155_431140 = {
   networkId: 431140,
   explorers: [],
   status: "incubating",
-} as const
+}

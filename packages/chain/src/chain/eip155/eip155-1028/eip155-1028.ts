@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_1028 = {
+export const eip155_1028: Chain = {
   name: "BitTorrent Chain Testnet",
   shortName: "tbtt",
   chain: "BTTC",
@@ -22,4 +24,4 @@ export const eip155_1028 = {
       standard: "none",
     },
   ],
-} as const
+}

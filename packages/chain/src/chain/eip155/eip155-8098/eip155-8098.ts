@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_8098 = {
+export const eip155_8098: Chain = {
   name: "StreamuX Blockchain",
   shortName: "StreamuX",
   chain: "StreamuX",
@@ -15,4 +17,4 @@ export const eip155_8098 = {
   infoURL: "https://www.streamux.cloud",
   chainId: 8098,
   networkId: 8098,
-} as const
+}

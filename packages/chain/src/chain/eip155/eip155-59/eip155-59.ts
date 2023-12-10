@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_59 = {
+export const eip155_59: Chain = {
   name: "EOS EVM Legacy",
   shortName: "eos-legacy",
   chain: "EOS",
@@ -17,4 +19,4 @@ export const eip155_59 = {
   networkId: 59,
   explorers: [],
   status: "deprecated",
-} as const
+}

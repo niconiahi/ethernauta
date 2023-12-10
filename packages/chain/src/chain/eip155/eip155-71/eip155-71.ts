@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_71 = {
+export const eip155_71: Chain = {
   name: "Conflux eSpace (Testnet)",
   shortName: "cfxtest",
   chain: "Conflux",
@@ -25,4 +27,4 @@ export const eip155_71 = {
       standard: "none",
     },
   ],
-} as const
+}

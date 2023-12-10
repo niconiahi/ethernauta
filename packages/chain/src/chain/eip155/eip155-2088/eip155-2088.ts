@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_2088 = {
+export const eip155_2088: Chain = {
   name: "Altair",
   shortName: "air",
   chain: "AIR",
@@ -23,4 +25,4 @@ export const eip155_2088 = {
   infoURL: "https://centrifuge.io",
   chainId: 2088,
   networkId: 2088,
-} as const
+}

@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_4918 = {
+export const eip155_4918: Chain = {
   name: "Venidium Testnet",
   shortName: "txvm",
   chain: "XVM",
@@ -22,4 +24,4 @@ export const eip155_4918 = {
       standard: "EIP3091",
     },
   ],
-} as const
+}

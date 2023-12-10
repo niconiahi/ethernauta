@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_109 = {
+export const eip155_109: Chain = {
   name: "Shibarium",
   shortName: "shibariumecosystem",
   chain: "Shibarium",
@@ -23,4 +25,4 @@ export const eip155_109 = {
       standard: "none",
     },
   ],
-} as const
+}

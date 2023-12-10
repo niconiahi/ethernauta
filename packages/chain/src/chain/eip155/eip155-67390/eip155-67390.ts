@@ -1,5 +1,7 @@
+import type { Chain } from "../../shared"
+
 /* eslint no-template-curly-in-string: 0 */
-export const eip155_67390 = {
+export const eip155_67390: Chain = {
   name: "SiriusNet",
   shortName: "mcl",
   chain: "SIN",
@@ -23,4 +25,4 @@ export const eip155_67390 = {
     },
   ],
   status: "deprecated",
-} as const
+}
