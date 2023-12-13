@@ -15,8 +15,6 @@
   },
   "typings": "./index.d.ts",
   "devDependencies": {
-    "camelcase": "^8.0.0",
-    "just-kebab-case": "^4.2.0",
     "simple-git": "^3.21.0",
     "ts-node": "^10.9.1"
   }
