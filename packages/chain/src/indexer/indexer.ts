@@ -79,7 +79,7 @@ export function runIndexer() {
         throw new Error(error.message)
       }
 
-      const indexFilePath = join(targetPath, "chain", "index.ts")
+      const indexFilePath = join(targetPath, "eip155", "index.ts")
 
       // eslint-disable-next-line prefer-const
       let imports: string[] = []
@@ -98,10 +98,10 @@ export function runIndexer() {
 
             const fileId = `eip155-${chain.chainId}`
             const nameId = `eip155_${chain.chainId}`
-            imports.push(`export * from "../chain/eip155/${fileId}"`)
+            imports.push(`export * from "./${fileId}"`)
             const file = `${fileId}.ts`
 
-            const chainPath = join(targetPath, "chain", "eip155")
+            const chainPath = join(targetPath, "eip155")
             if (!existsSync(chainPath)) {
               mkdirSync(chainPath, { recursive: true })
             }
@@ -144,7 +144,7 @@ export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain`
     })
   })
     .then(() => {
-      // rmdirSync(outputPath, { recursive: true })
+      rmdirSync(outputPath, { recursive: true })
     })
     .catch((err) => {
       throw new Error(err)
