@@ -19,7 +19,7 @@ const explorerSchema = object({
 const bridgeSchema = object({
   url: string(),
 })
-const ParentSchema = object({
+const parentSchema = object({
   type: string(),
   chain: string(),
   bridges: optional(array(bridgeSchema)),
@@ -48,7 +48,7 @@ const chainSchema = object({
   slip44: optional(number()),
   ens: optional(ensRegistrySchema),
   explorers: optional(array(explorerSchema)),
-  parent: optional(ParentSchema),
+  parent: optional(parentSchema),
   status: optional(string()),
   redFlags: optional(array(redFlagSchema)),
 })
