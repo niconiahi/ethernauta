@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_9170: Chain = {
+export const eip155_9170 = {
   name: "Rinia Testnet Old",
   shortName: "_old_tfire",
   chain: "FIRE",
@@ -20,4 +20,4 @@ export const eip155_9170: Chain = {
   networkId: 9170,
   explorers: [],
   status: "deprecated",
-}
+} satisfies Chain

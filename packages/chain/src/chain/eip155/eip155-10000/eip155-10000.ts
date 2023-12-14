@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_10000: Chain = {
+export const eip155_10000 = {
   name: "Smart Bitcoin Cash",
   shortName: "smartbch",
   chain: "smartBCH",
@@ -20,4 +20,4 @@ export const eip155_10000: Chain = {
   infoURL: "https://smartbch.org/",
   chainId: 10000,
   networkId: 10000,
-}
+} satisfies Chain

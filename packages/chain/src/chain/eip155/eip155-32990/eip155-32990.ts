@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_32990: Chain = {
+export const eip155_32990 = {
   name: "Zilliqa EVM Isolated Server",
   shortName: "zil-isolated-server",
   chain: "ZIL",
@@ -27,4 +27,4 @@ export const eip155_32990: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

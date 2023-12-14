@@ -1,21 +1,21 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_6: Chain = {
-  name: "Ethereum Classic Testnet Kotti",
+export const eip155_6 = {
+  name: "Kotti Testnet",
   shortName: "kot",
+  title: "Ethereum Classic Kotti Testnet",
   chain: "ETC",
-  rpc: [
-    "https://www.ethercluster.com/kotti",
-  ],
+  icon: "ethereumclassictestnet",
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "Kotti Ether",
     symbol: "KOT",
     decimals: 18,
   },
-  infoURL: "https://explorer.jade.builders/?network=kotti",
+  infoURL: "https://ethereumclassic.org/development/testnets",
   chainId: 6,
   networkId: 6,
   status: "deprecated",
-}
+} satisfies Chain

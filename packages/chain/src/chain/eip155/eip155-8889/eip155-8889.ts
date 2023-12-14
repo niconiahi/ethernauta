@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_8889: Chain = {
+export const eip155_8889 = {
   name: "Vyvo Smart Chain",
   shortName: "vsc",
   chain: "VSC",
@@ -17,4 +17,4 @@ export const eip155_8889: Chain = {
   infoURL: "https://vsc-dataseed.vyvo.org",
   chainId: 8889,
   networkId: 8889,
-}
+} satisfies Chain

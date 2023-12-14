@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_5678: Chain = {
+export const eip155_5678 = {
   name: "Tanssi EVM ContainerChain",
   shortName: "TanssiCC",
   chain: "EVMCC",
@@ -19,4 +19,4 @@ export const eip155_5678: Chain = {
   chainId: 5678,
   networkId: 5678,
   explorers: [],
-}
+} satisfies Chain

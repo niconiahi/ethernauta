@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_97288: Chain = {
+export const eip155_97288 = {
   name: "Boba BNB Mainnet Old",
   shortName: "BobaBnbOld",
   chain: "Boba BNB Mainnet",
@@ -23,4 +23,4 @@ export const eip155_97288: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

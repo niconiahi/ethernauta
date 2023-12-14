@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_2089: Chain = {
+export const eip155_2089 = {
   name: "Algol",
   shortName: "algl",
   chain: "algol",
@@ -25,4 +25,4 @@ export const eip155_2089: Chain = {
   infoURL: "https://centrifuge.io",
   chainId: 2089,
   networkId: 2089,
-}
+} satisfies Chain

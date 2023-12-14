@@ -1,15 +1,12 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_65100000: Chain = {
+export const eip155_65100000 = {
   name: "Autonity Piccadilly (Thames) Testnet",
   shortName: "piccadilly-0",
   chain: "AUT",
   icon: "autonity",
-  rpc: [
-    "https://rpc1.piccadilly.autonity.org/",
-    "wss://rpc1.piccadilly.autonity.org/ws/",
-  ],
+  rpc: [],
   faucets: [
     "https://faucet.autonity.org/",
   ],
@@ -28,4 +25,5 @@ export const eip155_65100000: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+  status: "deprecated",
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_3141: Chain = {
+export const eip155_3141 = {
   name: "Filecoin - Hyperspace testnet",
   shortName: "filecoin-hyperspace",
   chain: "FIL",
@@ -19,4 +19,4 @@ export const eip155_3141: Chain = {
   slip44: 1,
   explorers: [],
   status: "deprecated",
-}
+} satisfies Chain

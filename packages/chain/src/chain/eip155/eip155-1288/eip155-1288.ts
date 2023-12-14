@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1288: Chain = {
+export const eip155_1288 = {
   name: "Moonrock",
   shortName: "mrock",
   chain: "MOON",
@@ -18,4 +18,4 @@ export const eip155_1288: Chain = {
   infoURL: "https://docs.moonbeam.network/learn/platform/networks/overview/",
   chainId: 1288,
   networkId: 1288,
-}
+} satisfies Chain

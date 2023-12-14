@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_431140: Chain = {
+export const eip155_431140 = {
   name: "Markr Go",
   shortName: "markr-go",
   chain: "Unified",
@@ -20,4 +20,4 @@ export const eip155_431140: Chain = {
   networkId: 431140,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain

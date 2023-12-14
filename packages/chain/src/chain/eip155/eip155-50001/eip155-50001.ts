@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_50001: Chain = {
+export const eip155_50001 = {
   name: "Liveplex OracleEVM",
   shortName: "LOE",
   chain: "Liveplex OracleEVM Network",
@@ -18,4 +18,4 @@ export const eip155_50001: Chain = {
   chainId: 50001,
   networkId: 50001,
   explorers: [],
-}
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_2357: Chain = {
+export const eip155_2357 = {
   name: "(deprecated) Kroma Sepolia",
   shortName: "deprecated-kroma-sepolia",
   title: "(deprecated) Kroma Testnet Sepolia",
@@ -36,4 +36,4 @@ export const eip155_2357: Chain = {
     ],
   },
   status: "deprecated",
-}
+} satisfies Chain

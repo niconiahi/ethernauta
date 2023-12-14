@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_17000: Chain = {
+export const eip155_17000 = {
   name: "Holesky",
   shortName: "holesky",
   title: "Ethereum Testnet Holesky",
@@ -42,4 +42,4 @@ export const eip155_17000: Chain = {
     },
   ],
   status: "incubating",
-}
+} satisfies Chain

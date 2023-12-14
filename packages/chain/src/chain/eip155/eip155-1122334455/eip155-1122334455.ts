@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1122334455: Chain = {
+export const eip155_1122334455 = {
   name: "IPOS Network",
   shortName: "ipos",
   chain: "IPOS",
@@ -18,4 +18,4 @@ export const eip155_1122334455: Chain = {
   infoURL: "https://iposlab.com",
   chainId: 1122334455,
   networkId: 1122334455,
-}
+} satisfies Chain

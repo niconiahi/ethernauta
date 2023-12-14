@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_10101: Chain = {
+export const eip155_10101 = {
   name: "Blockchain Genesis Mainnet",
   shortName: "GEN",
   chain: "GEN",
@@ -19,4 +19,4 @@ export const eip155_10101: Chain = {
   infoURL: "https://www.xixoio.com/",
   chainId: 10101,
   networkId: 10101,
-}
+} satisfies Chain

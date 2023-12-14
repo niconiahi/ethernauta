@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1662: Chain = {
+export const eip155_1662 = {
   name: "Liquichain",
   shortName: "Liquichain",
   chain: "LQC",
@@ -25,4 +25,4 @@ export const eip155_1662: Chain = {
   redFlags: [
     "reusedChainId",
   ],
-}
+} satisfies Chain

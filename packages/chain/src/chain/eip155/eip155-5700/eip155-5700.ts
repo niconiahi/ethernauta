@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_5700: Chain = {
+export const eip155_5700 = {
   name: "Syscoin Tanenbaum Testnet",
   shortName: "tsys",
   chain: "SYS",
@@ -29,4 +29,4 @@ export const eip155_5700: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

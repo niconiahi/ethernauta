@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_115: Chain = {
+export const eip155_115 = {
   name: "DeBank Testnet(Deprecated)",
   shortName: "debank-testnet",
   chain: "DeBank",
@@ -18,4 +18,4 @@ export const eip155_115: Chain = {
   networkId: 115,
   explorers: [],
   status: "deprecated",
-}
+} satisfies Chain

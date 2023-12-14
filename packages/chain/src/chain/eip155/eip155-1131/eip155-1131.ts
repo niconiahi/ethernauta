@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1131: Chain = {
+export const eip155_1131 = {
   name: "DeFiChain EVM Network Testnet",
   shortName: "DFI-T",
   chain: "defichain-evm-testnet",
@@ -18,4 +18,4 @@ export const eip155_1131: Chain = {
   networkId: 1131,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain

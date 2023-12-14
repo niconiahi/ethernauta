@@ -95,6 +95,7 @@ export function runIndexer() {
 
             const jsonData = JSON.parse(data)
             const chain = parse(chainSchema, jsonData)
+
             const fileId = `eip155-${chain.chainId}`
             const nameId = `eip155_${chain.chainId}`
             imports.push(`export * from "../chain/eip155/${fileId}"`)
@@ -112,10 +113,10 @@ export function runIndexer() {
 
             const _filePath = join(fileFolderPath, file)
             const fileFolderIndexFilePath = join(fileFolderPath, "index.ts")
-            const content = `import type { Chain } from "../../shared"
+            const content = `/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const ${nameId}: Chain = ${JSON.stringify(chain, null, 2)}`
+export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain`
 
             writeFile(fileFolderIndexFilePath, `export * from "./${fileId}"`, "utf8", (error) => {
               if (error) {

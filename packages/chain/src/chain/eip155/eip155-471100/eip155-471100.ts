@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_471100: Chain = {
+export const eip155_471100 = {
   name: "Patex Sepolia Testnet",
   shortName: "psep",
   chain: "ETH",
@@ -17,4 +17,4 @@ export const eip155_471100: Chain = {
   infoURL: "https://patex.io/",
   chainId: 471100,
   networkId: 471100,
-}
+} satisfies Chain

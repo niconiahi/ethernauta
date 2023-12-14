@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1707: Chain = {
+export const eip155_1707 = {
   name: "TBSI Mainnet",
   shortName: "TBSI",
   title: "Thai Blockchain Service Infrastructure Mainnet",
@@ -25,4 +25,4 @@ export const eip155_1707: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_17: Chain = {
+export const eip155_17 = {
   name: "ThaiChain 2.0 ThaiFi",
   shortName: "tfi",
   chain: "TCH",
@@ -17,4 +17,4 @@ export const eip155_17: Chain = {
   infoURL: "https://exp.thaifi.com",
   chainId: 17,
   networkId: 17,
-}
+} satisfies Chain

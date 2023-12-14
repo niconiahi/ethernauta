@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_208: Chain = {
+export const eip155_208 = {
   name: "Structx Mainnet",
   shortName: "utx",
   chain: "utx",
@@ -17,4 +17,4 @@ export const eip155_208: Chain = {
   infoURL: "https://structx.io",
   chainId: 208,
   networkId: 208,
-}
+} satisfies Chain

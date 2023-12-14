@@ -1,10 +1,11 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_63: Chain = {
+export const eip155_63 = {
   name: "Ethereum Classic Testnet Mordor",
   shortName: "metc",
   chain: "ETC",
+  icon: "ethereumclassictestnet",
   rpc: [
     "https://rpc.mordor.etccooperative.org",
   ],
@@ -33,4 +34,4 @@ export const eip155_63: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

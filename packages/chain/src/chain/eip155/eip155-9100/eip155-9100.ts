@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_9100: Chain = {
+export const eip155_9100 = {
   name: "Genesis Coin",
   shortName: "GENEC",
   chain: "Genesis",
@@ -18,4 +18,4 @@ export const eip155_9100: Chain = {
   infoURL: "https://genesis-gn.com",
   chainId: 9100,
   networkId: 9100,
-}
+} satisfies Chain

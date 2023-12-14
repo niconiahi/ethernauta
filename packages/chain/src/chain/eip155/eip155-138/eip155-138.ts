@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_138: Chain = {
+export const eip155_138 = {
   name: "Defi Oracle Meta Mainnet",
   shortName: "dfio-meta-main",
   chain: "dfiometa",
@@ -38,4 +38,4 @@ export const eip155_138: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_170: Chain = {
+export const eip155_170 = {
   name: "HOO Smart Chain Testnet",
   shortName: "hoosmartchain",
   chain: "ETH",
@@ -19,4 +19,4 @@ export const eip155_170: Chain = {
   infoURL: "https://www.hoosmartchain.com",
   chainId: 170,
   networkId: 170,
-}
+} satisfies Chain

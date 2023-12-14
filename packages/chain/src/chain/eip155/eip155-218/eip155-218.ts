@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_218: Chain = {
+export const eip155_218 = {
   name: "SoterOne Mainnet old",
   shortName: "SO1-old",
   chain: "SOTER",
@@ -18,4 +18,4 @@ export const eip155_218: Chain = {
   chainId: 218,
   networkId: 218,
   status: "deprecated",
-}
+} satisfies Chain

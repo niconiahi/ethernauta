@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_224168: Chain = {
+export const eip155_224168 = {
   name: "Taf ECO Chain Mainnet",
   shortName: "TAFECO",
   chain: "Taf ECO Chain",
@@ -25,4 +25,4 @@ export const eip155_224168: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

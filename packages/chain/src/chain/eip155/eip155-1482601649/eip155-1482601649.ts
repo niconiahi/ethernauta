@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1482601649: Chain = {
+export const eip155_1482601649 = {
   name: "SKALE Nebula Hub",
   shortName: "nebula-mainnet",
   chain: "green-giddy-denebola",
@@ -28,4 +28,4 @@ export const eip155_1482601649: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

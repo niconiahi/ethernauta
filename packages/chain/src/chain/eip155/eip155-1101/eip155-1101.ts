@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_1101: Chain = {
+export const eip155_1101 = {
   name: "Polygon zkEVM",
   shortName: "zkevm",
   title: "Polygon zkEVM",
@@ -35,4 +35,4 @@ export const eip155_1101: Chain = {
       },
     ],
   },
-}
+} satisfies Chain

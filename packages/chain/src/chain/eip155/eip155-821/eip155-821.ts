@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_821: Chain = {
+export const eip155_821 = {
   name: "Callisto Testnet Deprecated",
   shortName: "tclo",
   chain: "CLO",
@@ -16,4 +16,4 @@ export const eip155_821: Chain = {
   chainId: 821,
   networkId: 2,
   status: "deprecated",
-}
+} satisfies Chain

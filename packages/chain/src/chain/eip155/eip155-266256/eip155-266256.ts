@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_266256: Chain = {
+export const eip155_266256 = {
   name: "Gear Zero Network Testnet",
   shortName: "gz-testnet",
   chain: "GearZero",
@@ -19,4 +19,4 @@ export const eip155_266256: Chain = {
   networkId: 266256,
   slip44: 266256,
   explorers: [],
-}
+} satisfies Chain

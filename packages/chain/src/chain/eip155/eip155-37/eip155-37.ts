@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_37: Chain = {
+export const eip155_37 = {
   name: "Xpla Mainnet",
   shortName: "xpla",
   chain: "XPLA",
@@ -28,4 +28,4 @@ export const eip155_37: Chain = {
   redFlags: [
     "reusedChainId",
   ],
-}
+} satisfies Chain

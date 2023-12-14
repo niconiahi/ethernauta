@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_3141592: Chain = {
+export const eip155_3141592 = {
   name: "Filecoin - Butterfly testnet",
   shortName: "filecoin-butterfly",
   chain: "FIL",
@@ -21,4 +21,4 @@ export const eip155_3141592: Chain = {
   slip44: 1,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_123: Chain = {
+export const eip155_123 = {
   name: "Fuse Sparknet",
   shortName: "spark",
   chain: "fuse",
@@ -19,4 +19,4 @@ export const eip155_123: Chain = {
   infoURL: "https://docs.fuse.io/general/fuse-network-blockchain/fuse-testnet",
   chainId: 123,
   networkId: 123,
-}
+} satisfies Chain

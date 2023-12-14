@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_7000: Chain = {
+export const eip155_7000 = {
   name: "ZetaChain Mainnet",
   shortName: "zetachain-mainnet",
   chain: "ZetaChain",
@@ -26,4 +26,4 @@ export const eip155_7000: Chain = {
     },
   ],
   status: "incubating",
-}
+} satisfies Chain

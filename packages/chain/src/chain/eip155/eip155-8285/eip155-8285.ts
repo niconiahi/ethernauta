@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_8285: Chain = {
+export const eip155_8285 = {
   name: "KorthoTest",
   shortName: "Kortho",
   chain: "Kortho",
@@ -17,4 +17,4 @@ export const eip155_8285: Chain = {
   infoURL: "https://www.kortho.io/",
   chainId: 8285,
   networkId: 8285,
-}
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_3701: Chain = {
+export const eip155_3701 = {
   name: "Xpla Testnet",
   shortName: "xplatest",
   chain: "XPLATest",
@@ -28,4 +28,4 @@ export const eip155_3701: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

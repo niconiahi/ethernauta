@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_956: Chain = {
+export const eip155_956 = {
   name: "muNode Testnet",
   shortName: "munode",
   chain: "munode",
@@ -15,4 +15,4 @@ export const eip155_956: Chain = {
   infoURL: "https://munode.dev/",
   chainId: 956,
   networkId: 956,
-}
+} satisfies Chain

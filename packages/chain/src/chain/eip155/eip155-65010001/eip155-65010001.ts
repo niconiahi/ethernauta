@@ -1,4 +1,6 @@
 /* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../../shared"
+
 export const eip155_65010001 = {
   name: "Autonity Bakerloo (Barada) Testnet",
   shortName: "bakerloo-01",
@@ -26,4 +28,4 @@ export const eip155_65010001 = {
       standard: "EIP3091",
     },
   ],
-} as const
+} satisfies Chain

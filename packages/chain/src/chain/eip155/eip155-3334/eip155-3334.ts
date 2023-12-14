@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_3334: Chain = {
+export const eip155_3334 = {
   name: "Web3Q Galileo",
   shortName: "w3q-g",
   chain: "Web3Q",
@@ -24,4 +24,4 @@ export const eip155_3334: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_71402: Chain = {
+export const eip155_71402 = {
   name: "Godwoken Mainnet",
   shortName: "gw-mainnet-v1",
   chain: "GWT",
@@ -24,4 +24,4 @@ export const eip155_71402: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

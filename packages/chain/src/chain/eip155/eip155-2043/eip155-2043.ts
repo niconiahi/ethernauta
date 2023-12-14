@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_2043: Chain = {
+export const eip155_2043 = {
   name: "OriginTrail Parachain",
   shortName: "otp",
   chain: "OTP",
@@ -18,4 +18,4 @@ export const eip155_2043: Chain = {
   infoURL: "https://parachain.origintrail.io",
   chainId: 2043,
   networkId: 2043,
-}
+} satisfies Chain

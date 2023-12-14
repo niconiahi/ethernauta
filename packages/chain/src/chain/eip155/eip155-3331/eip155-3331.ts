@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_3331: Chain = {
+export const eip155_3331 = {
   name: "ZCore Testnet",
   shortName: "zcrbeach",
   chain: "Beach",
@@ -20,4 +20,4 @@ export const eip155_3331: Chain = {
   infoURL: "https://zcore.cash",
   chainId: 3331,
   networkId: 3331,
-}
+} satisfies Chain

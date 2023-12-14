@@ -1,7 +1,7 @@
+/* eslint no-template-curly-in-string: 0 */
 import type { Chain } from "../../shared"
 
-/* eslint no-template-curly-in-string: 0 */
-export const eip155_22040: Chain = {
+export const eip155_22040 = {
   name: "AirDAO Testnet",
   shortName: "airdao-test",
   chain: "ambnet-test",
@@ -25,4 +25,4 @@ export const eip155_22040: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain
