@@ -25,12 +25,12 @@ const bridgeSchema = object({
 })
 export type Bridge = Input<typeof bridgeSchema>
 
-const ParentSchema = object({
+const parentSchema = object({
   type: string(),
   chain: string(),
   bridges: optional(array(bridgeSchema)),
 })
-export type Parent = Input<typeof ParentSchema>
+export type Parent = Input<typeof parentSchema>
 
 const ensRegistrySchema = object({
   registry: string(),
@@ -62,7 +62,7 @@ export const chainSchema = object({
   slip44: optional(number()),
   ens: optional(ensRegistrySchema),
   explorers: optional(array(explorerSchema)),
-  parent: optional(ParentSchema),
+  parent: optional(parentSchema),
   status: optional(string()),
   redFlags: optional(array(redFlagSchema)),
 })
