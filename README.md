@@ -8,7 +8,6 @@ The monorepo is arquitectured as per described in [Valibot's thesis](https://val
 
 #### in Ethernauta
 ```tsx
-// these are surgically imported to make the bundle size as low as possible
 import { createReader, httpTransport } from "@ethernauta/transport"
 import { getBlockByHash } from "@ethernauta/method"
 
@@ -40,7 +39,6 @@ const chain = await client.chain()
 
 #### in Ethernauta
 ```tsx
-// these are surgically imported to make the bundle size as low as possible
 import { mainnet, rinkeby } from "@ethernauta/chain"
 import { sendTransaction } from "@ethernauta/method"
 import { createWriter, http } from "@ethernauta/transport"
