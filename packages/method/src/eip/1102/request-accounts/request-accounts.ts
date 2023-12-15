@@ -1,17 +1,18 @@
 import { array, parse } from "valibot"
-import type { Reader } from "@ethernauta/transport"
+import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
 
-export async function requestAccounts(reader: Reader): Promise<Array<Address>> {
-  const method = "eth_requestAccounts"
-  const call = parse(callSchema, [method])
-  const response = await reader(call)
-  if ("error" in response) {
-    throw new Error(response.error.message)
+export function requestAccounts(): Writable<Array<Address>> {
+  return async (writer: Writer): Promise<Array<Address>> => {
+    const method = "eth_requestAccounts"
+    const call = parse(callSchema, [method])
+    const response = await writer(call)
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(array(addressSchema), response.result)
+    return result
   }
-  const result = parse(array(addressSchema), response.result)
-
-  return result
 }
