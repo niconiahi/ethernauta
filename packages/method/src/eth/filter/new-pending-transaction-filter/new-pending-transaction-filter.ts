@@ -5,8 +5,7 @@ import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 
 /**
- * Creates a filter in the node, to notify when new pending transactions arrive
- * @returns The filter identifier
+ * @returns The created block filter's identifier
  */
 export function newPendingTransactionFilter(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {

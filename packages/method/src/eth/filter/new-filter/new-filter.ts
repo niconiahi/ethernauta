@@ -3,14 +3,17 @@ import { filterSchema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([filterSchema])
+const parametersSchema = union([
+  tuple([filterSchema]),
+  object({
+    filter: filterSchema,
+  }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns an RLP encoded transaction signed by the specified account
- * @param transaction The transaction to be signed
- * @returns The encoded transaction
+ * @returns The created filter
  */
 export function newFilter(_parameters: Parameters): Readable<Bytes> {
   return async (reader: Reader): Promise<Bytes> => {

@@ -23,7 +23,6 @@ const feeHistoryResultsSchema = object({
 })
 export type FeeHistoryResults = Input<typeof feeHistoryResultsSchema>
 /**
- * Returns code at a given address
  * @returns Fee history for the returned block range. This can be a subsection of the requested range if not all blocks are available
  */
 export function feeHistory(_parameters: Parameters): Readable<FeeHistoryResults> {

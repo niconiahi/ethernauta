@@ -3,14 +3,17 @@ import { filterResultsSchema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([uintSchema])
+const parametersSchema = union([
+  tuple([uintSchema]),
+  object({
+    filterIdentifier: uintSchema,
+  }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Polling method for a filter, which returns an array of logs which occurred since last pollCreates a filter in the node, to notify when a new block arrives
- * @param filterIdentifier The filter identifier
- * @returns The filter results
+ * @returns Logs matching filter with given id
  */
 export function getFilterLogs(_parameters: Parameters): Readable<FilterResults> {
   return async (reader: Reader): Promise<FilterResults> => {
