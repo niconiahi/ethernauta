@@ -1,15 +1,20 @@
 import type { NotFound, Uint } from "@ethernauta/core"
-import { blockNumberOrTag, notFoundSchema, uintSchema } from "@ethernauta/core"
+import { blockNumberOrTagSchema, notFoundSchema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([blockNumberOrTag])
+const parametersSchema = union([
+  tuple([blockNumberOrTagSchema]),
+  object({ blockHashOrTag: blockNumberOrTagSchema }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
  * Returns the number of transactions in a block from a block matching the given block hash
- * @param blockHash The block hash in which to search
+ * @typedef {BlockNumberOrTag} blockNumberOrTag The block hash in which to search
+ * @typedef {[blockHash]} Parameters
+ * @param {Parameters} _parameters
  * @returns The transaction count or null if not found
  */
 export function getUncleCountByBlockNumber(_parameters: Parameters): Readable<Uint | NotFound> {

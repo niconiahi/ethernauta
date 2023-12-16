@@ -10,7 +10,14 @@ export function httpTransport(
     call: Call,
   ): Promise<Response> {
     const [method, params] = call
-    const request = parse(requestSchema, { jsonrpc: "2.0", id: generateId(), method, params })
+    const request = parse(requestSchema, {
+      jsonrpc: "2.0",
+      id: generateId(),
+      method,
+      params: params
+        ? Array.isArray(params) ? params : Object.values(params)
+        : undefined,
+    })
     const _response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(request),

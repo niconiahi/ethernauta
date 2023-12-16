@@ -3,16 +3,22 @@ import { blockSchema, hash32Schema, notFoundSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { boolean, parse, tuple, union } from "valibot"
+import { boolean, object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([hash32Schema, boolean()])
+const parametersSchema = union([
+  tuple([hash32Schema, boolean()]),
+  object({
+    blockHash: hash32Schema,
+    hydratedTransactions: boolean(),
+  }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
  * Returns information about a transaction by block hash and transaction index position
  * @typedef {Hash32} blockHash The block hash in which to search
  * @typedef {boolean} hydratedTransactions Return transaction as objects or not
  * @typedef {[blockHash, hydratedTransactions]} Parameters
- * @param {Parameters} _parameters h The block hash in which to search
+ * @param {Parameters} _parameters
  * @returns The transaction information or null if not found
  */
 export function getBlockByHash(_parameters: Parameters): Readable<Block | NotFound> {

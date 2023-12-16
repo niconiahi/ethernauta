@@ -14,11 +14,11 @@ import { withdrawalSchema } from "../withdrawal"
 export const blockTagSchema = union([literal("earliest"), literal("finalized"), literal("safe"), literal("latest"), literal("pending")])
 export type BlockTag = Input<typeof blockTagSchema>
 
-export const blockNumberOrTag = union([uintSchema, blockTagSchema])
-export type BlockNumberOrTag = Input<typeof blockNumberOrTag>
+export const blockNumberOrTagSchema = union([uintSchema, blockTagSchema])
+export type BlockNumberOrTag = Input<typeof blockNumberOrTagSchema>
 
-export const blockNumberOrTagOrHash = union([uintSchema, blockTagSchema, hash32Schema])
-export type BlockNumberOrTagOrHash = Input<typeof blockNumberOrTagOrHash>
+export const blockNumberOrTagOrHashSchema = union([uintSchema, blockTagSchema, hash32Schema])
+export type BlockNumberOrTagOrHash = Input<typeof blockNumberOrTagOrHashSchema>
 
 export const blockSchema = object({
   hash: hash32Schema,
