@@ -3,15 +3,18 @@ import { addressSchema, bytesSchema, uintSchema } from "@ethernauta/core"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([addressSchema, bytesSchema])
+const parametersSchema = union([
+  tuple([addressSchema, bytesSchema]),
+  object({
+    address: addressSchema,
+    message: bytesSchema,
+  }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns an EIP-191 signature over the provided data
- * @param address The signing address
- * @param message The message to be signed
- * @returns The signature
+ * @returns The EIP-191 signature over the provided data
  */
 export function sign(_parameters: Parameters): Writable<Bytes65> {
   return async (writer: Writer): Promise<Bytes65> => {
