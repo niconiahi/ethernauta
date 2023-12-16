@@ -4,10 +4,6 @@ import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 
-/**
- * Returns the chain ID of the current network
- * @returns The id of the chain
- */
 export function chainId(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_chainId"

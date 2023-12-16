@@ -13,14 +13,6 @@ const parametersSchema = union([
   }),
 ])
 type Parameters = Input<typeof parametersSchema>
-/**
- * Returns information about a transaction by block hash and transaction index position
- * @typedef {Hash32} blockHash The block hash in which to search
- * @typedef {boolean} hydratedTransactions Return transaction as objects or not
- * @typedef {[blockHash, hydratedTransactions]} Parameters
- * @param {Parameters} _parameters
- * @returns The transaction information or null if not found
- */
 export function getBlockByHash(_parameters: Parameters): Readable<Block | NotFound> {
   return async (reader: Reader): Promise<Block | NotFound> => {
     const method = "eth_getBlockByHash"

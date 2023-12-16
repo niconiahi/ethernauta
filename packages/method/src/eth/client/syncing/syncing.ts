@@ -4,10 +4,6 @@ import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { literal, parse, union } from "valibot"
 
-/**
- * Returns an object with data about the sync status or false
- * @returns The syncing status
- */
 export function syncing(): Readable<SyncingStatus> {
   return async (reader: Reader): Promise<SyncingStatus> => {
     const method = "eth_syncing"

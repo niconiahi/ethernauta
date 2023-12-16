@@ -1,21 +1,17 @@
 import type { Uint } from "@ethernauta/core"
-import { blockNumberOrTag, genericTransactionSchema, uintSchema } from "@ethernauta/core"
+import { blockNumberOrTagSchema, genericTransactionSchema, uintSchema } from "@ethernauta/core"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
-  tuple([genericTransactionSchema, blockNumberOrTag]),
+  tuple([genericTransactionSchema, blockNumberOrTagSchema]),
+  object({ transaction: genericTransactionSchema }),
+  object({ transaction: genericTransactionSchema, blockNumberOrTag: blockNumberOrTagSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
-/**
- * Generates and returns an estimate of how much gas is necessary to allow the transaction to complete
- * @param transaction The transaction object to be sent
- * @param blockNumberOrTag The block number or tag where to simulate
- * @returns The gas used
- */
 export function estimateGas(_parameters: Parameters): Writable<Uint> {
   return async (writer: Writer): Promise<Uint> => {
     const method = "eth_estimateGas"

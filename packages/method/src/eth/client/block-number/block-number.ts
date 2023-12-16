@@ -4,10 +4,6 @@ import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 
-/**
- * Returns the number of most recent block
- * @returns The block number
- */
 export function blockNumber(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_blockNumber"

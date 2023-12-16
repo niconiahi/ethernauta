@@ -4,10 +4,6 @@ import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 
-/**
- * Returns a list of addresses owned by client
- * @returns The coinbase address
- */
 export function acounts(): Readable<Addresses> {
   return async (reader: Reader): Promise<Addresses> => {
     const method = "eth_accounts"

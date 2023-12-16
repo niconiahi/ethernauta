@@ -10,13 +10,6 @@ const parametersSchema = union([
   object({ blockHashOrTag: blockNumberOrTagSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
-/**
- * Returns the number of transactions in a block matching the given block number
- * @typedef {BlockNumberOrTag} blockNumberOrTag The block hash in which to search
- * @typedef {[blockHash]} Parameters
- * @param {Parameters} _parameters
- * @returns The transaction count or null if not found
- */
 export function getBlockTransactionCountByNumber(_parameters: Parameters): Readable<Uint | NotFound> {
   return async (reader: Reader): Promise<Uint | NotFound> => {
     const method = "eth_getBlockTransactionCountByNumber"
