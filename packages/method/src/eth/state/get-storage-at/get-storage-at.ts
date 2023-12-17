@@ -1,21 +1,26 @@
 import type { Uint } from "@ethernauta/core"
-import { blockNumberOrTagOrHash, hash32Schema, uint256Schema, uintSchema } from "@ethernauta/core"
+import { addressSchema, blockNumberOrTagOrHashSchema, uint256Schema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
-  tuple([hash32Schema, uint256Schema]),
-  tuple([hash32Schema, uint256Schema, blockNumberOrTagOrHash]),
+  tuple([addressSchema, uint256Schema, blockNumberOrTagOrHashSchema]),
+  tuple([addressSchema, uint256Schema]),
+  object({
+    address: addressSchema,
+    storageSlot: uint256Schema,
+  }),
+  object({
+    address: addressSchema,
+    storageSlot: uint256Schema,
+    blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
+  }),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns the value from a storage position at a given address
- * @param address The address being requested
- * @param storageSlot The storage slot being requested
- * @param blockNumberOrTagOrHash The block number or tag or hash being requested
- * @returns The account's balance
+ * @returns The value from a storage position at a given address
  */
 export function getStorageAt(_parameters: Parameters): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {

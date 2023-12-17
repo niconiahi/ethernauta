@@ -7,9 +7,7 @@ import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([filterSchema]),
-  object({
-    filter: filterSchema,
-  }),
+  object({ filter: filterSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**

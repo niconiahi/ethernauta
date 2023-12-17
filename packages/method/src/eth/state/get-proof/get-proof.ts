@@ -14,7 +14,7 @@ const parametersSchema = union([
   object({
     address: addressSchema,
     storageKeys: array(bytesMax32Schema),
-    block: blockNumberOrTagOrHashSchema,
+    blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
   }),
 ])
 

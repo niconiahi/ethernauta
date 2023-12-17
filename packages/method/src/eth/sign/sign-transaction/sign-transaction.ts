@@ -7,9 +7,7 @@ import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
-  object({
-    transaction: genericTransactionSchema,
-  }),
+  object({ transaction: genericTransactionSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
