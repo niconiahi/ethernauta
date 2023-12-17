@@ -8,12 +8,12 @@ The monorepo is arquitectured as per described in [Valibot's thesis](https://val
 
 #### in Ethernauta
 ```tsx
-import { createReader, httpTransport } from "@ethernauta/transport"
+import { createReader, http } from "@ethernauta/transport"
 import { getBlockByHash } from "@ethernauta/method"
 
 const reader = createReader([
-  httpTransport("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),
-  httpTransport("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c222871faa17483fa65ba8177"),
+  http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),
+  http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c222871faa17483fa65ba8177"),
 ])
 const readable = getBlockByHash(["0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26", false])
 const block = await readable(reader)

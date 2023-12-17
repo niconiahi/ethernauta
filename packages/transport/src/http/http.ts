@@ -3,7 +3,7 @@ import type { Response } from "../json-rpc"
 import { requestSchema, responseSchema } from "../json-rpc"
 import type { Call } from "../base"
 
-export function httpTransport(
+export function http(
   url: string,
 ): (_call: Call) => Promise<Response> {
   return async function (
@@ -37,7 +37,7 @@ export function httpTransport(
     return response
   }
 }
-export type HttpTransport = ReturnType<typeof httpTransport>
+export type HttpTransport = ReturnType<typeof http>
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 9)

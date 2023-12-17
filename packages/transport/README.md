@@ -6,21 +6,21 @@ This module aims to be an un-opinionated representation of the defined [JSON-RPC
 ### reader
 
 ```tsx
-import { createReader, httpTransport } from "@ethernauta/transport"
+import { createReader, http } from "@ethernauta/transport"
 
 const reader = createReader([
-  httpTransport("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),
+  http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),
 ])
 ```
 
 ### writer
 
 ```tsx
-import { createWriter, httpTransport } from "@ethernauta/transport"
+import { createWriter, http } from "@ethernauta/transport"
 import { walletConnect } from "@ethernauta/connector" // not yet implemented
 
 const writer = createWriter(
-  httpTransport(walletConnect())
+  http(walletConnect())
 )
 ```
 
