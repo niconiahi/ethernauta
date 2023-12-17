@@ -1,20 +1,19 @@
 import type { Uint } from "@ethernauta/core"
-import { blockNumberOrTagOrHash, hash32Schema, uintSchema } from "@ethernauta/core"
+import { addressSchema, blockNumberOrTagOrHashSchema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
-  tuple([hash32Schema]),
-  tuple([hash32Schema, blockNumberOrTagOrHash]),
+  tuple([addressSchema]),
+  tuple([addressSchema, blockNumberOrTagOrHashSchema]),
+  object({ address: addressSchema, blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema }),
+  object({ address: addressSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns code at a given address
- * @param address The address being requested
- * @param blockNumberOrTagOrHash The block number or tag or hash being requested
- * @returns The account's balance
+ * @returns Code at a given address
  */
 export function getCode(_parameters: Parameters): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {

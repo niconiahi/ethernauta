@@ -1,19 +1,18 @@
 import type { Uint } from "@ethernauta/core"
-import { blockNumberOrTagOrHash, hash32Schema, uintSchema } from "@ethernauta/core"
+import { addressSchema, blockNumberOrTagOrHashSchema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
-  tuple([hash32Schema]),
-  tuple([hash32Schema, blockNumberOrTagOrHash]),
+  tuple([addressSchema, blockNumberOrTagOrHashSchema]),
+  tuple([addressSchema]),
+  object({ address: addressSchema, blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema }),
+  object({ address: addressSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns the balance of the account of given address
- * @param address The address being requested
- * @param blockNumberOrTagOrHash The block number or tag or hash being requested
  * @returns The account's balance
  */
 export function getBalance(_parameters: Parameters): Readable<Uint> {
