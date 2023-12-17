@@ -3,13 +3,14 @@ import { hash32Schema, notFoundSchema, receiptInfoSchema } from "@ethernauta/cor
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([hash32Schema])
+const parametersSchema = union([
+  tuple([hash32Schema]),
+  object({ transactionHash: hash32Schema }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns the information about a transaction requested by transaction hash
- * @param transactionHash The hash of the transaction that's being requested
  * @returns The transaction receipt or null if not found
  */
 export function getTransactionReceipt(_parameters: Parameters): Readable<ReceiptInfo | NotFound> {

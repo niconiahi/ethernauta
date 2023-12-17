@@ -1,11 +1,17 @@
 import type { NotFound, TransactionInfo } from "@ethernauta/core"
-import { blockNumberOrTag, notFoundSchema, transactionInfoSchema, uintSchema } from "@ethernauta/core"
+import { blockNumberOrTagSchema, notFoundSchema, transactionInfoSchema, uintSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([blockNumberOrTag, uintSchema])
+const parametersSchema = union([
+  tuple([blockNumberOrTagSchema, uintSchema]),
+  object({
+    blockNumberOrTag: blockNumberOrTagSchema,
+    transactionIndex: uintSchema,
+  }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
  * Returns information about a transaction by block number and transaction index position

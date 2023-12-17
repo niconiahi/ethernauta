@@ -3,19 +3,22 @@ import { hash32Schema, notFoundSchema, transactionInfoSchema, uintSchema } from 
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([hash32Schema, uintSchema])
+const parametersSchema = union([
+  tuple([hash32Schema, uintSchema]),
+  object({
+    blockHash: hash32Schema,
+    transactionIndex: uintSchema,
+  }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Returns information about a transaction by block hash and transaction index position
- * @param blockHash The block hash in which to search
- * @param transactionIndex The index of the transaction within the block
- * @returns The transaction information or null if not found
+ * @returns Transaction information or null if not found
  */
-export function getTransactionByHashAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
+export function getTransactionByBlockHashAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
   return async (reader: Reader): Promise<TransactionInfo | NotFound> => {
-    const method = "eth_getTransactionByHashAndIndex"
+    const method = "eth_getTransactionByBlockHashAndIndex"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
     const response = await reader(call)
