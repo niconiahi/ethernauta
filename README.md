@@ -16,6 +16,7 @@ but it will
 ### reader
 
 #### in Ethernauta
+
 ```tsx
 import { getBlockByHash } from "@ethernauta/method"
 import { createReader, http } from "@ethernauta/transport"
@@ -29,6 +30,7 @@ const block = await readable(reader)
 ```
 
 #### in Viem
+
 ```tsx
 import { createPublicClient, fallback, http } from "viem"
 import { mainnet, rinkeby } from "viem/chains"
@@ -47,6 +49,7 @@ const chain = await client.chain()
 ### writer
 
 #### in Ethernauta
+
 ```tsx
 import { mainnet, rinkeby } from "@ethernauta/chain"
 import { createWalletConnect } from "@ethernauta/connectors"
@@ -65,6 +68,7 @@ const hash = await writable(writer)
 ```
 
 #### in Viem
+
 ```tsx
 import { createWalletClient, custom } from "viem"
 import { mainnet } from "viem/chains"
