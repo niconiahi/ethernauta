@@ -1,9 +1,10 @@
+import type { Input } from "valibot"
+import { object, parse, tuple, union } from "valibot"
+
 import type { NotFound, ReceiptInfo } from "@ethernauta/core"
 import { hash32Schema, notFoundSchema, receiptInfoSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-import type { Input } from "valibot"
-import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([hash32Schema]),

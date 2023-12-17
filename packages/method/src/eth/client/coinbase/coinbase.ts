@@ -1,8 +1,9 @@
+import { parse } from "valibot"
+
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-import { parse } from "valibot"
 
 export function coinbase(): Readable<Address> {
   return async (reader: Reader): Promise<Address> => {

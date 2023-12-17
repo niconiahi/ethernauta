@@ -1,4 +1,5 @@
 import { describe } from "vitest"
+
 import { uintToBig } from "./uint-to-big"
 
 describe("uintToBig", () => {

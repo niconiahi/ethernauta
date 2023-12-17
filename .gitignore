@@ -43,3 +43,5 @@ Thumbs.db
 
 # local
 __dump
+
+packages/abi/src/json/abi

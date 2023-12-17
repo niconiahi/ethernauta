@@ -1,6 +1,8 @@
 import { describe, expect } from "vitest"
-import { createReader, http } from "@ethernauta/transport"
+
 import { bigToUint } from "@ethernauta/core"
+import { createReader, http } from "@ethernauta/transport"
+
 import { getBalance } from "./get-balance"
 
 describe("eth_getBalance", () => {

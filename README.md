@@ -1,6 +1,10 @@
 ## Philosophy
 
-The monorepo is arquitectured as per described in [Valibot's thesis](https://valibot.dev/thesis.pdf) so that it takes full use of tree-shaking thus making the bundle size of the library much smaller than similar libraries. It comes with the burden of getting used to composing functions (of small bundle size) but this is helped with a clear API. All "self" code, no third party libraries. It think this is very important due to the lack of validation schemas as core arquitecture of the system
+The monorepo is arquitectured as per described in [Valibot's thesis](https://valibot.dev/thesis.pdf) so that it takes full use of tree-shaking thus making the bundle size of the library much smaller than similar libraries. It comes with the burden of getting used to composing functions (of small bundle size) but this is helped with a clear API
+
+All "self" code, no third party libraries. It think this is very important due to the lack of validation schemas as core arquitecture of the system. Because of this, error messages can lead to better communication with the Ethereum user in order to guide for a valid and successful transaction
+
+It's ESM-first and edge/browser compatible, it runs anywhere. Only browser native APIs are used. This repository won't use Node APIs as part of its design
 
 ## API
 
@@ -13,8 +17,8 @@ but it will
 
 #### in Ethernauta
 ```tsx
-import { createReader, http } from "@ethernauta/transport"
 import { getBlockByHash } from "@ethernauta/method"
+import { createReader, http } from "@ethernauta/transport"
 
 const reader = createReader([
   http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),
@@ -45,9 +49,9 @@ const chain = await client.chain()
 #### in Ethernauta
 ```tsx
 import { mainnet, rinkeby } from "@ethernauta/chain"
+import { createWalletConnect } from "@ethernauta/connectors"
 import { sendTransaction } from "@ethernauta/method"
 import { createWriter, http } from "@ethernauta/transport"
-import { createWalletConnect } from "@ethernauta/connectors"
 
 const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
 const writer = createWriter(

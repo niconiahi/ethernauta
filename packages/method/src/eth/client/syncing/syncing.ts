@@ -1,8 +1,9 @@
+import { literal, parse, union } from "valibot"
+
 import type { SyncingStatus } from "@ethernauta/core"
 import { syncingStatusSchema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-import { literal, parse, union } from "valibot"
 
 export function syncing(): Readable<SyncingStatus> {
   return async (reader: Reader): Promise<SyncingStatus> => {

@@ -1,5 +1,7 @@
 import { describe, expect } from "vitest"
+
 import { createReader, http } from "@ethernauta/transport"
+
 import { getBlockByHash } from "./get-block-by-hash"
 
 describe("eth_getBlockByHash", () => {

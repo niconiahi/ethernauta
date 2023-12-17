@@ -1,8 +1,9 @@
 /// <reference types='vitest' />
 import * as path from "node:path"
+
+import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin"
 import { defineConfig } from "vite"
 import dts from "vite-plugin-dts"
-import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin"
 
 export default defineConfig({
   cacheDir: "../../node_modules/.vite/abi",

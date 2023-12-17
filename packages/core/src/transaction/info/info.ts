@@ -1,5 +1,6 @@
 import type { Input } from "valibot"
 import { object } from "valibot"
+
 import { addressSchema, hash32Schema, uintSchema } from "../../base"
 
 /**

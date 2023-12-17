@@ -1,9 +1,10 @@
+import type { Input } from "valibot"
+import { array, object, parse, tuple, union } from "valibot"
+
 import type { AccountProof } from "@ethernauta/core"
 import { accountProofSchema, addressSchema, blockNumberOrTagOrHashSchema, bytesMax32Schema } from "@ethernauta/core"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-import type { Input } from "valibot"
-import { array, object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([

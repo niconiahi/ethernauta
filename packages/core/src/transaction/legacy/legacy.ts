@@ -1,5 +1,6 @@
 import type { Input } from "valibot"
 import { nullable, object, string } from "valibot"
+
 import { addressSchema, bytesSchema, uintSchema } from "../../base"
 
 const transactionLegacyUnsignedSchema = object({

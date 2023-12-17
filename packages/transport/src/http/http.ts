@@ -1,7 +1,8 @@
 import { parse } from "valibot"
+
+import type { Call } from "../base"
 import type { Response } from "../json-rpc"
 import { requestSchema, responseSchema } from "../json-rpc"
-import type { Call } from "../base"
 
 export function http(
   url: string,

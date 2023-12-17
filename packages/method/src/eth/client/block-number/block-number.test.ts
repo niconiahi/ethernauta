@@ -1,7 +1,9 @@
-import { describe, expect } from "vitest"
-import { createReader, http } from "@ethernauta/transport"
-import { uintSchema } from "@ethernauta/core"
 import { safeParse } from "valibot"
+import { describe, expect } from "vitest"
+
+import { uintSchema } from "@ethernauta/core"
+import { createReader, http } from "@ethernauta/transport"
+
 import { blockNumber } from "./block-number"
 
 describe("eth_blockNumber", () => {

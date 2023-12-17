@@ -1,5 +1,6 @@
 import type { Input } from "valibot"
 import { array, boolean, nullable, object, optional } from "valibot"
+
 import { addressSchema, byteSchema, bytes32Schema, bytesSchema, hash32Schema, uintSchema } from "../base"
 
 export const logSchema = object({

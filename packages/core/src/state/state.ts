@@ -1,5 +1,6 @@
 import type { Input } from "valibot"
 import { array, object } from "valibot"
+
 import { addressSchema, bytes32Schema, bytesSchema, hash32Schema, uint256Schema, uint64Schema } from "../base"
 
 const storageProofSchema = object({

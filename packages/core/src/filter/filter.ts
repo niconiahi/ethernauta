@@ -1,5 +1,6 @@
 import type { Input } from "valibot"
 import { array, null_, object, union } from "valibot"
+
 import { addressSchema, addressesSchema, bytes32Schema, hash32Schema, uintSchema } from "../base"
 import { logSchema } from "../receipt"
 

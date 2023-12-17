@@ -1,44 +1,53 @@
 ## Philosophy
+
 This module aims to be an un-opinionated representation of the defined [Ethereum schemas](https://github.com/ethereum/execution-apis/tree/main/src/schemas) in a completely modular fashion. It it's _absolutely_ typed-safe because it uses validation schemas to validate every piece of information. If any information that do not completely comply with the validation schema, it will throw an error, effectively stopping execution. Perfect for the safe enviroment we need to run while using Ethereum
 
 ## API
 
 ```tsx
-import { safeParse } from "valibot"
 import { addressSchema } from "@ethernauta/core"
+import { safeParse } from "valibot"
 
 const someAddress = "0x0002340gsdf8"
 const { success: isAddress } = safeParse(addressSchema, someAddress)
-console.log("isAddress =>", isAddress)
 ```
 
 ### Files to pay attention
 
 #### block
+
 1. [block/block.ts](src/block/block.ts)
 
 #### client
+
 2. [client/client.ts](src/client/client.ts)
 
 #### filter
+
 3. [filter/filter.ts](src/filter/filter.ts)
 
 #### receipt
+
 4. [receipt/receipt.ts](src/receipt/receipt.ts)
 
 #### state
+
 5. [state/state.ts](src/state/state.ts)
 
 #### withdrawal
+
 6. [withdrawal/withdrawal.ts](src/withdrawal/withdrawal.ts)
 
 #### address
+
 7. [address/address.ts](src/base/address/address.ts)
 
 #### addresses
+
 8. [addresses/addressses.ts](src/base/addresses/addresses.ts)
 
 #### base
+
 9. [base/byte/byte.ts](src/base/byte/byte.ts)
 10. [base/bytes/bytes/ts](src/base/bytes/bytes.ts)
 11. [base/bytes-8/bytes-8.ts](src/base/bytes-8/bytes-8.ts)
@@ -55,6 +64,7 @@ console.log("isAddress =>", isAddress)
 22. [base/uint-256/uint-256.ts](src/base/uint-256/uint-256.ts)
 
 #### transaction
+
 23. [transaction/1559/1559.ts](src/transaction/1559/1559.ts)
 24. [transaction/2930/2930.ts](src/transaction/2930/2930.ts)
 25. [transaction/4844/4844.ts](src/transaction/4844/4844.ts)

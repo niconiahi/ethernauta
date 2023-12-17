@@ -1,5 +1,6 @@
 import type { Input } from "valibot"
 import { array, literal, object, optional, union } from "valibot"
+
 import {
   addressSchema,
   bytes256Schema,
