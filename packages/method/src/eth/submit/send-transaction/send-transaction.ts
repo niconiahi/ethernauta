@@ -3,14 +3,15 @@ import { genericTransactionSchema, hash32Schema } from "@ethernauta/core"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([genericTransactionSchema])
+const parametersSchema = union([
+  tuple([genericTransactionSchema]),
+  object({ transaction: genericTransactionSchema }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Signs and submits a transaction to the Ethereum network.
- * @param transaction The transaction object to be sent.
- * @returns The transaction hash as a promise.
+ * @returns The transaction hash
  */
 export function sendTransaction(_parameters: Parameters): Writable<Hash32> {
   return async (writer: Writer): Promise<Hash32> => {

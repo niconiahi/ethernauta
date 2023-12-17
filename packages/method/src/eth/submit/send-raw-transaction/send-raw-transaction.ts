@@ -3,13 +3,14 @@ import { bytesSchema, hash32Schema } from "@ethernauta/core"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { Input } from "valibot"
-import { parse, tuple } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = tuple([bytesSchema])
+const parametersSchema = union([
+  tuple([bytesSchema]),
+  object({ transaction: bytesSchema }),
+])
 type Parameters = Input<typeof parametersSchema>
 /**
- * Signs and submits a transaction to the Ethereum network
- * @param transaction The transaction to be sent
  * @returns The transaction hash
  */
 export function sendRawTransaction(_parameters: Parameters): Writable<Hash32> {
