@@ -1,6 +1,10 @@
 import { literal, object, string, union } from "valibot"
 
 export const typeSchema = union([
+  literal("bool"),
+  literal("bool[]"),
+  literal("string"),
+  literal("string[]"),
   literal("address"),
   literal("address[]"),
   literal("byte"),
@@ -23,6 +27,8 @@ export const typeSchema = union([
   literal("hash32[]"),
   literal("uint"),
   literal("uint[]"),
+  literal("uint8"),
+  literal("uint8[]"),
   literal("uint64"),
   literal("uint64[]"),
   literal("uint256"),

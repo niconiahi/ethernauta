@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "resolveJsonModule": true,
     "types": [
       "vitest/globals",
       "vitest/importMeta",
@@ -8,7 +9,8 @@
       "node",
       "vitest"
     ],
-    "outDir": "../../dist/out-tsc"
+    "outDir": "../../dist/out-tsc",
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "vite.config.ts",
