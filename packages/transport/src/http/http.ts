@@ -1,7 +1,7 @@
 import { parse } from "valibot"
 
 import type { Call } from "../base"
-import type { Response } from "../json-rpc"
+import type { Parameters, Response } from "../json-rpc"
 import { requestSchema, responseSchema } from "../json-rpc"
 
 export function http(
@@ -15,9 +15,7 @@ export function http(
       jsonrpc: "2.0",
       id: generateId(),
       method,
-      params: params
-        ? Array.isArray(params) ? params : Object.values(params)
-        : undefined,
+      params: getParams(params),
     })
     const _response = await fetch(url, {
       method: "POST",
@@ -39,6 +37,14 @@ export function http(
   }
 }
 export type HttpTransport = ReturnType<typeof http>
+
+function getParams(params?: Parameters): unknown[] | undefined {
+  if (!params) {
+    return undefined
+  }
+
+  return Array.isArray(params) ? params : Object.values(params)
+}
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 9)

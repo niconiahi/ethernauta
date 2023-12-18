@@ -37,7 +37,7 @@ const ensRegistrySchema = object({
 })
 export type EnsRegistry = Input<typeof ensRegistrySchema>
 
-function isShortName(input: unknown) {
+function isShortName(input: unknown): boolean {
   return typeof input === "string" && /^[A-Za-z0-9-_]{1,64}$/.test(input)
 }
 export const shortNameSchema = special<string>(isShortName)

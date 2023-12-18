@@ -12,6 +12,14 @@ export default antfu(
   {
     files: ["**/*.ts"],
     rules: {
+      "no-nested-ternary": "error",
+      "ts/explicit-function-return-type": [
+        "error",
+        {
+          allowExpressions: true,
+          allowHigherOrderFunctions: true,
+        },
+      ],
       "import/order": ["error", {
         "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
         "pathGroups": [
