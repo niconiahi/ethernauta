@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "lint:fix": "nx run-many -t lint:fix -p core method transport chain abi"
+    "lint:fix": "nx run-many -t lint:fix"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.4.4",
