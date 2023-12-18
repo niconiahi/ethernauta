@@ -6,6 +6,14 @@ All "self" code, no third party libraries. It think this is very important due t
 
 It's ESM-first and edge/browser compatible, it runs anywhere. Only browser native APIs are used. This repository won't use Node APIs as part of its design
 
+## Modules
+
+- [abi](packages/abi/README.md)
+- [chain](packages/chain/README.md)
+- [core](packages/core/README.md)
+- [method](packages/method/README.md)
+- [transport](packages/transport/README.md)
+
 ## API
 
 ### Disclaimer
@@ -82,4 +90,22 @@ const hash = await client.sendTransaction({
   account: address,
   to: "0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC"
 })
+```
+
+### reader
+
+#### in Ethernauta
+
+```tsx
+import { getBlockByHash } from "@ethernauta/method"
+import { createReader, http } from "@ethernauta/transport"
+import { eip155_1, eip155_3 } from "@ethernauta/chain"
+
+const currentChain = eip155_3
+const reader = createReader([
+  http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177", eip155_1),
+  http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c222871faa17483fa65ba8177", eip155_1),
+])
+const readable = getBlockByHash(["0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26", false])
+const block = await readable(reader)
 ```
