@@ -1,3 +1,4 @@
+import type { Input } from "valibot"
 import { array, literal, object, string } from "valibot"
 
 import { function_inputSchema, function_outputSchema, stateMutabilitySchema } from "../shared"
@@ -9,3 +10,4 @@ export const functionSchema = object({
   outputs: array(function_outputSchema),
   stateMutability: stateMutabilitySchema,
 })
+export type Function = Input<typeof functionSchema>
