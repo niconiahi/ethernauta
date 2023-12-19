@@ -1,0 +1,16 @@
+{
+  "name": "@ethernauta/connector",
+  "type": "module",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test:unit": "vitest"
+  },
+  "dependencies": {
+    "valibot": "^0.21.0"
+  },
+  "typings": "./index.d.ts"
+}
