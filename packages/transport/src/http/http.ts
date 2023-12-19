@@ -36,7 +36,7 @@ export function http(
     return response
   }
 }
-export type HttpTransport = ReturnType<typeof http>
+export type Http = ReturnType<typeof http>
 
 function getParams(params?: Parameters): unknown[] | undefined {
   if (!params) {
