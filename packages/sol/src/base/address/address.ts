@@ -2,7 +2,7 @@ import type { Input } from "valibot"
 import { special } from "valibot"
 
 function isAddress(input: unknown): boolean {
-  return typeof input === "string" && /^0x[0-9,a-f,A-F]{40}$/.test(input)
+  return typeof input === "string" && /[1-9A-HJ-NP-Za-km-z]{32,44}/.test(input)
 }
-export const addressSchema = special<`0x${string}`>(isAddress)
+export const addressSchema = special<string>(isAddress)
 export type Address = Input<typeof addressSchema>
