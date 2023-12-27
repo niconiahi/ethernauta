@@ -9,7 +9,7 @@ This module aims to be an un-opinionated representation of the defined [JSON-RPC
 ```tsx
 import { createReader, http } from "@ethernauta/transport"
 import { eip155_1, eip155_11155111 } from "@ethernauta/chain"
-import { getBlockByHash } from "@ethernauta/method"
+import { getBlockByHash } from "@ethernauta/eth"
 
 const reader = createReader([
   http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),

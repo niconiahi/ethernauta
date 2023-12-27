@@ -11,7 +11,8 @@ It's ESM-first and edge/browser compatible, it runs anywhere. Only browser nativ
 - [abi](packages/abi/README.md)
 - [chain](packages/chain/README.md)
 - [core](packages/core/README.md)
-- [method](packages/method/README.md)
+- [eth](packages/eth/README.md)
+- [sol](packages/sol/README.md)
 - [transport](packages/transport/README.md)
 
 ## API
@@ -26,7 +27,7 @@ but it will
 #### in Ethernauta
 
 ```tsx
-import { getBlockByHash } from "@ethernauta/method"
+import { getBlockByHash } from "@ethernauta/eth"
 import { createReader, http } from "@ethernauta/transport"
 
 const reader = createReader([
@@ -61,7 +62,7 @@ const chain = await client.chain()
 ```tsx
 import { mainnet, rinkeby } from "@ethernauta/chain"
 import { createWalletConnect } from "@ethernauta/connectors"
-import { sendTransaction } from "@ethernauta/method"
+import { sendTransaction } from "@ethernauta/eth"
 import { createWriter, http } from "@ethernauta/transport"
 
 const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)

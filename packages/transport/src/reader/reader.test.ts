@@ -1,8 +1,7 @@
 import { describe, expect } from "vitest"
 
 import { eip155_11155111 } from "@ethernauta/chain"
-import { bigToUint } from "@ethernauta/eth"
-import { getBalance } from "@ethernauta/method"
+import { bigToUint, getBalance } from "@ethernauta/eth"
 import { http } from "@ethernauta/transport"
 
 import { createReader_V2 } from "./reader"
