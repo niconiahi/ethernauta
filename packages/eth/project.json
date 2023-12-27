@@ -1,14 +1,14 @@
 {
-  "name": "core",
+  "name": "eth",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/core/src",
+  "sourceRoot": "packages/eth/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/core"
+        "outputPath": "dist/packages/eth"
       }
     },
     "test": {
@@ -16,7 +16,7 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/core"
+        "reportsDirectory": "../../coverage/packages/eth"
       }
     },
     "lint": {
@@ -24,8 +24,8 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/core/**/*.ts",
-          "packages/core/package.json"
+          "packages/eth/**/*.ts",
+          "packages/eth/package.json"
         ]
       }
     }

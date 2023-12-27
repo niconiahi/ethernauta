@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { boolean, object, parse, tuple, union } from "valibot"
 
-import { addressSchema, uint256Schema } from "@ethernauta/core"
+import { addressSchema, uint256Schema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 

@@ -1,8 +1,8 @@
 import type { Input } from "valibot"
 import { boolean, object, parse, tuple, union } from "valibot"
 
-import type { Block, NotFound } from "@ethernauta/core"
-import { blockNumberOrTagSchema, blockSchema, notFoundSchema } from "@ethernauta/core"
+import type { Block, NotFound } from "@ethernauta/eth"
+import { blockNumberOrTagSchema, blockSchema, notFoundSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 

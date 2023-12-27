@@ -5,7 +5,7 @@ This module aims to be an un-opinionated representation of the defined [Ethereum
 ## API
 
 ```tsx
-import { addressSchema } from "@ethernauta/core"
+import { addressSchema } from "@ethernauta/eth"
 import { safeParse } from "valibot"
 
 const someAddress = "0x0002340gsdf8"

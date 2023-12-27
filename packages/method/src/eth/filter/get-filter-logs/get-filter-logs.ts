@@ -1,8 +1,8 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { FilterResults } from "@ethernauta/core"
-import { filterResultsSchema, uintSchema } from "@ethernauta/core"
+import type { FilterResults } from "@ethernauta/eth"
+import { filterResultsSchema, uintSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 

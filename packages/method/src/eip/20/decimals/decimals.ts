@@ -1,6 +1,6 @@
 import { parse } from "valibot"
 
-import { type Uint8, uint8Schema } from "@ethernauta/core"
+import { type Uint8, uint8Schema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 

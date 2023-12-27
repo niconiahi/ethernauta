@@ -1,5 +1,5 @@
 {
-  "name": "@ethernauta/core",
+  "name": "@ethernauta/eth",
   "type": "module",
   "version": "0.0.1",
   "main": "./index.js",

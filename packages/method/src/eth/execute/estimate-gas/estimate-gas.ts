@@ -1,8 +1,8 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Uint } from "@ethernauta/core"
-import { blockNumberOrTagSchema, genericTransactionSchema, uintSchema } from "@ethernauta/core"
+import type { Uint } from "@ethernauta/eth"
+import { blockNumberOrTagSchema, genericTransactionSchema, uintSchema } from "@ethernauta/eth"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 

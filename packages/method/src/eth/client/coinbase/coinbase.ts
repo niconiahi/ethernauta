@@ -1,7 +1,7 @@
 import { parse } from "valibot"
 
-import type { Address } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
+import type { Address } from "@ethernauta/eth"
+import { addressSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
