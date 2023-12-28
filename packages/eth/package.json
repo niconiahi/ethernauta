@@ -20,10 +20,13 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:unit": "vitest",
-    "fresh": "rm -rf dist"
+    "fresh": "rm -rf dist",
+    "run:indexer": "node --loader tsm src/chain/indexer/indexer.ts"
   },
   "dependencies": {
     "@ethernauta/transport": "workspace:*",
+    "simple-git": "^3.21.0",
+    "tsm": "^2.3.0",
     "valibot": "^0.25.0"
   }
 }

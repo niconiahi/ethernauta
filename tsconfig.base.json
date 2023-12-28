@@ -9,8 +9,6 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "paths": {
-      "@ethernauta/abi": ["packages/abi/src/index.ts"],
-      "@ethernauta/chain": ["packages/chain/src/index.ts"],
       "@ethernauta/connector": ["packages/connector/src/index.ts"],
       "@ethernauta/eth": ["packages/eth/src/index.ts"],
       "@ethernauta/sol": ["packages/sol/src/index.ts"],
