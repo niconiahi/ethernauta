@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { describe } from "vitest"
 
 import { createReader, http } from "@ethernauta/transport"
@@ -12,7 +11,6 @@ describe("eth_getBalance", () => {
     ])
     const readable = getBalance(["5U3bH5b6XtG99aVWLqwVzYPVpQiFHytBD68Rz2eFPZd7"])
     const balance = await readable(reader)
-    console.log("it => balance =>", balance)
-    // expect(balance).toBedi(bigToUint(BigInt(0)))
+    expect(balance.value).toBeDefined()
   })
 })

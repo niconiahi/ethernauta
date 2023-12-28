@@ -7,6 +7,7 @@
   "scripts": {
     "build": "nx run-many -t build",
     "fresh": "nx reset && nx run-many -t fresh",
+    "test:unit": "nx run-many -t test:unit -p sol,eth -- run",
     "lint:fix": "nx run-many -t lint:fix"
   },
   "devDependencies": {
