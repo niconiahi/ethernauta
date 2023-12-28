@@ -2,20 +2,32 @@
   "name": "@ethernauta/chain",
   "type": "module",
   "version": "0.0.1",
-  "main": "./index.js",
-  "module": "./index.mjs",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:unit": "vitest",
-    "run:indexer": "node --loader ts-node/esm src/indexer/indexer.ts"
+    "run:indexer": "node --loader ts-node/esm src/indexer/indexer.ts",
+    "fresh": "rm -rf dist"
   },
   "dependencies": {
-    "valibot": "^0.22.0"
+    "valibot": "^0.25.0"
   },
-  "typings": "./index.d.ts",
   "devDependencies": {
     "simple-git": "^3.21.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   }
 }

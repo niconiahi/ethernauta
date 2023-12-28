@@ -8,7 +8,7 @@
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/chain"
+        "outputPath": "packages/chain/dist"
       }
     },
     "test": {

@@ -7,39 +7,25 @@ import dts from "vite-plugin-dts"
 
 export default defineConfig({
   cacheDir: "../../node_modules/.vite/transport",
-
   plugins: [
     nxViteTsPaths(),
     dts({
       entryRoot: "src",
-      tsConfigFilePath: path.join(__dirname, "tsconfig.lib.json"),
-      skipDiagnostics: true,
+      tsconfigPath: path.join(__dirname, "tsconfig.lib.json"),
     }),
   ],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-
-  // Configuration for building your library.
-  // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points.
       entry: "src/index.ts",
       name: "transport",
-      fileName: "index",
-      // Change this to the formats you want to support.
+      fileName: (format) => {
+        return `index.${format === "es" ? "js" : "cjs"}`
+      },
       // Don't forget to update your package.json as well.
       formats: ["es", "cjs"],
     },
-    rollupOptions: {
-      // External packages that should not be bundled into your library.
-      external: [],
-    },
+    minify: false,
   },
-
   test: {
     globals: true,
     cache: {

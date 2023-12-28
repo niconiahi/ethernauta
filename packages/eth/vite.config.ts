@@ -12,8 +12,7 @@ export default defineConfig({
     nxViteTsPaths(),
     dts({
       entryRoot: "src",
-      tsConfigFilePath: path.join(__dirname, "tsconfig.lib.json"),
-      skipDiagnostics: true,
+      tsconfigPath: path.join(__dirname, "tsconfig.lib.json"),
     }),
   ],
 
@@ -23,17 +22,17 @@ export default defineConfig({
   // },
 
   // Configuration for building your library.
-  // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points.
       entry: "src/index.ts",
       name: "eth",
-      fileName: "index",
-      // Change this to the formats you want to support.
+      fileName: (format) => {
+        return `index.${format === "es" ? "js" : "cjs"}`
+      },
       // Don't forget to update your package.json as well.
       formats: ["es", "cjs"],
     },
+    minify: false,
     rollupOptions: {
       // External packages that should not be bundled into your library.
       external: [],

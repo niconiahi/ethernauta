@@ -1,13 +1,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2015",
-    "lib": ["es2020", "dom"],
+    "target": "ESNext",
+    "lib": ["ESNext", "dom"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
     "rootDir": ".",
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "paths": {
       "@ethernauta/abi": ["packages/abi/src/index.ts"],
