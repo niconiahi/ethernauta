@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "baseUrl": ".",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
