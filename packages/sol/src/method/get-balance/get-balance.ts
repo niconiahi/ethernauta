@@ -1,10 +1,10 @@
 import type { Input } from "valibot"
-import { literal, object, optional, parse, tuple, union } from "valibot"
+import { literal, number, object, optional, parse, string, tuple, union } from "valibot"
 
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressSchema, uint64Schema } from "../../base"
+import { addressSchema } from "../../base"
 
 const commitmentSchema = union([
   literal("confirmed"),
@@ -13,7 +13,7 @@ const commitmentSchema = union([
 ])
 const configurationSchema = object({
   commitment: optional(commitmentSchema),
-  minContextSlot: optional(uint64Schema),
+  minContextSlot: optional(number()),
 })
 const parametersSchema = union([
   tuple([addressSchema, configurationSchema]),
@@ -21,10 +21,10 @@ const parametersSchema = union([
   object({ address: addressSchema, configuration: configurationSchema }),
   object({ address: addressSchema }),
 ])
-const contextSchema = object({ slot: uint64Schema })
+const contextSchema = object({ apiVersion: string(), slot: number() })
 const resultSchema = object({
   context: contextSchema,
-  value: uint64Schema,
+  value: number(),
 })
 type Result = Input<typeof resultSchema>
 type Parameters = Input<typeof parametersSchema>
@@ -33,14 +33,13 @@ type Parameters = Input<typeof parametersSchema>
  */
 export function getBalance(_parameters: Parameters): Readable<Result> {
   return async (reader: Reader): Promise<Result> => {
-    const method = "eth_getBalance"
+    const method = "getBalance"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
     const response = await reader(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(resultSchema, response.result)
-    return result
+    return parse(resultSchema, response.result)
   }
 }
