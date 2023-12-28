@@ -20,7 +20,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:unit": "vitest",
-    "run:indexer": "node --loader ts-node/esm src/indexer/indexer.ts",
+    "run:indexer": "tsm src/indexer/indexer.ts",
     "fresh": "rm -rf dist"
   },
   "dependencies": {
@@ -28,6 +28,6 @@
   },
   "devDependencies": {
     "simple-git": "^3.21.0",
-    "ts-node": "^10.9.2"
+    "tsm": "^2.3.0"
   }
 }

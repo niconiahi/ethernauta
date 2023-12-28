@@ -96,7 +96,6 @@ export function runJsonRpcNotification(
 
 // https://www.jsonrpc.org/specification#batch
 export function runJsonRpcBatch(
-
   _batch: (Request | Notification)[],
 ): (FailedResponse | SuccesfulResponse)[] | FailedResponse {
   const successful: SuccesfulResponse = {

@@ -2,57 +2,9 @@ import { existsSync, mkdirSync, readFile, readdir, rmdirSync, writeFile } from "
 import { extname, join, resolve } from "node:path"
 
 import simpleGit from "simple-git"
-import { array, literal, number, object, optional, parse, special, string } from "valibot"
+import { parse } from "valibot"
 
-const featureSchema = object({
-  name: string(),
-})
-const nativeCurrencySchema = object({
-  name: string(),
-  symbol: string(),
-  decimals: number(),
-})
-const explorerSchema = object({
-  name: string(),
-  url: string(),
-  standard: string(),
-})
-const bridgeSchema = object({
-  url: string(),
-})
-const parentSchema = object({
-  type: string(),
-  chain: string(),
-  bridges: optional(array(bridgeSchema)),
-})
-const ensRegistrySchema = object({
-  registry: string(),
-})
-function isShortName(input: unknown): boolean {
-  return typeof input === "string" && /^[A-Za-z0-9-_]{1,64}$/.test(input)
-}
-const shortNameSchema = special<string>(isShortName)
-const redFlagSchema = literal("reusedChainId")
-const chainSchema = object({
-  name: string(),
-  shortName: shortNameSchema,
-  title: optional(string()),
-  chain: string(),
-  icon: optional(string()),
-  rpc: array(string()),
-  faucets: array(string()),
-  features: optional(array(featureSchema)),
-  nativeCurrency: nativeCurrencySchema,
-  infoURL: string(),
-  chainId: number(),
-  networkId: number(),
-  slip44: optional(number()),
-  ens: optional(ensRegistrySchema),
-  explorers: optional(array(explorerSchema)),
-  parent: optional(parentSchema),
-  status: optional(string()),
-  redFlags: optional(array(redFlagSchema)),
-})
+import { chainSchema } from "../shared/shared.ts"
 
 export function runIndexer(): void {
   const git = simpleGit()
