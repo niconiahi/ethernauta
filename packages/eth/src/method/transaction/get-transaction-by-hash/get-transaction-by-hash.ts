@@ -1,10 +1,13 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { NotFound, TransactionInfo } from "@ethernauta/eth"
-import { hash32Schema, notFoundSchema, transactionInfoSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { hash32Schema, notFoundSchema } from "../../../base"
+import type { NotFound } from "../../../base"
+import { transactionInfoSchema } from "../../../transaction"
+import type { TransactionInfo } from "../../../transaction"
 
 const parametersSchema = union([
   tuple([hash32Schema]),

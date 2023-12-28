@@ -1,9 +1,10 @@
 import { parse } from "valibot"
 
-import type { Uint } from "@ethernauta/eth"
-import { uintSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { uintSchema } from "../../../base"
+import type { Uint } from "../../../base"
 
 export function blockNumber(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {

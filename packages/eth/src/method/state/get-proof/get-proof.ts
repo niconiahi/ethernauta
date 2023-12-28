@@ -1,10 +1,13 @@
 import type { Input } from "valibot"
 import { array, object, parse, tuple, union } from "valibot"
 
-import type { AccountProof } from "@ethernauta/eth"
-import { accountProofSchema, addressSchema, blockNumberOrTagOrHashSchema, bytesMax32Schema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { addressSchema, bytesMax32Schema } from "../../../base"
+import { blockNumberOrTagOrHashSchema } from "../../../block"
+import { accountProofSchema } from "../../../state"
+import type { AccountProof } from "../../../state"
 
 const parametersSchema = union([
   tuple([

@@ -1,10 +1,13 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Uint } from "@ethernauta/eth"
-import { blockNumberOrTagSchema, genericTransactionSchema, uintSchema } from "@ethernauta/eth"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { uintSchema } from "../../../base"
+import type { Uint } from "../../../base"
+import { blockNumberOrTagSchema } from "../../../block"
+import { genericTransactionSchema } from "../../../transaction"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),

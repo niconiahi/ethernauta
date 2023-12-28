@@ -1,9 +1,10 @@
 import { array, parse } from "valibot"
 
-import type { Address } from "@ethernauta/eth"
-import { addressSchema } from "@ethernauta/eth"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import type { Address } from "../../../base"
+import { addressSchema } from "../../../base"
 
 export function requestAccounts(): Writable<Array<Address>> {
   return async (writer: Writer): Promise<Array<Address>> => {

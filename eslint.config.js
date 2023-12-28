@@ -13,6 +13,10 @@ export default antfu(
     files: ["**/*.ts"],
     rules: {
       "no-nested-ternary": "error",
+      "ts/consistent-type-imports": ["error", {
+        disallowTypeAnnotations: true,
+        prefer: "type-imports",
+      }],
       "ts/explicit-function-return-type": [
         "error",
         {

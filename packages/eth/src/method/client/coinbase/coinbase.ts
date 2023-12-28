@@ -1,9 +1,10 @@
 import { parse } from "valibot"
 
-import type { Address } from "@ethernauta/eth"
-import { addressSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { addressSchema } from "../../../base"
+import type { Address } from "../../../base"
 
 export function coinbase(): Readable<Address> {
   return async (reader: Reader): Promise<Address> => {

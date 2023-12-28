@@ -1,9 +1,11 @@
 import type { Input } from "valibot"
 import { array, maxValue, minValue, number, object, parse, tuple, union } from "valibot"
 
-import { blockNumberOrTagSchema, ratioSchema, uintSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { ratioSchema, uintSchema } from "../../../base"
+import { blockNumberOrTagSchema } from "../../../block"
 
 const percentileSchema = number([minValue(0), maxValue(100)])
 const rewardsSchema = array(percentileSchema)

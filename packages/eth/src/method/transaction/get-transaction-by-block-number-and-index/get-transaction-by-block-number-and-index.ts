@@ -1,10 +1,14 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { NotFound, TransactionInfo } from "@ethernauta/eth"
-import { blockNumberOrTagSchema, notFoundSchema, transactionInfoSchema, uintSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { notFoundSchema, uintSchema } from "../../../base"
+import type { NotFound } from "../../../base"
+import { blockNumberOrTagSchema } from "../../../block"
+import { transactionInfoSchema } from "../../../transaction"
+import type { TransactionInfo } from "../../../transaction"
 
 const parametersSchema = union([
   tuple([blockNumberOrTagSchema, uintSchema]),

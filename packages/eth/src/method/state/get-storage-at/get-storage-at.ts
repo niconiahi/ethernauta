@@ -1,10 +1,12 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Uint } from "@ethernauta/eth"
-import { addressSchema, blockNumberOrTagOrHashSchema, uint256Schema, uintSchema } from "@ethernauta/eth"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+
+import { addressSchema, uint256Schema, uintSchema } from "../../../base"
+import type { Uint } from "../../../base"
+import { blockNumberOrTagOrHashSchema } from "../../../block"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema, blockNumberOrTagOrHashSchema]),

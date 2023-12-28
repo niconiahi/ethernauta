@@ -1,8 +1,9 @@
 import { safeParse } from "valibot"
 import { describe, expect } from "vitest"
 
-import { uintSchema } from "@ethernauta/eth"
 import { createReader, http } from "@ethernauta/transport"
+
+import { uintSchema } from "../../../base"
 
 import { blockNumber } from "./block-number"
 
