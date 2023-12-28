@@ -8,19 +8,17 @@ It's ESM-first and edge/browser compatible, it runs anywhere. Only browser nativ
 
 ## Modules
 
-- [abi](packages/abi/README.md)
-- [chain](packages/chain/README.md)
-- [core](packages/core/README.md)
+- [connector](packages/connector/README.md)
 - [eth](packages/eth/README.md)
 - [sol](packages/sol/README.md)
 - [transport](packages/transport/README.md)
 
+## Future
+
+- APIs for working with chains
+- WalletConnector connector to create a wallet session
+
 ## API
-
-### Disclaimer
-
-Right not the system _does not_ know how to handle chains. It will do in the near future. It also doesn't connect to WalletConnect
-but it will
 
 ### reader
 
