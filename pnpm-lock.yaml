@@ -85,7 +85,7 @@ importers:
   packages/eth:
     dependencies:
       '@ethernauta/transport':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../transport
       valibot:
         specifier: ^0.25.0
@@ -94,7 +94,7 @@ importers:
   packages/sol:
     dependencies:
       '@ethernauta/transport':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../transport
       valibot:
         specifier: ^0.25.0
