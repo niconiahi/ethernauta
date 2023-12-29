@@ -1,28 +1,28 @@
 import type { Input } from "valibot"
-import { boolean, object, parse, tuple, union } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressSchema, uint256Schema } from "../../../base"
+import type { Uint256 } from "../../../../base"
+import { addressSchema, uint256Schema } from "../../../../base"
 
 const parametersSchema = union([
-  tuple([addressSchema, uint256Schema]),
+  tuple([addressSchema]),
   object({
-    spender: addressSchema,
-    value: uint256Schema,
+    owner: addressSchema,
   }),
 ])
 type Parameters = Input<typeof parametersSchema>
-export function approve(_parameters: Parameters): Readable<boolean> {
-  return async (reader: Reader): Promise<boolean> => {
-    const method = "approve"
+export function balanceOf(_parameters: Parameters): Readable<Uint256> {
+  return async (reader: Reader): Promise<Uint256> => {
+    const method = "balanceOf"
     const call = parse(callSchema, [method])
     const response = await reader(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(boolean(), response.result)
+    const result = parse(uint256Schema, response.result)
     return result
   }
 }

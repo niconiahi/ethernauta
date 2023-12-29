@@ -25,7 +25,7 @@ import { safeParse } from "valibot"
 import { addressSchema, eip155_1, getBlockByHash } from "@ethernauta/eth"
 import { createReader, http } from "@ethernauta/transport"
 
-const someAddress = "5U3bH5b6XtG99aVWLqwVzYPVpQiFHytBD68Rz2eFPZd7"
+const someAddress = "0xF344B01DA08b142D2466dae9e47E333f22e64588"
 const { success: isAddress } = safeParse(addressSchema, someAddress)
 
 const reader = createReader([
@@ -110,110 +110,110 @@ const block = await readable(reader)
 
 #### error
 
-- [error/error.ts](src/error/error.ts)
+- [error/error.ts](src/abi/error/error.ts)
 
 #### client
 
-- [client/client.ts](src/event/event.ts)
+- [client/client.ts](src/abi/event/event.ts)
 
 #### shared
 
-- [shared/shared.ts](src/shared/shared.ts)
+- [shared/shared.ts](src/abi/shared/shared.ts)
 
 #### function
 
-- [function/shared/shared.ts](src/function/shared/shared.ts)
-- [function/function/function.ts](src/function/function/function.ts)
-- [function/constructor/constructor.ts](src/function/constructor/constructor.ts)
-- [function/fallback/fallback.ts](src/function/fallback/fallback.ts)
-- [function/receive/receive.ts](src/function/receive/receive.ts)
-- [error/error.ts](src/error/error.ts)
+- [function/shared/shared.ts](src/abi/function/shared/shared.ts)
+- [function/function/function.ts](src/abi/function/function/function.ts)
+- [function/constructor/constructor.ts](src/abi/function/constructor/constructor.ts)
+- [function/fallback/fallback.ts](src/abi/function/fallback/fallback.ts)
+- [function/receive/receive.ts](src/abi/function/receive/receive.ts)
+- [error/error.ts](src/abi/error/error.ts)
 
 #### client
 
-- [client/client.ts](src/event/event.ts)
+- [client/client.ts](src/abi/event/event.ts)
 
 #### shared
 
-- [shared/shared.ts](src/shared/shared.ts)
+- [shared/shared.ts](src/abi/shared/shared.ts)
 
 #### function
 
-- [function/shared/shared.ts](src/function/shared/shared.ts)
-- [function/function/function.ts](src/function/function/function.ts)
-- [function/constructor/constructor.ts](src/function/constructor/constructor.ts)
-- [function/fallback/fallback.ts](src/function/fallback/fallback.ts)
-- [function/receive/receive.ts](src/function/receive/receive.ts)
+- [function/shared/shared.ts](src/abi/function/shared/shared.ts)
+- [function/function/function.ts](src/abi/function/function/function.ts)
+- [function/constructor/constructor.ts](src/abi/function/constructor/constructor.ts)
+- [function/fallback/fallback.ts](src/abi/function/fallback/fallback.ts)
+- [function/receive/receive.ts](src/abi/function/receive/receive.ts)
 
 ### method
 
 #### eip-1102
 
-- [eip/1102/request-accounts/request-accounts.ts](src/eip/1102/request-accounts/request-accounts.ts)
+- [eip/1102/request-accounts/request-accounts.ts](src/method/eip/1102/request-accounts/request-accounts.ts)
 
 #### block
 
-- [block/get-block-by-hash/get-block-by-hash.ts](src/eth/block/get-block-by-hash/get-block-by-hash.ts)
-- [block/get-block-by-number/get-block-by-number.ts](src/eth/block/get-block-by-number/get-block-by-number.ts)
-- [block/get-block-receipts/get-block-receipts.ts](src/eth/block/get-block-receipts/get-block-receipts.ts)
-- [block/get-block-transaction-count-by-hash/get-block-transaction-count-by-hash.ts](src/eth/block/get-block-transaction-count-by-hash/get-block-transaction-count-by-hash.ts)
-- [block/get-block-transaction-count-by-number/get-block-transaction-count-by-number.ts](src/eth/block/get-block-transaction-count-by-number/get-block-transaction-count-by-number.ts)
-- [block/get-uncle-count-by-block-hash/get-uncle-count-by-block-hash.ts](src/eth/block/get-uncle-count-by-block-hash/get-uncle-count-by-block-hash.ts)
-- [block/get-uncle-count-by-block-number/get-uncle-count-by-block-number.ts](src/eth/block/get-uncle-count-by-block-number/get-uncle-count-by-block-number.ts)
-- [block/get-block-by-hash/get-block-by-hash.ts](src/eth/block/get-block-by-hash/get-block-by-hash.ts)
-- [block/get-block-by-number/get-block-by-number.ts](src/eth/block/get-block-by-number/get-block-by-number.ts)
+- [block/get-block-by-hash/get-block-by-hash.ts](src/method/block/get-block-by-hash/get-block-by-hash.ts)
+- [block/get-block-by-number/get-block-by-number.ts](src/method/block/get-block-by-number/get-block-by-number.ts)
+- [block/get-block-receipts/get-block-receipts.ts](src/method/block/get-block-receipts/get-block-receipts.ts)
+- [block/get-block-transaction-count-by-hash/get-block-transaction-count-by-hash.ts](src/method/block/get-block-transaction-count-by-hash/get-block-transaction-count-by-hash.ts)
+- [block/get-block-transaction-count-by-number/get-block-transaction-count-by-number.ts](src/method/block/get-block-transaction-count-by-number/get-block-transaction-count-by-number.ts)
+- [block/get-uncle-count-by-block-hash/get-uncle-count-by-block-hash.ts](src/method/block/get-uncle-count-by-block-hash/get-uncle-count-by-block-hash.ts)
+- [block/get-uncle-count-by-block-number/get-uncle-count-by-block-number.ts](src/method/block/get-uncle-count-by-block-number/get-uncle-count-by-block-number.ts)
+- [block/get-block-by-hash/get-block-by-hash.ts](src/method/block/get-block-by-hash/get-block-by-hash.ts)
+- [block/get-block-by-number/get-block-by-number.ts](src/method/block/get-block-by-number/get-block-by-number.ts)
 
 #### client
 
-- [client/accounts/accounts.ts](src/eth/client/accounts/accounts.ts)
-- [client/block-number/block-number.ts](src/eth/client/block-number/block-number.ts)
-- [client/chain-id/chain-id.ts](src/eth/client/chain-id/chain-id.ts)
-- [client/coinbase/coinbase.ts](src/eth/client/coinbase/coinbase.ts)
-- [client/syncing/syncing.ts](src/eth/client/syncing/syncing.ts)
+- [client/accounts/accounts.ts](src/method/client/accounts/accounts.ts)
+- [client/block-number/block-number.ts](src/method/client/block-number/block-number.ts)
+- [client/chain-id/chain-id.ts](src/method/client/chain-id/chain-id.ts)
+- [client/coinbase/coinbase.ts](src/method/client/coinbase/coinbase.ts)
+- [client/syncing/syncing.ts](src/method/client/syncing/syncing.ts)
 
 #### execute
 
-- [execute/call/call.ts](src/eth/execute/call/call.ts)
-- [execute/create-access-list/create-access-list.ts](src/eth/execute/create-access-list/create-access-list.ts)
-- [execute/estimate-gas/estimate-gas.ts](src/eth/execute/estimate-gas/estimate-gas.ts)
+- [execute/call/call.ts](src/method/execute/call/call.ts)
+- [execute/create-access-list/create-access-list.ts](src/method/execute/create-access-list/create-access-list.ts)
+- [execute/estimate-gas/estimate-gas.ts](src/method/execute/estimate-gas/estimate-gas.ts)
 
 #### fee-market
 
-- [fee-market/fee-history/fee-history.ts](src/eth/fee-market/fee-history/fee-history.ts)
-- [fee-market/gas-price/gas-price.ts](src/eth/fee-market/gas-price/gas-price.ts)
-- [fee-market/max-priority-fee-per-gas/max-priority-fee-per-gas.ts](src/eth/fee-market/max-priority-fee-per-gas/max-priority-fee-per-gas.ts)
+- [fee-market/fee-history/fee-history.ts](src/method/fee-market/fee-history/fee-history.ts)
+- [fee-market/gas-price/gas-price.ts](src/method/fee-market/gas-price/gas-price.ts)
+- [fee-market/max-priority-fee-per-gas/max-priority-fee-per-gas.ts](src/method/fee-market/max-priority-fee-per-gas/max-priority-fee-per-gas.ts)
 
 #### filter
 
-- [filter/get-filter-changes/get-filter-changes.ts](src/eth/filter/get-filter-changes/get-filter-changes.ts)
-- [filter/get-filter-logs/get-filter-logs.ts](src/eth/filter/get-filter-logs/get-filter-logs.ts)
-- [filter/get-logs/get-logs.ts](src/eth/filter/get-logs/get-logs.ts)
-- [filter/new-block-filter/new-block-filter.ts](src/eth/filter/new-block-filter/new-block-filter.ts)
-- [filter/new-filter/new-filter.ts](src/eth/filter/new-filter/new-filter.ts)
-- [filter/new-pending-transaction-filter/new-pending-transaction-filter.ts](src/eth/filter/new-pending-transaction-filter/new-pending-transaction-filter.ts)
-- [filter/uninstall-filter/uninstall-filter.ts](src/eth/filter/uninstall-filter/uninstall-filter.ts)
+- [filter/get-filter-changes/get-filter-changes.ts](src/method/filter/get-filter-changes/get-filter-changes.ts)
+- [filter/get-filter-logs/get-filter-logs.ts](src/method/filter/get-filter-logs/get-filter-logs.ts)
+- [filter/get-logs/get-logs.ts](src/method/filter/get-logs/get-logs.ts)
+- [filter/new-block-filter/new-block-filter.ts](src/method/filter/new-block-filter/new-block-filter.ts)
+- [filter/new-filter/new-filter.ts](src/method/filter/new-filter/new-filter.ts)
+- [filter/new-pending-transaction-filter/new-pending-transaction-filter.ts](src/method/filter/new-pending-transaction-filter/new-pending-transaction-filter.ts)
+- [filter/uninstall-filter/uninstall-filter.ts](src/method/filter/uninstall-filter/uninstall-filter.ts)
 
 #### sign
 
-- [sign/sign/sign.ts](src/eth/sign/sign/sign.ts)
-- [sign/sign-transaction/sign-transaction.ts](src/eth/sign/sign-transaction/sign-transaction.ts)
+- [sign/sign/sign.ts](src/method/sign/sign/sign.ts)
+- [sign/sign-transaction/sign-transaction.ts](src/method/sign/sign-transaction/sign-transaction.ts)
 
 #### state
 
-- [state/get-balance/get-balance.ts](src/eth/state/get-balance/get-balance.ts)
-- [state/get-code/get-code.ts](src/eth/state/get-code/get-code.ts)
-- [state/get-proof/get-proof.ts](src/eth/state/get-proof/get-proof.ts)
-- [state/get-storage-at/get-storage-at.ts](src/eth/state/get-storage-at/get-storage-at.ts)
-- [state/get-transaction-count/get-transaction-count.ts](src/eth/state/get-transaction-count/get-transaction-count.ts)
+- [state/get-balance/get-balance.ts](src/method/state/get-balance/get-balance.ts)
+- [state/get-code/get-code.ts](src/method/state/get-code/get-code.ts)
+- [state/get-proof/get-proof.ts](src/method/state/get-proof/get-proof.ts)
+- [state/get-storage-at/get-storage-at.ts](src/method/state/get-storage-at/get-storage-at.ts)
+- [state/get-transaction-count/get-transaction-count.ts](src/method/state/get-transaction-count/get-transaction-count.ts)
 
 #### submit
 
-- [submit/send-raw-transaction/send-raw-transaction.ts](src/eth/submit/send-raw-transaction/send-raw-transaction.ts)
-- [submit/send-transaction/send-transaction.ts](src/eth/submit/send-transaction/send-transaction.ts)
+- [submit/send-raw-transaction/send-raw-transaction.ts](src/method/submit/send-raw-transaction/send-raw-transaction.ts)
+- [submit/send-transaction/send-transaction.ts](src/method/submit/send-transaction/send-transaction.ts)
 
 #### transaction
 
-- [transaction/get-transaction-by-block-hash-and-index/get-transaction-by-block-hash-and-index.ts](src/eth/transaction/get-transaction-by-block-hash-and-index/get-transaction-by-block-hash-and-index.ts)
-- [transaction/get-transaction-by-block-number-and-index/get-transaction-by-block-number-and-index.ts](src/eth/transaction/get-transaction-by-block-number-and-index/get-transaction-by-block-number-and-index.ts)
-- [transaction/get-transaction-by-hash/get-transaction-by-hash.ts](src/eth/transaction/get-transaction-by-hash/get-transaction-by-hash.ts)
-- [transaction/get-transaction-receipt/get-transaction-receipt.ts](src/eth/transaction/get-transaction-receipt/get-transaction-receipt.ts)
+- [transaction/get-transaction-by-block-hash-and-index/get-transaction-by-block-hash-and-index.ts](src/method/transaction/get-transaction-by-block-hash-and-index/get-transaction-by-block-hash-and-index.ts)
+- [transaction/get-transaction-by-block-number-and-index/get-transaction-by-block-number-and-index.ts](src/method/transaction/get-transaction-by-block-number-and-index/get-transaction-by-block-number-and-index.ts)
+- [transaction/get-transaction-by-hash/get-transaction-by-hash.ts](src/method/transaction/get-transaction-by-hash/get-transaction-by-hash.ts)
+- [transaction/get-transaction-receipt/get-transaction-receipt.ts](src/method/transaction/get-transaction-receipt/get-transaction-receipt.ts)
