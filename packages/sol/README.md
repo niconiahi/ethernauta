@@ -35,3 +35,7 @@ const balance = await readable(reader)
 ### Tests
 
 - [x] Correctly gets balance of an address [Go to file](src/method/get-balance/get-balance.test.ts)
+
+## Additional
+
+This is `solana-web3`'s [implementation of "getBalance" RPC method](https://github.com/solana-labs/solana-web3.js/blob/master/packages/rpc-core/src/rpc-methods/getBalance.ts) vs [the implementation of it in this library](src/method/get-balance/get-balance.ts)
