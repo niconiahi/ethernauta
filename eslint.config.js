@@ -12,7 +12,7 @@ export default antfu(
   {
     files: ["**/*.ts"],
     rules: {
-      "no-nested-ternary": "error",
+      "style/brace-style": ["error", "1tbs", { allowSingleLine: false }],
       "ts/consistent-type-imports": ["error", {
         disallowTypeAnnotations: true,
         prefer: "type-imports",
@@ -40,7 +40,7 @@ export default antfu(
         },
       }],
       "curly": ["error", "all"],
-      "brace-style": ["error", "1tbs", { allowSingleLine: false }],
+      "no-nested-ternary": "error",
       "unused-imports/no-unused-imports": "error",
       "no-unused-vars": ["error", { vars: "all", args: "all", ignoreRestSiblings: false, argsIgnorePattern: "^_" }],
     },
