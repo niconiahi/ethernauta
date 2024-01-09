@@ -7,8 +7,8 @@ import { callSchema } from "@ethernauta/transport"
 import type { NotFound } from "../../../core/base"
 import { notFoundSchema } from "../../../core/base"
 import { blockNumberOrTagOrHashSchema } from "../../../core/block"
-import type { ReceiptInfo } from "../../../receipt"
-import { receiptInfoSchema } from "../../../receipt"
+import type { ReceiptInfo } from "../../../core/receipt"
+import { receiptInfoSchema } from "../../../core/receipt"
 
 const parametersSchema = union([
   tuple([blockNumberOrTagOrHashSchema]),

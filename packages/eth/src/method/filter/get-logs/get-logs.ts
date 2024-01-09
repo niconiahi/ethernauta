@@ -4,8 +4,8 @@ import { object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { filterResultsSchema, filterSchema } from "../../../filter"
-import type { FilterResults } from "../../../filter"
+import { filterResultsSchema, filterSchema } from "../../../core/filter"
+import type { FilterResults } from "../../../core/filter"
 
 const parametersSchema = union([
   tuple([filterSchema]),

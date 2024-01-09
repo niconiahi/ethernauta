@@ -6,8 +6,8 @@ import { callSchema } from "@ethernauta/transport"
 
 import { addressSchema, bytesMax32Schema } from "../../../core/base"
 import { blockNumberOrTagOrHashSchema } from "../../../core/block"
-import { accountProofSchema } from "../../../state"
-import type { AccountProof } from "../../../state"
+import { accountProofSchema } from "../../../core/state"
+import type { AccountProof } from "../../../core/state"
 
 const parametersSchema = union([
   tuple([

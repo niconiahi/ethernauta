@@ -3,8 +3,8 @@ import { literal, parse, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { syncingStatusSchema } from "../../../client"
-import type { SyncingStatus } from "../../../client"
+import { syncingStatusSchema } from "../../../core/client"
+import type { SyncingStatus } from "../../../core/client"
 
 export function syncing(): Readable<SyncingStatus> {
   return async (reader: Reader): Promise<SyncingStatus> => {

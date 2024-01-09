@@ -6,7 +6,7 @@ import { callSchema } from "@ethernauta/transport"
 
 import { uintSchema } from "../../../core/base"
 import type { Bytes } from "../../../core/base"
-import { filterSchema } from "../../../filter"
+import { filterSchema } from "../../../core/filter"
 
 const parametersSchema = union([
   tuple([filterSchema]),

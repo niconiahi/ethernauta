@@ -6,8 +6,8 @@ import { callSchema } from "@ethernauta/transport"
 
 import { hash32Schema, notFoundSchema } from "../../../core/base"
 import type { NotFound } from "../../../core/base"
-import { receiptInfoSchema } from "../../../receipt"
-import type { ReceiptInfo } from "../../../receipt"
+import { receiptInfoSchema } from "../../../core/receipt"
+import type { ReceiptInfo } from "../../../core/receipt"
 
 const parametersSchema = union([
   tuple([hash32Schema]),

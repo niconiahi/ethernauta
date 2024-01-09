@@ -5,8 +5,8 @@ import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { uintSchema } from "../../../core/base"
-import { filterResultsSchema } from "../../../filter"
-import type { FilterResults } from "../../../filter"
+import { filterResultsSchema } from "../../../core/filter"
+import type { FilterResults } from "../../../core/filter"
 
 const parametersSchema = union([
   tuple([uintSchema]),
