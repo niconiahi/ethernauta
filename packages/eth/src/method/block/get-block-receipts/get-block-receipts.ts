@@ -4,9 +4,9 @@ import { array, object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import type { NotFound } from "../../../base"
-import { notFoundSchema } from "../../../base"
-import { blockNumberOrTagOrHashSchema } from "../../../block"
+import type { NotFound } from "../../../core/base"
+import { notFoundSchema } from "../../../core/base"
+import { blockNumberOrTagOrHashSchema } from "../../../core/block"
 import type { ReceiptInfo } from "../../../receipt"
 import { receiptInfoSchema } from "../../../receipt"
 

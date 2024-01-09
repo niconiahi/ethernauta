@@ -4,7 +4,7 @@ import { object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { uintSchema } from "../../../base"
+import { uintSchema } from "../../../core/base"
 import { filterResultsSchema } from "../../../filter"
 import type { FilterResults } from "../../../filter"
 

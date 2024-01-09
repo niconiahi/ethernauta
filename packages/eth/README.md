@@ -21,18 +21,23 @@ It does so in a completely modular fashion. It it's _absolutely_ typed-safe beca
 ## API
 
 ```tsx
-import { safeParse } from "valibot"
-import { addressSchema, eip155_1, getBlockByHash } from "@ethernauta/eth"
-import { createReader, http } from "@ethernauta/transport"
+import { safeParse } from "valibot";
+import { addressSchema, eip155_1, getBlockByHash } from "@ethernauta/eth";
+import { createReader, http } from "@ethernauta/transport";
 
-const someAddress = "0xF344B01DA08b142D2466dae9e47E333f22e64588"
-const { success: isAddress } = safeParse(addressSchema, someAddress)
+const someAddress = "0xF344B01DA08b142D2466dae9e47E333f22e64588";
+const { success: isAddress } = safeParse(addressSchema, someAddress);
 
 const reader = createReader([
-  http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"),
-])
-const readable = getBlockByHash(["0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26", false])
-const block = await readable(reader)
+  http(
+    "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"
+  ),
+]);
+const readable = getBlockByHash([
+  "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
+  false,
+]);
+const block = await readable(reader);
 ```
 
 ## Files to pay attention
@@ -41,64 +46,64 @@ const block = await readable(reader)
 
 #### block
 
-- [block/block.ts](src/block/block.ts)
+- [block/block.ts](src/core/block/block.ts)
 
 #### client
 
-- [client/client.ts](src/client/client.ts)
+- [client/client.ts](src/core/client/client.ts)
 
 #### filter
 
-- [filter/filter.ts](src/filter/filter.ts)
+- [filter/filter.ts](src/core/filter/filter.ts)
 
 #### receipt
 
-- [receipt/receipt.ts](src/receipt/receipt.ts)
+- [receipt/receipt.ts](src/core/receipt/receipt.ts)
 
 #### state
 
-- [state/state.ts](src/state/state.ts)
+- [state/state.ts](src/core/state/state.ts)
 
 #### withdrawal
 
-- [withdrawal/withdrawal.ts](src/withdrawal/withdrawal.ts)
+- [withdrawal/withdrawal.ts](src/core/withdrawal/withdrawal.ts)
 
 #### address
 
-- [address/address.ts](src/base/address/address.ts)
+- [address/address.ts](src/core/base/address/address.ts)
 
 #### addresses
 
-- [addresses/addressses.ts](src/base/addresses/addresses.ts)
+- [addresses/addressses.ts](src/core/base/addresses/addresses.ts)
 
 #### base
 
-- [base/byte/byte.ts](src/base/byte/byte.ts)
-- [base/bytes/bytes/ts](src/base/bytes/bytes.ts)
-- [base/bytes-8/bytes-8.ts](src/base/bytes-8/bytes-8.ts)
-- [base/bytes-32/bytes-32.ts](src/base/bytes-32/bytes-32.ts)
-- [base/bytes-48/bytes-48.ts](src/base/bytes-48/bytes-48.ts)
-- [base/bytes-65/bytes-65.ts](src/base/bytes-65/bytes-65.ts)
-- [base/bytes-256/bytes-256.ts](src/base/bytes-256/bytes-256.ts)
-- [base/bytes-max-32/bytes-max-32.ts](src/base/bytes-max-32/bytes-max-32.ts)
-- [base/hash-32/hash-32.ts](src/base/hash-32/hash-32.ts)
-- [base/not-found/not-found.ts](src/base/not-found/not-found.ts)
-- [base/ratio/ratio.ts](src/base/ratio/ratio.ts)
-- [base/uint/uint.ts](src/base/uint/uint.ts)
-- [base/uint-64/uint-64.ts](src/base/uint-64/uint-64.ts)
-- [base/uint-256/uint-256.ts](src/base/uint-256/uint-256.ts)
+- [base/byte/byte.ts](src/core/base/byte/byte.ts)
+- [base/bytes/bytes/ts](src/core/base/bytes/bytes.ts)
+- [base/bytes-8/bytes-8.ts](src/core/base/bytes-8/bytes-8.ts)
+- [base/bytes-32/bytes-32.ts](src/core/base/bytes-32/bytes-32.ts)
+- [base/bytes-48/bytes-48.ts](src/core/base/bytes-48/bytes-48.ts)
+- [base/bytes-65/bytes-65.ts](src/core/base/bytes-65/bytes-65.ts)
+- [base/bytes-256/bytes-256.ts](src/core/base/bytes-256/bytes-256.ts)
+- [base/bytes-max-32/bytes-max-32.ts](src/core/base/bytes-max-32/bytes-max-32.ts)
+- [base/hash-32/hash-32.ts](src/core/base/hash-32/hash-32.ts)
+- [base/not-found/not-found.ts](src/core/base/not-found/not-found.ts)
+- [base/ratio/ratio.ts](src/core/base/ratio/ratio.ts)
+- [base/uint/uint.ts](src/core/base/uint/uint.ts)
+- [base/uint-64/uint-64.ts](src/core/base/uint-64/uint-64.ts)
+- [base/uint-256/uint-256.ts](src/core/base/uint-256/uint-256.ts)
 
 #### transaction
 
-- [transaction/1559/1559.ts](src/transaction/1559/1559.ts)
-- [transaction/2930/2930.ts](src/transaction/2930/2930.ts)
-- [transaction/4844/4844.ts](src/transaction/4844/4844.ts)
-- [transaction/access-list/access-list.ts](src/transaction/access-list/access-list.ts)
-- [transaction/generic/generic.ts](src/transaction/generic/generic.ts)
-- [transaction/info/info.ts](src/transaction/info/info.ts)
-- [transaction/legacy/legacy.ts](src/transaction/legacy/legacy.ts)
-- [transaction/signed/signed.ts](src/transaction/signed/signed.ts)
-- [transaction/unsigned/unsigned.ts](src/transaction/unsigned/unsigned.ts)
+- [transaction/1559/1559.ts](src/core/transaction/1559/1559.ts)
+- [transaction/2930/2930.ts](src/core/transaction/2930/2930.ts)
+- [transaction/4844/4844.ts](src/core/transaction/4844/4844.ts)
+- [transaction/access-list/access-list.ts](src/core/transaction/access-list/access-list.ts)
+- [transaction/generic/generic.ts](src/core/transaction/generic/generic.ts)
+- [transaction/info/info.ts](src/core/transaction/info/info.ts)
+- [transaction/legacy/legacy.ts](src/core/transaction/legacy/legacy.ts)
+- [transaction/signed/signed.ts](src/core/transaction/signed/signed.ts)
+- [transaction/unsigned/unsigned.ts](src/core/transaction/unsigned/unsigned.ts)
 
 ### chain
 

@@ -4,9 +4,9 @@ import { object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import type { NotFound, Uint } from "../../../base"
-import { notFoundSchema, uintSchema } from "../../../base"
-import { blockNumberOrTagSchema } from "../../../block"
+import type { NotFound, Uint } from "../../../core/base"
+import { notFoundSchema, uintSchema } from "../../../core/base"
+import { blockNumberOrTagSchema } from "../../../core/block"
 
 const parametersSchema = union([
   tuple([blockNumberOrTagSchema]),

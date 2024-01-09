@@ -3,7 +3,7 @@ import { describe, expect } from "vitest"
 
 import { createReader, http } from "@ethernauta/transport"
 
-import { uintSchema } from "../../../base"
+import { uintSchema } from "../../../core/base"
 
 import { blockNumber } from "./block-number"
 

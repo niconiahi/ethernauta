@@ -4,10 +4,10 @@ import { object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { hash32Schema, notFoundSchema, uintSchema } from "../../../base"
-import type { NotFound } from "../../../base"
-import { transactionInfoSchema } from "../../../transaction"
-import type { TransactionInfo } from "../../../transaction"
+import { hash32Schema, notFoundSchema, uintSchema } from "../../../core/base"
+import type { NotFound } from "../../../core/base"
+import { transactionInfoSchema } from "../../../core/transaction"
+import type { TransactionInfo } from "../../../core/transaction"
 
 const parametersSchema = union([
   tuple([hash32Schema, uintSchema]),

@@ -4,10 +4,10 @@ import { object, parse, tuple, union } from "valibot"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { bytesSchema } from "../../../base"
-import type { Bytes } from "../../../base"
-import { blockNumberOrTagOrHashSchema } from "../../../block"
-import { genericTransactionSchema } from "../../../transaction"
+import { bytesSchema } from "../../../core/base"
+import type { Bytes } from "../../../core/base"
+import { blockNumberOrTagOrHashSchema } from "../../../core/block"
+import { genericTransactionSchema } from "../../../core/transaction"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),

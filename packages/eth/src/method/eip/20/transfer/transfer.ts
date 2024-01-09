@@ -4,7 +4,7 @@ import { boolean, object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressSchema, uint256Schema } from "../../../../base"
+import { addressSchema, uint256Schema } from "../../../../core/base"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),

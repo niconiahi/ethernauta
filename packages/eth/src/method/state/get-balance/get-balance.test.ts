@@ -2,7 +2,7 @@ import { describe, expect } from "vitest"
 
 import { createReader, http } from "@ethernauta/transport"
 
-import { bigToUint } from "../../../base"
+import { bigToUint } from "../../../core/base"
 
 import { getBalance } from "./get-balance"
 

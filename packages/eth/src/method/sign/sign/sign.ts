@@ -4,8 +4,8 @@ import { object, parse, tuple, union } from "valibot"
 import type { Writable, Writer } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressSchema, bytesSchema, uintSchema } from "../../../base"
-import type { Bytes65 } from "../../../base"
+import { addressSchema, bytesSchema, uintSchema } from "../../../core/base"
+import type { Bytes65 } from "../../../core/base"
 
 const parametersSchema = union([
   tuple([addressSchema, bytesSchema]),

@@ -3,8 +3,8 @@ import { parse } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressesSchema } from "../../../base"
-import type { Addresses } from "../../../base"
+import { addressesSchema } from "../../../core/base"
+import type { Addresses } from "../../../core/base"
 
 export function acounts(): Readable<Addresses> {
   return async (reader: Reader): Promise<Addresses> => {

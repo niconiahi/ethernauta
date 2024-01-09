@@ -4,8 +4,8 @@ import { object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { hash32Schema, notFoundSchema } from "../../../base"
-import type { NotFound } from "../../../base"
+import { hash32Schema, notFoundSchema } from "../../../core/base"
+import type { NotFound } from "../../../core/base"
 import { receiptInfoSchema } from "../../../receipt"
 import type { ReceiptInfo } from "../../../receipt"
 

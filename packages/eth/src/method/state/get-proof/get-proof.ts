@@ -4,8 +4,8 @@ import { array, object, parse, tuple, union } from "valibot"
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressSchema, bytesMax32Schema } from "../../../base"
-import { blockNumberOrTagOrHashSchema } from "../../../block"
+import { addressSchema, bytesMax32Schema } from "../../../core/base"
+import { blockNumberOrTagOrHashSchema } from "../../../core/block"
 import { accountProofSchema } from "../../../state"
 import type { AccountProof } from "../../../state"
 

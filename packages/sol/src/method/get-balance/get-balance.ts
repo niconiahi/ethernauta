@@ -4,7 +4,7 @@ import { literal, number, object, optional, parse, string, tuple, union } from "
 import type { Readable, Reader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
-import { addressSchema } from "../../base"
+import { addressSchema } from "../../core/base"
 
 const commitmentSchema = union([
   literal("confirmed"),
