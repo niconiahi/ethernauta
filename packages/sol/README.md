@@ -37,11 +37,15 @@ const balance = await readable(reader);
 
 ### method
 
-- [get-balance/get-balance.ts](src/method/get-balance/get-balance.ts)
+- [getBalance](src/method/get-balance/get-balance.ts)
+- [getLatestBlockhash](src/method/get-latest-blockhash/get-latest-blockhash.ts)
+- [getMinimumBalanceForRentExemption](src/method/get-minimum-balance-for-rent-exemption/get-minimum-balance-for-rent-exemption.ts)
 
 ### Tests
 
 - [x] Correctly gets balance of an address [Go to file](src/method/get-balance/get-balance.test.ts)
+- [x] Correctly gets the latest blockhash [Go to file](src/method/get-latest-blockhash/get-latest-blockhash.test.ts)
+- [x] Correctly gets minimum balance for rent exemption [Go to file](src/method/get-minimum-balance-for-rent-exemption/get-minimum-balance-for-rent-exemption.test.ts)
 
 ## Additional
 
