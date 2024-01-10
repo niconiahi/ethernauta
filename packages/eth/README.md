@@ -22,7 +22,7 @@ It does so in a completely modular fashion. It it's _absolutely_ typed-safe beca
 
 ```tsx
 import { safeParse } from "valibot";
-import { addressSchema, eip155_1, getBlockByHash } from "@ethernauta/eth";
+import { addressSchema, eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
 import { createReader, http } from "@ethernauta/transport";
 
 const someAddress = "0xF344B01DA08b142D2466dae9e47E333f22e64588";
@@ -33,7 +33,7 @@ const reader = createReader([
     "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"
   ),
 ]);
-const readable = getBlockByHash([
+const readable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
 ]);
