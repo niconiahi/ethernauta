@@ -17,7 +17,7 @@ const parametersSchema = union([
   }),
 ])
 type Parameters = Input<typeof parametersSchema>
-export function getBlockByHash(_parameters: Parameters): Readable<Block | NotFound> {
+export function eth_getBlockByHash(_parameters: Parameters): Readable<Block | NotFound> {
   return async (reader: Reader): Promise<Block | NotFound> => {
     const method = "eth_getBlockByHash"
     const parameters = parse(parametersSchema, _parameters)

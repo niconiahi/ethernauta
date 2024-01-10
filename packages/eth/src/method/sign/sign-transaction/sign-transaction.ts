@@ -16,7 +16,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns RLP encoded transaction
  */
-export function signTransaction(_parameters: Parameters): Writable<Bytes> {
+export function eth_signTransaction(_parameters: Parameters): Writable<Bytes> {
   return async (writer: Writer): Promise<Bytes> => {
     const method = "eth_signTransaction"
     const parameters = parse(parametersSchema, _parameters)

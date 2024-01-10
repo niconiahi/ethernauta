@@ -15,7 +15,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns All logs matching filter with given id
  */
-export function getLogs(_parameters: Parameters): Readable<FilterResults> {
+export function eth_getLogs(_parameters: Parameters): Readable<FilterResults> {
   return async (reader: Reader): Promise<FilterResults> => {
     const method = "eth_getLogs"
     const parameters = parse(parametersSchema, _parameters)

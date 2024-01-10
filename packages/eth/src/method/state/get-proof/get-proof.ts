@@ -26,7 +26,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The merkle proof for a given account and optionally some storage keys
  */
-export function getProof(_parameters: Parameters): Readable<AccountProof> {
+export function eth_getProof(_parameters: Parameters): Readable<AccountProof> {
   return async (reader: Reader): Promise<AccountProof> => {
     const method = "eth_getProof"
     const parameters = parse(parametersSchema, _parameters)

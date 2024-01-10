@@ -15,7 +15,7 @@ const parametersSchema = union([
   object({ blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
-export function getBlockReceipts(_parameters: Parameters): Readable<ReceiptInfo[] | NotFound> {
+export function eth_getBlockReceipts(_parameters: Parameters): Readable<ReceiptInfo[] | NotFound> {
   return async (reader: Reader): Promise<ReceiptInfo[] | NotFound> => {
     const method = "eth_getBlockReceipts"
     const parameters = parse(parametersSchema, _parameters)

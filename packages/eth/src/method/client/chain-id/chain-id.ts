@@ -6,7 +6,7 @@ import { callSchema } from "@ethernauta/transport"
 import { uintSchema } from "../../../core/base"
 import type { Uint } from "../../../core/base"
 
-export function chainId(): Readable<Uint> {
+export function eth_chainId(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_chainId"
     const call = parse(callSchema, [method])

@@ -10,7 +10,7 @@ import type { Uint } from "../../../core/base"
  * Returns the current price per gas in wei
  * @returns The gas in wei
  */
-export function gasPrice(): Readable<Uint> {
+export function eth_gasPrice(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_gasPrice"
     const call = parse(callSchema, [method])

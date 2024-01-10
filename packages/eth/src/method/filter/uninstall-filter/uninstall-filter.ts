@@ -14,7 +14,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns A boolean representing the success or failure of the uninstall
  */
-export function uninstallFilter(_parameters: Parameters): Readable<boolean> {
+export function eth_uninstallFilter(_parameters: Parameters): Readable<boolean> {
   return async (reader: Reader): Promise<boolean> => {
     const method = "eth_uninstallFilter"
     const parameters = parse(parametersSchema, _parameters)

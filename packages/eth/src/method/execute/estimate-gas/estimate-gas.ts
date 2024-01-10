@@ -16,7 +16,7 @@ const parametersSchema = union([
   object({ transaction: genericTransactionSchema, blockNumberOrTag: blockNumberOrTagSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
-export function estimateGas(_parameters: Parameters): Writable<Uint> {
+export function eth_estimateGas(_parameters: Parameters): Writable<Uint> {
   return async (writer: Writer): Promise<Uint> => {
     const method = "eth_estimateGas"
     const parameters = parse(parametersSchema, _parameters)

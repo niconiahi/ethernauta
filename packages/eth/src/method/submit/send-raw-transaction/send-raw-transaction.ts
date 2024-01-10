@@ -15,7 +15,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The transaction hash
  */
-export function sendRawTransaction(_parameters: Parameters): Writable<Hash32> {
+export function eth_sendRawTransaction(_parameters: Parameters): Writable<Hash32> {
   return async (writer: Writer): Promise<Hash32> => {
     const method = "eth_sendRawTransaction"
     const parameters = parse(parametersSchema, _parameters)

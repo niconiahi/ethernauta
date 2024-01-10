@@ -21,7 +21,7 @@ const accessListResultSchema = object({
   gasUsed: uintSchema,
 })
 type Response = Input<typeof accessListResultSchema>
-export function createAccessList(_parameters: Parameters): Writable<Response> {
+export function eth_createAccessList(_parameters: Parameters): Writable<Response> {
   return async (writer: Writer): Promise<Response> => {
     const method = "eth_createAccessList"
     const parameters = parse(parametersSchema, _parameters)

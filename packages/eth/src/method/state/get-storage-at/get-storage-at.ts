@@ -25,7 +25,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The value from a storage position at a given address
  */
-export function getStorageAt(_parameters: Parameters): Readable<Uint> {
+export function eth_getStorageAt(_parameters: Parameters): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_getStorageAt"
     const parameters = parse(parametersSchema, _parameters)

@@ -21,7 +21,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The transaction information or null if not found
  */
-export function getTransactionByBlockNumberAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
+export function eth_getTransactionByBlockNumberAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
   return async (reader: Reader): Promise<TransactionInfo | NotFound> => {
     const method = "eth_getTransactionByBlockNumberAndIndex"
     const parameters = parse(parametersSchema, _parameters)

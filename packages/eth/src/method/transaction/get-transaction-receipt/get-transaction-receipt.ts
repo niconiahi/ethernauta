@@ -17,7 +17,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The transaction receipt or null if not found
  */
-export function getTransactionReceipt(_parameters: Parameters): Readable<ReceiptInfo | NotFound> {
+export function eth_getTransactionReceipt(_parameters: Parameters): Readable<ReceiptInfo | NotFound> {
   return async (reader: Reader): Promise<ReceiptInfo | NotFound> => {
     const method = "eth_getTransactionReceipt"
     const parameters = parse(parametersSchema, _parameters)

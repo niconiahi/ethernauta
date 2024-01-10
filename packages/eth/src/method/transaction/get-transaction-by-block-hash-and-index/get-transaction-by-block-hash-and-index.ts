@@ -20,7 +20,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns Transaction information or null if not found
  */
-export function getTransactionByBlockHashAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
+export function eth_getTransactionByBlockHashAndIndex(_parameters: Parameters): Readable<TransactionInfo | NotFound> {
   return async (reader: Reader): Promise<TransactionInfo | NotFound> => {
     const method = "eth_getTransactionByBlockHashAndIndex"
     const parameters = parse(parametersSchema, _parameters)

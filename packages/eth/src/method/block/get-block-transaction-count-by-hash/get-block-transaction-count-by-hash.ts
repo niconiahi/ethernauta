@@ -12,7 +12,7 @@ const parametersSchema = union([
   object({ blockHash: hash32Schema }),
 ])
 type Parameters = Input<typeof parametersSchema>
-export function getBlockTransactionCountByHash(_parameters: Parameters): Readable<Uint | NotFound> {
+export function eth_getBlockTransactionCountByHash(_parameters: Parameters): Readable<Uint | NotFound> {
   return async (reader: Reader): Promise<Uint | NotFound> => {
     const method = "eth_getBlockTransactionCountByHash"
     const parameters = parse(parametersSchema, _parameters)

@@ -16,7 +16,7 @@ const parametersSchema = union([
   object({ transaction: genericTransactionSchema, blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema }),
 ])
 type Parameters = Input<typeof parametersSchema>
-export function call(_parameters: Parameters): Writable<Bytes> {
+export function eth_call(_parameters: Parameters): Writable<Bytes> {
   return async (writer: Writer): Promise<Bytes> => {
     const method = "eth_call"
     const parameters = parse(parametersSchema, _parameters)

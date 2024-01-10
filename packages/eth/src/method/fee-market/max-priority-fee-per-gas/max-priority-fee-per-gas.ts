@@ -10,7 +10,7 @@ import type { Uint } from "../../../core/base"
  * Returns the current maxPriorityFeePerGas per gas in wei
  * @returns The current maxPriorityFeePerGas per gas in wei
  */
-export function maxPriorityFeePerGas(): Readable<Uint> {
+export function eth_maxPriorityFeePerGas(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_maxPriorityFeePerGas"
     const call = parse(callSchema, [method])

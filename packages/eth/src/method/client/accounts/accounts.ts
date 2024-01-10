@@ -6,7 +6,7 @@ import { callSchema } from "@ethernauta/transport"
 import { addressesSchema } from "../../../core/base"
 import type { Addresses } from "../../../core/base"
 
-export function acounts(): Readable<Addresses> {
+export function eth_acounts(): Readable<Addresses> {
   return async (reader: Reader): Promise<Addresses> => {
     const method = "eth_accounts"
     const call = parse(callSchema, [method])

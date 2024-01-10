@@ -9,7 +9,7 @@ import type { Uint } from "../../../core/base"
 /**
  * @returns The created block filter's identifier
  */
-export function newBlockFilter(): Readable<Uint> {
+export function eth_newBlockFilter(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_newFilter"
     const call = parse(callSchema, [method])

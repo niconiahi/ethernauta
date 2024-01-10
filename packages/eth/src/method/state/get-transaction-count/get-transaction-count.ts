@@ -18,7 +18,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The number of transactions sent from an address
  */
-export function getTransactionCount(_parameters: Parameters): Readable<Uint> {
+export function eth_getTransactionCount(_parameters: Parameters): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_getTransactionCount"
     const parameters = parse(parametersSchema, _parameters)

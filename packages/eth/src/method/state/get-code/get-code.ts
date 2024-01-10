@@ -18,7 +18,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns Code at a given address
  */
-export function getCode(_parameters: Parameters): Readable<Uint> {
+export function eth_getCode(_parameters: Parameters): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_getCode"
     const parameters = parse(parametersSchema, _parameters)

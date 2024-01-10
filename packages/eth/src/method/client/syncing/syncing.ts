@@ -6,7 +6,7 @@ import { callSchema } from "@ethernauta/transport"
 import { syncingStatusSchema } from "../../../core/client"
 import type { SyncingStatus } from "../../../core/client"
 
-export function syncing(): Readable<SyncingStatus> {
+export function eth_syncing(): Readable<SyncingStatus> {
   return async (reader: Reader): Promise<SyncingStatus> => {
     const method = "eth_syncing"
     const call = parse(callSchema, [method])

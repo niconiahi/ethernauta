@@ -18,7 +18,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The EIP-191 signature over the provided data
  */
-export function sign(_parameters: Parameters): Writable<Bytes65> {
+export function eth_sign(_parameters: Parameters): Writable<Bytes65> {
   return async (writer: Writer): Promise<Bytes65> => {
     const method = "eth_sign"
     const parameters = parse(parametersSchema, _parameters)

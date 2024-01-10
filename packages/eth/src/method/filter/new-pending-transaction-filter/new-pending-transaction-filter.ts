@@ -9,9 +9,9 @@ import type { Uint } from "../../../core/base"
 /**
  * @returns The created block filter's identifier
  */
-export function newPendingTransactionFilter(): Readable<Uint> {
+export function eth_newPendingTransactionFilter(): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
-    const method = "eth_newFilter"
+    const method = "eth_newPendingTransactionFilter"
     const call = parse(callSchema, [method])
     const response = await reader(call)
     if ("error" in response) {

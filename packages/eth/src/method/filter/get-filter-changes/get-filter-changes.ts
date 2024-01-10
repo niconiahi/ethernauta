@@ -16,7 +16,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns Logs which occurred since last poll
  */
-export function getFilterChanges(_parameters: Parameters): Readable<FilterResults> {
+export function eth_getFilterChanges(_parameters: Parameters): Readable<FilterResults> {
   return async (reader: Reader): Promise<FilterResults> => {
     const method = "eth_getFilterChanges"
     const parameters = parse(parametersSchema, _parameters)

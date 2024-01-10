@@ -18,7 +18,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The account's balance
  */
-export function getBalance(_parameters: Parameters): Readable<Uint> {
+export function eth_getBalance(_parameters: Parameters): Readable<Uint> {
   return async (reader: Reader): Promise<Uint> => {
     const method = "eth_getBalance"
     const parameters = parse(parametersSchema, _parameters)

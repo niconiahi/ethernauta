@@ -28,7 +28,7 @@ export type FeeHistoryResults = Input<typeof feeHistoryResultsSchema>
 /**
  * @returns Fee history for the returned block range. This can be a subsection of the requested range if not all blocks are available
  */
-export function feeHistory(_parameters: Parameters): Readable<FeeHistoryResults> {
+export function eth_feeHistory(_parameters: Parameters): Readable<FeeHistoryResults> {
   return async (reader: Reader): Promise<FeeHistoryResults> => {
     const method = "eth_feeHistory"
     const parameters = parse(parametersSchema, _parameters)

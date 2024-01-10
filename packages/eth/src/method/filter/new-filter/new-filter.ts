@@ -16,7 +16,7 @@ type Parameters = Input<typeof parametersSchema>
 /**
  * @returns The created filter
  */
-export function newFilter(_parameters: Parameters): Readable<Bytes> {
+export function eth_newFilter(_parameters: Parameters): Readable<Bytes> {
   return async (reader: Reader): Promise<Bytes> => {
     const method = "eth_newFilter"
     const parameters = parse(parametersSchema, _parameters)
