@@ -18,8 +18,7 @@ const configurationSchema = object({
 const parametersSchema = union([
   tuple([addressSchema, configurationSchema]),
   tuple([addressSchema]),
-  object({ address: addressSchema, configuration: configurationSchema }),
-  object({ address: addressSchema }),
+  object({ address: addressSchema, configuration: optional(configurationSchema) }),
 ])
 const contextSchema = object({ apiVersion: string(), slot: number() })
 const resultSchema = object({
