@@ -4,6 +4,5 @@ import { special } from "valibot"
 function isReference(input: unknown): boolean {
   return typeof input === "string" && /^[-a-zA-Z0-9]{1,32}$/.test(input)
 }
-const referenceSchema = special<string>(isReference)
-// eslint-disable-next-line no-unused-vars, unused-imports/no-unused-vars
-type Reference = Input<typeof referenceSchema>
+export const caip2_referenceSchema = special<string>(isReference)
+export type caip2_Reference = Input<typeof caip2_referenceSchema>
