@@ -1,12 +1,13 @@
 import { describe } from "vitest"
 
-import { eth_getBalance } from "../../../eth/src"
+import { eip155_1, eth_getBalance } from "../../../eth/src"
+import { encodeChainId } from "../chain"
 import { http } from "../http"
 
 import { createReader_V2 } from "./reader"
 
 describe("reader", () => {
-  it("should correctly get the initial balance of a given address as zero", async () => {
+  it("should correctly transact when submitting a valid transaction in a kwown chain", async () => {
     const reader = createReader_V2([
       {
         chain: "eip155:1",
@@ -16,8 +17,8 @@ describe("reader", () => {
       },
     ])
     const readable = eth_getBalance(["0xF344B01DA08b142D2466dae9e47E333f22e64588", "earliest"])
-    const mainnetReader = reader("eip155:1")
-    const balance = await readable(mainnetReader)
+    const chainId = encodeChainId({ namespace: "eip155", reference: String(eip155_1.chainId) })
+    const balance = await readable(reader(chainId))
     expect(balance).toBeDefined()
   })
 })
