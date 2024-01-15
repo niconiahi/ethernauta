@@ -80,39 +80,3 @@ export const responseSchema = union([
   succesfulResponseSchema,
 ])
 export type Response = Input<typeof responseSchema>
-
-// https://www.jsonrpc.org/specification#notification
-export function runJsonRpcNotification(
-  _notification: Notification,
-): FailedResponse | SuccesfulResponse {
-  const successful: SuccesfulResponse = {
-    id: "some-id",
-    jsonrpc: "2.0",
-    result: "something",
-  }
-
-  return successful
-}
-
-// https://www.jsonrpc.org/specification#batch
-export function runJsonRpcBatch(
-  _batch: (Request | Notification)[],
-): (FailedResponse | SuccesfulResponse)[] | FailedResponse {
-  const successful: SuccesfulResponse = {
-    id: "some-id",
-    jsonrpc: "2.0",
-    result: "something",
-  }
-  const error: FailedResponse = {
-    id: "some-id",
-    jsonrpc: "2.0",
-    error: {
-      code: -32600,
-      message: "omg",
-      data: "_omg",
-    },
-  }
-  // align the order of the responses with the requests, based on the "id" used
-
-  return [successful, error]
-}

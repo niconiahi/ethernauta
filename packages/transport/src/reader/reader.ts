@@ -1,6 +1,8 @@
 import type { Http } from "../http"
 
-export function createReader(chains: Array<{ chain: string, transports: Http[] }>): (_targetChain: string) => Http[] {
+export function createReader(
+  chains: Array<{ chain: string, transports: Http[] }>,
+): (_targetChain: string) => Http[] {
   return (targetChain: string): Http[] => {
     const chain = chains.find(({ chain }) => chain === targetChain)
 
