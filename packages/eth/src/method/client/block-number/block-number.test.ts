@@ -19,7 +19,7 @@ describe("eth_blockNumber", () => {
       },
     ])
     const readable = eth_blockNumber()
-    const chainId = encodeChainId({ namespace: "eip155", reference: String(eip155_1.chainId) })
+    const chainId = encodeChainId({ namespace: "eip155", reference: eip155_1.chainId })
     const blockNumber_ = await readable(reader(chainId))
     expect(blockNumber_).toSatisfy(value => safeParse(uintSchema, value).success)
   })

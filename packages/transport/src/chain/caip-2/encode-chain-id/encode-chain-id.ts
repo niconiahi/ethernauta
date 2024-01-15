@@ -11,10 +11,13 @@ export function encodeChainId({
   reference: _reference,
 }: {
   namespace: string
-  reference: string
+  reference: string | number
 }): ChainId {
   const namespace = parse(caip2_namespaceSchema, _namespace)
-  const reference = parse(caip2_referenceSchema, _reference)
+  const reference = parse(
+    caip2_referenceSchema,
+    typeof _reference === "number" ? String(_reference) : _reference,
+  )
   const _chainId = namespace + DELIMITER + reference
   const chainId = parse(chainIdSchema, _chainId)
   return chainId

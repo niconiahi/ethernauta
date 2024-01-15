@@ -46,7 +46,7 @@ const readable = eth_getBlockByHash([
 ]);
 const chainId = encodeChainId({
   namespace: "eip155",
-  reference: String(eip155_1.chainId),
+  reference: eip155_1.chainId,
 });
 const block = await readable(reader(chainId));
 ```

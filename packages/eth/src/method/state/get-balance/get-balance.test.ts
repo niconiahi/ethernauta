@@ -18,7 +18,7 @@ describe("eth_getBalance", () => {
       },
     ])
     const readable = eth_getBalance(["0xF344B01DA08b142D2466dae9e47E333f22e64588", "earliest"])
-    const chainId = encodeChainId({ namespace: "eip155", reference: String(eip155_1.chainId) })
+    const chainId = encodeChainId({ namespace: "eip155", reference: eip155_1.chainId })
     const balance = await readable(reader(chainId))
     expect(balance).toBe(bigToUint(BigInt(0)))
   })
