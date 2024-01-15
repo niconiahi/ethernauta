@@ -1,16 +1,18 @@
 import { parse } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import type { Uint256 } from "../../../../core/base"
 import { uint256Schema } from "../../../../core/base"
 
 export function totalSupply(): Readable<Uint256> {
-  return async (reader: Reader): Promise<Uint256> => {
+  return async (transports: Http[]): Promise<Uint256> => {
     const method = "totalSupply"
     const call = parse(callSchema, [method])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

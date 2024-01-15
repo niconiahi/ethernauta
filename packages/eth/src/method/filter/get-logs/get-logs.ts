@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { filterResultsSchema, filterSchema } from "../../../core/filter"
@@ -16,11 +16,13 @@ type Parameters = Input<typeof parametersSchema>
  * @returns All logs matching filter with given id
  */
 export function eth_getLogs(_parameters: Parameters): Readable<FilterResults> {
-  return async (reader: Reader): Promise<FilterResults> => {
+  return async (transports: Http[]): Promise<FilterResults> => {
     const method = "eth_getLogs"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

@@ -1,13 +1,15 @@
 import { parse, string } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 export function name(): Readable<string> {
-  return async (reader: Reader): Promise<string> => {
+  return async (transports: Http[]): Promise<string> => {
     const method = "name"
     const call = parse(callSchema, [method])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

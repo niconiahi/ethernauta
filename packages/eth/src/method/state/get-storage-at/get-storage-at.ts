@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { addressSchema, uint256Schema, uintSchema } from "../../../core/base"
@@ -26,11 +26,13 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The value from a storage position at a given address
  */
 export function eth_getStorageAt(_parameters: Parameters): Readable<Uint> {
-  return async (reader: Reader): Promise<Uint> => {
+  return async (transports: Http[]): Promise<Uint> => {
     const method = "eth_getStorageAt"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import type { NotFound, Uint } from "../../../core/base"
@@ -13,11 +13,13 @@ const parametersSchema = union([
 ])
 type Parameters = Input<typeof parametersSchema>
 export function eth_getUncleCountByBlockHash(_parameters: Parameters): Readable<Uint | NotFound> {
-  return async (reader: Reader): Promise<Uint | NotFound> => {
+  return async (transports: Http[]): Promise<Uint | NotFound> => {
     const method = "eth_getUncleCountByBlockHash"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

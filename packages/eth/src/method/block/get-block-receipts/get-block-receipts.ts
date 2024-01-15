@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { array, object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import type { NotFound } from "../../../core/base"
@@ -16,11 +16,13 @@ const parametersSchema = union([
 ])
 type Parameters = Input<typeof parametersSchema>
 export function eth_getBlockReceipts(_parameters: Parameters): Readable<ReceiptInfo[] | NotFound> {
-  return async (reader: Reader): Promise<ReceiptInfo[] | NotFound> => {
+  return async (transports: Http[]): Promise<ReceiptInfo[] | NotFound> => {
     const method = "eth_getBlockReceipts"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

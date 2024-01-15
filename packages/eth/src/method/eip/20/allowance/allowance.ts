@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import type { Uint256 } from "../../../../core/base"
@@ -16,10 +16,12 @@ const parametersSchema = union([
 ])
 type Parameters = Input<typeof parametersSchema>
 export function allowance(_parameters: Parameters): Readable<Uint256> {
-  return async (reader: Reader): Promise<Uint256> => {
+  return async (transports: Http[]): Promise<Uint256> => {
     const method = "allowance"
     const call = parse(callSchema, [method])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

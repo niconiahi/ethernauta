@@ -1,6 +1,6 @@
 import { parse } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Readable, Http } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { uintSchema } from "../../../core/base"
@@ -11,10 +11,12 @@ import type { Uint } from "../../../core/base"
  * @returns The gas in wei
  */
 export function eth_gasPrice(): Readable<Uint> {
-  return async (reader: Reader): Promise<Uint> => {
+  return async (transports: Http[]): Promise<Uint> => {
     const method = "eth_gasPrice"
     const call = parse(callSchema, [method])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

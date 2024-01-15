@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { boolean, literal, number, object, optional, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import type { Base58 } from "../../core"
@@ -28,11 +28,13 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The account's balance
  */
 export function sendTransaction(_parameters: Parameters): Readable<Base58> {
-  return async (reader: Reader): Promise<Base58> => {
+  return async (transports: Http[]): Promise<Base58> => {
     const method = "sendTransaction"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

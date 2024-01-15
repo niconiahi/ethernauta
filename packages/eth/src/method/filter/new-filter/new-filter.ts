@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { uintSchema } from "../../../core/base"
@@ -17,11 +17,13 @@ type Parameters = Input<typeof parametersSchema>
  * @returns The created filter
  */
 export function eth_newFilter(_parameters: Parameters): Readable<Bytes> {
-  return async (reader: Reader): Promise<Bytes> => {
+  return async (transports: Http[]): Promise<Bytes> => {
     const method = "eth_newFilter"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

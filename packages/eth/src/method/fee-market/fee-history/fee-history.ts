@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { array, maxValue, minValue, number, object, parse, tuple, union } from "valibot"
 
-import type { Readable, Reader } from "@ethernauta/transport"
+import type { Readable, Http } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { ratioSchema, uintSchema } from "../../../core/base"
@@ -29,11 +29,13 @@ export type FeeHistoryResults = Input<typeof feeHistoryResultsSchema>
  * @returns Fee history for the returned block range. This can be a subsection of the requested range if not all blocks are available
  */
 export function eth_feeHistory(_parameters: Parameters): Readable<FeeHistoryResults> {
-  return async (reader: Reader): Promise<FeeHistoryResults> => {
+  return async (transports: Http[]): Promise<FeeHistoryResults> => {
     const method = "eth_feeHistory"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await reader(call)
+    const response = await Promise.any(
+      transports.map(transport => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }
