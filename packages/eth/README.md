@@ -21,23 +21,36 @@ It does so in a completely modular fashion. It it's _absolutely_ typed-safe beca
 ## API
 
 ```tsx
-import { safeParse } from "valibot";
-import { addressSchema, eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
+import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
 import { createReader, http } from "@ethernauta/transport";
 
-const someAddress = "0xF344B01DA08b142D2466dae9e47E333f22e64588";
-const { success: isAddress } = safeParse(addressSchema, someAddress);
-
 const reader = createReader([
-  http(
-    "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c420871faa17483fa65ba8177"
-  ),
+  {
+    chain: "eip155:1",
+    transports: [
+      http(
+        "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"
+      ),
+    ],
+  },
+  {
+    chain: "eip155:1",
+    transports: [
+      http(
+        "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/x3bdg0c56ebg5b1c70957bfaa17483faxaba81z1/"
+      ),
+    ],
+  },
 ]);
 const readable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
 ]);
-const block = await readable(reader);
+const chainId = encodeChainId({
+  namespace: "eip155",
+  reference: String(eip155_1.chainId),
+});
+const block = await readable(reader(chainId));
 ```
 
 ## Files to pay attention
