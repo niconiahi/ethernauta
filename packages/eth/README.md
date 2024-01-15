@@ -22,7 +22,7 @@ It does so in a completely modular fashion. It it's _absolutely_ typed-safe beca
 
 ```tsx
 import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
-import { createReader, http } from "@ethernauta/transport";
+import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
 const reader = createReader([
   {

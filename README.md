@@ -28,7 +28,7 @@ It's ESM-first and edge/browser compatible, it runs anywhere. Only browser nativ
 
 ```tsx
 import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
-import { createReader, http } from "@ethernauta/transport";
+import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
 const reader = createReader([
   {
