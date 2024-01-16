@@ -12,7 +12,7 @@ describe("eth_blockNumber", () => {
   it("should correctly get the latest mined block", async () => {
     const reader = createReader([
       {
-        chain: "eip155:1",
+        chainId: "eip155:1",
         transports: [
           http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"),
         ],

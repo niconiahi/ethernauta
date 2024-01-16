@@ -24,7 +24,7 @@ import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
 const reader = createReader([
   {
-    chain: "eip155:1",
+    chainId: "eip155:1",
     transports: [
       http(
         "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"
@@ -32,7 +32,7 @@ const reader = createReader([
     ],
   },
   {
-    chain: "eip155:1",
+    chainId: "eip155:1",
     transports: [
       http(
         "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/x3bdg0c56ebg5b1c70957bfaa17483faxaba81z1/"

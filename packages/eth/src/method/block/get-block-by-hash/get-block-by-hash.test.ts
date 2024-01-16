@@ -10,7 +10,7 @@ describe("eth_getBlockByHash", () => {
   it("should return block when valid hash is provided", async () => {
     const reader = createReader([
       {
-        chain: "eip155:1",
+        chainId: "eip155:1",
         transports: [
           http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"),
         ],
@@ -26,7 +26,7 @@ describe("eth_getBlockByHash", () => {
   it("should return null when invalid hash is provided", async () => {
     const reader = createReader([
       {
-        chain: "eip155:1",
+        chainId: "eip155:1",
         transports: [
           http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"),
         ],
@@ -42,7 +42,7 @@ describe("eth_getBlockByHash", () => {
   it("should accept arguments as an object and return block when valid hash is provided", async () => {
     const reader = createReader([
       {
-        chain: "eip155:1",
+        chainId: "eip155:1",
         transports: [
           http("https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"),
         ],

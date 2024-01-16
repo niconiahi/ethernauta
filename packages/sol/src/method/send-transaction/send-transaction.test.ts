@@ -8,7 +8,7 @@ describe.skip("sendTransaction", () => {
   it("should correctly get the send a base64 encoded transaction", async () => {
     const reader = createReader([
       {
-        chain: "solana:101",
+        chainId: "solana:101",
         transports: [
           http("https://withered-wider-pool.solana-devnet.quiknode.pro/742e63a8f44b2b9ea78af3feb44e4be930a830a6"),
         ],

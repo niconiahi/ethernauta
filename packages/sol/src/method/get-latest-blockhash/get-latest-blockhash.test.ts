@@ -8,7 +8,7 @@ describe("getLatestBlockhash", () => {
   it("should correctly get the latest blockhash at given commitment", async () => {
     const reader = createReader([
       {
-        chain: "solana:101",
+        chainId: "solana:101",
         transports: [
           http("https://withered-wider-pool.solana-devnet.quiknode.pro/742e63a8f44b2b9ea78af3feb44e4be930a830a6"),
         ],
@@ -23,7 +23,7 @@ describe("getLatestBlockhash", () => {
   it("should correctly get the latest blockhash if no arguments are provided", async () => {
     const reader = createReader([
       {
-        chain: "solana:101",
+        chainId: "solana:101",
         transports: [
           http("https://withered-wider-pool.solana-devnet.quiknode.pro/742e63a8f44b2b9ea78af3feb44e4be930a830a6"),
         ],
