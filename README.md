@@ -41,6 +41,7 @@ It's ESM-first and edge/browser compatible, it runs anywhere. Only browser nativ
 
 ```tsx
 import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
+import { getBalance } from "@ethernauta/sol";
 import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
 const reader = createReader([
@@ -61,15 +62,24 @@ const reader = createReader([
     ],
   },
 ]);
-const readable = eth_getBlockByHash([
+const ethereumReadable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
 ]);
-const chainId = encodeChainId({
+const ethereumMainnet = encodeChainId({
   namespace: "eip155",
   reference: eip155_1.chainId,
 });
-const block = await readable(reader(chainId));
+const block = await readable(reader(ethereumMainnet));
+
+const solanaReadable = getBalance([
+  "5U3bH5b6XtG99aVWLqwVzYPVpQiFHytBD68Rz2eFPZd7",
+]);
+const solanaMainnet = encodeChainId({
+  namespace: "solana",
+  reference: "101",
+});
+const balance = await readable(reader(solanaMainnet));
 ```
 
 #### in Viem
