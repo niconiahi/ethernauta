@@ -44,6 +44,7 @@ import { eip155_11155111, eth_getBlockByHash } from "@ethernauta/eth";
 import { getBalance } from "@ethernauta/sol";
 import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
+// unique reader
 const reader = createReader([
   {
     chainId: "eip155:11155111",
@@ -62,6 +63,8 @@ const reader = createReader([
     ],
   },
 ]);
+
+// ethereum
 const ethereumReadable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
@@ -72,6 +75,7 @@ const ethereumSepolia = encodeChainId({
 });
 const block = await readable(reader(ethereumSepolia));
 
+// solana
 const solanaReadable = getBalance([
   "5U3bH5b6XtG99aVWLqwVzYPVpQiFHytBD68Rz2eFPZd7",
 ]);
