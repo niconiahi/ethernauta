@@ -27,7 +27,6 @@ It's ESM-first and edge/browser compatible, it runs anywhere. Only browser nativ
 - [x] JSON RPC methods ([specification](https://www.jsonrpc.org/specification))
 - [x] Methods for interacting with ERC20 contracts ([EIP-20](https://eips.ethereum.org/EIPS/eip-20))
 - [x] Methods for interacting with Metamask ([EIP-1102](https://eips.ethereum.org/EIPS/eip-1102))
-- [x] Methods for interacting with Metamask ([EIP-1102](https://eips.ethereum.org/EIPS/eip-1102))
 - [x] A function that allows to read the blockchain
 - [x] Support multiple transports for reader
 - [ ] A function that allows to write the blockchain
