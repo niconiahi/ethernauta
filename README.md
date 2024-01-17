@@ -40,9 +40,9 @@ It's ESM-first, it should run anywhere in the web. Only [Web APIs](https://devel
 #### in Ethernauta
 
 ```tsx
-import { eip155_11155111, eth_getBlockByHash } from "@ethernauta/eth";
-import { getBalance } from "@ethernauta/sol";
-import { createReader, encodeChainId, http } from "@ethernauta/transport";
+import { eip155_11155111, eth_getBlockByHash } from "@ethernauta/eth"
+import { getBalance } from "@ethernauta/sol"
+import { createReader, encodeChainId, http } from "@ethernauta/transport"
 
 // unique reader
 const reader = createReader([
@@ -62,35 +62,57 @@ const reader = createReader([
       ),
     ],
   },
-]);
+])
 
 // ethereum
 const ethereumReadable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
-]);
+])
 const ethereumSepolia = encodeChainId({
   namespace: "eip155",
   reference: eip155_11155111.chainId,
-});
-const block = await readable(reader(ethereumSepolia));
+})
+const block = await readable(reader(ethereumSepolia))
+// const block: {
+//     number: `0x${string}`;
+//     hash: `0x${string}`;
+//     parentHash: `0x${string}`;
+//     sha3Uncles: `0x${string}`;
+//     miner: `0x${string}`;
+//     stateRoot: `0x${string}`;
+//     transactionsRoot: `0x${string}`;
+//     receiptsRoot: `0x${string}`;
+//     logsBloom: `0x${string}`;
+//     ... 16 more ...;
+//     withdrawals?: {
+//         ...;
+//     }[] | undefined;
+// } | null
 
 // solana
 const solanaReadable = getBalance([
   "5U3bH5b6XtG99aVWLqwVzYPVpQiFHytBD68Rz2eFPZd7",
-]);
+])
 const solanaDevnet = encodeChainId({
   namespace: "solana",
   reference: "devnet",
-});
-const balance = await readable(reader(solanaDevnet));
+})
+const balance = await readable(reader(solanaDevnet))
+// const balance: {
+//    context: {
+//        apiVersion: string;
+//        slot: number;
+//    };
+//    value: number;
+// }
 ```
 
 #### in Viem
 
 ```tsx
-import { createPublicClient, fallback, http } from "viem";
-import { mainnet, rinkeby } from "viem/chains";
+import { createPublicClient, fallback, http } from "viem"
+import { mainnet, rinkeby } from "viem/chains"
 
 const client = createPublicClient({
   chain: env.environment === "production" ? mainnet : rinkeby,
@@ -98,9 +120,9 @@ const client = createPublicClient({
     http("https://eth-mainnet.g.alchemy.com/v2"),
     http("https://eth-mainnet.g.alchemy.com/v2"),
   ]),
-});
-const blockNumber = await client.getBlockNumber();
-const chain = await client.chain();
+})
+const blockNumber = await client.getBlockNumber()
+const chain = await client.chain()
 ```
 
 ### writer
@@ -108,37 +130,37 @@ const chain = await client.chain();
 #### in Ethernauta
 
 ```tsx
-import { mainnet, rinkeby } from "@ethernauta/chain";
-import { createWalletConnect } from "@ethernauta/connectors";
-import { eth_sendTransaction } from "@ethernauta/eth";
-import { createWriter, http } from "@ethernauta/transport";
+import { mainnet, rinkeby } from "@ethernauta/chain"
+import { createWalletConnect } from "@ethernauta/connectors"
+import { eth_sendTransaction } from "@ethernauta/eth"
+import { createWriter, http } from "@ethernauta/transport"
 
-const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID);
+const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
 const writer = createWriter(
   http(walletConnect(env.ENVIRONMENT === "production" ? mainnet : rinkeby))
-);
+)
 const writable = eth_sendTransaction([
   {
     from: "0xF344B01DA08b142D2466dae9e47E333f22e64588",
     data: "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675",
   },
-]);
-const hash = await writable(writer);
+])
+const hash = await writable(writer)
 ```
 
 #### in Viem
 
 ```tsx
-import { createWalletClient, custom } from "viem";
-import { mainnet } from "viem/chains";
+import { createWalletClient, custom } from "viem"
+import { mainnet } from "viem/chains"
 
 const client = createWalletClient({
   chain: mainnet,
   transport: custom(window.ethereum),
-});
-const [address] = await client.getAddresses();
+})
+const [address] = await client.getAddresses()
 const hash = await client.sendTransaction({
   account: address,
   to: "0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC",
-});
+})
 ```
