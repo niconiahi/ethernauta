@@ -1,5 +1,13 @@
 # @ethernauta/sol
 
+## 0.1.2
+
+### Patch Changes
+
+- da3151e: fix the publishing of sol and eth
+- Updated dependencies [da3151e]
+  - @ethernauta/transport@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
