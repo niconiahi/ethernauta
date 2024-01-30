@@ -1,5 +1,13 @@
 # @ethernauta/eth
 
+## 0.1.3
+
+### Patch Changes
+
+- 0acdcbb: chore: add changesets
+- Updated dependencies [0acdcbb]
+  - @ethernauta/transport@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
