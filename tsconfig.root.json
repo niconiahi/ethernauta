@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ethernauta/connector": ["packages/connector/src/index.ts"],
+      "@ethernauta/eth": ["packages/eth/src/index.ts"],
+      "@ethernauta/sol": ["packages/sol/src/index.ts"],
+      "@ethernauta/transport": ["packages/transport/src/index.ts"]
+    }
+  }
+}
