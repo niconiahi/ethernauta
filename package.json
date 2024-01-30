@@ -14,7 +14,7 @@
     "lint": "pnpm --recursive run lint",
     "lint:fix": "pnpm --recursive run lint:fix",
     "version": "changeset version",
-    "publish": "pnpm --recursive run publish"
+    "publish": "changeset publish"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.1",
