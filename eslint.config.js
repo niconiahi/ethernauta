@@ -8,7 +8,10 @@ export default antfu(
     formatters: {
       markdown: "prettier",
     },
-    ignores: ["**/*.md"],
+    ignores: [
+      "**/*.md",
+      "packages/eth/src/chain/eip155/**/*.ts",
+    ],
   },
   {
     files: ["**/*.ts"],
