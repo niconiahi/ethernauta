@@ -13,8 +13,7 @@
     "build": "pnpm --recursive --sort run build",
     "lint": "pnpm --recursive run lint",
     "lint:fix": "pnpm --recursive run lint:fix",
-    "version": "changeset version",
-    "publish": "changeset publish"
+    "version": "changeset version"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.1",

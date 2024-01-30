@@ -1,4 +1,4 @@
-import { describe } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { createReader, encodeChainId, http } from "@ethernauta/transport"
 
