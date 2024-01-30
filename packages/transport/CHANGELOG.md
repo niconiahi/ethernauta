@@ -1,5 +1,11 @@
 # @ethernauta/transport
 
+## 0.1.2
+
+### Patch Changes
+
+- da3151e: fix the publishing of sol and eth
+
 ## 0.1.1
 
 ### Patch Changes
