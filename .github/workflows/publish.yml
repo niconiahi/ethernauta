@@ -1,0 +1,44 @@
+name: publish
+on:
+  workflow_run:
+    workflows: [integrity]
+    branches: [main]
+    types: [completed]
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+env:
+  CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
+jobs:
+  version:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: checkout code repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: install pnpm
+        run: npm i pnpm@latest -g
+      - name: setup pnpm config
+        run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+      - name: install dependencies
+        run: pnpm install
+      - name: build packages
+        run: pnpm run build
+      - name: create and publish versions
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version
+          commit: "chore: update versions"
+          title: "chore: update versions"
+          publish: pnpm run publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

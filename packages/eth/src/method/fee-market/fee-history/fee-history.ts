@@ -1,7 +1,7 @@
 import type { Input } from "valibot"
 import { array, maxValue, minValue, number, object, parse, tuple, union } from "valibot"
 
-import type { Readable, Http } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { ratioSchema, uintSchema } from "../../../core/base"

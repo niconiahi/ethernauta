@@ -8,6 +8,10 @@ export default antfu(
     formatters: {
       markdown: "prettier",
     },
+    ignores: [
+      "**/*.md",
+      "packages/eth/src/chain/eip155/**/*.ts",
+    ],
   },
   {
     files: ["**/*.ts"],
@@ -43,6 +47,7 @@ export default antfu(
       "no-nested-ternary": "error",
       "unused-imports/no-unused-imports": "error",
       "no-unused-vars": ["error", { vars: "all", args: "all", ignoreRestSiblings: false, argsIgnorePattern: "^_" }],
+      "no-fallthrough": "error",
     },
   },
 )

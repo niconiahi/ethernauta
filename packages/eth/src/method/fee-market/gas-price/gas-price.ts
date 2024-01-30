@@ -1,6 +1,6 @@
 import { parse } from "valibot"
 
-import type { Readable, Http } from "@ethernauta/transport"
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 
 import { uintSchema } from "../../../core/base"
