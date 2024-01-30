@@ -36,6 +36,8 @@ const balance = await readable(reader);
 - [getBalance](src/method/get-balance/get-balance.ts)
 - [getLatestBlockhash](src/method/get-latest-blockhash/get-latest-blockhash.ts)
 - [getMinimumBalanceForRentExemption](src/method/get-minimum-balance-for-rent-exemption/get-minimum-balance-for-rent-exemption.ts)
+- [sendTransaction](src/method/send-transaction/send-transaction.ts)
+- [simulateTransaction](src/method/simulate-transaction/simulate-transaction.ts)
 
 ### Tests
 

@@ -8,6 +8,7 @@ export default antfu(
     formatters: {
       markdown: "prettier",
     },
+    ignores: ["**/*.md"],
   },
   {
     files: ["**/*.ts"],
