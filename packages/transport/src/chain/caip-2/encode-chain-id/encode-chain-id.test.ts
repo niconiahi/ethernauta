@@ -1,5 +1,5 @@
 import { parse } from "valibot"
-import { describe } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { caip2_namespaceSchema } from "../namespace"
 import { caip2_referenceSchema } from "../reference"

@@ -1,5 +1,5 @@
 import { parse } from "valibot"
-import { describe } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { tokenIdSchema } from "./token-id"
 
