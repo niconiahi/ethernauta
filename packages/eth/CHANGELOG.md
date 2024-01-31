@@ -1,5 +1,13 @@
 # @ethernauta/eth
 
+## 0.0.2
+
+### Patch Changes
+
+- 556003e: try four publish
+- Updated dependencies [556003e]
+  - @ethernauta/transport@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes

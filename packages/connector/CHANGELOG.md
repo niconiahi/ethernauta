@@ -1,5 +1,11 @@
 # @ethernauta/connector
 
+## 0.0.2
+
+### Patch Changes
+
+- 556003e: try four publish
+
 ## 0.0.1
 
 ### Patch Changes
