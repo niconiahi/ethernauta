@@ -31,8 +31,7 @@
     "build": "tsup",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:unit": "vitest",
-    "publish": "pnpm publish --access public"
+    "test:unit": "vitest"
   },
   "dependencies": {
     "valibot": "^0.25.0"
