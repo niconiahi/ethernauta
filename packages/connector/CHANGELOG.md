@@ -1,5 +1,11 @@
 # @ethernauta/connector
 
+## 0.0.3
+
+### Patch Changes
+
+- 174f653: try four
+
 ## 0.0.2
 
 ### Patch Changes
