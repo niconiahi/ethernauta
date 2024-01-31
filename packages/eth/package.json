@@ -32,7 +32,6 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:unit": "vitest",
-    "publish": "pnpm publish --access public",
     "run:indexer": "node --loader tsm src/chain/indexer/indexer.ts"
   },
   "dependencies": {
