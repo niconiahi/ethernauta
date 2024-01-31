@@ -1,5 +1,13 @@
 # @ethernauta/eth
 
+## 0.0.3
+
+### Patch Changes
+
+- 174f653: try four
+- Updated dependencies [174f653]
+  - @ethernauta/transport@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
