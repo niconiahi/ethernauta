@@ -10,6 +10,38 @@ import { tupleSchema, typeSchema } from "../shared"
 //     components: array(error_inputSchema),
 //   }),
 // ])
+// // ```ts
+// import type { BaseSchema, Output } from "valibot";
+// import { array, merge, object, parse, recursive, string } from "valibot";
+
+// const baseCategorySchema = object({
+//   name: string(),
+// });
+
+// type Category = Output<typeof baseCategorySchema> & {
+//   subcategories?: Category[];
+// };
+
+// const categorySchema: BaseSchema<Category> = merge([
+//   baseCategorySchema,
+//   object({ subcategories: recursive(() => array(categorySchema)) }),
+// ]);
+
+// const result = parse(categorySchema, {
+//   name: "People",
+//   subcategories: [
+//     {
+//       name: "Politicians",
+//       subcategories: [
+//         {
+//           name: "Presidents",
+//           subcategories: [],
+//         },
+//       ],
+//     },
+//   ],
+// });
+// ```
 export const error_tupleSchema = merge([
   tupleSchema,
   object({
