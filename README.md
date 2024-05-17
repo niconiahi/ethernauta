@@ -23,7 +23,7 @@ It's ESM-first, it should run anywhere in the web. Only [Web APIs](https://devel
 
 - [x] Chain manipulation methods ([CAIP](https://github.com/ChainAgnostic/caip-js))
 - [x] Ethereum base methods ([specification](https://github.com/ethereum/execution-apis/tree/main/src/eth))
-- [x] Solana base methods ([specification](https://github.com/solana-labs/solana-web3.js/tree/master/packages/rpc-core/src/rpc-methods))
+- [x] Solana base methods ([specification](https://github.com/solana-labs/solana-web3.js/tree/master/packages/rpc-api/src))
 - [x] JSON RPC methods ([specification](https://www.jsonrpc.org/specification))
 - [x] Methods for interacting with ERC20 contracts ([EIP-20](https://eips.ethereum.org/EIPS/eip-20))
 - [x] Methods for interacting with Metamask ([EIP-1102](https://eips.ethereum.org/EIPS/eip-1102))
