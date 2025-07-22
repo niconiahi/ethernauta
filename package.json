@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "morfar",
+  "type": "module",
+  "private": true,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "cd dist && zip -r ../extension.zip ."
+  },
+  "dependencies": {
+    "preact": "10.26.9",
+    "preact-robot": "1.1.0",
+    "robot3": "1.1.1",
+    "valibot": "1.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@preact/preset-vite": "2.10.2",
+    "@total-typescript/ts-reset": "0.6.1",
+    "@total-typescript/tsconfig": "1.0.4",
+    "@types/node": "24.1.0",
+    "npm-run-all": "4.1.5",
+    "typescript": "5.8.3",
+    "vite": "7.0.5",
+    "vite-tsconfig-paths": "5.1.4"
+  }
+}
