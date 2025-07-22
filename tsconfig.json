@@ -26,6 +26,9 @@
       ],
       "@machines/*": [
         "./src/machines/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
       ]
     }
   }
