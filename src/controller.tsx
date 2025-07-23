@@ -1,20 +1,24 @@
-import { useMachine } from "preact-robot"
+import { useMachine } from "@hooks/useMachine"
 import { Locked } from "@views/locked/index.tsx"
 import { Unlocked } from "@views/unlocked/index.tsx"
-import { controller_machine } from "@machines/controller"
+import { Mnemonics } from "@views/mnemonics/index.tsx"
+import { view_machine } from "@machines/view"
 
 export function Controller() {
-  const [state, send] = useMachine(controller_machine)
-  const current = state.name
+  const [state, send] = useMachine(view_machine)
+  const current = state.value
   switch (current) {
+    case "mnemonics": {
+      return <Mnemonics state={state} send={send} />
+    }
     case "locked": {
-      return <Locked state={state} send={send} />
+      return <Locked snapshot={state} send={send} />
     }
     case "unlocked": {
-      return <Unlocked state={state} send={send} />
+      return <Unlocked snapshot={state} send={send} />
     }
     default: {
-      return <Locked state={state} send={send} />
+      return <div>Unknown state: {String(current)}</div>
     }
   }
 }

@@ -10,11 +10,11 @@ const PBKDF2_CONFIG = {
   iterations: 100_000,
   hash: "SHA-256",
 } as const
-const DB_CONFIG = {
+const DATABASE_CONFIG = {
   name: "walle",
   version: 1,
-  storeName: "vault",
-  vaultKey: "vault",
+  store_name: "vault",
+  vault_key: "vault",
 } as const
 
 function buffer_to_base_64(buf: ArrayBuffer): string {
@@ -53,23 +53,28 @@ async function derive_key(
 
 function open_database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(
-      DB_CONFIG.name,
-      DB_CONFIG.version,
+    const request = indexedDB.open(
+      DATABASE_CONFIG.name,
+      DATABASE_CONFIG.version,
     )
-    req.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
+    request.onupgradeneeded = (event) => {
+      const database = (event.target as IDBOpenDBRequest)
+        .result
       if (
-        !db.objectStoreNames.contains(DB_CONFIG.storeName)
+        !database.objectStoreNames.contains(
+          DATABASE_CONFIG.store_name,
+        )
       ) {
-        db.createObjectStore(DB_CONFIG.storeName)
+        database.createObjectStore(
+          DATABASE_CONFIG.store_name,
+        )
       }
     }
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () =>
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () =>
       reject(
         new Error(
-          `Failed to open database: ${req.error?.message}`,
+          `Failed to open database: ${request.error?.message}`,
         ),
       )
   })
@@ -102,13 +107,16 @@ export async function set_vault(
   const database = await open_database()
   return new Promise((resolve, reject) => {
     const transaction = database.transaction(
-      DB_CONFIG.storeName,
+      DATABASE_CONFIG.store_name,
       "readwrite",
     )
     const store = transaction.objectStore(
-      DB_CONFIG.storeName,
+      DATABASE_CONFIG.store_name,
     )
-    const request = store.put(record, DB_CONFIG.vaultKey)
+    const request = store.put(
+      record,
+      DATABASE_CONFIG.vault_key,
+    )
     request.onsuccess = () => resolve()
     request.onerror = () =>
       reject(
@@ -132,13 +140,13 @@ export async function get_vault(
   const record = await new Promise<VaultRecord>(
     (resolve, reject) => {
       const transaction = database.transaction(
-        DB_CONFIG.storeName,
+        DATABASE_CONFIG.store_name,
         "readonly",
       )
       const store = transaction.objectStore(
-        DB_CONFIG.storeName,
+        DATABASE_CONFIG.store_name,
       )
-      const request = store.get(DB_CONFIG.vaultKey)
+      const request = store.get(DATABASE_CONFIG.vault_key)
       request.onsuccess = () => {
         const result = request.result as
           | VaultRecord
@@ -181,39 +189,37 @@ export async function get_vault(
 }
 
 export async function vault_exists(): Promise<boolean> {
-  try {
-    const db = await open_database()
-    return new Promise((resolve) => {
-      const tx = db.transaction(
-        DB_CONFIG.storeName,
-        "readonly",
-      )
-      const store = tx.objectStore(DB_CONFIG.storeName)
-      const getReq = store.get(DB_CONFIG.vaultKey)
-
-      getReq.onsuccess = () => resolve(!!getReq.result)
-      getReq.onerror = () => resolve(false)
-    })
-  } catch {
-    return false
-  }
+  const database = await open_database()
+  return new Promise((resolve) => {
+    const transaction = database.transaction(
+      DATABASE_CONFIG.store_name,
+      "readonly",
+    )
+    const store = transaction.objectStore(
+      DATABASE_CONFIG.store_name,
+    )
+    const request = store.get(DATABASE_CONFIG.vault_key)
+    request.onsuccess = () => resolve(!!request.result)
+    request.onerror = () => resolve(false)
+  })
 }
 
 export async function delete_vault(): Promise<void> {
-  const db = await open_database()
+  const database = await open_database()
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(
-      DB_CONFIG.storeName,
+    const transaction = database.transaction(
+      DATABASE_CONFIG.store_name,
       "readwrite",
     )
-    const store = tx.objectStore(DB_CONFIG.storeName)
-    const deleteReq = store.delete(DB_CONFIG.vaultKey)
-
-    deleteReq.onsuccess = () => resolve()
-    deleteReq.onerror = () =>
+    const store = transaction.objectStore(
+      DATABASE_CONFIG.store_name,
+    )
+    const request = store.delete(DATABASE_CONFIG.vault_key)
+    request.onsuccess = () => resolve()
+    request.onerror = () =>
       reject(
         new Error(
-          `Failed to delete vault: ${deleteReq.error?.message}`,
+          `Failed to delete vault: ${request.error?.message}`,
         ),
       )
   })
