@@ -1,24 +1,27 @@
-import { useMachine } from "@hooks/useMachine"
-import { Locked } from "@views/locked/index.tsx"
+import { Password } from "@views/password/index.tsx"
 import { Unlocked } from "@views/unlocked/index.tsx"
 import { Mnemonics } from "@views/mnemonics/index.tsx"
-import { view_machine } from "@machines/view"
+import { useViewMachine } from "@machines/view"
+import { useAuthenticationMachine } from "@machines/authentication"
 
 export function Controller() {
-  const [state, send] = useMachine(view_machine)
-  const current = state.value
+  const view = useViewMachine()
+  const authentication = useAuthenticationMachine({
+    view: view[2],
+  })
+  const current = view[0].context.current
   switch (current) {
     case "mnemonics": {
-      return <Mnemonics state={state} send={send} />
+      return <Mnemonics authentication={authentication} />
     }
-    case "locked": {
-      return <Locked snapshot={state} send={send} />
+    case "password": {
+      return <Password authentication={authentication} />
     }
-    case "unlocked": {
-      return <Unlocked snapshot={state} send={send} />
+    case "wallet": {
+      return <Unlocked authentication={authentication} />
     }
     default: {
-      return <div>Unknown state: {String(current)}</div>
+      return <div>Unknown state: {current}</div>
     }
   }
 }

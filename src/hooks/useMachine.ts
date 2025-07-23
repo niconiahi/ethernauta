@@ -1,10 +1,18 @@
-import { useEffect, useState } from "preact/hooks"
-import { type AnyStateMachine, createActor } from "xstate"
+import { useEffect, useState, useMemo } from "preact/hooks"
+import {
+  type ActorOptions,
+  type AnyStateMachine,
+  createActor,
+} from "xstate"
 
 export function useMachine<T extends AnyStateMachine>(
   machine: T,
+  options?: ActorOptions<T>,
 ) {
-  const actor = createActor(machine)
+  const actor = useMemo(
+    () => createActor(machine, options),
+    [machine],
+  )
   const [snapshot, setSnapshot] = useState(() =>
     actor.getSnapshot(),
   )
@@ -17,6 +25,5 @@ export function useMachine<T extends AnyStateMachine>(
     }
   }, [actor])
 
-  return [snapshot, actor.send] as const
+  return [snapshot, actor.send, actor] as const
 }
-

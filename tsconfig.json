@@ -15,9 +15,6 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "types": [
-      "./patches/preact-robot.d.ts"
-    ],
     "baseUrl": ".",
     "allowImportingTsExtensions": true,
     "paths": {

@@ -127,17 +127,14 @@ export async function set_vault(
   })
 }
 
-/**
- * Load and decrypt vault from IndexedDB
- */
 export async function get_vault(
   password: string,
-): Promise<string> {
+): Promise<string | undefined> {
   if (!password.trim()) {
     throw new Error("Password cannot be empty")
   }
   const database = await open_database()
-  const record = await new Promise<VaultRecord>(
+  const record = await new Promise<VaultRecord | undefined>(
     (resolve, reject) => {
       const transaction = database.transaction(
         DATABASE_CONFIG.store_name,
@@ -151,11 +148,7 @@ export async function get_vault(
         const result = request.result as
           | VaultRecord
           | undefined
-        if (!result) {
-          reject(new Error("No vault found"))
-        } else {
-          resolve(result)
-        }
+        resolve(result)
       }
       request.onerror = () =>
         reject(
@@ -165,6 +158,9 @@ export async function get_vault(
         )
     },
   )
+  if (!record) {
+    return undefined
+  }
   const salt_buffer = base_64_to_buffer(record.salt)
   const iv_buffer = base_64_to_buffer(record.iv)
   const cipher_buffer = base_64_to_buffer(record.cipher)
@@ -223,6 +219,17 @@ export async function delete_vault(): Promise<void> {
         ),
       )
   })
+}
+
+export async function validate_password(
+  password: string,
+): Promise<boolean> {
+  try {
+    const vault = await get_vault(password)
+    return vault !== undefined
+  } catch {
+    return false
+  }
 }
 
 export function validate_mnemonic(

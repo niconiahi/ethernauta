@@ -1,91 +1,41 @@
-import { vault_exists } from "@utils/vault"
-import * as v from "valibot"
-import {
-  createMachine,
-  fromPromise,
-  type SnapshotFrom,
-} from "xstate"
+import { useMachine } from "@hooks/useMachine"
+import { setup, assign } from "xstate"
 
+type ViewType = "mnemonics" | "password" | "wallet"
 type Context = {
-  user: string
-  mnemonic: string | null
-  address: string | null
-  error: string | null
+  current: ViewType
 }
 
-type Event =
-  | { type: "unlock"; mnemonics: string; address: string }
-  | { type: "lock" }
+type Event = { type: "SET_VIEW"; view: ViewType }
 
-export const view_machine = createMachine({
+const view_setup = setup({
   types: {} as {
     context: Context
     events: Event
   },
-  id: "wallet",
-  initial: "checking",
-  context: {
-    user: "Andy",
-    mnemonic: null,
-    address: null,
-    error: null,
-  },
-  states: {
-    checking: {
-      invoke: {
-        src: fromPromise(() => vault_exists()),
-        onDone: [
-          {
-            target: "locked",
-            guard: ({ event }) => event.output === true,
-          },
-          {
-            target: "mnemonics",
-            guard: ({ event }) => event.output === false,
-          },
-        ],
-        onError: {
-          target: "mnemonics",
-        },
+  actions: {
+    set_view: assign({
+      current: ({ event }) => {
+        return event.view
       },
-    },
-    mnemonics: {
-      on: {
-        unlock: {
-          target: "unlocked",
-          guard: ({ event }) => {
-            const { success: mnemonics_success } =
-              v.safeParse(
-                v.pipe(v.string(), v.minLength(1)),
-                event.mnemonics,
-              )
-            const { success: address_success } =
-              v.safeParse(
-                v.pipe(v.string(), v.length(42)),
-                event.address,
-              )
-            return mnemonics_success && address_success
-          },
-          actions: ({ context, event }) => {
-            context.mnemonic = event.mnemonics
-            context.address = event.address
-          },
-        },
-      },
-    },
-    locked: {
-      on: {
-        unlock: "unlocked",
-      },
-    },
-    unlocked: {
-      on: {
-        lock: "locked",
-      },
-    },
+    }),
   },
 })
 
+export const view_machine = view_setup.createMachine({
+  id: "view",
+  context: {
+    current: "password",
+  },
+  on: {
+    SET_VIEW: {
+      actions: ["set_view"],
+    },
+  },
+})
 export type ViewMachine = typeof view_machine
-export type ViewState = SnapshotFrom<ViewMachine>
-export type ViewSend = (event: Event) => void
+
+export function useViewMachine() {
+  return useMachine(view_machine)
+}
+export type View = ReturnType<typeof useViewMachine>

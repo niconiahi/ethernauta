@@ -48,6 +48,9 @@ importers:
       '@types/node':
         specifier: 24.1.0
         version: 24.1.0
+      fake-indexeddb:
+        specifier: ^6.0.1
+        version: 6.0.1
       npm-run-all:
         specifier: 4.1.5
         version: 4.1.5
@@ -804,6 +807,10 @@ packages:
   expect-type@1.2.2:
     resolution: {integrity: sha512-JhFGDVJ7tmDJItKhYgJCGLOWjuK9vPxiXoUFLwLDc99NlmklilbiQJwoctZtt13+xMw91MCk/REan6MWHqDjyA==}
     engines: {node: '>=12.0.0'}
+
+  fake-indexeddb@6.0.1:
+    resolution: {integrity: sha512-He2AjQGHe46svIFq5+L2Nx/eHDTI1oKgoevBP+TthnjymXiKkeJQ3+ITeWey99Y5+2OaPFbI1qEsx/5RsGtWnQ==}
+    engines: {node: '>=18'}
 
   fdir@6.4.6:
     resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
@@ -2245,6 +2252,8 @@ snapshots:
       '@types/estree': 1.0.8
 
   expect-type@1.2.2: {}
+
+  fake-indexeddb@6.0.1: {}
 
   fdir@6.4.6(picomatch@4.0.3):
     optionalDependencies:

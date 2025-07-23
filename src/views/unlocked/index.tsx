@@ -1,23 +1,24 @@
 import { useState } from "preact/hooks"
-import type { ViewMachine } from "@machines/view"
-import type { SnapshotFrom, ActorRefFrom } from "xstate"
+import type { Authentication } from "@machines/authentication"
 import { set_vault, get_vault } from "@utils/vault"
 
-type Props = {
-  snapshot: SnapshotFrom<ViewMachine>
-  send: ActorRefFrom<ViewMachine>["send"]
-}
-
-export function Unlocked({ snapshot, send }: Props) {
+export function Unlocked({
+  authentication,
+}: {
+  authentication: Authentication
+}) {
   const [message, setMessage] = useState("")
   const [password, setPassword] = useState("test123")
-  const current = snapshot.value
+  const current = authentication[0].value
   const handleStore = async () => {
     await set_vault("hello world", password)
   }
   const handleRetrieve = async () => {
     const message = await get_vault(password)
-    setMessage(message)
+    if (message) {
+      console.log("message", message)
+      setMessage(message)
+    }
   }
   return (
     <div>
@@ -53,7 +54,7 @@ export function Unlocked({ snapshot, send }: Props) {
       <button
         type="button"
         onClick={() => {
-          send({ type: "lock" })
+          authentication[1]({ type: "LOCK" })
         }}
       >
         lock
