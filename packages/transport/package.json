@@ -1,0 +1,43 @@
+{
+  "name": "@cryptoman/transport",
+  "type": "module",
+  "version": "0.0.3",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niconiahi/ethernauta"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test:unit": "vitest"
+  },
+  "dependencies": {
+    "valibot": "1.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1"
+  }
+}

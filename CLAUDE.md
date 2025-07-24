@@ -10,13 +10,15 @@ Be a wallet that allows the user:
 
 ## Project Overview
 
-**Morfar** is a Chrome extension built with Preact and Robot3 state machines. The project uses a finite state machine architecture for UI state management with strong TypeScript typing.
+**Morfar** is a Chrome extension built with Preact and XState state machines. The project uses a finite state machine architecture for UI state management with strong TypeScript typing.
 
 ## Commands
 
 ### Development
 - `pnpm dev` - Start development build with watch mode (builds continuously)
-- `pnpm build` - Create production build and zip extension for Chrome Web Store upload
+- `pnpm dev:web` - Start development server for web preview
+- `pnpm build` - Create production build and zip extension for Chrome Web Store upload (run from dist directory)
+- `pnpm test` - Run tests with Vitest
 
 ### Code Quality
 - `biome check` - Run linter and formatter checks
@@ -25,51 +27,94 @@ Be a wallet that allows the user:
 ## Architecture
 
 ### State Machine Pattern
-The application uses Robot3 for state management with a clean separation between:
-- **Machine definitions** (`src/machines/`) - Define states, transitions, and context
+The application uses XState v5 for state management with a clean separation between:
+- **Machine definitions** (`src/machines/`) - Define states, transitions, and context using XState
 - **View components** (`src/views/`) - Pure components that receive state and send functions
 - **Controller** (`src/controller.tsx`) - Coordinates state machine with UI rendering
+- **Custom hook** (`src/hooks/useMachine.ts`) - Wraps XState actor management for Preact
+
+### Dual State Machine Architecture
+The app uses two coordinated state machines:
+1. **View Machine** (`src/machines/view.ts`) - Controls which view is displayed (mnemonics/password/wallet)
+2. **Authentication Machine** (`src/machines/authentication.ts`) - Handles authentication flow and vault operations
+
+The authentication machine receives the view machine actor as input and controls navigation by sending events to it.
+
+### Key Libraries
+- **XState v5** - State management with typed actors and guards
+- **@formisch/preact** - Form handling library
+- **@scure/bip39** & **@scure/bip32** - Mnemonic and HD wallet utilities
+- **@noble/hashes** & **@noble/secp256k1** - Cryptographic operations
+- **Valibot** - Schema validation for forms and data
+
+### Secure Storage
+The `src/utils/vault.ts` file implements secure mnemonic storage using:
+- **IndexedDB** for persistent storage
+- **PBKDF2** (100,000 iterations) for key derivation
+- **AES-GCM** encryption for mnemonic protection
+- **Base64 encoding** for data serialization
 
 ### Type Safety
-- Custom type definitions in `patches/preact-robot.d.ts` provide full type inference
-- Export `ControllerSend` and `ControllerState` types from machine definitions for prop typing
-- State machine events are fully typed - only valid transitions are allowed
+- Custom hook returns typed state and send function: `[snapshot, send, actor]`
+- Export typed interfaces from machine files for component props
+- XState provides full type inference for events and context
+- Path aliases for clean imports: `@views/*`, `@machines/*`, `@utils/*`, `@hooks/*`
 
 ### Component Patterns
 ```tsx
-// Export typed send and state from machine
-export type ControllerSend = SendFunction<GetMachineTransitions<ControllerMachine>>
-export type ControllerState = ControllerMachine["state"] & { context: ControllerMachine["context"] }
+// Machine exports typed interfaces
+export type Authentication = ReturnType<typeof useAuthenticationMachine>
 
-// Components receive state and send as props
-export function ViewComponent({ state, send }: { state: ControllerState; send: ControllerSend }) {
-  // Component implementation
+// Components receive authentication object with state and send
+export function PasswordView({ authentication }: { authentication: Authentication }) {
+  const [state, send] = authentication
+  // Component implementation using state.matches() and send()
 }
 ```
 
 ### Build Configuration
-- **Vite config** builds unminified, readable output for debugging
-- **Manual chunking** separates vendor libraries by version
-- **Path aliases** `@views/*` and `@machines/*` for clean imports
-- **emptyOutDir: true** clears old assets on each build
+- **Vite** builds unminified ES modules for debugging
+- **Manual chunking** separates vendor libraries (preact, xstate)
+- **TypeScript paths** resolve `@views/*`, `@machines/*`, etc.
+- **Chrome extension structure** with manifest and background scripts
 
-### Chrome Extension Structure
-- Built files go to `dist/` directory
-- Build process creates `extension.zip` ready for Chrome Web Store upload
-- Extension uses ES modules with Preact for lightweight footprint
+### Cryptographic Operations
+The `src/utils/crypto.ts` file provides:
+- Mnemonic to seed conversion with validation
+- HD key derivation (BIP32/BIP44 paths)
+- Private key to Ethereum address generation
+- Secp256k1 public key operations
 
 ## Development Notes
 
-### Adding New States
-1. Update machine definition in `src/machines/controller.ts`
-2. Add corresponding view component in `src/views/`
-3. Update controller switch statement
-4. Types are automatically inferred for new transitions
+### State Machine Development
+1. Use XState v5 `setup()` function for machine configuration
+2. Define typed events, context, and input interfaces
+3. Use `fromPromise` actors for async operations (vault access, validation)
+4. Guards validate events before transitions occur
+5. Actions update context and trigger side effects
+
+### Adding New Features
+1. Update machine definitions with new states/events
+2. Add corresponding view components
+3. Update controller switch statement for new views
+4. Types are automatically inferred from machine definitions
+
+### Testing
+- **Vitest** for unit tests with fake-indexeddb for vault testing
+- Test files alongside source code (e.g., `crypto.test.ts`, `vault.test.ts`)
+- Mock IndexedDB operations for consistent testing environment
 
 ### Code Style
-- Uses Biome with custom rules (60 character line width, space indentation)
-- Semicolons only as needed
+- **Biome** configuration with 60 character line width
+- Snake_case for variable names and functions
+- Semicolons only as needed (asNeeded)
 - Self-closing elements enforced
 - No parameter reassignment allowed
-- Use snake_case for names
+- Space indentation (2 spaces)
 
+### Chrome Extension Structure
+- Source in `src/` directory builds to `dist/`
+- Extension manifest and assets in build output
+- Build creates `extension.zip` for Chrome Web Store upload
+- Uses ES modules for modern JavaScript features
