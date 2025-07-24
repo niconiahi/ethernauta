@@ -4,15 +4,15 @@ import {
   type ActorRefFrom,
   and,
 } from "xstate"
+import * as v from "valibot"
 import {
   set_vault,
   validate_password,
   vault_exists,
-} from "@utils/vault"
-import type { ViewMachine } from "@machines/view"
-import { useMachine } from "@hooks/useMachine"
-import * as v from "valibot"
-import invariant from "@utils/tiny-invariant"
+} from "../utils/vault"
+import type { ViewMachine } from "./view"
+import { useMachine } from "../hooks/useMachine"
+import invariant from "../utils/tiny-invariant"
 
 type Event =
   | {
