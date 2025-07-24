@@ -5,7 +5,7 @@ import {
   derive_private_key,
   private_key_to_address,
   to_hex,
-} from "@utils/crypto"
+} from "./crypto"
 
 const MNEMONICS =
   "smile price bomb movie minimum treat hurdle adult wing come space cross"

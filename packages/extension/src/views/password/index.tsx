@@ -1,4 +1,4 @@
-import type { Authentication } from "@machines/authentication"
+import type { Authentication } from "../../machines/authentication"
 import { useState } from "preact/hooks"
 
 export function Password({

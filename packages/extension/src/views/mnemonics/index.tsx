@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks"
-import type { Authentication } from "@machines/authentication"
+import type { Authentication } from "../../machines/authentication"
 
 export function Mnemonics({
   authentication,

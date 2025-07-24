@@ -7,7 +7,7 @@ import {
   delete_vault,
   validate_mnemonic,
   validate_password,
-} from "@utils/vault"
+} from "./vault"
 
 const TEST_MNEMONIC =
   "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"

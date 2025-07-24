@@ -1,5 +1,5 @@
 import type { InferOutput } from "valibot"
-import { array, maxValue, minValue, number, object, parse, tuple, union } from "valibot"
+import { array, maxValue, minValue, number, object, parse, pipe, tuple, union } from "valibot"
 
 import type { Http, Readable } from "@cryptoman/transport"
 import { callSchema } from "@cryptoman/transport"
@@ -7,7 +7,7 @@ import { callSchema } from "@cryptoman/transport"
 import { ratioSchema, uintSchema } from "../../../core/base"
 import { blockNumberOrTagSchema } from "../../../core/block"
 
-const percentileSchema = number([minValue(0), maxValue(100)])
+const percentileSchema = pipe(number(), minValue(0), maxValue(100))
 const rewardsSchema = array(percentileSchema)
 const parametersSchema = union([
   tuple([uintSchema, blockNumberOrTagSchema, array(percentileSchema)]),

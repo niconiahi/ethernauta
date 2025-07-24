@@ -1,4 +1,4 @@
-import { useMachine } from "@hooks/useMachine"
+import { useMachine } from "../hooks/useMachine"
 import { setup, assign } from "xstate"
 
 type ViewType = "mnemonics" | "password" | "wallet"

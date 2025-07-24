@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "cd dist && zip -r ../extension.zip .",
-    "test": "vitest"
+    "test:unit": "vitest"
   },
   "dependencies": {
     "@noble/hashes": "1.8.0",

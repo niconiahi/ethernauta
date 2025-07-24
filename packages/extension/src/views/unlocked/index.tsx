@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks"
-import type { Authentication } from "@machines/authentication"
-import { set_vault, get_vault } from "@utils/vault"
+import type { Authentication } from "../../machines/authentication"
+import { set_vault, get_vault } from "../../utils/vault"
 
 export function Unlocked({
   authentication,

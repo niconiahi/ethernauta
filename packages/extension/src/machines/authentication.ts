@@ -2,8 +2,8 @@ import {
   setup,
   fromPromise,
   type ActorRefFrom,
-  and,
 } from "xstate"
+import { and } from "xstate/guards"
 import * as v from "valibot"
 import {
   set_vault,

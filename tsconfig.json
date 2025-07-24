@@ -1,15 +1,46 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@total-typescript/tsconfig/tsc/dom/library",
-  "include": ["packages/**/*"],
+  "include": [
+    "packages/**/*",
+    "utils/**/*"
+  ],
+  "exclude": [
+    "**/dist/**",
+    "**/node_modules/**"
+  ],
   "compilerOptions": {
     "target": "es2021",
-    "lib": ["es2021", "dom", "dom.iterable"],
+    "lib": [
+      "es2021",
+      "dom",
+      "dom.iterable"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "allowImportingTsExtensions": true,
-    "types": ["vitest/globals"]
+    "types": [
+      "vitest/globals"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@cryptoman/transport": [
+        "./packages/transport/src"
+      ],
+      "@cryptoman/eth": [
+        "./packages/eth/src"
+      ],
+      "@cryptoman/chain": [
+        "./packages/chain/src"
+      ],
+      "@cryptoman/connector": [
+        "./packages/connector/src"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ]
+    }
   }
 }

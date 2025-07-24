@@ -1,6 +1,12 @@
 import { array, nullable, object } from "valibot"
 
-import { addressSchema, byteSchema, bytesSchema, hash32Schema, uintSchema } from "../../base"
+import {
+  addressSchema,
+  byteSchema,
+  bytesSchema,
+  hash32Schema,
+  uintSchema,
+} from "../../base"
 import { accessListSchema } from "../../transaction"
 
 /**

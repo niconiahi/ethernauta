@@ -1,22 +1,20 @@
-import { describe, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import {
   createReader,
   encodeChainId,
   http,
 } from "@cryptoman/transport"
+import { eip155_1 } from "@cryptoman/chain"
 import { eth_getBlockByHash } from "./get-block-by-hash"
+import { ETHEREUM_SEPOLIA_RPC_URL } from "@utils/constants"
 
 describe("eth_getBlockByHash", () => {
   it("should return block when valid hash is provided", async () => {
     const reader = createReader([
       {
         chainId: "eip155:1",
-        transports: [
-          http(
-            "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/",
-          ),
-        ],
+        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
       },
     ])
     const VALID_BLOCK_HASH =
@@ -37,11 +35,7 @@ describe("eth_getBlockByHash", () => {
     const reader = createReader([
       {
         chainId: "eip155:1",
-        transports: [
-          http(
-            "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/",
-          ),
-        ],
+        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
       },
     ])
     const INVALID_BLOCK_HASH =
@@ -62,11 +56,7 @@ describe("eth_getBlockByHash", () => {
     const reader = createReader([
       {
         chainId: "eip155:1",
-        transports: [
-          http(
-            "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/",
-          ),
-        ],
+        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
       },
     ])
     const VALID_BLOCK_HASH =
