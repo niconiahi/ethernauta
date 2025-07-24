@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@abi/*": ["./src/abi/*"],
+      "@chain/*": ["./src/chain/*"],
+      "@core/*": ["./src/core/*"],
+      "@method/*": ["./src/method/*"]
+    }
+  }
+}

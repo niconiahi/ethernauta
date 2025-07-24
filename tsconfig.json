@@ -1,35 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@total-typescript/tsconfig/tsc/dom/library",
-  "include": [
-    "src"
-  ],
   "compilerOptions": {
     "target": "es2020",
-    "lib": [
-      "es2020",
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["es2020", "dom", "dom.iterable"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "baseUrl": ".",
-    "allowImportingTsExtensions": true,
-    "paths": {
-      "@views/*": [
-        "./src/views/*"
-      ],
-      "@machines/*": [
-        "./src/machines/*"
-      ],
-      "@utils/*": [
-        "./src/utils/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ]
-    }
+    "allowImportingTsExtensions": true
   }
 }
