@@ -9,7 +9,10 @@
   ],
   "scripts": {
     "dev": "vite dev",
-    "build": "cd dist && zip -r ../extension.zip .",
+    "build": "pnpm run build:extension && pnpm run build:manifest",
+    "build:extension": "vite build --config vite.extension.config.ts",
+    "build:manifest": "vite build --config vite.manifest.config.ts",
+    "zip": "cd dist && zip -r ../extension.zip .",
     "test:unit": "vitest"
   },
   "dependencies": {
@@ -23,6 +26,7 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "2.10.2",
-    "fake-indexeddb": "6.0.1"
+    "fake-indexeddb": "6.0.1",
+    "tsup": "^8.5.0"
   }
 }

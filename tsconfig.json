@@ -10,9 +10,9 @@
     "**/node_modules/**"
   ],
   "compilerOptions": {
-    "target": "es2021",
+    "target": "esnext",
     "lib": [
-      "es2021",
+      "esnext",
       "dom",
       "dom.iterable"
     ],
