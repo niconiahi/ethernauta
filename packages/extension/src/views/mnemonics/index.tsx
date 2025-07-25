@@ -1,13 +1,14 @@
 import { useState } from "preact/hooks"
-import type { Authentication } from "../../machines/authentication"
+import * as v from "valibot"
+import { set_vault } from "../../utils/vault"
+import { view } from "../../utils/view"
 
-export function Mnemonics({
-  authentication,
-}: {
-  authentication: Authentication
-}) {
-  const [password, setPassword] = useState("")
-  const [mnemonics, setMnemonics] = useState(
+const PasswordSchema = v.pipe(v.string(), v.minLength(8))
+const MnemonicsSchema = v.pipe(v.string(), v.minLength(1))
+
+export function Mnemonics() {
+  const [password, set_password] = useState("")
+  const [mnemonics, set_mnemonics] = useState(
     "smile price bomb movie minimum treat hurdle adult wing come space cross",
   )
   return (
@@ -17,7 +18,7 @@ export function Mnemonics({
         value={mnemonics}
         onInput={(event) => {
           const value = event.currentTarget.value
-          setMnemonics(value)
+          set_mnemonics(value)
         }}
       />
       <input
@@ -25,17 +26,22 @@ export function Mnemonics({
         value={password}
         onInput={(event) => {
           const value = event.currentTarget.value
-          setPassword(value)
+          set_password(value)
         }}
       />
       <button
         type="button"
         onClick={() => {
-          authentication[1]({
-            type: "SAVE_MNEMONICS",
-            password: password,
-            mnemonics: mnemonics,
-          })
+          const _mnemonics = v.parse(
+            MnemonicsSchema,
+            mnemonics,
+          )
+          const _password = v.parse(
+            PasswordSchema,
+            password,
+          )
+          set_vault(_mnemonics, _password)
+          view.value = "password"
         }}
       >
         save wallet
