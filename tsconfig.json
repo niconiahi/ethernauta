@@ -22,7 +22,8 @@
     "jsxImportSource": "preact",
     "allowImportingTsExtensions": true,
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "chrome"
     ],
     "baseUrl": ".",
     "paths": {

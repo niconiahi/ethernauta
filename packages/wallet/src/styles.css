@@ -1,0 +1,17 @@
+:root {
+  --spacing: 0.25rem;
+}
+
+body {
+  width: 400px;
+}
+
+span {
+  color: red;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@cryptoman/wallet",
+  "type": "module",
+  "private": true,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite dev",
+    "build": "pnpm run build:extension && pnpm run build:manifest",
+    "build:watch": "pnpm run build:extension:watch & pnpm run build:manifest:watch",
+    "build:extension": "vite build --config vite.extension.config.ts",
+    "build:manifest": "vite build --config vite.manifest.config.ts",
+    "build:extension:watch": "vite build --watch --config vite.extension.config.ts",
+    "build:manifest:watch": "vite build --watch --config vite.manifest.config.ts",
+    "zip": "cd dist && zip -r ../extension.zip .",
+    "test:unit": "vitest"
+  },
+  "dependencies": {
+    "@noble/hashes": "1.8.0",
+    "@noble/secp256k1": "2.3.0",
+    "@preact/signals": "^2.2.1",
+    "@scure/bip32": "1.7.0",
+    "@scure/bip39": "1.6.0",
+    "preact": "10.26.9",
+    "valibot": "1.1.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "2.10.2",
+    "@types/chrome": "^0.1.1",
+    "fake-indexeddb": "6.0.1",
+    "npm-run-all": "^4.1.5",
+    "tsup": "^8.5.0"
+  }
+}

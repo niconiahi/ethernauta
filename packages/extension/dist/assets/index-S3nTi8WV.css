@@ -1,1 +1,0 @@
-:root{--spacing: .25rem}span{color:purple}main{display:flex;flex-direction:column;gap:calc(var(--spacing) * 2)}
