@@ -1,5 +1,13 @@
 import type { InferOutput } from "valibot"
-import { array, literal, number, object, optional, custom, string } from "valibot"
+import {
+  array,
+  literal,
+  number,
+  object,
+  optional,
+  custom,
+  string,
+} from "valibot"
 
 const featureSchema = object({
   name: string(),
@@ -11,7 +19,9 @@ const nativeCurrencySchema = object({
   symbol: string(),
   decimals: number(),
 })
-export type NativeCurrency = InferOutput<typeof nativeCurrencySchema>
+export type NativeCurrency = InferOutput<
+  typeof nativeCurrencySchema
+>
 
 const explorerSchema = object({
   name: string(),
@@ -35,16 +45,23 @@ export type Parent = InferOutput<typeof parentSchema>
 const ensRegistrySchema = object({
   registry: string(),
 })
-export type EnsRegistry = InferOutput<typeof ensRegistrySchema>
+export type EnsRegistry = InferOutput<
+  typeof ensRegistrySchema
+>
 
 function isShortName(input: unknown): boolean {
-  return typeof input === "string" && /^[A-Za-z0-9-_]{1,64}$/.test(input)
+  return (
+    typeof input === "string" &&
+    /^[A-Za-z0-9-_]{1,64}$/.test(input)
+  )
 }
 export const shortNameSchema = custom<string>(isShortName)
-export type ShortName = InferOutput<typeof shortNameSchema >
+export type ShortName = InferOutput<typeof shortNameSchema>
 
 const redFlagSchema = literal("reusedChainId")
-export type RedFlagSchema = InferOutput<typeof redFlagSchema>
+export type RedFlagSchema = InferOutput<
+  typeof redFlagSchema
+>
 
 export const chainSchema = object({
   name: string(),
