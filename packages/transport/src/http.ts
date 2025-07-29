@@ -7,7 +7,7 @@ import { requestSchema, responseSchema } from "./json-rpc"
 export function http(
   url: string,
 ): (_call: Call) => Promise<Response> {
-  return async function (call: Call): Promise<Response> {
+  return async (call: Call): Promise<Response> => {
     const [method, params] = call
     const request = parse(requestSchema, {
       jsonrpc: "2.0",
@@ -29,8 +29,8 @@ export function http(
       .catch((error) => {
         throw new Error(error)
       })
+    console.log("_response", _response)
     const response = parse(responseSchema, _response)
-
     return response
   }
 }

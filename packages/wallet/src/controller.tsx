@@ -1,13 +1,18 @@
 import { Password } from "./views/password/index.tsx"
 import { Wallet } from "./views/wallet/index.tsx"
 import { Mnemonics } from "./views/mnemonics/index.tsx"
+import { Sign } from "./views/sign/index.tsx"
 import { useEffect } from "preact/hooks"
 import { vault_exists } from "./utils/vault.ts"
 import { view } from "./utils/view.ts"
 import * as v from "valibot"
 import { RequestSchema } from "./utils/event.ts"
-import { is_authenticated } from "./utils/authentication.ts"
+import {
+  is_authenticated,
+  validate_vault,
+} from "./utils/authentication.ts"
 import { restore_wallet } from "./utils/wallet.ts"
+import { transaction } from "./utils/transaction.ts"
 
 export function Controller() {
   useEffect(() => {
@@ -29,22 +34,32 @@ export function Controller() {
             console.log("sender", sender)
             console.log("sendResponse", sendResponse)
             const authenticated = await is_authenticated()
+            await validate_vault(authenticated)
             if (authenticated) {
               await restore_wallet()
               view.value = "wallet"
               return
             }
-            const exists = await vault_exists()
-            if (!exists) {
-              view.value = "mnemonics"
-            } else {
-              if (!authenticated) {
-                view.value = "mnemonics"
+            break
+          }
+          case "CRYPTOMAN_SIGN_TRANSACTION":
+            {
+              console.log("message", message)
+              console.log("sender", sender)
+              console.log("sendResponse", sendResponse)
+              const authenticated = await is_authenticated()
+              await validate_vault(authenticated)
+              if (authenticated) {
+                await restore_wallet()
+                transaction.value = {
+                  method: request.method,
+                  params: request.params,
+                }
+                view.value = "sign"
                 return
               }
-              view.value = "password"
             }
-          }
+            break
         }
       },
     )
@@ -62,6 +77,9 @@ function render_view(view: string) {
     }
     case "wallet": {
       return <Wallet />
+    }
+    case "sign": {
+      return <Sign />
     }
     default: {
       return <div>there is no view for: {view}</div>

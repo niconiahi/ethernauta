@@ -9,7 +9,6 @@
     "worker-configuration.d.ts"
   ],
   "compilerOptions": {
-    "composite": true,
     "strict": true,
     "lib": [
       "DOM",
@@ -24,6 +23,7 @@
     "module": "ES2022",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "baseUrl": ".",
     "rootDirs": [
       ".",
@@ -32,7 +32,10 @@
     "paths": {
       "~/*": [
         "./app/*"
-      ]
+      ],
+      "@cryptoman/transport": ["../transport/src"],
+      "@cryptoman/chain": ["../chain/src"], 
+      "@cryptoman/eth": ["../eth/src"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

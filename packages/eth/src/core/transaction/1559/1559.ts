@@ -2,7 +2,7 @@ import type { InferOutput } from "valibot"
 import { nullable, object, string } from "valibot"
 
 import { addressSchema, bytesSchema, uintSchema } from "../../base"
-import { accessListSchema } from "../../transaction"
+import { accessListSchema } from "../access-list"
 
 export const transaction1559UnsignedSchema = object({
   type: string(),
