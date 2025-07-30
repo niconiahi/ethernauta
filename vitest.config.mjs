@@ -10,6 +10,5 @@ export default defineConfig({
   test: {
     root: rootPath,
     include: ["packages/**/*.test.ts"],
-    setupFiles: ["packages/wallet/src/utils/test-setup.ts"],
   },
 })

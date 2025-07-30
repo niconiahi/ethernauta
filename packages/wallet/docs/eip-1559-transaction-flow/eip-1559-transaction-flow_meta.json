@@ -1,0 +1,282 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Signing an EIP-1559 (Type-2) Ethereum Transaction",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          76.798828125,
+          117.369140625
+        ],
+        [
+          535.055908203125,
+          117.369140625
+        ],
+        [
+          535.055908203125,
+          138.4453125
+        ],
+        [
+          76.798828125,
+          138.4453125
+        ]
+      ]
+    },
+    {
+      "title": "EIP-1559 Transaction Format (Type 0x02)",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          77.47119140625,
+          238.798828125
+        ],
+        [
+          350.2265625,
+          238.798828125
+        ],
+        [
+          350.2265625,
+          253.880859375
+        ],
+        [
+          77.47119140625,
+          253.880859375
+        ]
+      ]
+    },
+    {
+      "title": "Step-by-Step Signing Process (Pseudocode)",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          77.17236328125,
+          74.39501953125
+        ],
+        [
+          365.7929992675781,
+          74.39501953125
+        ],
+        [
+          365.7929992675781,
+          90.26708984375
+        ],
+        [
+          77.17236328125,
+          90.26708984375
+        ]
+      ]
+    },
+    {
+      "title": "raw_transaction = 0x02 || signed_tx_rlp",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          87.75,
+          82.37109375
+        ],
+        [
+          301.81640625,
+          82.37109375
+        ],
+        [
+          301.81640625,
+          93.8759765625
+        ],
+        [
+          87.75,
+          93.8759765625
+        ]
+      ]
+    },
+    {
+      "title": "References:",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          78.0,
+          255.427734375
+        ],
+        [
+          131.04598999023438,
+          255.427734375
+        ],
+        [
+          131.04598999023438,
+          266.642578125
+        ],
+        [
+          78.0,
+          266.642578125
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          181
+        ],
+        [
+          "Line",
+          53
+        ],
+        [
+          "ListItem",
+          12
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          101
+        ],
+        [
+          "Line",
+          36
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Code",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          132
+        ],
+        [
+          "Line",
+          40
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "ListItem",
+          5
+        ],
+        [
+          "TextInlineMath",
+          2
+        ],
+        [
+          "Code",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          106
+        ],
+        [
+          "Line",
+          33
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data/eip-1559-transaction-flow"
+}

@@ -80,7 +80,7 @@ The `packages/extension/src/utils/crypto.ts` file provides:
 
 ### Code Style (Biome Configuration)
 - **60 character line width** for compact code
-- **Snake_case** for variable names and functions
+- **snake_case** for variable names and functions
 - **Semicolons as needed** (asNeeded)
 - **Self-closing elements** enforced
 - **No parameter reassignment** allowed

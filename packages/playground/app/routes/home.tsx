@@ -43,6 +43,20 @@ export default function () {
         "transaction_count",
         hex_to_number(transaction_count),
       )
+      // export const transaction1559UnsignedSchema = object({
+      //   type: string(),
+      //   nonce: uintSchema,
+      //   to: nullable(addressSchema),
+      //   gas: uintSchema,
+      //   value: uintSchema,
+      //   input: bytesSchema,
+      //   maxPriorityFeePerGas: uintSchema,
+      //   maxFeePerGas: uintSchema,
+      //   gasPrice: uintSchema,
+      //   accessList: accessListSchema,
+      //   chainId: uintSchema,
+      // })
+      const nonce = transaction_count
     }
     run()
   }, [])
