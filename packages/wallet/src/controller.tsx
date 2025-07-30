@@ -12,7 +12,7 @@ import {
   validate_vault,
 } from "./utils/authentication.ts"
 import { restore_wallet } from "./utils/wallet.ts"
-import { transaction } from "./utils/transaction.ts"
+import { transaction_request } from "./utils/transaction.ts"
 
 export function Controller() {
   useEffect(() => {
@@ -51,7 +51,7 @@ export function Controller() {
               await validate_vault(authenticated)
               if (authenticated) {
                 await restore_wallet()
-                transaction.value = {
+                transaction_request.value = {
                   method: request.method,
                   params: request.params,
                 }

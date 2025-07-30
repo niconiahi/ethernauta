@@ -1,19 +1,19 @@
 import { describe, it, expect } from "vitest"
 import type { RecoveredSignature } from "@noble/secp256k1"
-import { encode } from "@ethereumjs/rlp"
 import {
   encode_eip155_transaction_unsigned,
   type Eip1559TransactionUnsigned,
   big_to_bytes,
   concat_bytes,
   make_transaction_hash,
-  sign_transaction,
   compose_y_parity,
   encode_access_list,
   make_unsigned_fields,
   make_signed_fields,
   encode_fields,
-} from "./transaction.js"
+  sign_transaction_hash,
+} from "./sign-transaction.js"
+import { encode } from "./rlp.js"
 
 // Test data
 const TEST_PRIVATE_KEY = new Uint8Array([
@@ -78,7 +78,10 @@ describe("transaction.ts", () => {
 
   it("should sign hash with private key", () => {
     const hash = new Uint8Array(32).fill(0x01)
-    const result = sign_transaction(hash, TEST_PRIVATE_KEY)
+    const result = sign_transaction_hash(
+      hash,
+      TEST_PRIVATE_KEY,
+    )
     expect(result).toHaveProperty("r")
     expect(result).toHaveProperty("s")
     expect(result).toHaveProperty("recovery")
