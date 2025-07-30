@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 import { chainIdSchema } from "./chain-id"
 import { decodeChainId } from "./decode-chain-id"
 
-describe("decodeChainId", () => {
+describe("decode-chain-id.ts", () => {
   it("should correctly parse a decode a valid chain id", async () => {
     const raw = "eip155:1"
     const chainId = parse(chainIdSchema, raw)

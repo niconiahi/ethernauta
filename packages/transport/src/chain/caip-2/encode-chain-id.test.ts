@@ -6,7 +6,7 @@ import { caip2_referenceSchema } from "./reference"
 
 import { encodeChainId } from "./encode-chain-id"
 
-describe("encodeChainId", () => {
+describe("encode-chain-id.ts", () => {
   it("should correctly parse a encode with valid parameters", async () => {
     const _namespace = "eip155"
     const _reference = "1"
