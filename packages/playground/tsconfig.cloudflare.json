@@ -33,9 +33,18 @@
       "~/*": [
         "./app/*"
       ],
-      "@cryptoman/transport": ["../transport/src"],
-      "@cryptoman/chain": ["../chain/src"], 
-      "@cryptoman/eth": ["../eth/src"]
+      "@cryptoman/transport": [
+        "../transport/src"
+      ],
+      "@cryptoman/chain": [
+        "../chain/src"
+      ],
+      "@cryptoman/eth": [
+        "../eth/src"
+      ],
+      "@cryptoman/wallet": [
+        "../wallet/src"
+      ]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

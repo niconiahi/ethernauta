@@ -1,11 +1,13 @@
 // @ts-nocheck
-export function bytes_to_hex(data: Uint8Array): string {
+export function bytes_to_hex(
+  data: Uint8Array,
+): `0x${string}` {
   let result = ""
   for (let i = 0; i < data.length; i++) {
     result += ALPHABET[data[i] >> 4]
     result += ALPHABET[data[i] & 0x0f]
   }
-  return result
+  return result satisfies `0x${string}`
 }
 
 export function hex_to_bytes(data: string): Uint8Array {

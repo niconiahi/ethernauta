@@ -64,6 +64,21 @@ importers:
       '@cryptoman/transport':
         specifier: workspace:*
         version: link:../transport
+      '@ethereumjs/rlp':
+        specifier: ^10.0.0
+        version: 10.0.0
+      '@noble/hashes':
+        specifier: 1.8.0
+        version: 1.8.0
+      '@noble/secp256k1':
+        specifier: 2.3.0
+        version: 2.3.0
+      '@scure/bip32':
+        specifier: 1.7.0
+        version: 1.7.0
+      '@scure/bip39':
+        specifier: 1.6.0
+        version: 1.6.0
       valibot:
         specifier: 1.1.0
         version: 1.1.0(typescript@5.8.3)
@@ -83,6 +98,9 @@ importers:
       '@cryptoman/transport':
         specifier: workspace:*
         version: link:../transport
+      '@cryptoman/wallet':
+        specifier: workspace:*
+        version: link:../wallet
       isbot:
         specifier: ^5.1.27
         version: 5.1.28

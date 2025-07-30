@@ -6,6 +6,7 @@ import { wordlist } from "@scure/bip39/wordlists/english"
 import { HDKey } from "@scure/bip32"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { getPublicKey } from "@noble/secp256k1"
+import invariant from "./tiny-invariant"
 
 export function mnemonic_to_seed(mnemonic: string) {
   if (!validateMnemonic(mnemonic, wordlist)) {
@@ -40,4 +41,32 @@ export function to_hex(bytes: Uint8Array) {
   return Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("")
+}
+
+export function get_public_key(key: HDKey) {
+  const private_key = key.privateKey
+  invariant(private_key, "a private key should exist")
+  return private_key
+}
+
+export function get_private_key(key: HDKey) {
+  const public_key = key.publicKey
+  invariant(public_key, "a public key should exist")
+  return public_key
+}
+
+export function big_to_hex(number: bigint): `0x${string}` {
+  return `0x${number.toString(16)}` satisfies `0x${string}`
+}
+export function hex_to_big(hex: `0x${string}`): bigint {
+  return BigInt(hex)
+}
+
+export function number_to_hex(
+  number: number,
+): `0x${string}` {
+  return `0x${number.toString(16)}` satisfies `0x${string}`
+}
+export function hex_to_number(hex: `0x${string}`): number {
+  return Number(hex)
 }

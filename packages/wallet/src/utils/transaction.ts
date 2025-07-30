@@ -2,19 +2,50 @@ import { signal } from "@preact/signals"
 import * as v from "valibot"
 import { encode } from "@ethereumjs/rlp"
 import { keccak_256 } from "@noble/hashes/sha3"
-import { hex_to_bytes } from "./hex"
+import { bytes_to_hex, hex_to_bytes } from "./hex"
 import invariant from "./tiny-invariant"
 import { secp } from "./secp"
+import { wallet } from "./wallet"
+import {
+  get_private_key,
+  get_public_key,
+  hex_to_big,
+  number_to_hex,
+} from "./crypto"
+import { eip155_11155111 } from "@cryptoman/chain"
+import { eth_getTransactionCount } from "@cryptoman/eth"
+import {
+  http,
+  createReader,
+  encodeChainId,
+} from "@cryptoman/transport"
+
+const NAMESPACE = {
+  ETHEREUM: "eip155",
+}
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://little-bitter-wave.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
+const sepolia_chain_id = encodeChainId({
+  namespace: NAMESPACE.ETHEREUM,
+  reference: eip155_11155111.chainId,
+})
+const reader = createReader([
+  {
+    chainId: sepolia_chain_id,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
+])
 
 export const TransactionSchema = v.object({
   method: v.string(),
   params: v.array(v.unknown()),
 })
+type Transaction = v.InferOutput<typeof TransactionSchema>
 export const transaction = signal<Transaction>({
   method: "hello_world",
   params: [],
 })
-type Transaction = v.InferOutput<typeof TransactionSchema>
+
 export interface Eip1559TransactionUnsigned {
   chain_id: bigint
   nonce: bigint
@@ -44,7 +75,9 @@ function strip_hex_prefix(hex: string): string {
   return hex.startsWith("0x") ? hex.substring(2) : hex
 }
 
-export function big_to_bytes(big: bigint): Uint8Array {
+export function big_to_bytes(
+  big: bigint,
+): Uint8Array<ArrayBufferLike> {
   if (big === 0n) {
     return new Uint8Array([])
   }
@@ -54,6 +87,50 @@ export function big_to_bytes(big: bigint): Uint8Array {
     "0",
   )
   return hex_to_bytes(padded_hex)
+}
+
+export function sign_transaction(
+  hash: Uint8Array<ArrayBufferLike>,
+  private_key: Uint8Array,
+): secp.RecoveredSignature {
+  return secp.sign(hash, private_key)
+}
+
+export function compose_y_parity(
+  recovery_id: number,
+): bigint {
+  return BigInt(recovery_id)
+}
+
+export async function encode_transaction(
+  method: Transaction["method"],
+  params: Transaction["params"],
+) {
+  const public_key = get_public_key(wallet.value.key)
+  const readable = eth_getTransactionCount([
+    bytes_to_hex(public_key),
+    number_to_hex(8870407),
+  ])
+  const transaction_count = await readable(
+    reader(sepolia_chain_id),
+  )
+  const transaction: Eip1559TransactionUnsigned = {
+    to,
+    data,
+    value,
+    nonce: hex_to_big(transaction_count),
+    chain_id,
+    gas_limit,
+    access_list,
+    max_fee_per_gas,
+    max_priority_fee_per_gas,
+  }
+  const private_key = get_private_key(wallet.value.key)
+  const encoded = encode_eip155_transaction_unsigned(
+    transaction,
+    private_key,
+  )
+  return encoded
 }
 
 export function make_transaction_hash(
@@ -67,21 +144,10 @@ export function make_transaction_hash(
   return keccak_256(message_to_sign)
 }
 
-export function sign_transaction(
-  hash: Uint8Array<ArrayBufferLike>,
-  private_key: Uint8Array,
-): secp.RecoveredSignature {
-  return secp.sign(hash, private_key)
-}
-
-export function compose_y_parity(recovery_id: number) {
-  return BigInt(recovery_id)
-}
-
 export function encode_eip155_transaction_unsigned(
   transaction: Eip1559TransactionUnsigned,
   private_key: Uint8Array,
-) {
+): Uint8Array<ArrayBufferLike> {
   // step 1: prepare transaction fields in EIP-1559 order
   const unsigned_fields = make_unsigned_fields(transaction)
   // step 2: RLP encode the unsigned transaction
@@ -111,7 +177,7 @@ export function encode_eip155_transaction_unsigned(
 
 export function concat_bytes(
   ...arrays: Uint8Array[]
-): Uint8Array {
+): Uint8Array<ArrayBufferLike> {
   let total_length = 0
   for (const arr of arrays) {
     total_length += arr.length
