@@ -2,9 +2,9 @@ import { signal } from "@preact/signals"
 import * as v from "valibot"
 import { encode } from "@ethereumjs/rlp"
 import { keccak_256 } from "@noble/hashes/sha3"
-import * as secp from "@noble/secp256k1"
 import { hex_to_bytes } from "./hex"
 import invariant from "./tiny-invariant"
+import { secp } from "./secp"
 
 export const TransactionSchema = v.object({
   method: v.string(),
@@ -39,6 +39,10 @@ export interface Eip1559TransactionSigned
 type EncodedAccessListItem = [Uint8Array, Uint8Array[]]
 type EncodedAccessList = EncodedAccessListItem[]
 type Field = Uint8Array<ArrayBufferLike> | EncodedAccessList
+
+function strip_hex_prefix(hex: string): string {
+  return hex.startsWith("0x") ? hex.substring(2) : hex
+}
 
 export function big_to_bytes(big: bigint): Uint8Array {
   if (big === 0n) {
@@ -136,10 +140,12 @@ export function encode_access_list(
     for (let j = 0; j < item.storage_keys.length; j++) {
       const storage_key = item.storage_keys[j]
       invariant(storage_key, "storage key should exist")
-      storage_keys[j] = hex_to_bytes(storage_key)
+      storage_keys[j] = hex_to_bytes(
+        strip_hex_prefix(storage_key),
+      )
     }
     encoded_list[i] = [
-      hex_to_bytes(item.address),
+      hex_to_bytes(strip_hex_prefix(item.address)),
       storage_keys,
     ]
   }
@@ -190,7 +196,7 @@ export function make_unsigned_fields(
   )
   fields[3] = big_to_bytes(transaction.max_fee_per_gas)
   fields[4] = big_to_bytes(transaction.gas_limit)
-  fields[5] = hex_to_bytes(transaction.to)
+  fields[5] = hex_to_bytes(strip_hex_prefix(transaction.to))
   fields[6] = big_to_bytes(transaction.value)
   fields[7] = transaction.data
   fields[8] = encode_access_list([])
