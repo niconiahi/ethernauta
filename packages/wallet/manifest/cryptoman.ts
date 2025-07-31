@@ -1,25 +1,8 @@
-type SignTransactionRequest = {
-  type: "CRYPTOMAN_SIGN_TRANSACTION"
-  id: string
-  method: string
-  params: unknown[]
-}
-
-type SignTransactionResponse = {
-  id: string
-  error?: string
-  signature?: string
-}
-
-type ConnectRequest = {
-  type: "CRYPTOMAN_CONNECT"
-  id: string
-}
-
-type ConnectResponse = {
-  id: string
-  error?: string
-}
+import type {
+  ConnectRequest,
+  SignTransactionRequest,
+  SignTransactionResponse,
+} from "../src/utils/event"
 
 type Cryptoman = {
   connect: () => Promise<void>
@@ -40,7 +23,7 @@ window.cryptoman = {
     method: string,
     params: unknown[],
   ): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<string>((resolve) => {
       const id = crypto.randomUUID()
       window.addEventListener(
         "message",
@@ -49,17 +32,12 @@ window.cryptoman = {
         ) {
           if (event.data.id === id) {
             window.removeEventListener("message", handler)
-            if (event.data.error) {
-              reject(new Error(event.data.error))
-            }
-            if (event.data.signature) {
-              resolve(event.data.signature)
-            }
+            resolve(event.data.signed_transaction)
           }
         },
       )
       const request: SignTransactionRequest = {
-        type: "CRYPTOMAN_SIGN_TRANSACTION",
+        type: "CRYPTOMAN_REQUEST_SIGN_TRANSACTION",
         id,
         method,
         params,
@@ -72,20 +50,10 @@ window.cryptoman = {
       const id = crypto.randomUUID()
       window.addEventListener(
         "message",
-        function handler(
-          event: MessageEvent<ConnectResponse>,
-        ) {
-          if (event.data.id === id) {
-            window.removeEventListener("message", handler)
-            if (event.data.error) {
-              reject(new Error(event.data.error))
-            }
-            resolve()
-          }
-        },
+        function handler(event: MessageEvent<any>) {},
       )
       const request: ConnectRequest = {
-        type: "CRYPTOMAN_CONNECT",
+        type: "CRYPTOMAN_REQUEST_CONNECT",
         id,
       }
       window.postMessage(request, "*")

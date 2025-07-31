@@ -29,7 +29,6 @@ export function http(
       .catch((error) => {
         throw new Error(error)
       })
-    console.log("_response", _response)
     const response = parse(responseSchema, _response)
     return response
   }

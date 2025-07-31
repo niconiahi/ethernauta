@@ -2,45 +2,50 @@ import * as v from "valibot"
 
 export const SignTransactionRequestSchema = v.object({
   id: v.string(),
-  type: v.literal("CRYPTOMAN_SIGN_TRANSACTION"),
+  type: v.literal("CRYPTOMAN_REQUEST_SIGN_TRANSACTION"),
   method: v.string(),
   params: v.array(v.unknown()),
 })
 export type SignTransactionRequest = v.InferOutput<
-  typeof ConnectRequestSchema
+  typeof SignTransactionRequestSchema
 >
 
 export const SignTransactionResponseSchema = v.object({
   id: v.string(),
-  error: v.optional(v.string()),
-  signature: v.optional(v.string()),
+  type: v.literal("CRYPTOMAN_RESPONSE_SIGNED_TRANSACTION"),
+  signed_transaction: v.string(),
 })
 export type SignTransactionResponse = v.InferOutput<
-  typeof ConnectRequestSchema
+  typeof SignTransactionResponseSchema
 >
 
 const ConnectRequestSchema = v.object({
   id: v.string(),
-  type: v.literal("CRYPTOMAN_CONNECT"),
+  type: v.literal("CRYPTOMAN_REQUEST_CONNECT"),
 })
 export type ConnectRequest = v.InferOutput<
   typeof ConnectRequestSchema
 >
 
-export const ConnectResponseSchema = v.object({
-  id: v.string(),
-  error: v.optional(v.string()),
-})
-export type ConnectResponse = v.InferOutput<
-  typeof ConnectResponseSchema
->
-
-export const RequestSchema = v.union([
+export const CryptomanRequestSchema = v.union([
   SignTransactionRequestSchema,
   ConnectRequestSchema,
 ])
+export type CryptomanRequest = v.InferOutput<
+  typeof CryptomanRequestSchema
+>
 
-export const ResponseSchema = v.union([
+export const CryptomanResponseSchema = v.union([
   SignTransactionResponseSchema,
-  ConnectResponseSchema,
 ])
+export type CryptomanResponse = v.InferOutput<
+  typeof CryptomanResponseSchema
+>
+
+export const CryptomanEventSchema = v.union([
+  CryptomanRequestSchema,
+  CryptomanResponseSchema,
+])
+export type CryptomanEvent = v.InferOutput<
+  typeof CryptomanEventSchema
+>

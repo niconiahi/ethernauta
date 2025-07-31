@@ -30,11 +30,11 @@ export function derive_private_key(
 }
 
 export function private_key_to_address(
-  privateKey: Uint8Array,
+  private_key: Uint8Array,
 ) {
-  const publicKey = getPublicKey(privateKey, false)
+  const publicKey = getPublicKey(private_key, false)
   const hash = keccak_256(publicKey.slice(1))
-  return `0x${to_hex(hash.slice(-20))}`
+  return `0x${to_hex(hash.slice(-20))}` satisfies `0x${string}`
 }
 
 export function to_hex(bytes: Uint8Array) {
@@ -50,9 +50,9 @@ export function get_public_key(key: HDKey) {
 }
 
 export function get_private_key(key: HDKey) {
-  const public_key = key.publicKey
-  invariant(public_key, "a public key should exist")
-  return public_key
+  const private_key = key.privateKey
+  invariant(private_key, "a private key should exist")
+  return private_key
 }
 
 export function big_to_hex(number: bigint): `0x${string}` {

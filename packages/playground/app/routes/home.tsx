@@ -7,9 +7,9 @@
 // } from "@cryptoman/transport"
 import {
   number_to_hex,
-  sign_transaction,
+  // sign_transaction,
 } from "@cryptoman/wallet"
-import { useEffect } from "react"
+// import { useEffect } from "react"
 // import { bytes_to_hex } from "../../../wallet/src/utils/hex"
 
 // const NAMESPACE = {
@@ -28,28 +28,7 @@ import { useEffect } from "react"
 //   },
 // ])
 
-export default function () {
-  useEffect(() => {
-    async function run() {
-      // const method = "eth_getTransactionCount"
-      // const params = [
-      //   "0x636C0fCd6DA2207aBfA80427b556695A4ad0AF94",
-      //   number_to_hex(8870407),
-      // ]
-      // const signed_transaction = await sign_transaction(
-      //   method,
-      //   params,
-      // )
-      // console.log("signed_transaction", signed_transaction)
-      // const writable = eth_sendRawTransaction([
-      //   bytes_to_hex(signed_transaction),
-      // ])
-      // const transaction = await writable(
-      //   writer(sepolia_chain_id),
-      // )
-    }
-    run()
-  }, [])
+export default function() {
   return (
     <div>
       <p>
@@ -68,8 +47,11 @@ export default function () {
           type="button"
           onClick={() => {
             console.log("clicking send transfer")
-            const method = "transfer"
-            const params = ["0x", "1x", 3]
+            const method = "eth_getTransactionCount"
+            const params = [
+              "0x636C0fCd6DA2207aBfA80427b556695A4ad0AF94",
+              number_to_hex(8870407),
+            ]
             window.cryptoman.sign(method, params)
           }}
         >

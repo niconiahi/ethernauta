@@ -3,6 +3,13 @@
   "name": "react-router-app",
   "compatibility_date": "2025-04-04",
   "main": "./workers/app.ts",
+  // TODO: make the application work without nodejs_compact
+  // for some reason @noble/hashes conflicts with its NodeJS
+  // compatibility
+  // this is mentioned in the library itself here
+  // https://www.npmjs.com/package/@noble/hashes?activeTab=code
+  // in the file "utils.js", used by "sha256.js"
+  "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare"
   }

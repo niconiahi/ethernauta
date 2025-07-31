@@ -2,7 +2,9 @@ import { encode } from "./rlp"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { hex_to_bytes } from "./hex"
 import invariant from "./tiny-invariant"
-import { secp } from "./secp"
+import * as secp from "@noble/secp256k1"
+import { hmac } from "@noble/hashes/hmac"
+import { sha256 } from "@noble/hashes/sha256"
 import { wallet } from "./wallet"
 import {
   get_private_key,
@@ -83,6 +85,8 @@ export function sign_transaction_hash(
   hash: Uint8Array<ArrayBufferLike>,
   private_key: Uint8Array,
 ): secp.RecoveredSignature {
+  secp.etc.hmacSha256Sync = (k, ...m) =>
+    hmac(sha256, k, secp.etc.concatBytes(...m))
   return secp.sign(hash, private_key)
 }
 
@@ -143,6 +147,7 @@ async function get_nonce(
   reader: Reader,
   chain_id: ChainId,
 ): Promise<bigint> {
+  console.log("address", address)
   const readable = eth_getTransactionCount([
     address,
     number_to_hex(8870407),
@@ -200,6 +205,7 @@ export async function sign_transaction(
   params: Transaction["params"],
 ) {
   const address = wallet.value.address as `0x${string}`
+  console.log("address", address)
   const transaction: Eip1559TransactionUnsigned = {
     to: get_to(params),
     data: get_data(method, params),
@@ -216,11 +222,15 @@ export async function sign_transaction(
     max_priority_fee_per_gas:
       get_max_priority_fee_per_gas(),
   }
+  console.log("transaction", transaction)
   const private_key = get_private_key(wallet.value.key)
+  console.log("private_key", private_key)
   const encoded = encode_eip155_transaction_unsigned(
     transaction,
     private_key,
   )
+  // const encoded = new Uint8Array(32).fill(1)
+  console.log("encoded", encoded)
   return encoded
 }
 
@@ -241,27 +251,40 @@ export function encode_eip155_transaction_unsigned(
 ): Uint8Array<ArrayBufferLike> {
   // step 1: prepare transaction fields in EIP-1559 order
   const unsigned_fields = make_unsigned_fields(transaction)
+  console.log("unsigned_fields", unsigned_fields)
   // step 2: RLP encode the unsigned transaction
   const encoded_unsigned_fields =
     encode_fields(unsigned_fields)
+  console.log(
+    "encoded_unsigned_fields",
+    encoded_unsigned_fields,
+  )
   // step 3: compute message hash with type prefix (0x02 for EIP-1559)
   const type_prefix = new Uint8Array([0x02])
+  console.log("type_prefix", type_prefix)
   const transaction_hash = make_transaction_hash(
     type_prefix,
     encoded_unsigned_fields,
   )
+  console.log("transaction_hash", transaction_hash)
   // step 4: sign with ECDSA (secp256k1)
   const signature = sign_transaction_hash(
     transaction_hash,
     private_key,
   )
+  console.log("signature", signature)
   // step 5: add signature fields to create complete signed transaction
   const signed_fields = make_signed_fields(
     unsigned_fields,
     signature,
   )
+  console.log("signed_fields", signed_fields)
   // step 6: RLP encode the signed transaction
   const encoded_signed_fields = encode_fields(signed_fields)
+  console.log(
+    "encoded_signed_fields",
+    encoded_signed_fields,
+  )
   // step 7: prepend type byte to create final raw transaction
   return concat_bytes(type_prefix, encoded_signed_fields)
 }

@@ -10,6 +10,6 @@ export default defineConfig({
   test: {
     root: rootPath,
     include: ["packages/**/*.test.ts"],
-    environment: "node",
+    environment: "edge-runtime",
   },
 })

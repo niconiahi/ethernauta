@@ -1,20 +1,6 @@
 import { useState } from "preact/hooks"
-import {
-  get_vault,
-  validate_password,
-} from "../../utils/vault"
-import invariant from "../../utils/tiny-invariant"
-import {
-  derive_private_key,
-  mnemonic_to_seed,
-  private_key_to_address,
-  seed_to_master_key,
-} from "../../utils/crypto"
-import {
-  save_wallet,
-  set_wallet,
-  wallet,
-} from "../../utils/wallet"
+import { validate_password } from "../../utils/vault"
+import { set_wallet } from "../../utils/wallet"
 import { view } from "../../utils/view"
 import { set_timestamp } from "../../utils/authentication"
 

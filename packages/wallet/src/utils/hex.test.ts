@@ -9,7 +9,9 @@ describe("hex.ts", () => {
         new Uint8Array(length),
       )
       expect(bytes_to_hex(data)).toBe(
-        Buffer.from(data).toString("hex"),
+        Array.from(data)
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join(""),
       )
     }
   })

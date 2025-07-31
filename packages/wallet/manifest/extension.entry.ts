@@ -1,19 +1,39 @@
 import * as v from "valibot"
-import { RequestSchema } from "../src/utils/event"
+import {
+  CryptomanEventSchema,
+  CryptomanRequestSchema,
+  CryptomanResponseSchema,
+} from "../src/utils/event"
 
 chrome.runtime.onMessage.addListener(
-  (message, _, sendResponse) => {
-    const request = v.parse(RequestSchema, message)
-    if (request.type.startsWith("CRYPTOMAN_")) {
+  async (message, _, sendResponse) => {
+    const event = v.parse(CryptomanEventSchema, message)
+    console.log("extension.entry.ts => event", event)
+    if (event.type.startsWith("CRYPTOMAN_REQUEST")) {
+      const request = v.parse(
+        CryptomanRequestSchema,
+        message,
+      )
+      console.log("extension.entry.ts => request", request)
       chrome.action
         .openPopup()
         .then(() => {
-          chrome.runtime.sendMessage(message)
+          chrome.runtime.sendMessage(request)
         })
-        .catch((error) => {
-          sendResponse({ error: error.message })
+        .catch(() => {
+          console.log("error when trying to open the popup")
         })
-      return true
+    }
+    if (event.type.startsWith("CRYPTOMAN_RESPONSE")) {
+      const response = v.parse(
+        CryptomanResponseSchema,
+        message,
+      )
+      console.log(
+        "extension.entry.ts => response",
+        response,
+      )
+      sendResponse(response)
     }
   },
 )

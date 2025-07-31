@@ -28,14 +28,11 @@ export function eth_getTransactionCount(
   return async (transports: Http[]): Promise<Uint> => {
     const method = "eth_getTransactionCount"
     const parameters = parse(parametersSchema, _parameters)
-    console.log("parameters", parameters)
     const call = parse(callSchema, [method, parameters])
     const response = await Promise.race(
       transports.map((transport) => transport(call)),
     )
-    console.log("response", response)
     if ("error" in response) {
-      console.log("response.error", response.error)
       throw new Error(response.error.message)
     }
     const result = parse(uintSchema, response.result)
