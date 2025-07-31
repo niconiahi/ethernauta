@@ -4,15 +4,12 @@ This module aims to be an un-opinionated representation of the defined:
 
 - [Ethereum schemas](https://github.com/ethereum/execution-apis/tree/main/src/schemas)
 - [Ethereum base methods](https://github.com/ethereum/execution-apis/tree/main/src/eth)
-- [Ethereum chains](https://github.com/ethereum-lists/chains/tree/master/_data/chains)
 - [abi-spec](https://docs.soliditylang.org/en/latest/abi-spec.html)
-- [chain schema](https://github.com/ethereum-lists/chains/blob/master/tools/schema/chainSchema.json)
 
 ## Table of contents
 
 1. [API](#api)
 2. [core](#core)
-3. [chain](#chain)
 4. [abi](#abi)
 5. [method](#method)
 
@@ -115,12 +112,6 @@ const block = await readable(reader(chainId));
 - [transaction/legacy/legacy.ts](src/core/transaction/legacy/legacy.ts)
 - [transaction/signed/signed.ts](src/core/transaction/signed/signed.ts)
 - [transaction/unsigned/unsigned.ts](src/core/transaction/unsigned/unsigned.ts)
-
-### chain
-
-- [indexer.tsx](src/chain/indexer/indexer.ts)
-- [shared.tsx](src/chain/shared/shared.ts)
-- [eip155-1](src/chain/eip155/eip155-1/eip155-1.ts)
 
 ### abi
 
