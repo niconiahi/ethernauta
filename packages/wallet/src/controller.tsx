@@ -6,13 +6,13 @@ import { useEffect } from "preact/hooks"
 import { vault_exists } from "./utils/vault.ts"
 import { view } from "./utils/view.ts"
 import * as v from "valibot"
-import { RequestSchema } from "./utils/event.ts"
+import { CryptomanRequestSchema } from "./utils/event.ts"
 import {
   is_authenticated,
   validate_vault,
 } from "./utils/authentication.ts"
 import { restore_wallet } from "./utils/wallet.ts"
-import { transaction } from "./utils/transaction.ts"
+import { transaction_request } from "./utils/transaction.ts"
 
 export function Controller() {
   useEffect(() => {
@@ -26,13 +26,17 @@ export function Controller() {
   }, [])
   useEffect(() => {
     chrome.runtime.onMessage.addListener(
-      async (message, sender, sendResponse) => {
-        const request = v.parse(RequestSchema, message)
+      async (message) => {
+        // async (message, sender, sendResponse) => {
+        const request = v.parse(
+          CryptomanRequestSchema,
+          message,
+        )
         switch (request.type) {
-          case "CRYPTOMAN_CONNECT": {
-            console.log("message", message)
-            console.log("sender", sender)
-            console.log("sendResponse", sendResponse)
+          case "CRYPTOMAN_REQUEST_CONNECT": {
+            // console.log("message", message)
+            // console.log("sender", sender)
+            // console.log("sendResponse", sendResponse)
             const authenticated = await is_authenticated()
             await validate_vault(authenticated)
             if (authenticated) {
@@ -42,16 +46,17 @@ export function Controller() {
             }
             break
           }
-          case "CRYPTOMAN_SIGN_TRANSACTION":
+          case "CRYPTOMAN_REQUEST_SIGN_TRANSACTION":
             {
-              console.log("message", message)
-              console.log("sender", sender)
-              console.log("sendResponse", sendResponse)
+              // console.log("message", message)
+              // console.log("sender", sender)
+              // console.log("sendResponse", sendResponse)
               const authenticated = await is_authenticated()
               await validate_vault(authenticated)
               if (authenticated) {
                 await restore_wallet()
-                transaction.value = {
+                transaction_request.value = {
+                  id: request.id,
                   method: request.method,
                   params: request.params,
                 }

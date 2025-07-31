@@ -1,22 +1,26 @@
-import type { Call } from "./call"
+import { parse } from "valibot"
+
+import { chainIdSchema } from "./chain"
 import type { Http } from "./http"
-import type {
-  FailedResponse,
-  SuccesfulResponse,
-} from "./json-rpc"
+import type { Transaction } from "./transaction"
 
 export function createWriter(
-  transports: Http[],
-): (
-  _call: Call,
-) => Promise<FailedResponse | SuccesfulResponse> {
-  // for now, just pick the first transport and use it
-  const transport = transports[0]
-  if (!transport) {
-    throw new Error("at least one transport is required")
+  chains: Array<{ chainId: string; transports: Http[] }>,
+): (_targetChain: string) => Http[] {
+  return (_targetChain: string): Http[] => {
+    const targetChain = parse(chainIdSchema, _targetChain)
+    const chain = chains.find(
+      ({ chainId }) => chainId === targetChain,
+    )
+    if (!chain) {
+      throw new Error(
+        "you need at least one transport for the targeted chain",
+      )
+    }
+    return chain.transports
   }
-  return transport
 }
-
 export type Writer = ReturnType<typeof createWriter>
-export type Writable<T> = (_reader: Writer) => Promise<T>
+export type Writable<T> = (
+  _transports: Http[],
+) => Promise<Transaction<T>>
