@@ -5,8 +5,15 @@ document.head.appendChild(script)
 
 window.addEventListener("message", (event) => {
   if (event.source !== window) return
-  console.log("browser.entry.ts => event.data", event.data)
-  if (event.data?.type?.startsWith("CRYPTOMAN_")) {
+  if (event.data?.type?.startsWith("CRYPTOMAN_REQUEST")) {
+    console.log("sending request", event.data)
     chrome.runtime.sendMessage(event.data)
+  }
+})
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type?.startsWith("CRYPTOMAN_RESPONSE")) {
+    console.log("receiving response", message)
+    window.postMessage(message, "*")
   }
 })

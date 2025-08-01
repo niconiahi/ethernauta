@@ -27,16 +27,12 @@ export function Controller() {
   useEffect(() => {
     chrome.runtime.onMessage.addListener(
       async (message) => {
-        // async (message, sender, sendResponse) => {
         const request = v.parse(
           CryptomanRequestSchema,
           message,
         )
         switch (request.type) {
           case "CRYPTOMAN_REQUEST_CONNECT": {
-            // console.log("message", message)
-            // console.log("sender", sender)
-            // console.log("sendResponse", sendResponse)
             const authenticated = await is_authenticated()
             await validate_vault(authenticated)
             if (authenticated) {
@@ -48,9 +44,6 @@ export function Controller() {
           }
           case "CRYPTOMAN_REQUEST_SIGN_TRANSACTION":
             {
-              // console.log("message", message)
-              // console.log("sender", sender)
-              // console.log("sendResponse", sendResponse)
               const authenticated = await is_authenticated()
               await validate_vault(authenticated)
               if (authenticated) {

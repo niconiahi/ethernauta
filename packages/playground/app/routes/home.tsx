@@ -35,7 +35,6 @@ export default function() {
         <button
           type="button"
           onClick={() => {
-            console.log("clicking connect")
             window.cryptoman.connect()
           }}
         >
@@ -46,7 +45,6 @@ export default function() {
         <button
           type="button"
           onClick={() => {
-            console.log("clicking send transfer")
             const method = "eth_getTransactionCount"
             const params = [
               "0x636C0fCd6DA2207aBfA80427b556695A4ad0AF94",
