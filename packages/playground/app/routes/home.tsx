@@ -28,7 +28,7 @@ import {
 //   },
 // ])
 
-export default function() {
+export default function () {
   return (
     <div>
       <p>
@@ -44,13 +44,16 @@ export default function() {
       <p>
         <button
           type="button"
-          onClick={() => {
-            const method = "eth_getTransactionCount"
-            const params = [
-              "0x636C0fCd6DA2207aBfA80427b556695A4ad0AF94",
-              number_to_hex(8870407),
-            ]
-            window.cryptoman.sign(method, params)
+          onClick={async () => {
+            const method = "transfer"
+            const ADDRESS =
+              "0x636C0fCd6DA2207aBfA80427b556695A4ad0AF94"
+            const params = [ADDRESS, number_to_hex(1)]
+            const signature = await window.cryptoman.sign(
+              method,
+              params,
+            )
+            console.log("signature", signature)
           }}
         >
           send transfer

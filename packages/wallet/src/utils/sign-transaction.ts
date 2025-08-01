@@ -1,10 +1,10 @@
 import { encode } from "./rlp"
-import { keccak_256 } from "@noble/hashes/sha3"
 import { hex_to_bytes } from "./hex"
-import invariant from "./tiny-invariant"
 import * as secp from "@noble/secp256k1"
 import { hmac } from "@noble/hashes/hmac"
-import { sha256 } from "@noble/hashes/sha256"
+import { keccak_256 } from "@noble/hashes/sha3"
+import { sha256 } from "@noble/hashes/sha2"
+import invariant from "./tiny-invariant"
 import { wallet } from "./wallet"
 import {
   get_private_key,
@@ -12,7 +12,11 @@ import {
   number_to_hex,
 } from "./crypto"
 import { eip155_11155111 } from "@cryptoman/chain"
-import { eth_getTransactionCount } from "@cryptoman/eth"
+import {
+  addressSchema,
+  eth_getTransactionCount,
+  type Address,
+} from "@cryptoman/eth"
 import {
   http,
   createReader,
@@ -21,6 +25,7 @@ import {
   type ChainId,
 } from "@cryptoman/transport"
 import type { Transaction } from "./transaction"
+import * as v from "valibot"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -44,13 +49,13 @@ export interface Eip1559TransactionUnsigned {
   max_priority_fee_per_gas: bigint
   max_fee_per_gas: bigint
   gas_limit: bigint
-  to: string
+  to: Address
   value: bigint
   data: Uint8Array
   access_list: AccessListItem[]
 }
 export interface AccessListItem {
-  address: string
+  address: Address
   storage_keys: string[]
 }
 export interface Eip1559TransactionSigned
@@ -96,58 +101,11 @@ export function compose_y_parity(
   return BigInt(recovery_id)
 }
 
-function get_to(params: Transaction["params"]): string {
-  if (params.length > 0) {
-    const tx_params = params[0] as any
-    if (tx_params?.to) return tx_params.to
-  }
-  return "0x0000000000000000000000000000000000000000" // placeholder recipient
-}
-
-function get_data(
-  method: Transaction["method"],
-  params: Transaction["params"],
-): Uint8Array<ArrayBuffer> {
-  if (
-    method === "eth_sendTransaction" &&
-    params.length > 0
-  ) {
-    const tx_params = params[0] as any
-    if (tx_params?.data) {
-      return hex_to_bytes(
-        tx_params.data.startsWith("0x")
-          ? tx_params.data.slice(2)
-          : tx_params.data,
-      ) as Uint8Array<ArrayBuffer>
-    }
-  }
-  return new Uint8Array([]) as Uint8Array<ArrayBuffer> // empty data for simple transfers
-}
-
-function get_value(
-  method: Transaction["method"],
-  params: Transaction["params"],
-): bigint {
-  if (
-    method === "eth_sendTransaction" &&
-    params.length > 0
-  ) {
-    const tx_params = params[0] as any
-    if (tx_params?.value) {
-      return typeof tx_params.value === "string"
-        ? hex_to_big(tx_params.value)
-        : BigInt(tx_params.value)
-    }
-  }
-  return 0n // 0 ETH
-}
-
 async function get_nonce(
   address: `0x${string}`,
   reader: Reader,
   chain_id: ChainId,
 ): Promise<bigint> {
-  console.log("address", address)
   const readable = eth_getTransactionCount([
     address,
     number_to_hex(8870407),
@@ -160,35 +118,11 @@ function get_chain_id(): bigint {
   return BigInt(eip155_11155111.chainId) // Sepolia chain ID
 }
 
-function get_gas_limit(
-  method: Transaction["method"],
-  params: Transaction["params"],
-): bigint {
-  if (
-    method === "eth_sendTransaction" &&
-    params.length > 0
-  ) {
-    const tx_params = params[0] as any
-    if (tx_params?.gas) {
-      return typeof tx_params.gas === "string"
-        ? hex_to_big(tx_params.gas)
-        : BigInt(tx_params.gas)
-    }
-  }
+function get_gas_limit(): bigint {
   return 21000n // standard gas limit for ETH transfer
 }
 
-function get_access_list(
-  method: Transaction["method"],
-  params: Transaction["params"],
-): AccessListItem[] {
-  if (
-    method === "eth_sendTransaction" &&
-    params.length > 0
-  ) {
-    const tx_params = params[0] as any
-    if (tx_params?.accessList) return tx_params.accessList
-  }
+function get_access_list(): AccessListItem[] {
   return [] // empty access list
 }
 
@@ -200,37 +134,63 @@ function get_max_priority_fee_per_gas(): bigint {
   return 2_000_000_000n // 2 gwei
 }
 
+function get_fields_from_transaction(
+  method: Transaction["method"],
+  params: Transaction["params"],
+): {
+  to: Address
+  data: Uint8Array<ArrayBufferLike>
+  value: bigint
+} {
+  switch (method) {
+    case "transfer": {
+      const to = v.parse(addressSchema, params[0])
+      const value = v.parse(
+        v.pipe(v.string(), v.hexadecimal()),
+        params[1],
+      )
+      return {
+        to,
+        value: hex_to_big(value),
+        data: new Uint8Array([]),
+      }
+    }
+  }
+  throw new Error(
+    `there is no support for the sent ${method} method`,
+  )
+}
+
 export async function sign_transaction(
   method: Transaction["method"],
   params: Transaction["params"],
 ) {
-  const address = wallet.value.address as `0x${string}`
-  console.log("address", address)
+  const address = wallet.value.address as Address
+  const { to, value, data } = get_fields_from_transaction(
+    method,
+    params,
+  )
   const transaction: Eip1559TransactionUnsigned = {
-    to: get_to(params),
-    data: get_data(method, params),
-    value: get_value(method, params),
+    to,
+    data,
+    value,
     nonce: await get_nonce(
       address,
       reader,
       sepolia_chain_id,
     ),
     chain_id: get_chain_id(),
-    gas_limit: get_gas_limit(method, params),
-    access_list: get_access_list(method, params),
+    gas_limit: get_gas_limit(),
+    access_list: get_access_list(),
     max_fee_per_gas: get_max_fee_per_gas(),
     max_priority_fee_per_gas:
       get_max_priority_fee_per_gas(),
   }
-  console.log("transaction", transaction)
   const private_key = get_private_key(wallet.value.key)
-  console.log("private_key", private_key)
   const encoded = encode_eip155_transaction_unsigned(
     transaction,
     private_key,
   )
-  // const encoded = new Uint8Array(32).fill(1)
-  console.log("encoded", encoded)
   return encoded
 }
 
@@ -251,40 +211,27 @@ export function encode_eip155_transaction_unsigned(
 ): Uint8Array<ArrayBufferLike> {
   // step 1: prepare transaction fields in EIP-1559 order
   const unsigned_fields = make_unsigned_fields(transaction)
-  console.log("unsigned_fields", unsigned_fields)
   // step 2: RLP encode the unsigned transaction
   const encoded_unsigned_fields =
     encode_fields(unsigned_fields)
-  console.log(
-    "encoded_unsigned_fields",
-    encoded_unsigned_fields,
-  )
   // step 3: compute message hash with type prefix (0x02 for EIP-1559)
   const type_prefix = new Uint8Array([0x02])
-  console.log("type_prefix", type_prefix)
   const transaction_hash = make_transaction_hash(
     type_prefix,
     encoded_unsigned_fields,
   )
-  console.log("transaction_hash", transaction_hash)
   // step 4: sign with ECDSA (secp256k1)
   const signature = sign_transaction_hash(
     transaction_hash,
     private_key,
   )
-  console.log("signature", signature)
   // step 5: add signature fields to create complete signed transaction
   const signed_fields = make_signed_fields(
     unsigned_fields,
     signature,
   )
-  console.log("signed_fields", signed_fields)
   // step 6: RLP encode the signed transaction
   const encoded_signed_fields = encode_fields(signed_fields)
-  console.log(
-    "encoded_signed_fields",
-    encoded_signed_fields,
-  )
   // step 7: prepend type byte to create final raw transaction
   return concat_bytes(type_prefix, encoded_signed_fields)
 }
