@@ -31,17 +31,11 @@ export async function is_authenticated() {
   return false
 }
 
-export async function validate_vault(
-  authenticated: boolean,
-) {
+export async function validate_vault() {
   const exists = await vault_exists()
   if (!exists) {
     view.value = "mnemonics"
   } else {
-    if (!authenticated) {
-      view.value = "mnemonics"
-      return
-    }
     view.value = "password"
   }
 }

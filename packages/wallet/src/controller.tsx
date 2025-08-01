@@ -3,7 +3,6 @@ import { Wallet } from "./views/wallet/index.tsx"
 import { Mnemonics } from "./views/mnemonics/index.tsx"
 import { Sign } from "./views/sign/index.tsx"
 import { useEffect } from "preact/hooks"
-import { vault_exists } from "./utils/vault.ts"
 import { view } from "./utils/view.ts"
 import * as v from "valibot"
 import { CryptomanRequestSchema } from "./utils/event.ts"
@@ -16,15 +15,6 @@ import { transaction_request } from "./utils/transaction.ts"
 
 export function Controller() {
   useEffect(() => {
-    async function run() {
-      const exists = await vault_exists()
-      if (!exists) {
-        view.value = "mnemonics"
-      }
-    }
-    run()
-  }, [])
-  useEffect(() => {
     chrome.runtime.onMessage.addListener(
       async (message) => {
         const request = v.parse(
@@ -34,7 +24,7 @@ export function Controller() {
         switch (request.type) {
           case "CRYPTOMAN_REQUEST_CONNECT": {
             const authenticated = await is_authenticated()
-            await validate_vault(authenticated)
+            await validate_vault()
             if (authenticated) {
               await restore_wallet()
               view.value = "wallet"
@@ -45,7 +35,7 @@ export function Controller() {
           case "CRYPTOMAN_REQUEST_SIGN_TRANSACTION":
             {
               const authenticated = await is_authenticated()
-              await validate_vault(authenticated)
+              await validate_vault()
               if (authenticated) {
                 await restore_wallet()
                 transaction_request.value = {
