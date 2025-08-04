@@ -1,5 +1,11 @@
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+import {
+  object,
+  parse,
+  string,
+  tuple,
+  union,
+} from "valibot"
 
 import type {
   Writable,
@@ -15,8 +21,8 @@ import {
 import type { Hash32 } from "../../../core/base"
 
 const parametersSchema = union([
-  tuple([bytesSchema]),
-  object({ transaction: bytesSchema }),
+  tuple([string()]),
+  object({ transaction: string() }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 /**
@@ -29,13 +35,18 @@ export function eth_sendRawTransaction(
     writer: Writer,
   ): Promise<Transaction<Hash32>> => {
     const method = "eth_sendRawTransaction"
+    console.log("_parameters", _parameters)
     const parameters = parse(parametersSchema, _parameters)
+    console.log("parameters", parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await writer(call)
-    if ("error" in response) {
-      throw new Error(response.error.message)
-    }
-    const result = parse(hash32Schema, response.result)
-    return result
+    console.log("call", call)
+    console.log("writer", writer)
+    const response = await writer[0](call)
+    console.log("response", response)
+    // if ("error" in response) {
+    //   throw new Error(response.error.message)
+    // }
+    // const result = parse(hash32Schema, response.result)
+    return response
   }
 }
