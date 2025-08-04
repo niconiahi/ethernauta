@@ -1,32 +1,4 @@
-// import { eip155_11155111 } from "@cryptoman/chain"
-// import { eth_sendRawTransaction } from "@cryptoman/eth"
-// import {
-//   createWriter,
-//   encodeChainId,
-//   http,
-// } from "@cryptoman/transport"
-import {
-  number_to_hex,
-  // sign_transaction,
-} from "@cryptoman/wallet"
-// import { useEffect } from "react"
-// import { bytes_to_hex } from "../../../wallet/src/utils/hex"
-
-// const NAMESPACE = {
-//   ETHEREUM: "eip155",
-// }
-// const ETHEREUM_SEPOLIA_RPC_URL =
-//   "https://little-bitter-wave.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-// const sepolia_chain_id = encodeChainId({
-//   namespace: NAMESPACE.ETHEREUM,
-//   reference: eip155_11155111.chainId,
-// })
-// const writer = createWriter([
-//   {
-//     chainId: sepolia_chain_id,
-//     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
-//   },
-// ])
+import { number_to_hex } from "@cryptoman/wallet"
 
 export default function () {
   return (

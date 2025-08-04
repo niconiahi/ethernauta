@@ -30,7 +30,13 @@ window.cryptoman = {
         function handler(
           event: MessageEvent<SignTransactionResponse>,
         ) {
-          if (event.data.id === id) {
+          if (
+            event.data.type.startsWith(
+              "CRYPTOMAN_RESPONSE",
+            ) &&
+            event.data.id === id
+          ) {
+            console.log("removing listener")
             window.removeEventListener("message", handler)
             resolve(event.data.signed_transaction)
           }
@@ -46,12 +52,8 @@ window.cryptoman = {
     })
   },
   connect: async (): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(() => {
       const id = crypto.randomUUID()
-      window.addEventListener(
-        "message",
-        function handler(event: MessageEvent<any>) {},
-      )
       const request: ConnectRequest = {
         type: "CRYPTOMAN_REQUEST_CONNECT",
         id,
