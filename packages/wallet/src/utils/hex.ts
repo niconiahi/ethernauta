@@ -7,10 +7,15 @@ export function bytes_to_hex(
     result += ALPHABET[data[i] >> 4]
     result += ALPHABET[data[i] & 0x0f]
   }
-  return result satisfies `0x${string}`
+  return `0x${result}`
 }
 
-export function hex_to_bytes(data: string): Uint8Array {
+export function strip_hex_prefix(hex: string): string {
+  return hex.startsWith("0x") ? hex.substring(2) : hex
+}
+
+export function hex_to_bytes(hex: string): Uint8Array {
+  const data = strip_hex_prefix(hex)
   if (data.length % 2 !== 0) {
     throw new Error("Invalid hex string")
   }

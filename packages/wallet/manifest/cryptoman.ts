@@ -36,7 +36,6 @@ window.cryptoman = {
             ) &&
             event.data.id === id
           ) {
-            console.log("removing listener")
             window.removeEventListener("message", handler)
             resolve(event.data.signed_transaction)
           }

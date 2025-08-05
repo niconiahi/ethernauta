@@ -59,16 +59,17 @@ const errorSchema = object({
   data: optional(unknown()),
   message: string(),
   code: union([
-    literal(-32700),
-    literal(-32701),
-    literal(-32702),
+    literal(-32000),
+    literal(-32300),
+    literal(-32400),
+    literal(-32500),
     literal(-32600),
     literal(-32601),
     literal(-32602),
     literal(-32603),
-    literal(-32500),
-    literal(-32400),
-    literal(-32300),
+    literal(-32700),
+    literal(-32701),
+    literal(-32702),
   ]),
 })
 

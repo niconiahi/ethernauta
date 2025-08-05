@@ -18,7 +18,7 @@ export function http(
     const _response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(request),
-      // maybe adding abort signal
+      // TODO: add abort signal
       headers: {
         "Content-Type": "application/json",
       },

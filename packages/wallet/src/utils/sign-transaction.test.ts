@@ -12,8 +12,45 @@ import {
   make_signed_fields,
   encode_fields,
   sign_transaction_hash,
+  get_nonce,
 } from "./sign-transaction.js"
 import { encode } from "./rlp.js"
+import { HDKey } from "@scure/bip32"
+import { sepolia } from "viem/chains"
+import { privateKeyToAccount } from "viem/accounts"
+import { recoverTransactionAddress } from "viem"
+import {
+  mnemonic_to_seed,
+  seed_to_master_key,
+  derive_private_key,
+  private_key_to_address,
+  number_to_hex,
+} from "./crypto"
+import { sign_transaction } from "./sign-transaction"
+import type { Hex } from "viem"
+import { bytes_to_hex } from "./hex.js"
+import {
+  createReader,
+  encodeChainId,
+  http,
+} from "@cryptoman/transport"
+import { eip155_11155111 } from "@cryptoman/chain"
+
+const NAMESPACE = {
+  ETHEREUM: "eip155",
+}
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://little-bitter-wave.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
+const sepolia_chain_id = encodeChainId({
+  namespace: NAMESPACE.ETHEREUM,
+  reference: eip155_11155111.chainId,
+})
+const reader = createReader([
+  {
+    chainId: sepolia_chain_id,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
+])
 
 // Test data
 const TEST_PRIVATE_KEY = new Uint8Array([
@@ -160,5 +197,153 @@ describe("transaction.ts", () => {
     expect(result).toBeInstanceOf(Uint8Array)
     expect(result[0]).toBe(0x02) // should start with EIP-1559 type byte
     expect(result.length).toBeGreaterThan(100) // should be reasonably sized
+  })
+
+  it("should match Viem signed transaction", async () => {
+    const test_mnemonic =
+      "smile price bomb movie minimum treat hurdle adult wing come space cross"
+    const seed = mnemonic_to_seed(test_mnemonic)
+    const master_key = seed_to_master_key(seed)
+    const private_key = derive_private_key(master_key)
+    const private_key_hex = bytes_to_hex(private_key)
+    const account = privateKeyToAccount(
+      private_key_hex as Hex,
+    )
+    const viem_signed = await account.signTransaction({
+      to: "0x515e9e0565fdddd4f8a9759744734154da453585",
+      value: 1n,
+      nonce: 0,
+      gas: 21000n,
+      chainId: sepolia.id,
+      type: "eip1559",
+      maxFeePerGas: 20000000000n,
+      maxPriorityFeePerGas: 2000000000n,
+    })
+    const debug_transaction: Eip1559TransactionUnsigned = {
+      to: "0x515e9e0565fdddd4f8a9759744734154da453585",
+      data: new Uint8Array(),
+      value: 1n,
+      nonce: 0n,
+      chain_id: 11155111n,
+      gas_limit: 21000n,
+      access_list: [],
+      max_fee_per_gas: 20000000000n,
+      max_priority_fee_per_gas: 2000000000n,
+    }
+    const debug_signed = encode_eip155_transaction_unsigned(
+      debug_transaction,
+      private_key,
+    )
+    expect(bytes_to_hex(debug_signed)).toBe(viem_signed)
+  })
+
+  it("should match Viem when signing transfer with dynamic params", async () => {
+    const test_mnemonic =
+      "smile price bomb movie minimum treat hurdle adult wing come space cross"
+    const seed = mnemonic_to_seed(test_mnemonic)
+    const master_key = seed_to_master_key(seed)
+    const private_key = derive_private_key(master_key)
+    const private_key_hex = bytes_to_hex(private_key)
+    const address = private_key_to_address(private_key)
+    const nonce = await get_nonce(
+      address,
+      reader,
+      sepolia_chain_id,
+    )
+    const account = privateKeyToAccount(
+      private_key_hex as Hex,
+    )
+    const method = "transfer"
+    const TARGET_ADDRESS =
+      "0x515e9e0565fdddd4f8a9759744734154da453585"
+    const params = [TARGET_ADDRESS, number_to_hex(1)] // 1 wei
+    const FIXED_GAS = 21000n
+    const FIXED_MAX_FEE = 20000000000n
+    const FIXED_PRIORITY_FEE = 2000000000n
+    const viem_signed = await account.signTransaction({
+      to: TARGET_ADDRESS,
+      value: 1n, // 1 wei
+      nonce: Number(nonce),
+      gas: FIXED_GAS,
+      chainId: sepolia.id,
+      type: "eip1559",
+      maxFeePerGas: FIXED_MAX_FEE,
+      maxPriorityFeePerGas: FIXED_PRIORITY_FEE,
+    })
+    const key = new HDKey({ privateKey: private_key })
+    const cryptoman_signed = await sign_transaction({
+      key,
+      nonce,
+      method,
+      params,
+    })
+    expect(bytes_to_hex(cryptoman_signed)).toBe(viem_signed)
+  })
+
+  it("should recover correct sender address from signed transaction", async () => {
+    const test_mnemonic =
+      "smile price bomb movie minimum treat hurdle adult wing come space cross"
+    const seed = mnemonic_to_seed(test_mnemonic)
+    const master_key = seed_to_master_key(seed)
+    const private_key = derive_private_key(master_key)
+    const expected_address =
+      private_key_to_address(private_key)
+
+    const key = new HDKey({ privateKey: private_key })
+    const method = "transfer"
+    const TARGET_ADDRESS =
+      "0x515e9e0565fdddd4f8a9759744734154da453585"
+    const params = [TARGET_ADDRESS, number_to_hex(1)]
+
+    const cryptoman_signed = await sign_transaction({
+      key,
+      nonce: 0n,
+      method,
+      params,
+    })
+
+    const signed_tx_hex = bytes_to_hex(
+      cryptoman_signed,
+    ) as Hex
+
+    // Recover sender address from signed transaction
+    const recovered_address =
+      await recoverTransactionAddress({
+        serializedTransaction: signed_tx_hex,
+      })
+
+    console.log("Expected address:", expected_address)
+    console.log("Recovered address:", recovered_address)
+
+    expect(recovered_address.toLowerCase()).toBe(
+      expected_address.toLowerCase(),
+    )
+  })
+
+  it("should recover correct address from actual console log transaction", async () => {
+    // This is the exact signed transaction from your console log
+    const actual_signed_tx =
+      "0x02f86e83aa36a78084773594008504a817c80082520894636c0fcd6da2207abfa80427b556695a4ad0af940180c001a0fa74e0e883841cf1919c0e5f93d819d62a30a49a1d501de04e2f52516b3083fda05ead6e9bc177a69962ec192130364d97ba7fc041cf2c74a0a3203c13136ddb47" as Hex
+
+    const expected_address =
+      "0x515e9e0565fdddd4f8a9759744734154da453585"
+
+    const recovered_address =
+      await recoverTransactionAddress({
+        serializedTransaction: actual_signed_tx,
+      })
+
+    console.log(
+      "Console log transaction - Expected:",
+      expected_address,
+    )
+    console.log(
+      "Console log transaction - Recovered:",
+      recovered_address,
+    )
+
+    expect(recovered_address.toLowerCase()).toBe(
+      expected_address.toLowerCase(),
+    )
   })
 })

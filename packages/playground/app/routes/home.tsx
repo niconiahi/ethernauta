@@ -8,6 +8,7 @@ import {
   watch_transaction,
 } from "@cryptoman/transport"
 import { number_to_hex } from "@cryptoman/wallet"
+import { hex_to_bytes } from "../../../wallet/src/utils/hex"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -25,7 +26,7 @@ const writer = createWriter([
   },
 ])
 
-export default function() {
+export default function () {
   return (
     <div>
       <p>
@@ -44,7 +45,7 @@ export default function() {
           onClick={async () => {
             const method = "transfer"
             const ADDRESS =
-              "0x636C0fCd6DA2207aBfA80427b556695A4ad0AF94"
+              "0x515e9e0565fdddd4f8a9759744734154da453585"
             const params = [ADDRESS, number_to_hex(1)]
             const signed_transaction =
               await window.cryptoman.sign(method, params)
@@ -61,7 +62,7 @@ export default function() {
               signed_transaction,
               // a new "transaction" is returned every time
               // the transaction mutates state
-              (transaction) => { },
+              (transaction) => {},
             )
           }}
         >

@@ -4,44 +4,18 @@ import * as secp from "@noble/secp256k1"
 import { hmac } from "@noble/hashes/hmac"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { sha256 } from "@noble/hashes/sha2"
+import type { HDKey } from "@scure/bip32"
 import invariant from "./tiny-invariant"
-import { wallet } from "./wallet"
-import {
-  get_private_key,
-  hex_to_big,
-  number_to_hex,
-} from "./crypto"
+import { get_private_key, hex_to_big } from "./crypto"
 import { eip155_11155111 } from "@cryptoman/chain"
 import {
   addressSchema,
   eth_getTransactionCount,
   type Address,
 } from "@cryptoman/eth"
-import {
-  http,
-  createReader,
-  encodeChainId,
-  type Reader,
-  type ChainId,
-} from "@cryptoman/transport"
+import type { Reader, ChainId } from "@cryptoman/transport"
 import type { Transaction } from "./transaction"
 import * as v from "valibot"
-
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://little-bitter-wave.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-const sepolia_chain_id = encodeChainId({
-  namespace: NAMESPACE.ETHEREUM,
-  reference: eip155_11155111.chainId,
-})
-const reader = createReader([
-  {
-    chainId: sepolia_chain_id,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
-  },
-])
 
 export interface Eip1559TransactionUnsigned {
   chain_id: bigint
@@ -67,10 +41,6 @@ export interface Eip1559TransactionSigned
 type EncodedAccessListItem = [Uint8Array, Uint8Array[]]
 type EncodedAccessList = EncodedAccessListItem[]
 type Field = Uint8Array<ArrayBufferLike> | EncodedAccessList
-
-function strip_hex_prefix(hex: string): string {
-  return hex.startsWith("0x") ? hex.substring(2) : hex
-}
 
 export function big_to_bytes(
   big: bigint,
@@ -101,14 +71,14 @@ export function compose_y_parity(
   return BigInt(recovery_id)
 }
 
-async function get_nonce(
+export async function get_nonce(
   address: `0x${string}`,
   reader: Reader,
   chain_id: ChainId,
 ): Promise<bigint> {
   const readable = eth_getTransactionCount([
     address,
-    number_to_hex(8870407),
+    "latest",
   ])
   const transaction_count = await readable(reader(chain_id))
   return hex_to_big(transaction_count)
@@ -148,7 +118,7 @@ function get_fields_from_transaction(
       const value = v.parse(
         v.pipe(v.string(), v.hexadecimal()),
         params[1],
-      )
+      ) as `0x${string}`
       return {
         to,
         value: hex_to_big(value),
@@ -161,11 +131,17 @@ function get_fields_from_transaction(
   )
 }
 
-export async function sign_transaction(
-  method: Transaction["method"],
-  params: Transaction["params"],
-) {
-  const address = wallet.value.address as Address
+export async function sign_transaction({
+  key,
+  nonce,
+  method,
+  params,
+}: {
+  key: HDKey
+  nonce: bigint
+  method: Transaction["method"]
+  params: Transaction["params"]
+}) {
   const { to, value, data } = get_fields_from_transaction(
     method,
     params,
@@ -174,11 +150,7 @@ export async function sign_transaction(
     to,
     data,
     value,
-    nonce: await get_nonce(
-      address,
-      reader,
-      sepolia_chain_id,
-    ),
+    nonce,
     chain_id: get_chain_id(),
     gas_limit: get_gas_limit(),
     access_list: get_access_list(),
@@ -186,7 +158,7 @@ export async function sign_transaction(
     max_priority_fee_per_gas:
       get_max_priority_fee_per_gas(),
   }
-  const private_key = get_private_key(wallet.value.key)
+  const private_key = get_private_key(key)
   const encoded = encode_eip155_transaction_unsigned(
     transaction,
     private_key,
@@ -267,12 +239,10 @@ export function encode_access_list(
     for (let j = 0; j < item.storage_keys.length; j++) {
       const storage_key = item.storage_keys[j]
       invariant(storage_key, "storage key should exist")
-      storage_keys[j] = hex_to_bytes(
-        strip_hex_prefix(storage_key),
-      )
+      storage_keys[j] = hex_to_bytes(storage_key)
     }
     encoded_list[i] = [
-      hex_to_bytes(strip_hex_prefix(item.address)),
+      hex_to_bytes(item.address),
       storage_keys,
     ]
   }
@@ -323,7 +293,7 @@ export function make_unsigned_fields(
   )
   fields[3] = big_to_bytes(transaction.max_fee_per_gas)
   fields[4] = big_to_bytes(transaction.gas_limit)
-  fields[5] = hex_to_bytes(strip_hex_prefix(transaction.to))
+  fields[5] = hex_to_bytes(transaction.to)
   fields[6] = big_to_bytes(transaction.value)
   fields[7] = transaction.data
   fields[8] = encode_access_list([])

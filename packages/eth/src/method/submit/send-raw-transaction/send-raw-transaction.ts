@@ -35,18 +35,15 @@ export function eth_sendRawTransaction(
     writer: Writer,
   ): Promise<Transaction<Hash32>> => {
     const method = "eth_sendRawTransaction"
-    console.log("_parameters", _parameters)
     const parameters = parse(parametersSchema, _parameters)
-    console.log("parameters", parameters)
     const call = parse(callSchema, [method, parameters])
-    console.log("call", call)
-    console.log("writer", writer)
+    console.log("writer[0]", writer[0])
     const response = await writer[0](call)
     console.log("response", response)
-    // if ("error" in response) {
-    //   throw new Error(response.error.message)
-    // }
-    // const result = parse(hash32Schema, response.result)
-    return response
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(hash32Schema, response.result)
+    return result
   }
 }

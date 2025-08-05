@@ -1,98 +1,291 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with the Cryptoman codebase.
 
 ## Objective
 
-**Cryptoman** is a cryptocurrency wallet Chrome extension that allows users to:
-- Create a wallet from mnemonic words while setting a password
-- Store mnemonics securely in IndexedDB with encryption
-- Access wallet functionality through a simple UI
+**Cryptoman** is a secure cryptocurrency wallet Chrome extension that provides:
+- Wallet creation from mnemonic phrases with password protection
+- Secure mnemonic storage using IndexedDB with AES-GCM encryption
+- Transaction signing for Ethereum-compatible networks
+- Clean, minimal UI built with Preact
+- Extensible architecture supporting multiple blockchain networks
 
-## Project Overview
-
-**Cryptoman** is built as a multi-package monorepo using pnpm workspaces. The main extension is built with Preact and uses Preact Signals for state management, replacing the previous XState implementation.
-
-## Commands
-
-### Development
-- `pnpm dev` - Start development build for the extension (runs `pnpm --filter extension run dev`)
-- `pnpm test` - Run unit tests for all packages except connector
-- `pnpm test:chain` - Run tests specifically for the chain package
-- `pnpm test:eth` - Run tests specifically for the eth package
-
-### Code Quality
-- `biome check` - Run linter and formatter checks
-- `biome format --write` - Format code according to project standards
-
-### Extension Build
-- From extension package: `pnpm build` - Creates production build and zips extension for Chrome Web Store upload (run from dist directory)
-
-## Architecture
+## Project Architecture
 
 ### Monorepo Structure
-The project is organized as a pnpm workspace with multiple packages:
-- **@cryptoman/extension** - Main Chrome extension with UI
-- **@cryptoman/chain** - Chain abstractions and utilities
-- **@cryptoman/eth** - Ethereum-specific functionality
-- **@cryptoman/transport** - Transport layer for blockchain communication
-- **@cryptoman/connector** - External wallet connection utilities
+Cryptoman is organized as a pnpm workspace monorepo with the following packages:
 
-### State Management
-The application uses **Preact Signals** for state management with a simple controller pattern:
-- **View signal** (`src/utils/view.ts`) - Controls which view is displayed (mnemonics/password/wallet)
-- **Controller** (`src/controller.tsx`) - Simple switch-based view rendering
-- No complex state machines - straightforward signal-based state
+#### Core Packages
+- **@cryptoman/wallet** - Main Chrome extension with UI and crypto operations
+- **@cryptoman/transport** - Transport layer for JSON-RPC communication and blockchain interactions
+- **@cryptoman/chain** - Chain definitions and utilities (extensive EIP-155 chain support)
+- **@cryptoman/eth** - Ethereum-specific functionality and methods
+- **@cryptoman/connector** - External wallet connection utilities (WalletConnect support)
 
-### Key Libraries
-- **Preact** & **@preact/signals** - UI framework and state management
-- **@scure/bip39** & **@scure/bip32** - Mnemonic and HD wallet utilities
-- **@noble/hashes** & **@noble/secp256k1** - Cryptographic operations
-- **Valibot** - Schema validation for forms and data
+#### Development Packages  
+- **playground** - React Router development environment for testing wallet integration
 
-### Secure Storage
-The `packages/extension/src/utils/vault.ts` file implements secure mnemonic storage:
-- **IndexedDB** for persistent storage
-- **PBKDF2** (100,000 iterations) for key derivation from password
-- **AES-GCM** encryption for mnemonic protection
-- **Base64 encoding** for data serialization
-- Database: `cryptoman/signer` with store `vault`
+### Technology Stack
 
-### Cryptographic Operations
-The `packages/extension/src/utils/crypto.ts` file provides:
-- Mnemonic validation using @scure/bip39
-- Mnemonic to seed conversion with validation
-- HD key derivation (BIP32/BIP44 paths, default: `m/44'/60'/0'/0/0`)
-- Private key to Ethereum address generation using Keccak-256
+#### Frontend & State Management
+- **Preact 10.26.9** - Lightweight React alternative for the extension UI
+- **@preact/signals 2.2.1** - Reactive state management (replaces previous XState implementation)
+- **Valibot 1.1.0** - Schema validation for forms and API data across all packages
 
-### TypeScript Configuration
-- Root tsconfig extends `@total-typescript/tsconfig/tsc/dom/library`
-- Path aliases for clean imports: `@cryptoman/transport`, `@cryptoman/eth`, etc.
-- JSX configured for Preact with `react-jsx` transform
+#### Cryptography & Security
+- **@noble/hashes 1.8.0** - Cryptographic hash functions (Keccak-256, SHA-256)
+- **@noble/secp256k1 2.3.0** - Elliptic curve cryptography for key operations
+- **@scure/bip39 1.6.0** - BIP39 mnemonic phrase generation and validation
+- **@scure/bip32 1.7.0** - HD key derivation (BIP32/BIP44)
+- **PBKDF2** (100,000 iterations) for password-based key derivation
+- **AES-GCM** for mnemonic encryption in IndexedDB storage
+
+#### Build & Development Tools
+- **Vite 7.0.5** - Build tool with HMR for development
+- **Biome 2.1.1** - Fast linter and formatter
+- **Vitest 3.2.4** - Unit testing framework
+- **TypeScript 5.8.3** - Type safety across all packages
+- **pnpm** - Package manager with workspace support
+
+### Package Details
+
+#### @cryptoman/wallet (`packages/wallet/`)
+The main Chrome extension package containing:
+
+**Core Files:**
+- `src/controller.tsx` - Main view controller with message handling
+- `src/utils/view.ts` - View state management using Preact signals
+- `src/utils/vault.ts` - Secure mnemonic storage with IndexedDB + encryption
+- `src/utils/crypto.ts` - Cryptographic operations (mnemonic → seed → keys → addresses)
+- `src/utils/authentication.ts` - Vault authentication and validation
+- `src/utils/wallet.ts` - Wallet restoration and management
+- `src/utils/transaction.ts` - Transaction signing and management
+- `src/utils/sign-transaction.ts` - Transaction signature utilities
+
+**Views:**
+- `src/views/mnemonics/` - Initial wallet setup with mnemonic generation
+- `src/views/password/` - Password entry for vault unlock
+- `src/views/wallet/` - Main wallet interface
+- `src/views/sign/` - Transaction signing interface
+
+**Extension Architecture:**
+- `manifest/extension.entry.ts` - Background script for message handling
+- `manifest/browser.entry.ts` - Content script injection
+- `manifest/cryptoman.ts` - Web-accessible resources
+- `public/manifest.json` - Chrome extension manifest v3
+
+#### @cryptoman/transport (`packages/transport/`)
+Blockchain communication layer providing:
+- JSON-RPC client implementation
+- HTTP transport with error handling
+- Transaction management and monitoring
+- Chain ID encoding/decoding (CAIP-2, CAIP-10, CAIP-19 standards)
+- Reader/Writer pattern for blockchain operations
+
+#### @cryptoman/chain (`packages/chain/`)
+Comprehensive chain definitions including:
+- 500+ EIP-155 chain configurations (Ethereum, Polygon, BSC, L2s, testnets)
+- Chain indexer for automatic updates
+- Shared utilities for chain operations
+- CAIP standard implementations
+
+#### @cryptoman/eth (`packages/eth/`)
+Ethereum-specific functionality:
+- ABI encoding/decoding for functions, events, and errors
+- Block, transaction, and receipt utilities
+- Method implementations for common operations
+- Fee market (EIP-1559) support
+- State management utilities
+
+#### @cryptoman/connector (`packages/connector/`)
+External wallet integration:
+- WalletConnect protocol implementation
+- Cross-wallet compatibility layer
+
+#### playground (`packages/playground/`)
+Development testing environment:
+- React Router 7.7.1 application
+- Cloudflare Pages deployment configuration
+- Integration examples and testing utilities
+- Live wallet interaction demos
+
+## Commands & Scripts
+
+### Development
+```bash
+pnpm dev                 # Start wallet extension development build
+pnpm test               # Run unit tests for all packages except connector
+pnpm test:chain         # Run chain package tests specifically
+pnpm test:eth           # Run eth package tests specifically
+```
+
+### Code Quality
+```bash
+biome check             # Run linter and formatter checks
+biome format --write    # Format code according to project standards
+```
+
+### Extension Build & Distribution
+```bash
+# From packages/wallet/
+pnpm build              # Production build (creates both manifest and extension)
+pnpm zip                # Create extension.zip for Chrome Web Store (run from dist/)
+```
+
+### Package-Specific Scripts
+```bash
+# Transport, eth, connector packages
+pnpm dev                # Watch mode builds with tsup
+pnpm build              # Production builds
+
+# Chain package  
+pnpm run:indexer        # Update chain definitions from git repositories
+
+# Playground
+pnpm dev                # React Router development server
+pnpm deploy             # Build and deploy to Cloudflare Pages
+```
+
+## Development Workflow
+
+### State Management Pattern
+The extension uses a simple, signal-based architecture:
+
+1. **View Signal** (`packages/wallet/src/utils/view.ts`):
+   ```typescript
+   export const INITIAL_VIEW = "password"
+   export const view = signal(INITIAL_VIEW)
+   ```
+
+2. **Controller Pattern** (`packages/wallet/src/controller.tsx`):
+   - Message handling for Chrome extension communication
+   - Simple switch-based view rendering
+   - Authentication flow management
+
+3. **Views Navigation**:
+   - `"password"` - Initial view for vault unlock
+   - `"mnemonics"` - New wallet setup (if no vault exists)
+   - `"wallet"` - Main wallet interface (after authentication)
+   - `"sign"` - Transaction signing interface
+
+### Extension Communication Flow
+1. **Content Script** → **Background Script** → **Popup**
+2. **Message Types**:
+   - `CRYPTOMAN_REQUEST_CONNECT` - Wallet connection request
+   - `CRYPTOMAN_REQUEST_SIGN_TRANSACTION` - Transaction signing request
+   - `CRYPTOMAN_RESPONSE_*` - Response messages back to content script
+
+### Secure Storage Implementation
+The vault system (`packages/wallet/src/utils/vault.ts`) provides:
+
+**Encryption Process**:
+1. User password + random salt → PBKDF2 (100,000 iterations) → encryption key
+2. Mnemonic + random IV → AES-GCM encryption → encrypted cipher
+3. Store: `{salt, iv, cipher}` in IndexedDB (`cryptoman/signer` database)
+
+**Security Features**:
+- Password-based key derivation (PBKDF2 with SHA-256)
+- Authenticated encryption (AES-GCM)
+- Secure random number generation for salts and IVs
+- Base64 encoding for storage serialization
 
 ### Build Configuration
-- **Vite** for extension builds with Preact preset
-- Manual chunking separates vendor libraries by package and version
-- ES modules output format for modern browsers
-- Chrome extension structure with manifest in public directory
 
-## Development Notes
+#### TypeScript Configuration
+- **Root tsconfig**: Extends `@total-typescript/tsconfig/tsc/dom/library`
+- **Path Aliases**:
+  ```json
+  {
+    "@cryptoman/transport": ["./packages/transport/src"],
+    "@cryptoman/eth": ["./packages/eth/src"],
+    "@cryptoman/chain": ["./packages/chain/src"],
+    "@cryptoman/connector": ["./packages/connector/src"],
+    "@cryptoman/wallet": ["./packages/wallet/src"],
+    "@utils/*": ["./utils/*"]
+  }
+  ```
+- **JSX**: Configured for Preact with `react-jsx` transform
+- **Types**: Includes Vitest globals and Chrome extension APIs
 
-### Code Style (Biome Configuration)
-- **60 character line width** for compact code
-- **snake_case** for variable names and functions
-- **Semicolons as needed** (asNeeded)
-- **Self-closing elements** enforced
-- **No parameter reassignment** allowed
-- **2 space indentation**
+#### Vite Build Configuration
+**Extension Build** (`packages/wallet/vite.extension.config.ts`):
+- Preact preset with tsconfig paths
+- ES modules output format
+- Manual chunking for vendor libraries
+- Hash-based file names in production
+- Watch mode support for development
 
-### Testing
-- **Vitest** for unit tests with `fake-indexeddb` for vault testing
-- Test files alongside source code (e.g., `crypto.test.ts`, `vault.test.ts`)
-- Tests configured at workspace root with vitest.config.mjs
+**Manifest Build** (`packages/wallet/vite.manifest.config.ts`):
+- Separate build for extension background script
+- Service worker output format
+
+#### Biome Configuration
+**Code Style Standards**:
+- **Line Width**: 60 characters for compact, readable code
+- **Naming Convention**: snake_case for variables and functions
+- **Semicolons**: As needed (asNeeded)
+- **Indentation**: 2 spaces
+- **Rules**: No parameter reassignment, self-closing elements, enum initializers
+
+**Linting Rules**:
+- Recommended rules enabled
+- Accessibility rules customized for extension context
+- Style rules enforced (const assertions, number namespace, etc.)
+
+### Testing Strategy
+
+#### Test Configuration
+- **Framework**: Vitest with edge-runtime environment
+- **Root Config**: `vitest.config.mjs` includes all `packages/**/*.test.ts`
+- **Mocking**: `fake-indexeddb` for vault storage testing
+- **Coverage**: Unit tests for cryptographic functions and utilities
+
+#### Test Patterns
+```typescript
+// Example test structure
+describe('crypto utilities', () => {
+  test('mnemonic validation', () => {
+    expect(validateMnemonic('valid mnemonic phrase...')).toBe(true)
+  })
+})
+```
+
+### Package Dependencies
+
+#### Workspace Dependencies
+- All packages use `valibot@1.1.0` for schema validation
+- Crypto packages share `@noble/*` and `@scure/*` libraries
+- Internal packages reference each other via `workspace:*`
+
+#### Development Dependencies
+- `tsup` for package builds (transport, eth, connector)
+- `npm-run-all` for parallel script execution
+- `fake-indexeddb` for IndexedDB testing
+- `@types/chrome` for extension API types
+
+## Development Guidelines
+
+### Code Organization
+- **Test files**: Co-located with source files (`.test.ts` suffix)
+- **Utils**: Shared utilities in each package's `utils/` directory  
+- **Types**: TypeScript interfaces and schemas alongside implementation
+- **Index files**: Clean re-exports for package APIs
+
+### Security Best Practices
+- **Never log sensitive data**: Mnemonics, private keys, passwords
+- **Validate all inputs**: Use Valibot schemas for runtime validation
+- **Secure random generation**: Use `crypto.getRandomValues()` for salts/IVs
+- **Constant-time operations**: Use timing-safe equality checks where needed
 
 ### Extension Development
-- Source in `packages/extension/src/` builds to `packages/extension/dist/`
-- Three main views: mnemonics (initial setup), password (unlock), wallet (main)
-- Views switch based on vault existence and authentication state
-- Simple signal-based navigation between views
+- **Manifest V3**: Uses service workers instead of background pages
+- **Permissions**: Minimal permissions (`storage`, `activeTab`)
+- **Content Security Policy**: Strict CSP for security
+- **Message Passing**: Structured communication between contexts
+
+### Performance Considerations
+- **Code Splitting**: Manual chunks for vendor libraries
+- **Tree Shaking**: ES modules for optimal bundling
+- **Lazy Loading**: Views loaded only when needed
+- **Memory Management**: Signals for efficient reactivity

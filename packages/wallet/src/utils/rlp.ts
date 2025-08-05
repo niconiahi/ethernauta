@@ -1,3 +1,5 @@
+import { hex_to_bytes } from "./hex"
+
 type RLPInput =
   | string
   | number
@@ -90,17 +92,6 @@ function to_bytes(
   throw new Error(`cannot convert ${typeof input} to bytes`)
 }
 
-function hex_to_bytes(hex: string): Uint8Array {
-  const clean_hex = hex.slice(2) // remove "0x" prefix
-  const bytes = new Uint8Array(clean_hex.length / 2)
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = Number.parseInt(
-      clean_hex.slice(i * 2, i * 2 + 2),
-      16,
-    )
-  }
-  return bytes
-}
 
 function number_to_bytes(big: bigint): Uint8Array {
   if (big === 0n) return new Uint8Array([])
@@ -109,7 +100,7 @@ function number_to_bytes(big: bigint): Uint8Array {
     hex.length + (hex.length % 2),
     "0",
   )
-  return hex_to_bytes(`0x${padded_hex}`)
+  return hex_to_bytes(padded_hex)
 }
 
 function encode_length(length: number): Uint8Array {

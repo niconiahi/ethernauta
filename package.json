@@ -2,10 +2,8 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "cryptoman",
   "scripts": {
-    "dev": "pnpm --filter extension run dev",
-    "test": "pnpm --recursive --filter !@cryptoman/connector run test:unit",
-    "test:chain": "pnpm --recursive --filter @cryptoman/chain run test:unit",
-    "test:eth": "pnpm --recursive --filter @cryptoman/eth run test:unit"
+    "dev": "pnpm -r --parallel --filter @cryptoman/wallet --filter @cryptoman/playground dev",
+    "test": "pnpm --recursive --filter !@cryptoman/connector run test:unit"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

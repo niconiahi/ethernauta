@@ -7,6 +7,7 @@ import { HDKey } from "@scure/bip32"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { getPublicKey } from "@noble/secp256k1"
 import invariant from "./tiny-invariant"
+import { bytes_to_hex } from "./hex"
 
 export function mnemonic_to_seed(mnemonic: string) {
   if (!validateMnemonic(mnemonic, wordlist)) {
@@ -34,13 +35,9 @@ export function private_key_to_address(
 ) {
   const publicKey = getPublicKey(private_key, false)
   const hash = keccak_256(publicKey.slice(1))
-  return `0x${to_hex(hash.slice(-20))}` satisfies `0x${string}`
-}
-
-export function to_hex(bytes: Uint8Array) {
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("")
+  return bytes_to_hex(
+    hash.slice(-20),
+  ) satisfies `0x${string}`
 }
 
 export function get_public_key(key: HDKey) {
