@@ -1,28 +1,15 @@
 import type { InferOutput } from "valibot"
-import {
-  object,
-  parse,
-  // string,
-  tuple,
-  union,
-} from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
-import type {
-  Writable,
-  Transaction,
-  Http,
-} from "@cryptoman/transport"
-import {
-  callSchema,
-  // store_transaction,
-} from "@cryptoman/transport"
+import type { Writable, Http } from "@cryptoman/transport"
+import { callSchema } from "@cryptoman/transport"
 
-import { Hash32Schema } from "../../core/base"
+import { bytesSchema, Hash32Schema } from "../../core/base"
 import type { Hash32 } from "../../core/base"
 
 const parametersSchema = union([
-  tuple([Hash32Schema]),
-  object({ transaction: Hash32Schema }),
+  tuple([bytesSchema]),
+  object({ transaction: bytesSchema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 /**
@@ -30,10 +17,8 @@ type Parameters = InferOutput<typeof parametersSchema>
  */
 export function eth_sendRawTransaction(
   _parameters: Parameters,
-): Writable<Transaction<Hash32>> {
-  return async (
-    transports: Http[],
-  ): Promise<Transaction<Hash32>> => {
+): Writable<Hash32> {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "eth_sendRawTransaction"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

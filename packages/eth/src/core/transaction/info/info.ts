@@ -1,17 +1,23 @@
 import type { InferOutput } from "valibot"
 import { object } from "valibot"
 
-import { addressSchema, hash32Schema, uintSchema } from "../../base"
+import {
+  addressSchema,
+  Hash32Schema,
+  uintSchema,
+} from "../../base"
 
 /**
  * Transaction information object.
  */
 
 export const transactionInfoSchema = object({
-  blockHash: hash32Schema,
+  blockHash: Hash32Schema,
   blockNumber: uintSchema,
   from: addressSchema,
-  hash: hash32Schema,
+  hash: Hash32Schema,
   transactionIndex: uintSchema,
 })
-export type TransactionInfo = InferOutput<typeof transactionInfoSchema>
+export type TransactionInfo = InferOutput<
+  typeof transactionInfoSchema
+>

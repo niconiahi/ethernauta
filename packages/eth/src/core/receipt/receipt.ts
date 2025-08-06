@@ -1,14 +1,29 @@
+// https://github.com/ethereum/execution-apis/blob/main/src/eth/transaction.yaml
 import type { InferOutput } from "valibot"
-import { array, boolean, nullable, object, optional } from "valibot"
+import {
+  array,
+  boolean,
+  nullable,
+  object,
+  optional,
+} from "valibot"
 
-import { addressSchema, byteSchema, bytes32Schema, bytesSchema, hash32Schema, uintSchema } from "../base"
+import {
+  addressSchema,
+  byteSchema,
+  bytes32Schema,
+  bytesSchema,
+  Hash32Schema,
+  uintSchema,
+  bytes256Schema,
+} from "../base"
 
 export const logSchema = object({
   removed: boolean(),
   logIndex: uintSchema,
   transactionIndex: uintSchema,
-  transactionHash: hash32Schema,
-  blockHash: hash32Schema,
+  transactionHash: Hash32Schema,
+  blockHash: Hash32Schema,
   blockNumber: uintSchema,
   address: addressSchema,
   data: bytesSchema,
@@ -17,22 +32,24 @@ export const logSchema = object({
 export type Log = InferOutput<typeof logSchema>
 
 export const receiptInfoSchema = object({
-  type: optional(byteSchema), // might not be present in all receipts
-  transactionHash: hash32Schema,
-  transactionIndex: uintSchema,
-  blockHash: hash32Schema,
+  blockHash: Hash32Schema,
   blockNumber: uintSchema,
   from: addressSchema,
-  to: nullable(addressSchema),
   cumulativeGasUsed: uintSchema,
   gasUsed: uintSchema,
-  blobGasUsed: optional(uintSchema), // only for blob transactions
-  contractAddress: nullable(addressSchema),
   logs: array(logSchema),
-  logsBloom: bytesSchema,
-  root: optional(hash32Schema), // only for pre-Byzantium transactions
-  status: optional(uintSchema), // only for post-Byzantium transactions
+  logsBloom: bytes256Schema,
+  transactionHash: Hash32Schema,
+  transactionIndex: uintSchema,
   effectiveGasPrice: uintSchema,
+  type: optional(byteSchema), // might not be present in all receipts
+  to: nullable(addressSchema),
+  blobGasUsed: optional(uintSchema), // only for blob transactions
+  root: optional(Hash32Schema), // only for pre-Byzantium transactions
+  status: optional(uintSchema), // only for post-Byzantium transactions
   blobGasPrice: optional(uintSchema), // only for blob transactions
+  contractAddress: nullable(addressSchema),
 })
-export type ReceiptInfo = InferOutput<typeof receiptInfoSchema>
+export type ReceiptInfo = InferOutput<
+  typeof receiptInfoSchema
+>
