@@ -125,10 +125,7 @@ export function watch_transaction(
   const interval_id = setInterval(async () => {
     const readable = eth_getTransactionReceipt([hash])
     const receipt = await readable(reader(sepolia_chain_id))
-    if (!receipt) {
-      console.log("transaction still pending")
-      return
-    }
+    if (!receipt) return // transaction still pending
     invariant(
       receipt.status,
       "status should exist as the transaction was created after Byzantium update",
