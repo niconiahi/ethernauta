@@ -35,7 +35,8 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "valibot": "1.1.0"
+    "valibot": "1.1.0",
+    "@cryptoman/eth": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.1"

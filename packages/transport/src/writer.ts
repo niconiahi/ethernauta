@@ -2,7 +2,6 @@ import { parse } from "valibot"
 
 import { chainIdSchema } from "./chain"
 import type { Http } from "./http"
-import type { Transaction } from "./transaction"
 
 export function createWriter(
   chains: Array<{ chainId: string; transports: Http[] }>,
@@ -23,4 +22,4 @@ export function createWriter(
 export type Writer = ReturnType<typeof createWriter>
 export type Writable<T> = (
   _transports: Http[],
-) => Promise<Transaction<T>>
+) => Promise<T>

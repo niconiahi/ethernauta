@@ -3,12 +3,13 @@ import { eth_sendRawTransaction } from "@cryptoman/eth"
 import {
   createWriter,
   encodeChainId,
-  get_transaction,
   http,
+  register_transaction,
   watch_transaction,
+  type Transaction,
 } from "@cryptoman/transport"
 import { number_to_hex } from "@cryptoman/wallet"
-import { hex_to_bytes } from "../../../wallet/src/utils/hex"
+import { useEffect, useState } from "react"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -26,7 +27,23 @@ const writer = createWriter([
   },
 ])
 
-export default function () {
+export default function() {
+  const [hash, setHash] = useState<`0x${string}` | null>(
+    null,
+  )
+  const [transaction_log, set_transaction_log] = useState<
+    Transaction[]
+  >([])
+  useEffect(() => {
+    if (!hash) return
+    const transaction = register_transaction(hash)
+    set_transaction_log([transaction])
+    watch_transaction(hash, (transaction) => {
+      set_transaction_log((prev_transaction_logs) => {
+        return [...prev_transaction_logs, transaction]
+      })
+    })
+  }, [hash])
   return (
     <div>
       <p>
@@ -52,23 +69,33 @@ export default function () {
             const writable = eth_sendRawTransaction([
               signed_transaction,
             ])
-            await writable(writer(sepolia_chain_id))
-            // "transaction" is a snapshot of transaction
-            // at the time of calling "get_transaction"
-            const transaction = get_transaction(
-              signed_transaction,
+            const hash = await writable(
+              writer(sepolia_chain_id),
             )
-            watch_transaction(
-              signed_transaction,
-              // a new "transaction" is returned every time
-              // the transaction mutates state
-              (transaction) => {},
-            )
+            setHash(hash)
           }}
         >
           send transfer
         </button>
       </p>
+      <ul>
+        {transaction_log.map((transaction) => {
+          const key = `transaction-${transaction.hash}-${transaction.status}`
+          switch (transaction.status) {
+            case "mined": {
+              return (
+                <li key={key}>
+                  {transaction.status} at block number{" "}
+                  {transaction.blockNumber}
+                </li>
+              )
+            }
+            default: {
+              return <li key={key}>{transaction.status}</li>
+            }
+          }
+        })}
+      </ul>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import {
   addressSchema,
   byteSchema,
   bytesSchema,
-  hash32Schema,
+  Hash32Schema,
   uintSchema,
 } from "../../base"
 import { accessListSchema } from "../../transaction"
@@ -25,7 +25,7 @@ export const genericTransactionSchema = object({
   maxFeePerGas: uintSchema,
   maxFeePerBlobGas: uintSchema,
   accessList: accessListSchema,
-  blobVersionedHashes: array(hash32Schema),
+  blobVersionedHashes: array(Hash32Schema),
   blobs: array(bytesSchema),
   chainId: uintSchema,
 })

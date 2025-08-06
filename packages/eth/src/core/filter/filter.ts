@@ -1,14 +1,28 @@
 import type { InferOutput } from "valibot"
 import { array, null_, object, union } from "valibot"
 
-import { addressSchema, addressesSchema, bytes32Schema, hash32Schema, uintSchema } from "../base"
+import {
+  addressSchema,
+  addressesSchema,
+  bytes32Schema,
+  Hash32Schema,
+  uintSchema,
+} from "../base"
 import { logSchema } from "../receipt"
 
-export const filterTopicSchema = union([null_(), bytes32Schema, array(bytes32Schema)])
-export type FilterTopic = InferOutput<typeof filterTopicSchema>
+export const filterTopicSchema = union([
+  null_(),
+  bytes32Schema,
+  array(bytes32Schema),
+])
+export type FilterTopic = InferOutput<
+  typeof filterTopicSchema
+>
 
 export const filterTopicsSchema = array(filterTopicSchema)
-export type FilterTopics = InferOutput<typeof filterTopicsSchema>
+export type FilterTopics = InferOutput<
+  typeof filterTopicsSchema
+>
 
 export const filterSchema = object({
   fromBlock: uintSchema,
@@ -18,5 +32,10 @@ export const filterSchema = object({
 })
 export type Filter = InferOutput<typeof filterSchema>
 
-export const filterResultsSchema = union([array(hash32Schema), array(logSchema)])
-export type FilterResults = InferOutput<typeof filterResultsSchema>
+export const filterResultsSchema = union([
+  array(Hash32Schema),
+  array(logSchema),
+])
+export type FilterResults = InferOutput<
+  typeof filterResultsSchema
+>

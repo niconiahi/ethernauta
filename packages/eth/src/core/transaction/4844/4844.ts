@@ -1,7 +1,13 @@
 import type { InferOutput } from "valibot"
 import { array, object } from "valibot"
 
-import { addressSchema, byteSchema, bytesSchema, hash32Schema, uintSchema } from "../../base"
+import {
+  addressSchema,
+  byteSchema,
+  bytesSchema,
+  Hash32Schema,
+  uintSchema,
+} from "../../base"
 import { accessListSchema } from "../../transaction"
 
 export const transaction4844UnsignedSchema = object({
@@ -15,10 +21,12 @@ export const transaction4844UnsignedSchema = object({
   maxFeePerGas: uintSchema,
   maxFeePerBlobGas: uintSchema,
   accessList: accessListSchema,
-  blobVersionedHashes: array(hash32Schema),
+  blobVersionedHashes: array(Hash32Schema),
   chainId: uintSchema,
 })
-export type Transaction4844Unsigned = InferOutput<typeof transaction4844UnsignedSchema>
+export type Transaction4844Unsigned = InferOutput<
+  typeof transaction4844UnsignedSchema
+>
 
 export const transaction4844SignedSchema = object({
   type: byteSchema,
@@ -31,10 +39,12 @@ export const transaction4844SignedSchema = object({
   maxFeePerGas: uintSchema,
   maxFeePerBlobGas: uintSchema,
   accessList: accessListSchema,
-  blobVersionedHashes: array(hash32Schema),
+  blobVersionedHashes: array(Hash32Schema),
   chainId: uintSchema,
   yParity: uintSchema,
   r: uintSchema,
   s: uintSchema,
 })
-export type Transaction4844Signed = InferOutput<typeof transaction4844SignedSchema>
+export type Transaction4844Signed = InferOutput<
+  typeof transaction4844SignedSchema
+>
