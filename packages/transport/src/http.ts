@@ -11,7 +11,7 @@ export function http(
     const [method, params] = call
     const request = parse(requestSchema, {
       jsonrpc: "2.0",
-      id: generateId(),
+      id: crypto.randomUUID(),
       method,
       params: getParams(params),
     })
@@ -41,12 +41,7 @@ function getParams(
   if (!params) {
     return undefined
   }
-
   return Array.isArray(params)
     ? params
     : Object.values(params)
-}
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9)
 }

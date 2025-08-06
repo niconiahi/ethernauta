@@ -8,7 +8,6 @@ import {
   watch_transaction,
 } from "@cryptoman/transport"
 import { number_to_hex } from "@cryptoman/wallet"
-import { hex_to_bytes } from "../../../wallet/src/utils/hex"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -26,7 +25,7 @@ const writer = createWriter([
   },
 ])
 
-export default function () {
+export default function() {
   return (
     <div>
       <p>
@@ -62,7 +61,7 @@ export default function () {
               signed_transaction,
               // a new "transaction" is returned every time
               // the transaction mutates state
-              (transaction) => {},
+              (transaction) => { },
             )
           }}
         >
