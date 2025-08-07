@@ -277,7 +277,9 @@ describe("transaction.ts", () => {
       method,
       params,
     })
-    expect(bytes_to_hex(ethernauta_signed)).toBe(viem_signed)
+    expect(bytes_to_hex(ethernauta_signed)).toBe(
+      viem_signed,
+    )
   })
 
   it("should recover correct sender address from signed transaction", async () => {
