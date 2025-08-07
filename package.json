@@ -3,7 +3,10 @@
   "name": "cryptoman",
   "scripts": {
     "dev": "pnpm -r --parallel --filter @cryptoman/wallet --filter @cryptoman/playground dev",
-    "test": "pnpm --recursive --filter !@cryptoman/connector run test:unit"
+    "test": "pnpm --recursive --filter !@cryptoman/connector run test:unit",
+    "lint": "pnpm -r --parallel lint",
+    "lint:fix": "pnpm -r --parallel lint:fix",
+    "format": "pnpm --recursive format"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

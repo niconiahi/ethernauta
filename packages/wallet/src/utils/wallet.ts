@@ -4,7 +4,6 @@ import { get_vault } from "./vault"
 import invariant from "./tiny-invariant"
 import {
   derive_private_key,
-  get_private_key,
   mnemonic_to_seed,
   private_key_to_address,
   seed_to_master_key,

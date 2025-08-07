@@ -27,7 +27,7 @@ const writer = createWriter([
   },
 ])
 
-export default function() {
+export default function () {
   const [hash, setHash] = useState<`0x${string}` | null>(
     null,
   )

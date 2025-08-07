@@ -100,8 +100,8 @@ export async function set_vault(
     data,
   )
   const record: VaultRecord = {
-    salt: buffer_to_base_64(salt),
-    iv: buffer_to_base_64(iv),
+    salt: buffer_to_base_64(salt.buffer),
+    iv: buffer_to_base_64(iv.buffer),
     cipher: buffer_to_base_64(cipher),
   }
   const database = await open_database()

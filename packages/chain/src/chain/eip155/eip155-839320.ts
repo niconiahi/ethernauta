@@ -1,0 +1,30 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_839320 = {
+  "name": "PRM Testnet",
+  "shortName": "prmtest",
+  "chain": "prm",
+  "icon": "prmIcon",
+  "rpc": [
+    "https://testnet-rpc.prmscan.org"
+  ],
+  "faucets": [
+    "https://faucet.prmscan.org"
+  ],
+  "nativeCurrency": {
+    "name": "Primal Network",
+    "symbol": "PRM",
+    "decimals": 18
+  },
+  "infoURL": "https://primalnetwork.org",
+  "chainId": 839320,
+  "networkId": 839320,
+  "explorers": [
+    {
+      "name": "Primal Network Testnet",
+      "url": "https://testnet-explorer.prmscan.org",
+      "standard": "EIP3091"
+    }
+  ]
+} satisfies Chain

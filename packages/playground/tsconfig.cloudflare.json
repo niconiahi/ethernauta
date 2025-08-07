@@ -10,41 +10,21 @@
   ],
   "compilerOptions": {
     "strict": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
-    "types": [
-      "vite/client",
-      "./app/cryptoman.d.ts"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["vite/client", "./app/cryptoman.d.ts"],
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
-    "rootDirs": [
-      ".",
-      "./.react-router/types"
-    ],
+    "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": [
-        "./app/*"
-      ],
-      "@cryptoman/transport": [
-        "../transport/src"
-      ],
-      "@cryptoman/chain": [
-        "../chain/src"
-      ],
-      "@cryptoman/eth": [
-        "../eth/src"
-      ],
-      "@cryptoman/wallet": [
-        "../wallet/src"
-      ]
+      "~/*": ["./app/*"],
+      "@cryptoman/transport": ["../transport/src"],
+      "@cryptoman/chain": ["../chain/src"],
+      "@cryptoman/eth": ["../eth/src"],
+      "@cryptoman/wallet": ["../wallet/src"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

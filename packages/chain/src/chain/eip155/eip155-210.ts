@@ -1,0 +1,32 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_210 = {
+  "name": "Bitnet",
+  "shortName": "BTN",
+  "chain": "BTN",
+  "icon": "bitnet",
+  "rpc": [
+    "https://rpc.bitnet.money",
+    "https://rpc.btnscan.com",
+    "https://rpc.btn.network",
+    "https://rpc.bitnetmoney.com",
+    "https://rpc.btn-network.org"
+  ],
+  "faucets": [],
+  "nativeCurrency": {
+    "name": "Bitnet",
+    "symbol": "BTN",
+    "decimals": 18
+  },
+  "infoURL": "https://bitnet.technology",
+  "chainId": 210,
+  "networkId": 210,
+  "explorers": [
+    {
+      "name": "Bitnet Explorer",
+      "url": "https://btnscan.com",
+      "standard": "EIP3091"
+    }
+  ]
+} satisfies Chain

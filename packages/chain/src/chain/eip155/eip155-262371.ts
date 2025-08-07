@@ -1,0 +1,30 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_262371 = {
+  "name": "Eclat Testnet",
+  "shortName": "tECLAT",
+  "chain": "Eclat",
+  "icon": "eclat",
+  "rpc": [
+    "https://testnet-rpc.eclatscan.com"
+  ],
+  "faucets": [
+    "https://faucet.eclatscan.com"
+  ],
+  "nativeCurrency": {
+    "name": "Eclat Testnet",
+    "symbol": "ECLAT",
+    "decimals": 18
+  },
+  "infoURL": "https://testnet-explorer.eclatscan.com",
+  "chainId": 262371,
+  "networkId": 262371,
+  "explorers": [
+    {
+      "name": "Eclat Testnet Explorer",
+      "url": "https://testnet-explorer.eclatscan.com",
+      "standard": "EIP3091"
+    }
+  ]
+} satisfies Chain

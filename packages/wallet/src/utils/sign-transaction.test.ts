@@ -143,7 +143,7 @@ describe("transaction.ts", () => {
     const access_list = [
       {
         address:
-          "0x742d35Cc6635C0532925a3b8D83C2D2d88Ca7c38",
+          "0x742d35Cc6635C0532925a3b8D83C2D2d88Ca7c38" as const,
         storage_keys: [
           "0x0000000000000000000000000000000000000000000000000000000000000001",
         ],
@@ -309,6 +309,7 @@ describe("transaction.ts", () => {
     // Recover sender address from signed transaction
     const recovered_address =
       await recoverTransactionAddress({
+        // @ts-expect-error minor type differnces
         serializedTransaction: signed_tx_hex,
       })
 
@@ -330,6 +331,7 @@ describe("transaction.ts", () => {
 
     const recovered_address =
       await recoverTransactionAddress({
+        // @ts-expect-error minor type differnces
         serializedTransaction: actual_signed_tx,
       })
 
