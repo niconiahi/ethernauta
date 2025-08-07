@@ -15,8 +15,7 @@
       "!**/.react-router",
       "!**/worker-configuration.d.ts",
       "!**/src/chain/output",
-      "!**/src/chain/eip155",
-      "!**/dist"
+      "!**/src/chain/eip155"
     ]
   },
   "assist": {

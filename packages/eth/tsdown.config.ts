@@ -1,15 +1,10 @@
-import { defineConfig } from "tsup"
+import { defineConfig } from "tsdown"
 
 export default defineConfig({
   entry: ["./src/**/*.ts", "!./src/**/*.test.ts"],
   clean: true,
   format: ["esm"],
-  dts: {
-    compilerOptions: {
-      declarationMap: true,
-      declaration: true,
-    },
-  },
+  dts: { sourcemap: true },
   sourcemap: true,
   outDir: "./dist",
   bundle: false,

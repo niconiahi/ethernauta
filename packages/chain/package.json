@@ -1,7 +1,7 @@
 {
   "name": "@ethernauta/chain",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publishConfig": {
     "access": "public"
   },
@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown && biome format --write dist",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
@@ -27,6 +27,6 @@
     "valibot": "1.1.0",
     "simple-git": "^3.21.0",
     "tsm": "^2.3.0",
-    "tsup": "^8.5.0"
+    "tsdown": "^0.13.3"
   }
 }
