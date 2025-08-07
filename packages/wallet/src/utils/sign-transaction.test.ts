@@ -13,8 +13,8 @@ import {
   encode_fields,
   sign_transaction_hash,
   get_nonce,
-} from "./sign-transaction.js"
-import { encode } from "./rlp.js"
+} from "./sign-transaction"
+import { encode } from "./rlp"
 import { HDKey } from "@scure/bip32"
 import { sepolia } from "viem/chains"
 import { privateKeyToAccount } from "viem/accounts"
@@ -28,7 +28,7 @@ import {
 } from "./crypto"
 import { sign_transaction } from "./sign-transaction"
 import type { Hex } from "viem"
-import { bytes_to_hex } from "./hex.js"
+import { bytes_to_hex } from "./hex"
 import {
   createReader,
   encodeChainId,

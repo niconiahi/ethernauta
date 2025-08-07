@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { bytes_to_hex, hex_to_bytes } from "./hex.js"
+import { bytes_to_hex, hex_to_bytes } from "./hex"
 
 describe("hex.ts", () => {
   it("should encode correct data", () => {
