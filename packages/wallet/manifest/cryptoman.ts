@@ -32,7 +32,7 @@ window.cryptoman = {
         ) {
           if (
             event.data.type.startsWith(
-              "CRYPTOMAN_RESPONSE",
+              "ETHERNAUTA_RESPONSE",
             ) &&
             event.data.id === id
           ) {
@@ -42,7 +42,7 @@ window.cryptoman = {
         },
       )
       const request: SignTransactionRequest = {
-        type: "CRYPTOMAN_REQUEST_SIGN_TRANSACTION",
+        type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
         id,
         method,
         params,
@@ -54,7 +54,7 @@ window.cryptoman = {
     return new Promise<void>(() => {
       const id = crypto.randomUUID()
       const request: ConnectRequest = {
-        type: "CRYPTOMAN_REQUEST_CONNECT",
+        type: "ETHERNAUTA_REQUEST_CONNECT",
         id,
       }
       window.postMessage(request, "*")

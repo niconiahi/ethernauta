@@ -1,5 +1,5 @@
-import { eip155_11155111 } from "@cryptoman/chain"
-import { eth_sendRawTransaction } from "@cryptoman/eth"
+import { eip155_11155111 } from "@ethernauta/chain"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
   createWriter,
   encodeChainId,
@@ -7,8 +7,8 @@ import {
   register_transaction,
   watch_transaction,
   type Transaction,
-} from "@cryptoman/transport"
-import { number_to_hex } from "@cryptoman/wallet"
+} from "@ethernauta/transport"
+import { number_to_hex } from "@ethernauta/wallet"
 import { useEffect, useState } from "react"
 
 const NAMESPACE = {

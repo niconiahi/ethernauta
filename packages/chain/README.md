@@ -12,7 +12,7 @@ This module aims to be an un-opinionated representation of the defined:
 ## API
 
 ```tsx
-import { eip155_1, encodeChainId, decodeChainId } from "@cryptoman/chain"
+import { eip155_1, encodeChainId, decodeChainId } from "@ethernauta/chain"
 const chainId = encodeChainId({
   namespace: "eip155",
   reference: eip155_1.chainId,

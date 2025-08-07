@@ -16,11 +16,11 @@
     "declarationMap": true,
     "baseUrl": ".",
     "paths": {
-      "@cryptoman/transport": ["./packages/transport/src"],
-      "@cryptoman/eth": ["./packages/eth/src"],
-      "@cryptoman/chain": ["./packages/chain/src"],
-      "@cryptoman/connector": ["./packages/connector/src"],
-      "@cryptoman/wallet": ["./packages/wallet/src"],
+      "@ethernauta/transport": ["./packages/transport/src"],
+      "@ethernauta/eth": ["./packages/eth/src"],
+      "@ethernauta/chain": ["./packages/chain/src"],
+      "@ethernauta/connector": ["./packages/connector/src"],
+      "@ethernauta/wallet": ["./packages/wallet/src"],
       "@utils/*": ["./utils/*"]
     }
   }

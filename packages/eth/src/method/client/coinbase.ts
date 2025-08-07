@@ -1,7 +1,7 @@
 import { parse } from "valibot"
 
-import type { Http, Readable } from "@cryptoman/transport"
-import { callSchema } from "@cryptoman/transport"
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 
 import { addressSchema } from "../../core/base"
 import type { Address } from "../../core/base"

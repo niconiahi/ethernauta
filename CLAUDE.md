@@ -17,11 +17,11 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 Cryptoman is organized as a pnpm workspace monorepo with the following packages:
 
 #### Core Packages
-- **@cryptoman/wallet** - Main Chrome extension with UI and crypto operations
-- **@cryptoman/transport** - Transport layer for JSON-RPC communication and blockchain interactions
-- **@cryptoman/chain** - Chain definitions and utilities (extensive EIP-155 chain support)
-- **@cryptoman/eth** - Ethereum-specific functionality and methods
-- **@cryptoman/connector** - External wallet connection utilities (WalletConnect support)
+- **@ethernauta/wallet** - Main Chrome extension with UI and crypto operations
+- **@ethernauta/transport** - Transport layer for JSON-RPC communication and blockchain interactions
+- **@ethernauta/chain** - Chain definitions and utilities (extensive EIP-155 chain support)
+- **@ethernauta/eth** - Ethereum-specific functionality and methods
+- **@ethernauta/connector** - External wallet connection utilities (WalletConnect support)
 
 #### Development Packages  
 - **playground** - React Router development environment for testing wallet integration
@@ -50,7 +50,7 @@ Cryptoman is organized as a pnpm workspace monorepo with the following packages:
 
 ### Package Details
 
-#### @cryptoman/wallet (`packages/wallet/`)
+#### @ethernauta/wallet (`packages/wallet/`)
 The main Chrome extension package containing:
 
 **Core Files:**
@@ -75,7 +75,7 @@ The main Chrome extension package containing:
 - `manifest/cryptoman.ts` - Web-accessible resources
 - `public/manifest.json` - Chrome extension manifest v3
 
-#### @cryptoman/transport (`packages/transport/`)
+#### @ethernauta/transport (`packages/transport/`)
 Blockchain communication layer providing:
 - JSON-RPC client implementation
 - HTTP transport with error handling
@@ -83,14 +83,14 @@ Blockchain communication layer providing:
 - Chain ID encoding/decoding (CAIP-2, CAIP-10, CAIP-19 standards)
 - Reader/Writer pattern for blockchain operations
 
-#### @cryptoman/chain (`packages/chain/`)
+#### @ethernauta/chain (`packages/chain/`)
 Comprehensive chain definitions including:
 - 500+ EIP-155 chain configurations (Ethereum, Polygon, BSC, L2s, testnets)
 - Chain indexer for automatic updates
 - Shared utilities for chain operations
 - CAIP standard implementations
 
-#### @cryptoman/eth (`packages/eth/`)
+#### @ethernauta/eth (`packages/eth/`)
 Ethereum-specific functionality:
 - ABI encoding/decoding for functions, events, and errors
 - Block, transaction, and receipt utilities
@@ -98,7 +98,7 @@ Ethereum-specific functionality:
 - Fee market (EIP-1559) support
 - State management utilities
 
-#### @cryptoman/connector (`packages/connector/`)
+#### @ethernauta/connector (`packages/connector/`)
 External wallet integration:
 - WalletConnect protocol implementation
 - Cross-wallet compatibility layer
@@ -172,9 +172,9 @@ The extension uses a simple, signal-based architecture:
 ### Extension Communication Flow
 1. **Content Script** → **Background Script** → **Popup**
 2. **Message Types**:
-   - `CRYPTOMAN_REQUEST_CONNECT` - Wallet connection request
-   - `CRYPTOMAN_REQUEST_SIGN_TRANSACTION` - Transaction signing request
-   - `CRYPTOMAN_RESPONSE_*` - Response messages back to content script
+   - `ETHERNAUTA_REQUEST_CONNECT` - Wallet connection request
+   - `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` - Transaction signing request
+   - `ETHERNAUTA_RESPONSE_*` - Response messages back to content script
 
 ### Secure Storage Implementation
 The vault system (`packages/wallet/src/utils/vault.ts`) provides:
@@ -197,11 +197,11 @@ The vault system (`packages/wallet/src/utils/vault.ts`) provides:
 - **Path Aliases**:
   ```json
   {
-    "@cryptoman/transport": ["./packages/transport/src"],
-    "@cryptoman/eth": ["./packages/eth/src"],
-    "@cryptoman/chain": ["./packages/chain/src"],
-    "@cryptoman/connector": ["./packages/connector/src"],
-    "@cryptoman/wallet": ["./packages/wallet/src"],
+    "@ethernauta/transport": ["./packages/transport/src"],
+    "@ethernauta/eth": ["./packages/eth/src"],
+    "@ethernauta/chain": ["./packages/chain/src"],
+    "@ethernauta/connector": ["./packages/connector/src"],
+    "@ethernauta/wallet": ["./packages/wallet/src"],
     "@utils/*": ["./utils/*"]
   }
   ```

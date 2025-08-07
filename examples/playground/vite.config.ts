@@ -10,6 +10,18 @@ export default defineConfig({
     tailwindcss(),
     reactRouter(),
     tsconfigPaths(),
+    {
+      name: "suppress-devtools-request",
+      configureServer(server) {
+        server.middlewares.use(
+          "/.well-known",
+          (_, response) => {
+            response.statusCode = 404
+            response.end()
+          },
+        )
+      },
+    },
   ],
   server: {
     middlewareMode: false,

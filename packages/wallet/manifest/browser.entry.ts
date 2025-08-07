@@ -5,14 +5,14 @@ document.head.appendChild(script)
 
 window.addEventListener("message", (event) => {
   if (event.source !== window) return
-  if (event.data?.type?.startsWith("CRYPTOMAN_REQUEST")) {
+  if (event.data?.type?.startsWith("ETHERNAUTA_REQUEST")) {
     console.log("sending request", event.data)
     chrome.runtime.sendMessage(event.data)
   }
 })
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message?.type?.startsWith("CRYPTOMAN_RESPONSE")) {
+  if (message?.type?.startsWith("ETHERNAUTA_RESPONSE")) {
     console.log("receiving response", message)
     window.postMessage(message, "*")
   }

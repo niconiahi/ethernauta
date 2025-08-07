@@ -2,12 +2,12 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "cryptoman",
   "scripts": {
-    "dev": "pnpm -r --parallel --filter @cryptoman/wallet --filter @cryptoman/playground dev",
-    "test": "pnpm --recursive --filter !@cryptoman/connector run test:unit",
+    "dev": "pnpm -r --parallel --filter @ethernauta/wallet --filter @ethernauta/playground dev",
+    "test": "pnpm --recursive --filter !@ethernauta/connector run test:unit",
     "lint": "pnpm -r --parallel lint",
     "lint:fix": "pnpm -r --parallel lint:fix",
     "format": "pnpm --recursive format",
-    "publish": "pnpm publish --filter @cryptoman/transport --filter @cryptoman/eth --filter @cryptoman/chain"
+    "publish": "pnpm publish --filter @ethernauta/transport --filter @ethernauta/eth --filter @ethernauta/chain"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

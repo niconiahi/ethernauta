@@ -22,7 +22,7 @@ export function Controller() {
           message,
         )
         switch (request.type) {
-          case "CRYPTOMAN_REQUEST_CONNECT": {
+          case "ETHERNAUTA_REQUEST_CONNECT": {
             const authenticated = await is_authenticated()
             await validate_vault()
             if (authenticated) {
@@ -32,7 +32,7 @@ export function Controller() {
             }
             break
           }
-          case "CRYPTOMAN_REQUEST_SIGN_TRANSACTION":
+          case "ETHERNAUTA_REQUEST_SIGN_TRANSACTION":
             {
               const authenticated = await is_authenticated()
               await validate_vault()

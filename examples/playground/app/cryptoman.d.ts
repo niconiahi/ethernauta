@@ -1,4 +1,4 @@
-import type { Transaction } from "@cryptoman/transport"
+import type { Transaction } from "@ethernauta/transport"
 
 export type SignResponse = {
   id: string

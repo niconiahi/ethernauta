@@ -1,13 +1,13 @@
-import { eip155_11155111 } from "@cryptoman/chain"
+import { eip155_11155111 } from "@ethernauta/chain"
 import {
   eth_getBalance,
   type Address,
-} from "@cryptoman/eth"
+} from "@ethernauta/eth"
 import {
   createReader,
   encodeChainId,
   http,
-} from "@cryptoman/transport"
+} from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import { hex_to_big } from "./crypto"
 
