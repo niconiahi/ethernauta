@@ -8,7 +8,7 @@
     "lint": "pnpm --recursive --parallel lint",
     "lint:fix": "pnpm -recursive --parallel lint:fix",
     "format": "pnpm --recursive format",
-    "publish": "pnpm publish --filter @ethernauta/transport --filter @ethernauta/eth --filter @ethernauta/chain"
+    "publish": "pnpm publish --filter @ethernauta/transport --filter @ethernauta/eth --filter @ethernauta/chain --filter @ethernauta/transaction"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
