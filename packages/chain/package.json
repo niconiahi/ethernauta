@@ -24,6 +24,7 @@
     "indexer": "node --loader tsm src/chain/indexer.ts && pnpm run format"
   },
   "devDependencies": {
+    "@ethernauta/chain": "workspace:*",
     "valibot": "1.1.0",
     "simple-git": "^3.21.0",
     "tsm": "^2.3.0",

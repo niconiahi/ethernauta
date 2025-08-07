@@ -11,7 +11,7 @@ import { extname, join, resolve } from "node:path"
 import simpleGit from "simple-git"
 import { parse } from "valibot"
 
-import { chainSchema } from "./shared.ts"
+import { chainSchema } from "../src/chain"
 
 export function runIndexer(): void {
   const git = simpleGit()
