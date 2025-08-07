@@ -11,4 +11,7 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
+  server: {
+    middlewareMode: false,
+  },
 })
