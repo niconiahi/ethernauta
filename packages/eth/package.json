@@ -1,5 +1,5 @@
 {
-  "name": "@cryptoman/eth",
+  "name": "@ethernauta/eth",
   "type": "module",
   "version": "0.0.3",
   "publishConfig": {
@@ -23,7 +23,7 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@cryptoman/transport": "workspace:*",
+    "@ethernauta/transport": "workspace:*",
     "@noble/hashes": "1.8.0",
     "@noble/secp256k1": "2.3.0",
     "@scure/bip32": "1.7.0",

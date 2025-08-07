@@ -33,8 +33,8 @@ import {
   createReader,
   encodeChainId,
   http,
-} from "@cryptoman/transport"
-import { eip155_11155111 } from "@cryptoman/chain"
+} from "@ethernauta/transport"
+import { eip155_11155111 } from "@ethernauta/chain"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -271,13 +271,13 @@ describe("transaction.ts", () => {
       maxPriorityFeePerGas: FIXED_PRIORITY_FEE,
     })
     const key = new HDKey({ privateKey: private_key })
-    const cryptoman_signed = await sign_transaction({
+    const ethernauta_signed = await sign_transaction({
       key,
       nonce,
       method,
       params,
     })
-    expect(bytes_to_hex(cryptoman_signed)).toBe(viem_signed)
+    expect(bytes_to_hex(ethernauta_signed)).toBe(viem_signed)
   })
 
   it("should recover correct sender address from signed transaction", async () => {
@@ -295,7 +295,7 @@ describe("transaction.ts", () => {
       "0x515e9e0565fdddd4f8a9759744734154da453585"
     const params = [TARGET_ADDRESS, number_to_hex(1)]
 
-    const cryptoman_signed = await sign_transaction({
+    const ethernauta_signed = await sign_transaction({
       key,
       nonce: 0n,
       method,
@@ -303,7 +303,7 @@ describe("transaction.ts", () => {
     })
 
     const signed_tx_hex = bytes_to_hex(
-      cryptoman_signed,
+      ethernauta_signed,
     ) as Hex
 
     // Recover sender address from signed transaction

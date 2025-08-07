@@ -6,13 +6,13 @@ import {
 import { bytes_to_hex } from "../../utils/hex"
 import type { CryptomanResponse } from "../../utils/event"
 import { wallet } from "../../utils/wallet"
-import type { Address } from "@cryptoman/eth"
+import type { Address } from "@ethernauta/eth"
 import {
   http,
   createReader,
   encodeChainId,
-} from "@cryptoman/transport"
-import { eip155_11155111 } from "@cryptoman/chain"
+} from "@ethernauta/transport"
+import { eip155_11155111 } from "@ethernauta/chain"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -63,7 +63,7 @@ export function Sign() {
           )
           const response: CryptomanResponse = {
             id: transaction_request.value.id,
-            type: "CRYPTOMAN_RESPONSE_SIGNED_TRANSACTION",
+            type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
             signed_transaction: bytes_to_hex(
               signed_transaction,
             ),

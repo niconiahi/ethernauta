@@ -7,13 +7,13 @@ import { sha256 } from "@noble/hashes/sha2"
 import type { HDKey } from "@scure/bip32"
 import invariant from "./tiny-invariant"
 import { get_private_key, hex_to_big } from "./crypto"
-import { eip155_11155111 } from "@cryptoman/chain"
+import { eip155_11155111 } from "@ethernauta/chain"
 import {
   addressSchema,
   eth_getTransactionCount,
   type Address,
-} from "@cryptoman/eth"
-import type { Reader, ChainId } from "@cryptoman/transport"
+} from "@ethernauta/eth"
+import type { Reader, ChainId } from "@ethernauta/transport"
 import type { Transaction } from "./transaction"
 import * as v from "valibot"
 

@@ -57,7 +57,7 @@ importers:
 
   packages/eth:
     dependencies:
-      '@cryptoman/transport':
+      '@ethernauta/transport':
         specifier: workspace:*
         version: link:../transport
       '@noble/hashes':
@@ -82,16 +82,16 @@ importers:
 
   packages/playground:
     dependencies:
-      '@cryptoman/chain':
+      '@ethernauta/chain':
         specifier: workspace:*
         version: link:../chain
-      '@cryptoman/eth':
+      '@ethernauta/eth':
         specifier: workspace:*
         version: link:../eth
-      '@cryptoman/transport':
+      '@ethernauta/transport':
         specifier: workspace:*
         version: link:../transport
-      '@cryptoman/wallet':
+      '@ethernauta/wallet':
         specifier: workspace:*
         version: link:../wallet
       isbot:
@@ -140,7 +140,7 @@ importers:
 
   packages/transport:
     dependencies:
-      '@cryptoman/eth':
+      '@ethernauta/eth':
         specifier: workspace:*
         version: link:../eth
       valibot:

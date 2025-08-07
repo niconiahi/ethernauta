@@ -7,10 +7,10 @@
 
 **Implementation**:
 ```typescript
-import { eth_getBalance } from "@cryptoman/eth"
+import { eth_getBalance } from "@ethernauta/eth"
 import { signal } from "@preact/signals"
-import type { Reader, ChainId } from "@cryptoman/transport"
-import type { Address } from "@cryptoman/eth"
+import type { Reader, ChainId } from "@ethernauta/transport"
+import type { Address } from "@ethernauta/eth"
 import { hex_to_big } from "./crypto"
 
 export const balance = signal<bigint>(0n)
@@ -73,7 +73,7 @@ export async function restore_wallet() {
 import { wallet } from "../../utils/wallet"
 import { balance, refresh_balance, wei_to_eth } from "../../utils/balance"
 import { reader, sepolia_chain_id } from "../../utils/sign-transaction"
-import type { Address } from "@cryptoman/eth"
+import type { Address } from "@ethernauta/eth"
 
 export function Wallet() {
   const handle_refresh_balance = async () => {
@@ -130,8 +130,8 @@ export function Sign() {
 
 **EIP-1559 Fee Strategy**:
 ```typescript
-import { eth_feeHistory } from "@cryptoman/eth"
-import type { Reader, ChainId } from "@cryptoman/transport"
+import { eth_feeHistory } from "@ethernauta/eth"
+import type { Reader, ChainId } from "@ethernauta/transport"
 import { hex_to_big, number_to_hex } from "./crypto"
 
 interface ModernGasPrices {
@@ -376,7 +376,7 @@ export function Sign() {
 4. **Error Prevention**: Pre-validation catches funding issues before signing
 
 ### **Technical Excellence**:
-- Uses existing `@cryptoman/eth` methods (`eth_getBalance`, `eth_feeHistory`)
+- Uses existing `@ethernauta/eth` methods (`eth_getBalance`, `eth_feeHistory`)
 - Reactive UI updates with Preact signals
 - Proper error handling and fallbacks  
 - Type-safe implementation with Valibot validation

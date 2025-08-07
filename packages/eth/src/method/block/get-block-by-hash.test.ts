@@ -4,8 +4,8 @@ import {
   createReader,
   encodeChainId,
   http,
-} from "@cryptoman/transport"
-import { eip155_1 } from "@cryptoman/chain"
+} from "@ethernauta/transport"
+import { eip155_1 } from "@ethernauta/chain"
 import { eth_getBlockByHash } from "./get-block-by-hash"
 import { ETHEREUM_SEPOLIA_RPC_URL } from "@utils/constants"
 

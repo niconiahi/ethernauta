@@ -1,7 +1,7 @@
 import { parse, string } from "valibot"
 
-import type { Http, Readable } from "@cryptoman/transport"
-import { callSchema } from "@cryptoman/transport"
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 
 export function name(): Readable<string> {
   return async (transports: Http[]): Promise<string> => {

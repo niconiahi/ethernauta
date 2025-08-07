@@ -6,7 +6,7 @@
 
 - 174f653: try four
 - Updated dependencies [174f653]
-  - @cryptoman/transport@0.0.3
+  - @ethernauta/transport@0.0.3
 
 ## 0.0.2
 
@@ -14,7 +14,7 @@
 
 - 556003e: try four publish
 - Updated dependencies [556003e]
-  - @cryptoman/transport@0.0.2
+  - @ethernauta/transport@0.0.2
 
 ## 0.0.1
 
@@ -22,7 +22,7 @@
 
 - 2029201: test prevent double publish
 - Updated dependencies [2029201]
-  - @cryptoman/transport@0.0.1
+  - @ethernauta/transport@0.0.1
 
 ## 0.0.1
 
@@ -30,4 +30,4 @@
 
 - 910adf6: first release
 - Updated dependencies [910adf6]
-  - @cryptoman/transport@0.0.1
+  - @ethernauta/transport@0.0.1

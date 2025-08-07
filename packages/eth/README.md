@@ -17,7 +17,7 @@ This module aims to be an un-opinionated representation of the defined:
 
 ```tsx
 import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
-import { createReader, encodeChainId, http } from "@cryptoman/transport";
+import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
 const reader = createReader([
   {

@@ -7,8 +7,8 @@ import {
   union,
 } from "valibot"
 
-import type { Http, Readable } from "@cryptoman/transport"
-import { callSchema } from "@cryptoman/transport"
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 
 import {
   addressSchema,

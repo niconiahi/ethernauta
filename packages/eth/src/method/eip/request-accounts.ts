@@ -4,11 +4,11 @@ import type {
   Address,
   Http,
   Writable,
-} from "@cryptoman/transport"
+} from "@ethernauta/transport"
 import {
   addressSchema,
   callSchema,
-} from "@cryptoman/transport"
+} from "@ethernauta/transport"
 
 export function requestAccounts(): Writable<
   Array<Address>

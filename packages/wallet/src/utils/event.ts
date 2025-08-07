@@ -2,7 +2,7 @@ import * as v from "valibot"
 
 export const SignTransactionRequestSchema = v.object({
   id: v.string(),
-  type: v.literal("CRYPTOMAN_REQUEST_SIGN_TRANSACTION"),
+  type: v.literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
   method: v.string(),
   params: v.array(v.unknown()),
 })
@@ -12,7 +12,7 @@ export type SignTransactionRequest = v.InferOutput<
 
 export const SignTransactionResponseSchema = v.object({
   id: v.string(),
-  type: v.literal("CRYPTOMAN_RESPONSE_SIGNED_TRANSACTION"),
+  type: v.literal("ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"),
   signed_transaction: v.string(),
 })
 export type SignTransactionResponse = v.InferOutput<
@@ -21,7 +21,7 @@ export type SignTransactionResponse = v.InferOutput<
 
 const ConnectRequestSchema = v.object({
   id: v.string(),
-  type: v.literal("CRYPTOMAN_REQUEST_CONNECT"),
+  type: v.literal("ETHERNAUTA_REQUEST_CONNECT"),
 })
 export type ConnectRequest = v.InferOutput<
   typeof ConnectRequestSchema

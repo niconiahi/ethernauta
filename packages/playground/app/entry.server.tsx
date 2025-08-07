@@ -13,10 +13,6 @@ export default async function handleRequest(
   routerContext: EntryContext,
   _loadContext: AppLoadContext,
 ) {
-  const url = new URL(request.url)
-  if (url.href.includes(".well-known")) {
-    return
-  }
   let shellRendered = false
   const userAgent = request.headers.get("user-agent")
 

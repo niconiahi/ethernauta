@@ -21,10 +21,10 @@
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
       "~/*": ["./app/*"],
-      "@cryptoman/transport": ["../transport/src"],
-      "@cryptoman/chain": ["../chain/src"],
-      "@cryptoman/eth": ["../eth/src"],
-      "@cryptoman/wallet": ["../wallet/src"]
+      "@ethernauta/transport": ["../transport/src"],
+      "@ethernauta/chain": ["../chain/src"],
+      "@ethernauta/eth": ["../eth/src"],
+      "@ethernauta/wallet": ["../wallet/src"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

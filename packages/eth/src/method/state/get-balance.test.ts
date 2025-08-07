@@ -4,9 +4,9 @@ import {
   createReader,
   encodeChainId,
   http,
-} from "@cryptoman/transport"
+} from "@ethernauta/transport"
 
-import { eip155_1 } from "@cryptoman/chain"
+import { eip155_1 } from "@ethernauta/chain"
 
 import { eth_getBalance } from "./get-balance"
 import { ETHEREUM_SEPOLIA_RPC_URL } from "@utils/constants"

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@cryptoman/wallet",
+  "name": "@ethernauta/wallet",
   "type": "module",
   "private": true,
   "sideEffects": false,

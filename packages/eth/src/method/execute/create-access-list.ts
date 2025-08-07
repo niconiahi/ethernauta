@@ -7,8 +7,8 @@ import {
   union,
 } from "valibot"
 
-import type { Writable, Http } from "@cryptoman/transport"
-import { callSchema } from "@cryptoman/transport"
+import type { Writable, Http } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 
 import { uintSchema } from "../../core/base"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"

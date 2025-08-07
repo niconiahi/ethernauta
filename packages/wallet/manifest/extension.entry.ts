@@ -13,7 +13,7 @@ function compose_key(id: string) {
 chrome.runtime.onMessage.addListener(
   async (message, sender) => {
     const event = v.parse(CryptomanEventSchema, message)
-    if (event.type.startsWith("CRYPTOMAN_REQUEST")) {
+    if (event.type.startsWith("ETHERNAUTA_REQUEST")) {
       const request = v.parse(
         CryptomanRequestSchema,
         message,
@@ -40,7 +40,7 @@ chrome.runtime.onMessage.addListener(
         })
       return true // enables sendResponse to be executed later on
     }
-    if (event.type.startsWith("CRYPTOMAN_RESPONSE")) {
+    if (event.type.startsWith("ETHERNAUTA_RESPONSE")) {
       const response = v.parse(
         CryptomanResponseSchema,
         message,

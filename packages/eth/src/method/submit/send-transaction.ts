@@ -1,8 +1,8 @@
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Http, Writable } from "@cryptoman/transport"
-import { callSchema } from "@cryptoman/transport"
+import type { Http, Writable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 
 import { Hash32Schema } from "../../core/base"
 import type { Hash32 } from "../../core/base"
