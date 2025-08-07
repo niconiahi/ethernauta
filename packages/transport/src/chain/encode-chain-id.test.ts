@@ -1,8 +1,8 @@
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { caip2_namespaceSchema } from "./namespace"
-import { caip2_referenceSchema } from "./reference"
+import { caip2_namespaceSchema } from "./caip-2/namespace"
+import { caip2_referenceSchema } from "./caip-2/reference"
 
 import { encodeChainId } from "./encode-chain-id"
 

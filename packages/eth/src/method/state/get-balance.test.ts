@@ -9,7 +9,8 @@ import {
 import { eip155_1 } from "@ethernauta/chain"
 
 import { eth_getBalance } from "./get-balance"
-import { ETHEREUM_SEPOLIA_RPC_URL } from "@utils/constants"
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://little-bitter-wave.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
 import { bigToUint } from "../../utils/big-to-uint"
 
 describe("eth_getBalance", () => {
