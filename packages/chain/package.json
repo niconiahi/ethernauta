@@ -1,7 +1,7 @@
 {
   "name": "@ethernauta/chain",
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publishConfig": {
     "access": "public"
   },
@@ -23,9 +23,10 @@
     "test:unit": "vitest",
     "indexer": "node --loader tsm src/chain/indexer.ts && pnpm run format"
   },
+  "dependencies": {
+    "valibot": "1.1.0"
+  },
   "devDependencies": {
-    "@ethernauta/chain": "workspace:*",
-    "valibot": "1.1.0",
     "simple-git": "^3.21.0",
     "tsm": "^2.3.0",
     "tsdown": "^0.13.3"
