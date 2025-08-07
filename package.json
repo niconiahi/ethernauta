@@ -6,7 +6,8 @@
     "test": "pnpm --recursive --filter !@cryptoman/connector run test:unit",
     "lint": "pnpm -r --parallel lint",
     "lint:fix": "pnpm -r --parallel lint:fix",
-    "format": "pnpm --recursive format"
+    "format": "pnpm --recursive format",
+    "publish": "pnpm --filter @cryptoman/transport --filter @cryptoman/eth --filter @cryptoman/chain publish"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

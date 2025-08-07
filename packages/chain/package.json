@@ -7,8 +7,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/niconiahi/ethernauta"
+    "url": "https://github.com/niconiahi/cryptoman"
   },
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": {
@@ -37,9 +38,10 @@
     "valibot": "1.1.0"
   },
   "devDependencies": {
-    "tsm": "^2.3.0",
-    "simple-git": "^3.21.0",
     "@types/node": "^24.1.0",
+    "simple-git": "^3.21.0",
+    "tsm": "^2.3.0",
+    "tsup": "^8.5.0",
     "vitest": "^3.2.4"
   }
 }

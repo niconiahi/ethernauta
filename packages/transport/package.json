@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/niconiahi/ethernauta"
+    "url": "https://github.com/niconiahi/cryptoman"
   },
   "sideEffects": false,
   "exports": {
@@ -36,10 +36,11 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "valibot": "1.1.0",
-    "@cryptoman/eth": "workspace:*"
+    "@cryptoman/eth": "workspace:*",
+    "valibot": "1.1.0"
   },
   "devDependencies": {
+    "@types/chrome": "^0.1.1",
     "tsup": "^8.0.1"
   }
 }
