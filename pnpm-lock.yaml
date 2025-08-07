@@ -95,6 +95,10 @@ importers:
         version: 4.28.1
 
   packages/chain:
+    dependencies:
+      valibot:
+        specifier: 1.1.0
+        version: 1.1.0(typescript@5.8.3)
     devDependencies:
       simple-git:
         specifier: ^3.21.0
@@ -105,12 +109,12 @@ importers:
       tsm:
         specifier: ^2.3.0
         version: 2.3.0
-      valibot:
-        specifier: 1.1.0
-        version: 1.1.0(typescript@5.8.3)
 
   packages/eth:
     dependencies:
+      '@ethernauta/chain':
+        specifier: workspace:*
+        version: link:../chain
       '@ethernauta/transport':
         specifier: workspace:*
         version: link:../transport
@@ -136,9 +140,15 @@ importers:
 
   packages/transaction:
     dependencies:
+      '@ethernauta/chain':
+        specifier: workspace:*
+        version: link:../chain
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../eth
+      '@ethernauta/transport':
+        specifier: workspace:*
+        version: link:../transport
       valibot:
         specifier: 1.1.0
         version: 1.1.0(typescript@5.8.3)
@@ -152,6 +162,9 @@ importers:
 
   packages/transport:
     dependencies:
+      '@ethernauta/chain':
+        specifier: workspace:*
+        version: link:../chain
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../eth
