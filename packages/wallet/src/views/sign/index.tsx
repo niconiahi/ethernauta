@@ -3,10 +3,6 @@ import {
   get_nonce,
   sign_transaction,
 } from "../../utils/sign-transaction"
-import {
-  get_private_key,
-  private_key_to_address,
-} from "../../utils/crypto"
 import { bytes_to_hex } from "../../utils/hex"
 import type { CryptomanResponse } from "../../utils/event"
 import { wallet } from "../../utils/wallet"

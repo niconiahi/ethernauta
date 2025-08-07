@@ -1,0 +1,33 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_50341 = {
+  "name": "Reddio Testnet",
+  "shortName": "reddio-devnet",
+  "title": "Reddio Sepolia L2 Rollup Testnet",
+  "chain": "ETH",
+  "rpc": [
+    "https://reddio-dev.reddio.com"
+  ],
+  "faucets": [],
+  "nativeCurrency": {
+    "name": "Reddio",
+    "symbol": "RDO",
+    "decimals": 18
+  },
+  "infoURL": "https://www.reddio.com",
+  "chainId": 50341,
+  "networkId": 50341,
+  "slip44": 1,
+  "explorers": [
+    {
+      "name": "L2scan",
+      "url": "https://reddio-devnet.l2scan.co",
+      "standard": "EIP3091"
+    }
+  ],
+  "parent": {
+    "type": "L2",
+    "chain": "eip155-11155111"
+  }
+} satisfies Chain

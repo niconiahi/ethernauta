@@ -1,7 +1,7 @@
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Writable, Writer } from "@cryptoman/transport"
+import type { Http, Writable } from "@cryptoman/transport"
 import { callSchema } from "@cryptoman/transport"
 
 import { Hash32Schema } from "../../core/base"
@@ -19,11 +19,13 @@ type Parameters = InferOutput<typeof parametersSchema>
 export function eth_sendTransaction(
   _parameters: Parameters,
 ): Writable<Hash32> {
-  return async (writer: Writer): Promise<Hash32> => {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "eth_sendTransaction"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
-    const response = await writer(call)
+    const response = await Promise.any(
+      transports.map((transport) => transport(call)),
+    )
     if ("error" in response) {
       throw new Error(response.error.message)
     }

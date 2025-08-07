@@ -8,7 +8,6 @@ import {
   encodeChainId,
   http,
 } from "@cryptoman/transport"
-import { wallet } from "./wallet"
 import { signal } from "@preact/signals"
 import { hex_to_big } from "./crypto"
 

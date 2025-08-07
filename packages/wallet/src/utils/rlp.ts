@@ -19,7 +19,11 @@ function encode_item(
 ): Uint8Array {
   const bytes = to_bytes(item)
   const first_byte = bytes[0]
-  if (bytes.length === 1 && first_byte < 0x80) {
+  if (
+    bytes.length === 1 &&
+    first_byte !== undefined &&
+    first_byte < 0x80
+  ) {
     // Single byte < 0x80 encodes as itself
     return bytes
   }
@@ -91,7 +95,6 @@ function to_bytes(
   }
   throw new Error(`cannot convert ${typeof input} to bytes`)
 }
-
 
 function number_to_bytes(big: bigint): Uint8Array {
   if (big === 0n) return new Uint8Array([])

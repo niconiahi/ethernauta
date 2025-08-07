@@ -1,0 +1,40 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_123420111 = {
+  "name": "OP Celestia Raspberry",
+  "shortName": "opcelestia-raspberry",
+  "title": "OP Celestia Raspberry Testnet",
+  "chain": "ETH",
+  "rpc": [
+    "https://rpc.opcelestia-raspberry.gelato.digital",
+    "wss://ws.opcelestia-raspberry.gelato.digital"
+  ],
+  "faucets": [],
+  "nativeCurrency": {
+    "name": "Sepolia Ether",
+    "symbol": "ETH",
+    "decimals": 18
+  },
+  "infoURL": "https://raas.gelato.network/rollups/details/public/opcelestia-raspberry",
+  "chainId": 123420111,
+  "networkId": 123420111,
+  "slip44": 60,
+  "explorers": [
+    {
+      "name": "blockscout",
+      "url": "https://opcelestia-raspberry.gelatoscout.com",
+      "standard": "EIP3091"
+    }
+  ],
+  "parent": {
+    "type": "L2",
+    "chain": "eip155-11155111",
+    "bridges": [
+      {
+        "url": "https://bridge.gelato.network/bridge/opcelestia-raspberry"
+      }
+    ]
+  },
+  "status": "active"
+} satisfies Chain

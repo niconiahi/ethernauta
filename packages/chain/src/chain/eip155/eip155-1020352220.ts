@@ -1,0 +1,33 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_1020352220 = {
+  "name": "SKALE Titan Hub Testnet",
+  "shortName": "titan-testnet",
+  "title": "SKALE Titan Hub Testnet",
+  "chain": "aware-fake-trim-testnet",
+  "icon": "titan",
+  "rpc": [
+    "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
+    "wss://testnet.skalenodes.com/v1/ws/aware-fake-trim-testnet"
+  ],
+  "faucets": [
+    "https://www.sfuelstation.com/"
+  ],
+  "nativeCurrency": {
+    "name": "sFUEL",
+    "symbol": "sFUEL",
+    "decimals": 18
+  },
+  "infoURL": "",
+  "chainId": 1020352220,
+  "networkId": 1020352220,
+  "slip44": 1,
+  "explorers": [
+    {
+      "name": "Blockscout",
+      "url": "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com",
+      "standard": "EIP3091"
+    }
+  ]
+} satisfies Chain

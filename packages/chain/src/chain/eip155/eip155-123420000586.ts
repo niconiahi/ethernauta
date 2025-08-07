@@ -1,0 +1,39 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_123420000586 = {
+  "name": "sivo-defi-testnet",
+  "shortName": "sivo-defi-testnet",
+  "title": "Sivo Defi Testnet",
+  "chain": "sivo-defi-testnet",
+  "rpc": [
+    "https://rpc.sivo-defi-testnet.t.raas.gelato.cloud",
+    "wss://ws.sivo-defi-testnet.t.raas.gelato.cloud"
+  ],
+  "faucets": [],
+  "nativeCurrency": {
+    "name": "Ether",
+    "symbol": "ETH",
+    "decimals": 18
+  },
+  "infoURL": "https://raas.gelato.network/rollups/details/public/sivo-defi-testnet",
+  "chainId": 123420000586,
+  "networkId": 123420000586,
+  "slip44": 60,
+  "explorers": [
+    {
+      "name": "blockscout",
+      "url": "https://sivo-defi-testnet.cloud.blockscout.com",
+      "standard": "EIP3091"
+    }
+  ],
+  "parent": {
+    "type": "L2",
+    "chain": "eip155-11155111",
+    "bridges": [
+      {
+        "url": "https://testnet-bridge.gelato.network/bridge/sivo-defi-testnet"
+      }
+    ]
+  }
+} satisfies Chain

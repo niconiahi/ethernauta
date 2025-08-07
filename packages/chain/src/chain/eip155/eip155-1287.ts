@@ -1,0 +1,42 @@
+/* eslint no-template-curly-in-string: 0 */
+import type { Chain } from "../shared"
+
+export const eip155_1287 = {
+  "name": "Moonbase Alpha",
+  "shortName": "mbase",
+  "chain": "MOON",
+  "icon": "moonbasealpha",
+  "rpc": [
+    "https://rpc.api.moonbase.moonbeam.network",
+    "wss://wss.api.moonbase.moonbeam.network",
+    "https://moonbase-alpha.public.blastapi.io",
+    "wss://moonbase-alpha.public.blastapi.io",
+    "https://moonbase-rpc.dwellir.com",
+    "wss://moonbase-rpc.dwellir.com",
+    "https://moonbeam-alpha.api.onfinality.io/public",
+    "wss://moonbeam-alpha.api.onfinality.io/public-ws",
+    "https://moonbase.unitedbloc.com",
+    "wss://moonbase.unitedbloc.com",
+    "https://moonbase-alpha.drpc.org",
+    "wss://moonbase-alpha.drpc.org"
+  ],
+  "faucets": [
+    "https://faucet.moonbeam.network/"
+  ],
+  "nativeCurrency": {
+    "name": "Dev",
+    "symbol": "DEV",
+    "decimals": 18
+  },
+  "infoURL": "https://docs.moonbeam.network/learn/platform/networks/moonbase/",
+  "chainId": 1287,
+  "networkId": 1287,
+  "slip44": 1,
+  "explorers": [
+    {
+      "name": "moonscan",
+      "url": "https://moonbase.moonscan.io",
+      "standard": "none"
+    }
+  ]
+} satisfies Chain
