@@ -1,33 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_9990 = {
-  "name": "Agung Network",
-  "shortName": "AGNG",
-  "chain": "Agung",
-  "icon": "agung",
-  "rpc": [
-    "https://wss-async.agung.peaq.network"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Agung",
-    "symbol": "AGNG",
-    "decimals": 18
+  name: "Agung Network",
+  shortName: "AGNG",
+  chain: "Agung",
+  icon: "agung",
+  rpc: ["https://wss-async.agung.peaq.network"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Agung",
+    symbol: "AGNG",
+    decimals: 18,
   },
-  "infoURL": "https://www.peaq.network",
-  "chainId": 9990,
-  "networkId": 9990,
-  "explorers": [
+  infoURL: "https://www.peaq.network",
+  chainId: 9990,
+  networkId: 9990,
+  explorers: [
     {
-      "name": "Polkadot.js",
-      "url": "https://polkadot.js.org/apps/?rpc=wss:///wss-async.agung.peaq.network#/explorer",
-      "standard": "none"
+      name: "Polkadot.js",
+      url: "https://polkadot.js.org/apps/?rpc=wss:///wss-async.agung.peaq.network#/explorer",
+      standard: "none",
     },
     {
-      "name": "Subscan",
-      "url": "https://agung-testnet.subscan.io",
-      "standard": "none"
-    }
-  ]
+      name: "Subscan",
+      url: "https://agung-testnet.subscan.io",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

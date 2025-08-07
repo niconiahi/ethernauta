@@ -1,29 +1,27 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_8989 = {
-  "name": "Giant Mammoth Mainnet",
-  "shortName": "gmmt",
-  "title": "Giant Mammoth Chain",
-  "chain": "GMMT",
-  "icon": "gmmt",
-  "rpc": [
-    "https://rpc-asia.gmmtchain.io"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Giant Mammoth Coin",
-    "symbol": "GMMT",
-    "decimals": 18
+  name: "Giant Mammoth Mainnet",
+  shortName: "gmmt",
+  title: "Giant Mammoth Chain",
+  chain: "GMMT",
+  icon: "gmmt",
+  rpc: ["https://rpc-asia.gmmtchain.io"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Giant Mammoth Coin",
+    symbol: "GMMT",
+    decimals: 18,
   },
-  "infoURL": "https://gmmtchain.io/",
-  "chainId": 8989,
-  "networkId": 8989,
-  "explorers": [
+  infoURL: "https://gmmtchain.io/",
+  chainId: 8989,
+  networkId: 8989,
+  explorers: [
     {
-      "name": "gmmtscan",
-      "url": "https://scan.gmmtchain.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "gmmtscan",
+      url: "https://scan.gmmtchain.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

@@ -1,39 +1,35 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_5201420 = {
-  "name": "Electroneum Testnet",
-  "shortName": "etn-testnet",
-  "chain": "Electroneum",
-  "icon": "electroneum",
-  "rpc": [
-    "https://rpc.ankr.com/electroneum_testnet"
-  ],
-  "faucets": [
-    "https://faucet.electroneum.com"
-  ],
-  "features": [
+  name: "Electroneum Testnet",
+  shortName: "etn-testnet",
+  chain: "Electroneum",
+  icon: "electroneum",
+  rpc: ["https://rpc.ankr.com/electroneum_testnet"],
+  faucets: ["https://faucet.electroneum.com"],
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Electroneum",
-    "symbol": "ETN",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Electroneum",
+    symbol: "ETN",
+    decimals: 18,
   },
-  "infoURL": "https://electroneum.com",
-  "chainId": 5201420,
-  "networkId": 5201420,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://electroneum.com",
+  chainId: 5201420,
+  networkId: 5201420,
+  slip44: 1,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://testnet-blockexplorer.electroneum.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "blockscout",
+      url: "https://testnet-blockexplorer.electroneum.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

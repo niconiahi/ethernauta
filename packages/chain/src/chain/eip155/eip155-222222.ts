@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_222222 = {
-  "name": "Hydration",
-  "shortName": "hdx",
-  "chain": "HDX",
-  "icon": "hydration",
-  "rpc": [
+  name: "Hydration",
+  shortName: "hdx",
+  chain: "HDX",
+  icon: "hydration",
+  rpc: [
     "https://rpc.hydradx.cloud",
     "wss://rpc.hydradx.cloud",
     "https://hydration-rpc.n.dwellir.com",
@@ -28,22 +28,22 @@ export const eip155_222222 = {
     "https://rpc.sin.hydration.cloud",
     "wss://rpc.sin.hydration.cloud",
     "https://rpc.coke.hydration.cloud",
-    "wss://rpc.coke.hydration.cloud"
+    "wss://rpc.coke.hydration.cloud",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Wrapped ETH",
-    "symbol": "WETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Wrapped ETH",
+    symbol: "WETH",
+    decimals: 18,
   },
-  "infoURL": "https://hydration.net/",
-  "chainId": 222222,
-  "networkId": 222222,
-  "explorers": [
+  infoURL: "https://hydration.net/",
+  chainId: 222222,
+  networkId: 222222,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://explorer.evm.hydration.cloud",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "blockscout",
+      url: "https://explorer.evm.hydration.cloud",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

@@ -1,28 +1,26 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2122 = {
-  "name": "Metaplayerone Mainnet",
-  "shortName": "Metad",
-  "chain": "METAD",
-  "icon": "metad",
-  "rpc": [
-    "https://rpc.metaplayer.one/"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "METAD",
-    "symbol": "METAD",
-    "decimals": 18
+  name: "Metaplayerone Mainnet",
+  shortName: "Metad",
+  chain: "METAD",
+  icon: "metad",
+  rpc: ["https://rpc.metaplayer.one/"],
+  faucets: [],
+  nativeCurrency: {
+    name: "METAD",
+    symbol: "METAD",
+    decimals: 18,
   },
-  "infoURL": "https://docs.metaplayer.one/",
-  "chainId": 2122,
-  "networkId": 2122,
-  "explorers": [
+  infoURL: "https://docs.metaplayer.one/",
+  chainId: 2122,
+  networkId: 2122,
+  explorers: [
     {
-      "name": "Metad Scan",
-      "url": "https://scan.metaplayer.one",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Metad Scan",
+      url: "https://scan.metaplayer.one",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

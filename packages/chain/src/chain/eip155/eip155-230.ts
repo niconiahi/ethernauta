@@ -1,28 +1,28 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_230 = {
-  "name": "SwapDEX",
-  "shortName": "SDX",
-  "chain": "SDX",
-  "rpc": [
+  name: "SwapDEX",
+  shortName: "SDX",
+  chain: "SDX",
+  rpc: [
     "https://rpc.swapdex.network",
-    "wss://ss.swapdex.network"
+    "wss://ss.swapdex.network",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "SwapDEX",
-    "symbol": "SDX",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "SwapDEX",
+    symbol: "SDX",
+    decimals: 18,
   },
-  "infoURL": "https://swapdex.network/",
-  "chainId": 230,
-  "networkId": 230,
-  "explorers": [
+  infoURL: "https://swapdex.network/",
+  chainId: 230,
+  networkId: 230,
+  explorers: [
     {
-      "name": "SwapDEX",
-      "url": "https://evm.swapdex.network",
-      "standard": "none"
-    }
-  ]
+      name: "SwapDEX",
+      url: "https://evm.swapdex.network",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

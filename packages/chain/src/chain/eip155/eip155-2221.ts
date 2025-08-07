@@ -1,34 +1,32 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2221 = {
-  "name": "Kava Testnet",
-  "shortName": "tkava",
-  "chain": "KAVA",
-  "icon": "kava",
-  "rpc": [
+  name: "Kava Testnet",
+  shortName: "tkava",
+  chain: "KAVA",
+  icon: "kava",
+  rpc: [
     "https://evm.testnet.kava.io",
     "https://kava-evm-testnet.rpc.thirdweb.com",
     "wss://wevm.testnet.kava.io",
     "https://kava-testnet.drpc.org",
-    "wss://kava-testnet.drpc.org"
+    "wss://kava-testnet.drpc.org",
   ],
-  "faucets": [
-    "https://faucet.kava.io"
-  ],
-  "nativeCurrency": {
-    "name": "TKava",
-    "symbol": "TKAVA",
-    "decimals": 18
+  faucets: ["https://faucet.kava.io"],
+  nativeCurrency: {
+    name: "TKava",
+    symbol: "TKAVA",
+    decimals: 18,
   },
-  "infoURL": "https://www.kava.io",
-  "chainId": 2221,
-  "networkId": 2221,
-  "explorers": [
+  infoURL: "https://www.kava.io",
+  chainId: 2221,
+  networkId: 2221,
+  explorers: [
     {
-      "name": "Kava Testnet Explorer",
-      "url": "http://testnet.kavascan.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Kava Testnet Explorer",
+      url: "http://testnet.kavascan.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

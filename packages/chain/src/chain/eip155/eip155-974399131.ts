@@ -1,32 +1,30 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_974399131 = {
-  "name": "SKALE Calypso Hub Testnet",
-  "shortName": "calypso-testnet",
-  "title": "SKALE Calypso Hub Testnet",
-  "chain": "giant-half-dual-testnet",
-  "icon": "calypso",
-  "rpc": [
-    "https://testnet.skalenodes.com/v1/giant-half-dual-testnet"
+  name: "SKALE Calypso Hub Testnet",
+  shortName: "calypso-testnet",
+  title: "SKALE Calypso Hub Testnet",
+  chain: "giant-half-dual-testnet",
+  icon: "calypso",
+  rpc: [
+    "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
   ],
-  "faucets": [
-    "https://www.sfuelstation.com/"
-  ],
-  "nativeCurrency": {
-    "name": "sFUEL",
-    "symbol": "sFUEL",
-    "decimals": 18
+  faucets: ["https://www.sfuelstation.com/"],
+  nativeCurrency: {
+    name: "sFUEL",
+    symbol: "sFUEL",
+    decimals: 18,
   },
-  "infoURL": "https://calypsohub.network/",
-  "chainId": 974399131,
-  "networkId": 974399131,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://calypsohub.network/",
+  chainId: 974399131,
+  networkId: 974399131,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Blockscout",
-      "url": "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Blockscout",
+      url: "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

@@ -1,27 +1,25 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_648 = {
-  "name": "Endurance Smart Chain Mainnet",
-  "shortName": "ace",
-  "chain": "ACE",
-  "rpc": [
-    "https://rpc-endurance.fusionist.io/"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Endurance Chain Native Token",
-    "symbol": "ACE",
-    "decimals": 18
+  name: "Endurance Smart Chain Mainnet",
+  shortName: "ace",
+  chain: "ACE",
+  rpc: ["https://rpc-endurance.fusionist.io/"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Endurance Chain Native Token",
+    symbol: "ACE",
+    decimals: 18,
   },
-  "infoURL": "https://ace.fusionist.io/",
-  "chainId": 648,
-  "networkId": 648,
-  "explorers": [
+  infoURL: "https://ace.fusionist.io/",
+  chainId: 648,
+  networkId: 648,
+  explorers: [
     {
-      "name": "Endurance Scan",
-      "url": "https://explorer.endurance.fusionist.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Endurance Scan",
+      url: "https://explorer.endurance.fusionist.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

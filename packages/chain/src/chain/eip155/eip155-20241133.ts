@@ -1,27 +1,25 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_20241133 = {
-  "name": "Swan Proxima Testnet",
-  "shortName": "Proxima",
-  "chain": "SWAN",
-  "rpc": [
-    "https://rpc-proxima.swanchain.io"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "SWANETH",
-    "symbol": "sETH",
-    "decimals": 18
+  name: "Swan Proxima Testnet",
+  shortName: "Proxima",
+  chain: "SWAN",
+  rpc: ["https://rpc-proxima.swanchain.io"],
+  faucets: [],
+  nativeCurrency: {
+    name: "SWANETH",
+    symbol: "sETH",
+    decimals: 18,
   },
-  "infoURL": "https://swanchain.io/",
-  "chainId": 20241133,
-  "networkId": 20241133,
-  "explorers": [
+  infoURL: "https://swanchain.io/",
+  chainId: 20241133,
+  networkId: 20241133,
+  explorers: [
     {
-      "name": "Swan Proxima Chain explorer",
-      "url": "https://proxima-explorer.swanchain.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Swan Proxima Chain explorer",
+      url: "https://proxima-explorer.swanchain.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1089 = {
-  "name": "Humans.ai Mainnet",
-  "shortName": "humans",
-  "chain": "Humans",
-  "icon": "humans-dark",
-  "rpc": [
+  name: "Humans.ai Mainnet",
+  shortName: "humans",
+  chain: "Humans",
+  icon: "humans-dark",
+  rpc: [
     "https://jsonrpc.humans.nodestake.top",
     "https://humans-mainnet-evm.itrocket.net",
     "https://humans-evm-rpc.staketab.org:443",
@@ -14,30 +14,30 @@ export const eip155_1089 = {
     "https://mainnet-humans-evm.konsortech.xyz",
     "https://evm-rpc.mainnet.humans.zone",
     "https://json-rpc.humans.bh.rocks",
-    "https://evm-rpc.humans.huginn.tech"
+    "https://evm-rpc.humans.huginn.tech",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "HEART",
-    "symbol": "HEART",
-    "decimals": 18
+  nativeCurrency: {
+    name: "HEART",
+    symbol: "HEART",
+    decimals: 18,
   },
-  "infoURL": "https://humans.ai",
-  "chainId": 1089,
-  "networkId": 1089,
-  "explorers": [
+  infoURL: "https://humans.ai",
+  chainId: 1089,
+  networkId: 1089,
+  explorers: [
     {
-      "name": "explorer.guru",
-      "url": "https://humans.explorers.guru",
-      "standard": "none"
-    }
-  ]
+      name: "explorer.guru",
+      url: "https://humans.explorers.guru",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

@@ -1,31 +1,29 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_69 = {
-  "name": "Optimism Kovan",
-  "shortName": "okov",
-  "title": "Optimism Testnet Kovan",
-  "chain": "ETH",
-  "rpc": [
-    "https://kovan.optimism.io/"
+  name: "Optimism Kovan",
+  shortName: "okov",
+  title: "Optimism Testnet Kovan",
+  chain: "ETH",
+  rpc: ["https://kovan.optimism.io/"],
+  faucets: [
+    "http://fauceth.komputing.org?chain=69&address=${ADDRESS}",
   ],
-  "faucets": [
-    "http://fauceth.komputing.org?chain=69&address=${ADDRESS}"
-  ],
-  "nativeCurrency": {
-    "name": "Kovan Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Kovan Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://optimism.io",
-  "chainId": 69,
-  "networkId": 69,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://optimism.io",
+  chainId: 69,
+  networkId: 69,
+  slip44: 1,
+  explorers: [
     {
-      "name": "etherscan",
-      "url": "https://kovan-optimistic.etherscan.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "etherscan",
+      url: "https://kovan-optimistic.etherscan.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

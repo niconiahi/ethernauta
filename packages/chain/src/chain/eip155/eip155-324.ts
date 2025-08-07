@@ -1,39 +1,39 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_324 = {
-  "name": "zkSync Mainnet",
-  "shortName": "zksync",
-  "chain": "ETH",
-  "icon": "zksync-era",
-  "rpc": [
+  name: "zkSync Mainnet",
+  shortName: "zksync",
+  chain: "ETH",
+  icon: "zksync-era",
+  rpc: [
     "https://mainnet.era.zksync.io",
     "https://zksync.drpc.org",
-    "wss://zksync.drpc.org"
+    "wss://zksync.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://zksync.io/",
-  "chainId": 324,
-  "networkId": 324,
-  "explorers": [
+  infoURL: "https://zksync.io/",
+  chainId: 324,
+  networkId: 324,
+  explorers: [
     {
-      "name": "zkSync Era Block Explorer",
-      "url": "https://explorer.zksync.io",
-      "standard": "EIP3091"
-    }
+      name: "zkSync Era Block Explorer",
+      url: "https://explorer.zksync.io",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge.zksync.io/"
-      }
-    ]
-  }
+        url: "https://bridge.zksync.io/",
+      },
+    ],
+  },
 } satisfies Chain

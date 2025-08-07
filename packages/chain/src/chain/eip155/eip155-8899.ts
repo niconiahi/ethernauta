@@ -1,37 +1,37 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_8899 = {
-  "name": "JIBCHAIN L1",
-  "shortName": "jbc",
-  "chain": "JBC",
-  "icon": "jbc",
-  "rpc": [
+  name: "JIBCHAIN L1",
+  shortName: "jbc",
+  chain: "JBC",
+  icon: "jbc",
+  rpc: [
     "https://rpc-l1.jibchain.net",
-    "https://rpc-l1.inan.in.th"
+    "https://rpc-l1.inan.in.th",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "JIBCOIN",
-    "symbol": "JBC",
-    "decimals": 18
+  nativeCurrency: {
+    name: "JIBCOIN",
+    symbol: "JBC",
+    decimals: 18,
   },
-  "infoURL": "https://jibchain.net",
-  "chainId": 8899,
-  "networkId": 8899,
-  "explorers": [
+  infoURL: "https://jibchain.net",
+  chainId: 8899,
+  networkId: 8899,
+  explorers: [
     {
-      "name": "JIBCHAIN Explorer",
-      "url": "https://exp-l1.jibchain.net",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "JIBCHAIN Explorer",
+      url: "https://exp-l1.jibchain.net",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

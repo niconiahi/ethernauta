@@ -1,33 +1,33 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_12781 = {
-  "name": "Playdapp Testnet",
-  "shortName": "PDA-TESTNET",
-  "chain": "PDA",
-  "icon": "pda",
-  "rpc": [
-    "https://subnets.avax.network/playdappte/testnet/rpc"
+  name: "Playdapp Testnet",
+  shortName: "PDA-TESTNET",
+  chain: "PDA",
+  icon: "pda",
+  rpc: [
+    "https://subnets.avax.network/playdappte/testnet/rpc",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Playdapp",
-    "symbol": "PDA",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Playdapp",
+    symbol: "PDA",
+    decimals: 18,
   },
-  "infoURL": "https://playdapp.io",
-  "chainId": 12781,
-  "networkId": 12781,
-  "explorers": [
+  infoURL: "https://playdapp.io",
+  chainId: 12781,
+  networkId: 12781,
+  explorers: [
     {
-      "name": "Playdapp Testnet Explorer",
-      "url": "https://subnets-test.avax.network/playdappte",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Playdapp Testnet Explorer",
+      url: "https://subnets-test.avax.network/playdappte",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

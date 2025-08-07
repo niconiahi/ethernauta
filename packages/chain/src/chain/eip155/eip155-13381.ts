@@ -1,28 +1,26 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_13381 = {
-  "name": "Phoenix Mainnet",
-  "shortName": "Phoenix",
-  "chain": "Phoenix",
-  "icon": "phoenix",
-  "rpc": [
-    "https://rpc.phoenixplorer.com/"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Phoenix",
-    "symbol": "PHX",
-    "decimals": 18
+  name: "Phoenix Mainnet",
+  shortName: "Phoenix",
+  chain: "Phoenix",
+  icon: "phoenix",
+  rpc: ["https://rpc.phoenixplorer.com/"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Phoenix",
+    symbol: "PHX",
+    decimals: 18,
   },
-  "infoURL": "https://cryptophoenix.org/phoenix",
-  "chainId": 13381,
-  "networkId": 13381,
-  "explorers": [
+  infoURL: "https://cryptophoenix.org/phoenix",
+  chainId: 13381,
+  networkId: 13381,
+  explorers: [
     {
-      "name": "phoenixplorer",
-      "url": "https://phoenixplorer.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "phoenixplorer",
+      url: "https://phoenixplorer.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

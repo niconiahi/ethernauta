@@ -1,29 +1,26 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_328527 = {
-  "name": "Nal Mainnet",
-  "shortName": "nal",
-  "chain": "ETH",
-  "icon": "nal",
-  "rpc": [
-    "https://rpc.nal.network",
-    "wss://wss.nal.network"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  name: "Nal Mainnet",
+  shortName: "nal",
+  chain: "ETH",
+  icon: "nal",
+  rpc: ["https://rpc.nal.network", "wss://wss.nal.network"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://www.nal.network",
-  "chainId": 328527,
-  "networkId": 328527,
-  "explorers": [
+  infoURL: "https://www.nal.network",
+  chainId: 328527,
+  networkId: 328527,
+  explorers: [
     {
-      "name": "Nal Network Explorer",
-      "url": "https://scan.nal.network",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Nal Network Explorer",
+      url: "https://scan.nal.network",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

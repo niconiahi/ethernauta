@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1285 = {
-  "name": "Moonriver",
-  "shortName": "mriver",
-  "chain": "MOON",
-  "icon": "moonriver",
-  "rpc": [
+  name: "Moonriver",
+  shortName: "mriver",
+  chain: "MOON",
+  icon: "moonriver",
+  rpc: [
     "https://rpc.api.moonriver.moonbeam.network",
     "wss://wss.api.moonriver.moonbeam.network",
     "https://moonriver.public.blastapi.io",
@@ -20,22 +20,22 @@ export const eip155_1285 = {
     "https://moonriver-rpc.publicnode.com",
     "wss://moonriver-rpc.publicnode.com",
     "https://moonriver.drpc.org",
-    "wss://moonriver.drpc.org"
+    "wss://moonriver.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Moonriver",
-    "symbol": "MOVR",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Moonriver",
+    symbol: "MOVR",
+    decimals: 18,
   },
-  "infoURL": "https://moonbeam.network/networks/moonriver/",
-  "chainId": 1285,
-  "networkId": 1285,
-  "explorers": [
+  infoURL: "https://moonbeam.network/networks/moonriver/",
+  chainId: 1285,
+  networkId: 1285,
+  explorers: [
     {
-      "name": "moonscan",
-      "url": "https://moonriver.moonscan.io",
-      "standard": "none"
-    }
-  ]
+      name: "moonscan",
+      url: "https://moonriver.moonscan.io",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

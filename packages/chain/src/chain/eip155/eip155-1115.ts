@@ -1,39 +1,35 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1115 = {
-  "name": "Core Blockchain Testnet",
-  "shortName": "tcore",
-  "chain": "Core",
-  "icon": "core",
-  "rpc": [
-    "https://rpc.test.btcs.network/"
-  ],
-  "faucets": [
-    "https://scan.test.btcs.network/faucet"
-  ],
-  "features": [
+  name: "Core Blockchain Testnet",
+  shortName: "tcore",
+  chain: "Core",
+  icon: "core",
+  rpc: ["https://rpc.test.btcs.network/"],
+  faucets: ["https://scan.test.btcs.network/faucet"],
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Core Blockchain Testnet Native Token",
-    "symbol": "tCORE",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Core Blockchain Testnet Native Token",
+    symbol: "tCORE",
+    decimals: 18,
   },
-  "infoURL": "https://www.coredao.org",
-  "chainId": 1115,
-  "networkId": 1115,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://www.coredao.org",
+  chainId: 1115,
+  networkId: 1115,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Core Scan Testnet",
-      "url": "https://scan.test.btcs.network",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Core Scan Testnet",
+      url: "https://scan.test.btcs.network",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

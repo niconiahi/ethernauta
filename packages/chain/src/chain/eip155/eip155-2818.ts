@@ -1,41 +1,41 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2818 = {
-  "name": "Morph",
-  "shortName": "morph",
-  "title": "Morph Mainnet",
-  "chain": "ETH",
-  "rpc": [
+  name: "Morph",
+  shortName: "morph",
+  title: "Morph Mainnet",
+  chain: "ETH",
+  rpc: [
     "https://rpc.morphl2.io",
     "wss://rpc.morphl2.io:8443",
     "https://rpc-quicknode.morphl2.io",
-    "wss://rpc-quicknode.morphl2.io"
+    "wss://rpc-quicknode.morphl2.io",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://morphl2.io",
-  "chainId": 2818,
-  "networkId": 2818,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://morphl2.io",
+  chainId: 2818,
+  networkId: 2818,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Morph Mainnet Explorer",
-      "url": "https://explorer.morphl2.io",
-      "standard": "EIP3091"
-    }
+      name: "Morph Mainnet Explorer",
+      url: "https://explorer.morphl2.io",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge.morphl2.io/"
-      }
-    ]
-  }
+        url: "https://bridge.morphl2.io/",
+      },
+    ],
+  },
 } satisfies Chain

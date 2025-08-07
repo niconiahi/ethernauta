@@ -1,38 +1,38 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_444444 = {
-  "name": "Syndr L3 Sepolia",
-  "shortName": "syndr",
-  "title": "Syndr L3 Sepolia Rollup Testnet",
-  "chain": "SYNDRSEPOLIA",
-  "rpc": [
+  name: "Syndr L3 Sepolia",
+  shortName: "syndr",
+  title: "Syndr L3 Sepolia Rollup Testnet",
+  chain: "SYNDRSEPOLIA",
+  rpc: [
     "https://sepolia.syndr.com/http",
-    "wss://sepolia.syndr.com/ws"
+    "wss://sepolia.syndr.com/ws",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Sepolia Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Sepolia Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://syndr.com",
-  "chainId": 444444,
-  "networkId": 444444,
-  "explorers": [
+  infoURL: "https://syndr.com",
+  chainId: 444444,
+  networkId: 444444,
+  explorers: [
     {
-      "name": "Syndr L3 Sepolia Testnet Explorer",
-      "url": "https://sepolia-explorer.syndr.com",
-      "standard": "EIP3091"
-    }
+      name: "Syndr L3 Sepolia Testnet Explorer",
+      url: "https://sepolia-explorer.syndr.com",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-421614",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-421614",
+    bridges: [
       {
-        "url": "https://sepolia-bridge.syndr.com"
-      }
-    ]
-  }
+        url: "https://sepolia-bridge.syndr.com",
+      },
+    ],
+  },
 } satisfies Chain

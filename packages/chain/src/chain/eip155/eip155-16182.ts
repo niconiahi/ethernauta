@@ -1,40 +1,41 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_16182 = {
-  "name": "Eventum Testnet",
-  "shortName": "eventum-testnet",
-  "title": "Eventum Testnet",
-  "chain": "eventum-testnet",
-  "rpc": [
+  name: "Eventum Testnet",
+  shortName: "eventum-testnet",
+  title: "Eventum Testnet",
+  chain: "eventum-testnet",
+  rpc: [
     "https://testnet-rpc.eh-dev.app",
-    "wss://testnet-ws.eh-dev.app"
+    "wss://testnet-ws.eh-dev.app",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://raas.gelato.network/rollups/details/public/event-horizon-eventum-testnet",
-  "chainId": 16182,
-  "networkId": 16182,
-  "slip44": 60,
-  "explorers": [
+  infoURL:
+    "https://raas.gelato.network/rollups/details/public/event-horizon-eventum-testnet",
+  chainId: 16182,
+  networkId: 16182,
+  slip44: 60,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://testnet-blockscout.eh-dev.app",
-      "standard": "EIP3091"
-    }
+      name: "blockscout",
+      url: "https://testnet-blockscout.eh-dev.app",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-421614",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-421614",
+    bridges: [
       {
-        "url": "https://testnet-bridge.eh-dev.app/bridge/event-horizon-eventum-testnet"
-      }
-    ]
+        url: "https://testnet-bridge.eh-dev.app/bridge/event-horizon-eventum-testnet",
+      },
+    ],
   },
-  "status": "active"
+  status: "active",
 } satisfies Chain

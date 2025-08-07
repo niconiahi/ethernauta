@@ -1,42 +1,40 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2810 = {
-  "name": "Morph Holesky",
-  "shortName": "hmorph",
-  "title": "Morph Holesky Testnet",
-  "chain": "ETH",
-  "rpc": [
+  name: "Morph Holesky",
+  shortName: "hmorph",
+  title: "Morph Holesky Testnet",
+  chain: "ETH",
+  rpc: [
     "https://rpc-quicknode-holesky.morphl2.io",
     "wss://rpc-quicknode-holesky.morphl2.io",
-    "https://rpc-holesky.morphl2.io"
+    "https://rpc-holesky.morphl2.io",
   ],
-  "faucets": [
-    "https://morphfaucet.com/"
-  ],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: ["https://morphfaucet.com/"],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://morphl2.io",
-  "chainId": 2810,
-  "networkId": 2810,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://morphl2.io",
+  chainId: 2810,
+  networkId: 2810,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Morph Holesky Testnet Explorer",
-      "url": "https://explorer-holesky.morphl2.io",
-      "standard": "EIP3091"
-    }
+      name: "Morph Holesky Testnet Explorer",
+      url: "https://explorer-holesky.morphl2.io",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge-holesky.morphl2.io"
-      }
-    ]
-  }
+        url: "https://bridge-holesky.morphl2.io",
+      },
+    ],
+  },
 } satisfies Chain

@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1284 = {
-  "name": "Moonbeam",
-  "shortName": "mbeam",
-  "chain": "MOON",
-  "icon": "moonbeam",
-  "rpc": [
+  name: "Moonbeam",
+  shortName: "mbeam",
+  chain: "MOON",
+  icon: "moonbeam",
+  rpc: [
     "https://rpc.api.moonbeam.network",
     "wss://wss.api.moonbeam.network",
     "https://moonbeam.public.blastapi.io",
@@ -20,22 +20,22 @@ export const eip155_1284 = {
     "https://moonbeam-rpc.publicnode.com",
     "wss://moonbeam-rpc.publicnode.com",
     "https://moonbeam.drpc.org",
-    "wss://moonbeam.drpc.org"
+    "wss://moonbeam.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Glimmer",
-    "symbol": "GLMR",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Glimmer",
+    symbol: "GLMR",
+    decimals: 18,
   },
-  "infoURL": "https://moonbeam.network/networks/moonbeam/",
-  "chainId": 1284,
-  "networkId": 1284,
-  "explorers": [
+  infoURL: "https://moonbeam.network/networks/moonbeam/",
+  chainId: 1284,
+  networkId: 1284,
+  explorers: [
     {
-      "name": "moonscan",
-      "url": "https://moonbeam.moonscan.io",
-      "standard": "none"
-    }
-  ]
+      name: "moonscan",
+      url: "https://moonbeam.moonscan.io",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

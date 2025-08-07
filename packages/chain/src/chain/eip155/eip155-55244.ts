@@ -1,32 +1,30 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_55244 = {
-  "name": "Superposition",
-  "shortName": "spn",
-  "chain": "Superposition",
-  "rpc": [
-    "https://rpc.superposition.so"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  name: "Superposition",
+  shortName: "spn",
+  chain: "Superposition",
+  rpc: ["https://rpc.superposition.so"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://superposition.so",
-  "chainId": 55244,
-  "networkId": 55244,
-  "explorers": [
+  infoURL: "https://superposition.so",
+  chainId: 55244,
+  networkId: 55244,
+  explorers: [
     {
-      "name": "Superposition Explorer",
-      "url": "https://explorer.superposition.so",
-      "standard": "EIP3091"
-    }
+      name: "Superposition Explorer",
+      url: "https://explorer.superposition.so",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-42161",
-    "bridges": []
-  }
+  parent: {
+    type: "L2",
+    chain: "eip155-42161",
+    bridges: [],
+  },
 } satisfies Chain

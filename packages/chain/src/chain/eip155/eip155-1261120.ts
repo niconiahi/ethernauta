@@ -1,50 +1,50 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1261120 = {
-  "name": "zKatana",
-  "shortName": "azktn",
-  "title": "Astar zkEVM Testnet zKatana",
-  "chain": "ETH",
-  "icon": "astarzk",
-  "rpc": [
+  name: "zKatana",
+  shortName: "azktn",
+  title: "Astar zkEVM Testnet zKatana",
+  chain: "ETH",
+  icon: "astarzk",
+  rpc: [
     "https://rpc.zkatana.gelato.digital",
     "https://rpc.startale.com/zkatana",
     "https://astar-zkatana.drpc.org",
-    "wss://astar-zkatana.drpc.org"
+    "wss://astar-zkatana.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Sepolia Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Sepolia Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://astar.network",
-  "chainId": 1261120,
-  "networkId": 1261120,
-  "explorers": [
+  infoURL: "https://astar.network",
+  chainId: 1261120,
+  networkId: 1261120,
+  explorers: [
     {
-      "name": "Blockscout zKatana chain explorer",
-      "url": "https://zkatana.blockscout.com",
-      "standard": "EIP3091"
+      name: "Blockscout zKatana chain explorer",
+      url: "https://zkatana.blockscout.com",
+      standard: "EIP3091",
     },
     {
-      "name": "Startale zKatana chain explorer",
-      "url": "https://zkatana.explorer.startale.com",
-      "standard": "EIP3091"
-    }
+      name: "Startale zKatana chain explorer",
+      url: "https://zkatana.explorer.startale.com",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-11155111",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-11155111",
+    bridges: [
       {
-        "url": "https://portal.astar.network"
+        url: "https://portal.astar.network",
       },
       {
-        "url": "https://bridge.zkatana.gelato.digital"
-      }
-    ]
+        url: "https://bridge.zkatana.gelato.digital",
+      },
+    ],
   },
-  "status": "active"
+  status: "active",
 } satisfies Chain

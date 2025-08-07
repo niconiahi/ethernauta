@@ -1,32 +1,30 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_4162 = {
-  "name": "SX Rollup",
-  "shortName": "SXR",
-  "chain": "SX",
-  "icon": "SX",
-  "rpc": [
-    "https://rpc.sx-rollup.gelato.digital"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "SX Network",
-    "symbol": "SX",
-    "decimals": 18
+  name: "SX Rollup",
+  shortName: "SXR",
+  chain: "SX",
+  icon: "SX",
+  rpc: ["https://rpc.sx-rollup.gelato.digital"],
+  faucets: [],
+  nativeCurrency: {
+    name: "SX Network",
+    symbol: "SX",
+    decimals: 18,
   },
-  "infoURL": "https://www.sx.technology",
-  "chainId": 4162,
-  "networkId": 4162,
-  "explorers": [
+  infoURL: "https://www.sx.technology",
+  chainId: 4162,
+  networkId: 4162,
+  explorers: [
     {
-      "name": "SX L2 Explorer",
-      "url": "https://explorerl2.sx.technology",
-      "standard": "EIP3091"
-    }
+      name: "SX L2 Explorer",
+      url: "https://explorerl2.sx.technology",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1"
-  }
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+  },
 } satisfies Chain

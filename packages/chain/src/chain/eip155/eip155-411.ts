@@ -1,29 +1,27 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_411 = {
-  "name": "Pepe Chain Mainnet",
-  "shortName": "pepe",
-  "chain": "PC",
-  "icon": "pepechain",
-  "rpc": [
-    "https://rpc.pepe-chain.vip"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Pepe",
-    "symbol": "PEPE",
-    "decimals": 18
+  name: "Pepe Chain Mainnet",
+  shortName: "pepe",
+  chain: "PC",
+  icon: "pepechain",
+  rpc: ["https://rpc.pepe-chain.vip"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Pepe",
+    symbol: "PEPE",
+    decimals: 18,
   },
-  "infoURL": "https://pepe-chain.vip",
-  "chainId": 411,
-  "networkId": 411,
-  "explorers": [
+  infoURL: "https://pepe-chain.vip",
+  chainId: 411,
+  networkId: 411,
+  explorers: [
     {
-      "name": "pepechain explorer",
-      "url": "https://explorer.pepe-chain.vip",
-      "standard": "EIP3091"
-    }
+      name: "pepechain explorer",
+      url: "https://explorer.pepe-chain.vip",
+      standard: "EIP3091",
+    },
   ],
-  "status": "active"
+  status: "active",
 } satisfies Chain

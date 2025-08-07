@@ -21,7 +21,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test:unit": "vitest",
-    "indexer": "node --loader tsm src/chain/indexer.ts"
+    "indexer": "node --loader tsm src/chain/indexer.ts && pnpm run format"
   },
   "devDependencies": {
     "valibot": "1.1.0",

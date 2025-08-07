@@ -1,37 +1,35 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1071 = {
-  "name": "OpenGPU Mainnet",
-  "shortName": "ogpu",
-  "chain": "OGPU",
-  "icon": "ogpu",
-  "rpc": [
+  name: "OpenGPU Mainnet",
+  shortName: "ogpu",
+  chain: "OGPU",
+  icon: "ogpu",
+  rpc: [
     "https://mainnet-rpc.ogpuscan.io",
-    "wss://mainnet-rpc.ogpuscan.io"
+    "wss://mainnet-rpc.ogpuscan.io",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP155"
-    }
+      name: "EIP155",
+    },
   ],
-  "nativeCurrency": {
-    "name": "OGPU",
-    "symbol": "OGPU",
-    "decimals": 18
+  nativeCurrency: {
+    name: "OGPU",
+    symbol: "OGPU",
+    decimals: 18,
   },
-  "infoURL": "https://opengpu.network",
-  "chainId": 1071,
-  "networkId": 1071,
-  "explorers": [
+  infoURL: "https://opengpu.network",
+  chainId: 1071,
+  networkId: 1071,
+  explorers: [
     {
-      "name": "OpenGPU Explorer",
-      "url": "https://ogpuscan.io",
-      "standard": "EIP3091"
-    }
+      name: "OpenGPU Explorer",
+      url: "https://ogpuscan.io",
+      standard: "EIP3091",
+    },
   ],
-  "redFlags": [
-    "reusedChainId"
-  ]
+  redFlags: ["reusedChainId"],
 } satisfies Chain

@@ -1,42 +1,42 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_6038361 = {
-  "name": "Astar zKyoto",
-  "shortName": "azkyt",
-  "title": "Astar zkEVM Testnet zKyoto",
-  "chain": "ETH",
-  "icon": "astarzk",
-  "rpc": [
+  name: "Astar zKyoto",
+  shortName: "azkyt",
+  title: "Astar zkEVM Testnet zKyoto",
+  chain: "ETH",
+  icon: "astarzk",
+  rpc: [
     "https://rpc.startale.com/zkyoto",
-    "https://rpc.zkyoto.gelato.digital"
+    "https://rpc.zkyoto.gelato.digital",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Sepolia Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Sepolia Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://astar.network",
-  "chainId": 6038361,
-  "networkId": 6038361,
-  "explorers": [
+  infoURL: "https://astar.network",
+  chainId: 6038361,
+  networkId: 6038361,
+  explorers: [
     {
-      "name": "Blockscout zKyoto explorer",
-      "url": "https://astar-zkyoto.blockscout.com",
-      "standard": "EIP3091"
-    }
+      name: "Blockscout zKyoto explorer",
+      url: "https://astar-zkyoto.blockscout.com",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-11155111",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-11155111",
+    bridges: [
       {
-        "url": "https://portal.astar.network"
+        url: "https://portal.astar.network",
       },
       {
-        "url": "https://bridge.gelato.network/bridge/astar-zkyoto"
-      }
-    ]
-  }
+        url: "https://bridge.gelato.network/bridge/astar-zkyoto",
+      },
+    ],
+  },
 } satisfies Chain

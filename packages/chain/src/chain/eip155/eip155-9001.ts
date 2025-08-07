@@ -1,31 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_9001 = {
-  "name": "Evmos",
-  "shortName": "evmos",
-  "chain": "Evmos",
-  "icon": "evmos",
-  "rpc": [
+  name: "Evmos",
+  shortName: "evmos",
+  chain: "Evmos",
+  icon: "evmos",
+  rpc: [
     "https://evmos.lava.build",
     "wss://evmos.lava.build/websocket",
     "https://evmos-evm-rpc.publicnode.com",
-    "wss://evmos-evm-rpc.publicnode.com"
+    "wss://evmos-evm-rpc.publicnode.com",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Evmos",
-    "symbol": "EVMOS",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Evmos",
+    symbol: "EVMOS",
+    decimals: 18,
   },
-  "infoURL": "https://evmos.org",
-  "chainId": 9001,
-  "networkId": 9001,
-  "explorers": [
+  infoURL: "https://evmos.org",
+  chainId: 9001,
+  networkId: 9001,
+  explorers: [
     {
-      "name": "Evmos Explorer (Escan)",
-      "url": "https://escan.live",
-      "standard": "none"
-    }
-  ]
+      name: "Evmos Explorer (Escan)",
+      url: "https://escan.live",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

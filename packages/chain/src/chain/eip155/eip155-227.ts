@@ -1,37 +1,35 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_227 = {
-  "name": "Prom",
-  "shortName": "PROM",
-  "chain": "Prom",
-  "icon": "prom",
-  "rpc": [
-    "https://prom-rpc.eu-north-2.gateway.fm"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Prom",
-    "symbol": "PROM",
-    "decimals": 18
+  name: "Prom",
+  shortName: "PROM",
+  chain: "Prom",
+  icon: "prom",
+  rpc: ["https://prom-rpc.eu-north-2.gateway.fm"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Prom",
+    symbol: "PROM",
+    decimals: 18,
   },
-  "infoURL": "https://prom.io",
-  "chainId": 227,
-  "networkId": 227,
-  "explorers": [
+  infoURL: "https://prom.io",
+  chainId: 227,
+  networkId: 227,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://prom-blockscout.eu-north-2.gateway.fm",
-      "standard": "EIP3091"
-    }
+      name: "blockscout",
+      url: "https://prom-blockscout.eu-north-2.gateway.fm",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://prom-bridge.eu-north-2.gateway.fm/"
-      }
-    ]
-  }
+        url: "https://prom-bridge.eu-north-2.gateway.fm/",
+      },
+    ],
+  },
 } satisfies Chain

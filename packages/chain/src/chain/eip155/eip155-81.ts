@@ -1,33 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_81 = {
-  "name": "Japan Open Chain Mainnet",
-  "shortName": "joc",
-  "chain": "JOC",
-  "icon": "joc",
-  "rpc": [
+  name: "Japan Open Chain Mainnet",
+  shortName: "joc",
+  chain: "JOC",
+  icon: "joc",
+  rpc: [
     "https://rpc-1.japanopenchain.org:8545",
     "https://rpc-2.japanopenchain.org:8545",
-    "https://rpc-3.japanopenchain.org"
+    "https://rpc-3.japanopenchain.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Japan Open Chain Token",
-    "symbol": "JOC",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Japan Open Chain Token",
+    symbol: "JOC",
+    decimals: 18,
   },
-  "infoURL": "https://www.japanopenchain.org/",
-  "chainId": 81,
-  "networkId": 81,
-  "explorers": [
+  infoURL: "https://www.japanopenchain.org/",
+  chainId: 81,
+  networkId: 81,
+  explorers: [
     {
-      "name": "Block Explorer",
-      "url": "https://explorer.japanopenchain.org",
-      "standard": "EIP3091"
-    }
+      name: "Block Explorer",
+      url: "https://explorer.japanopenchain.org",
+      standard: "EIP3091",
+    },
   ],
-  "redFlags": [
-    "reusedChainId"
-  ]
+  redFlags: ["reusedChainId"],
 } satisfies Chain

@@ -1,29 +1,27 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1666600002 = {
-  "name": "Harmony Mainnet Shard 2",
-  "shortName": "hmy-s2",
-  "chain": "Harmony",
-  "rpc": [
-    "https://api.s2.t.hmny.io"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "ONE",
-    "symbol": "ONE",
-    "decimals": 18
+  name: "Harmony Mainnet Shard 2",
+  shortName: "hmy-s2",
+  chain: "Harmony",
+  rpc: ["https://api.s2.t.hmny.io"],
+  faucets: [],
+  nativeCurrency: {
+    name: "ONE",
+    symbol: "ONE",
+    decimals: 18,
   },
-  "infoURL": "https://www.harmony.one/",
-  "chainId": 1666600002,
-  "networkId": 1666600002,
-  "slip44": 1023,
-  "explorers": [
+  infoURL: "https://www.harmony.one/",
+  chainId: 1666600002,
+  networkId: 1666600002,
+  slip44: 1023,
+  explorers: [
     {
-      "name": "Harmony Block Explorer",
-      "url": "https://explorer.harmony.one/blocks/shard/2",
-      "standard": "none"
-    }
+      name: "Harmony Block Explorer",
+      url: "https://explorer.harmony.one/blocks/shard/2",
+      standard: "none",
+    },
   ],
-  "status": "deprecated"
+  status: "deprecated",
 } satisfies Chain

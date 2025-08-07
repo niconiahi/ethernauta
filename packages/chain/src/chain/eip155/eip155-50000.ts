@@ -1,37 +1,35 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_50000 = {
-  "name": "Citronus",
-  "shortName": "citro",
-  "chain": "Citronus",
-  "icon": "citro",
-  "rpc": [
-    "https://rpc.citronus.com"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "CITRO",
-    "symbol": "CITRO",
-    "decimals": 18
+  name: "Citronus",
+  shortName: "citro",
+  chain: "Citronus",
+  icon: "citro",
+  rpc: ["https://rpc.citronus.com"],
+  faucets: [],
+  nativeCurrency: {
+    name: "CITRO",
+    symbol: "CITRO",
+    decimals: 18,
   },
-  "infoURL": "https://citronus.com",
-  "chainId": 50000,
-  "networkId": 50000,
-  "explorers": [
+  infoURL: "https://citronus.com",
+  chainId: 50000,
+  networkId: 50000,
+  explorers: [
     {
-      "name": "citro",
-      "url": "https://explorer.citronus.com",
-      "standard": "EIP3091"
-    }
+      name: "citro",
+      url: "https://explorer.citronus.com",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge.gelato.network/bridge/citronus"
-      }
-    ]
-  }
+        url: "https://bridge.gelato.network/bridge/citronus",
+      },
+    ],
+  },
 } satisfies Chain

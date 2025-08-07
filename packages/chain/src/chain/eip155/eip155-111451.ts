@@ -1,29 +1,29 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_111451 = {
-  "name": "eGold Chain Testnet",
-  "shortName": "egoldchaint",
-  "chain": "EGC",
-  "icon": "egoldchain",
-  "rpc": [
+  name: "eGold Chain Testnet",
+  shortName: "egoldchaint",
+  chain: "EGC",
+  icon: "egoldchain",
+  rpc: [
     "https://rpc-testnet.egoldchain.com",
-    "wss://rpc-testnet.egoldchain.com"
+    "wss://rpc-testnet.egoldchain.com",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Aurum",
-    "symbol": "XAU",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Aurum",
+    symbol: "XAU",
+    decimals: 18,
   },
-  "infoURL": "https://www.egoldchain.com",
-  "chainId": 111451,
-  "networkId": 111451,
-  "explorers": [
+  infoURL: "https://www.egoldchain.com",
+  chainId: 111451,
+  networkId: 111451,
+  explorers: [
     {
-      "name": "eGold Chain Block Explorer",
-      "url": "http://testnet.egoldscan.io",
-      "standard": "none"
-    }
-  ]
+      name: "eGold Chain Block Explorer",
+      url: "http://testnet.egoldscan.io",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

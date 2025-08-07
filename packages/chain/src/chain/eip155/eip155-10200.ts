@@ -1,42 +1,40 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_10200 = {
-  "name": "Gnosis Chiado Testnet",
-  "shortName": "chi",
-  "chain": "GNO",
-  "icon": "gnosis",
-  "rpc": [
+  name: "Gnosis Chiado Testnet",
+  shortName: "chi",
+  chain: "GNO",
+  icon: "gnosis",
+  rpc: [
     "https://rpc.chiadochain.net",
     "https://rpc.chiado.gnosis.gateway.fm",
     "wss://rpc.chiadochain.net/wss",
     "https://gnosis-chiado-rpc.publicnode.com",
     "wss://gnosis-chiado-rpc.publicnode.com",
     "https://gnosis-chiado.drpc.org",
-    "wss://gnosis-chiado.drpc.org"
+    "wss://gnosis-chiado.drpc.org",
   ],
-  "faucets": [
-    "https://gnosisfaucet.com"
-  ],
-  "nativeCurrency": {
-    "name": "Chiado xDAI",
-    "symbol": "XDAI",
-    "decimals": 18
+  faucets: ["https://gnosisfaucet.com"],
+  nativeCurrency: {
+    name: "Chiado xDAI",
+    symbol: "XDAI",
+    decimals: 18,
   },
-  "infoURL": "https://docs.gnosischain.com",
-  "chainId": 10200,
-  "networkId": 10200,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://docs.gnosischain.com",
+  chainId: 10200,
+  networkId: 10200,
+  slip44: 1,
+  explorers: [
     {
-      "name": "blockscout-chiadochain",
-      "url": "https://blockscout.chiadochain.net",
-      "standard": "EIP3091"
+      name: "blockscout-chiadochain",
+      url: "https://blockscout.chiadochain.net",
+      standard: "EIP3091",
     },
     {
-      "name": "blockscout",
-      "url": "https://gnosis-chiado.blockscout.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "blockscout",
+      url: "https://gnosis-chiado.blockscout.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

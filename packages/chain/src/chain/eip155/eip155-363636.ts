@@ -1,28 +1,26 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_363636 = {
-  "name": "Digit Soul Smart Chain 2",
-  "shortName": "DS2",
-  "chain": "DS2",
-  "icon": "pnet",
-  "rpc": [
-    "https://dgs-rpc.digitsoul.co.th"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Digit Coin",
-    "symbol": "DGC",
-    "decimals": 18
+  name: "Digit Soul Smart Chain 2",
+  shortName: "DS2",
+  chain: "DS2",
+  icon: "pnet",
+  rpc: ["https://dgs-rpc.digitsoul.co.th"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Digit Coin",
+    symbol: "DGC",
+    decimals: 18,
   },
-  "infoURL": "",
-  "chainId": 363636,
-  "networkId": 363636,
-  "explorers": [
+  infoURL: "",
+  chainId: 363636,
+  networkId: 363636,
+  explorers: [
     {
-      "name": "Digit Soul Explorer",
-      "url": "https://dgs-exp.digitsoul.co.th",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Digit Soul Explorer",
+      url: "https://dgs-exp.digitsoul.co.th",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

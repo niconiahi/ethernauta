@@ -1,22 +1,9 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
     "useIgnoreFile": false
-  },
-  "files": {
-    "ignoreUnknown": false,
-    "includes": [
-      "**",
-      "!**/build",
-      "!**/.wrangler",
-      "!**/database/types.ts",
-      "!**/.react-router",
-      "!**/worker-configuration.d.ts",
-      "!**/src/chain/output",
-      "!**/src/chain/eip155"
-    ]
   },
   "assist": {
     "actions": {
@@ -26,6 +13,12 @@
     }
   },
   "formatter": {
+    "includes": [
+      "**",
+      "!**/.wrangler/**",
+      "!**/.react-router/**",
+      "!**/worker-configuration.d.ts"
+    ],
     "enabled": true,
     "lineWidth": 60,
     "indentStyle": "space",
@@ -39,6 +32,14 @@
   },
   "linter": {
     "enabled": true,
+    "includes": [
+      "**",
+      "!**/.wrangler/**",
+      "!**/.react-router/**",
+      "!**/worker-configuration.d.ts",
+      "!**/src/chain/eip155",
+      "!**/dist/**"
+    ],
     "rules": {
       "recommended": true,
       "nursery": {

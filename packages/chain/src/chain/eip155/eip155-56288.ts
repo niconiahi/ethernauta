@@ -1,41 +1,41 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_56288 = {
-  "name": "Boba BNB Mainnet",
-  "shortName": "BobaBnb",
-  "chain": "Boba BNB Mainnet",
-  "rpc": [
+  name: "Boba BNB Mainnet",
+  shortName: "BobaBnb",
+  chain: "Boba BNB Mainnet",
+  rpc: [
     "https://bnb.boba.network",
     "https://boba-bnb.gateway.tenderly.co/",
     "https://gateway.tenderly.co/public/boba-bnb",
     "https://replica.bnb.boba.network",
     "wss://boba-bnb.gateway.tenderly.co/",
-    "wss://gateway.tenderly.co/public/boba-bnb"
+    "wss://gateway.tenderly.co/public/boba-bnb",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Boba Token",
-    "symbol": "BOBA",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Boba Token",
+    symbol: "BOBA",
+    decimals: 18,
   },
-  "infoURL": "https://boba.network",
-  "chainId": 56288,
-  "networkId": 56288,
-  "explorers": [
+  infoURL: "https://boba.network",
+  chainId: 56288,
+  networkId: 56288,
+  explorers: [
     {
-      "name": "Boba BNB block explorer",
-      "url": "https://bobascan.com",
-      "standard": "none"
-    }
+      name: "Boba BNB block explorer",
+      url: "https://bobascan.com",
+      standard: "none",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-56",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-56",
+    bridges: [
       {
-        "url": "https://gateway.boba.network"
-      }
-    ]
-  }
+        url: "https://gateway.boba.network",
+      },
+    ],
+  },
 } satisfies Chain

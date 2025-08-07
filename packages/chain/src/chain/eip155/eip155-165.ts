@@ -1,26 +1,26 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_165 = {
-  "name": "Omni Testnet (Deprecated)",
-  "shortName": "omni_testnet_deprecated",
-  "chain": "Omni",
-  "rpc": [],
-  "faucets": [],
-  "features": [
+  name: "Omni Testnet (Deprecated)",
+  shortName: "omni_testnet_deprecated",
+  chain: "Omni",
+  rpc: [],
+  faucets: [],
+  features: [
     {
-      "name": "EIP155"
-    }
+      name: "EIP155",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Omni",
-    "symbol": "OMNI",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Omni",
+    symbol: "OMNI",
+    decimals: 18,
   },
-  "infoURL": "https://docs.omni.network/",
-  "chainId": 165,
-  "networkId": 165,
-  "slip44": 1,
-  "explorers": [],
-  "status": "deprecated"
+  infoURL: "https://docs.omni.network/",
+  chainId: 165,
+  networkId: 165,
+  slip44: 1,
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

@@ -1,32 +1,32 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_11227 = {
-  "name": "Jiritsu Testnet Subnet",
-  "shortName": "jiritsutes",
-  "chain": "JIRITSUTES",
-  "rpc": [
-    "https://subnets.avax.network/jiritsutes/testnet/rpc"
+  name: "Jiritsu Testnet Subnet",
+  shortName: "jiritsutes",
+  chain: "JIRITSUTES",
+  rpc: [
+    "https://subnets.avax.network/jiritsutes/testnet/rpc",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "JIRI",
-    "symbol": "TZW",
-    "decimals": 18
+  nativeCurrency: {
+    name: "JIRI",
+    symbol: "TZW",
+    decimals: 18,
   },
-  "infoURL": "https://jiritsu.network",
-  "chainId": 11227,
-  "networkId": 11227,
-  "explorers": [
+  infoURL: "https://jiritsu.network",
+  chainId: 11227,
+  networkId: 11227,
+  explorers: [
     {
-      "name": "JIRITSUTES Explorer",
-      "url": "https://subnets-test.avax.network/jiritsutes",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "JIRITSUTES Explorer",
+      url: "https://subnets-test.avax.network/jiritsutes",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

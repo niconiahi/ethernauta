@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_100 = {
-  "name": "Gnosis",
-  "shortName": "gno",
-  "chain": "GNO",
-  "icon": "gnosis",
-  "rpc": [
+  name: "Gnosis",
+  shortName: "gno",
+  chain: "GNO",
+  icon: "gnosis",
+  rpc: [
     "https://rpc.gnosischain.com",
     "https://rpc.gnosis.gateway.fm",
     "https://rpc.ankr.com/gnosis",
@@ -18,37 +18,37 @@ export const eip155_100 = {
     "https://gnosis.oat.farm",
     "wss://rpc.gnosischain.com/wss",
     "https://gnosis-rpc.publicnode.com",
-    "wss://gnosis-rpc.publicnode.com"
+    "wss://gnosis-rpc.publicnode.com",
   ],
-  "faucets": [
+  faucets: [
     "https://gnosisfaucet.com",
     "https://stakely.io/faucet/gnosis-chain-xdai",
-    "https://faucet.prussia.dev/xdai"
+    "https://faucet.prussia.dev/xdai",
   ],
-  "nativeCurrency": {
-    "name": "xDAI",
-    "symbol": "XDAI",
-    "decimals": 18
+  nativeCurrency: {
+    name: "xDAI",
+    symbol: "XDAI",
+    decimals: 18,
   },
-  "infoURL": "https://docs.gnosischain.com",
-  "chainId": 100,
-  "networkId": 100,
-  "slip44": 700,
-  "explorers": [
+  infoURL: "https://docs.gnosischain.com",
+  chainId: 100,
+  networkId: 100,
+  slip44: 700,
+  explorers: [
     {
-      "name": "gnosisscan",
-      "url": "https://gnosisscan.io",
-      "standard": "EIP3091"
+      name: "gnosisscan",
+      url: "https://gnosisscan.io",
+      standard: "EIP3091",
     },
     {
-      "name": "blockscout",
-      "url": "https://gnosis.blockscout.com",
-      "standard": "EIP3091"
+      name: "blockscout",
+      url: "https://gnosis.blockscout.com",
+      standard: "EIP3091",
     },
     {
-      "name": "dexguru",
-      "url": "https://gnosis.dex.guru",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "dexguru",
+      url: "https://gnosis.dex.guru",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

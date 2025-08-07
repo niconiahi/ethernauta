@@ -1,11 +1,11 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_288 = {
-  "name": "Boba Network",
-  "shortName": "Boba",
-  "chain": "ETH",
-  "rpc": [
+  name: "Boba Network",
+  shortName: "Boba",
+  chain: "ETH",
+  rpc: [
     "https://mainnet.boba.network",
     "https://replica.boba.network",
     "https://boba-ethereum.gateway.tenderly.co",
@@ -13,31 +13,31 @@ export const eip155_288 = {
     "wss://boba-ethereum.gateway.tenderly.co/",
     "wss://gateway.tenderly.co/public/boba-ethereum",
     "https://boba-eth.drpc.org",
-    "wss://boba-eth.drpc.org"
+    "wss://boba-eth.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://boba.network",
-  "chainId": 288,
-  "networkId": 288,
-  "explorers": [
+  infoURL: "https://boba.network",
+  chainId: 288,
+  networkId: 288,
+  explorers: [
     {
-      "name": "Bobascan",
-      "url": "https://bobascan.com",
-      "standard": "none"
-    }
+      name: "Bobascan",
+      url: "https://bobascan.com",
+      standard: "none",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://gateway.boba.network"
-      }
-    ]
-  }
+        url: "https://gateway.boba.network",
+      },
+    ],
+  },
 } satisfies Chain

@@ -1,40 +1,40 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_13337 = {
-  "name": "Beam Testnet",
-  "shortName": "beam-testnet",
-  "chain": "BEAM",
-  "icon": "beam",
-  "rpc": [
+  name: "Beam Testnet",
+  shortName: "beam-testnet",
+  chain: "BEAM",
+  icon: "beam",
+  rpc: [
     "https://build.onbeam.com/rpc/testnet",
     "wss://build.onbeam.com/ws/testnet",
     "https://subnets.avax.network/beam/testnet/rpc",
-    "wss://subnets.avax.network/beam/testnet/ws"
+    "wss://subnets.avax.network/beam/testnet/ws",
   ],
-  "faucets": [
+  faucets: [
     "https://faucet.avax.network/?subnet=beam",
-    "https://faucet.onbeam.com"
+    "https://faucet.onbeam.com",
   ],
-  "features": [
+  features: [
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Beam",
-    "symbol": "BEAM",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Beam",
+    symbol: "BEAM",
+    decimals: 18,
   },
-  "infoURL": "https://www.onbeam.com",
-  "chainId": 13337,
-  "networkId": 13337,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://www.onbeam.com",
+  chainId: 13337,
+  networkId: 13337,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Beam Explorer",
-      "url": "https://subnets-test.avax.network/beam",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Beam Explorer",
+      url: "https://subnets-test.avax.network/beam",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

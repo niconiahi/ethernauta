@@ -1,31 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_10081 = {
-  "name": "Japan Open Chain Testnet",
-  "shortName": "joct",
-  "chain": "JOCT",
-  "icon": "joct",
-  "rpc": [
+  name: "Japan Open Chain Testnet",
+  shortName: "joct",
+  chain: "JOCT",
+  icon: "joct",
+  rpc: [
     "https://rpc-1.testnet.japanopenchain.org:8545",
     "https://rpc-2.testnet.japanopenchain.org:8545",
-    "https://rpc-3.testnet.japanopenchain.org"
+    "https://rpc-3.testnet.japanopenchain.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Japan Open Chain Testnet Token",
-    "symbol": "JOCT",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Japan Open Chain Testnet Token",
+    symbol: "JOCT",
+    decimals: 18,
   },
-  "infoURL": "https://www.japanopenchain.org/",
-  "chainId": 10081,
-  "networkId": 10081,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://www.japanopenchain.org/",
+  chainId: 10081,
+  networkId: 10081,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Testnet Block Explorer",
-      "url": "https://explorer.testnet.japanopenchain.org",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Testnet Block Explorer",
+      url: "https://explorer.testnet.japanopenchain.org",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

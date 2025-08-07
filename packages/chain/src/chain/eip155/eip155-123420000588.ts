@@ -1,39 +1,40 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_123420000588 = {
-  "name": "volmex",
-  "shortName": "volmex",
-  "title": "Volmex",
-  "chain": "volmex",
-  "rpc": [
+  name: "volmex",
+  shortName: "volmex",
+  title: "Volmex",
+  chain: "volmex",
+  rpc: [
     "https://rpc.volmex.t.raas.gelato.cloud",
-    "wss://ws.volmex.t.raas.gelato.cloud"
+    "wss://ws.volmex.t.raas.gelato.cloud",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://raas.gelato.network/rollups/details/public/volmex",
-  "chainId": 123420000588,
-  "networkId": 123420000588,
-  "slip44": 60,
-  "explorers": [
+  infoURL:
+    "https://raas.gelato.network/rollups/details/public/volmex",
+  chainId: 123420000588,
+  networkId: 123420000588,
+  slip44: 60,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://volmex.cloud.blockscout.com",
-      "standard": "EIP3091"
-    }
+      name: "blockscout",
+      url: "https://volmex.cloud.blockscout.com",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-84532",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-84532",
+    bridges: [
       {
-        "url": "https://testnet-bridge.gelato.network/bridge/volmex"
-      }
-    ]
-  }
+        url: "https://testnet-bridge.gelato.network/bridge/volmex",
+      },
+    ],
+  },
 } satisfies Chain

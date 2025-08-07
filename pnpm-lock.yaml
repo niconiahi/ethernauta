@@ -134,6 +134,22 @@ importers:
         specifier: ^0.13.3
         version: 0.13.3(typescript@5.8.3)
 
+  packages/transaction:
+    dependencies:
+      '@ethernauta/eth':
+        specifier: workspace:*
+        version: link:../eth
+      valibot:
+        specifier: 1.1.0
+        version: 1.1.0(typescript@5.8.3)
+    devDependencies:
+      '@types/chrome':
+        specifier: ^0.1.1
+        version: 0.1.1
+      tsdown:
+        specifier: ^0.13.3
+        version: 0.13.3(typescript@5.8.3)
+
   packages/transport:
     dependencies:
       '@ethernauta/eth':

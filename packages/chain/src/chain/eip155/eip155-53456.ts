@@ -1,31 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_53456 = {
-  "name": "BirdLayer",
-  "shortName": "birdlayer",
-  "title": "BirdLayer",
-  "chain": "BirdLayer",
-  "icon": "birdlayer",
-  "rpc": [
+  name: "BirdLayer",
+  shortName: "birdlayer",
+  title: "BirdLayer",
+  chain: "BirdLayer",
+  icon: "birdlayer",
+  rpc: [
     "https://rpc.birdlayer.xyz",
     "https://rpc1.birdlayer.xyz",
-    "wss://rpc.birdlayer.xyz/ws"
+    "wss://rpc.birdlayer.xyz/ws",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://www.dodochain.com",
-  "chainId": 53456,
-  "networkId": 53456,
-  "explorers": [
+  infoURL: "https://www.dodochain.com",
+  chainId: 53456,
+  networkId: 53456,
+  explorers: [
     {
-      "name": "BirdLayer Explorer",
-      "url": "https://scan.birdlayer.xyz",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "BirdLayer Explorer",
+      url: "https://scan.birdlayer.xyz",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

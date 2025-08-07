@@ -1,31 +1,29 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_77777 = {
-  "name": "Toronet Mainnet",
-  "shortName": "Toronet",
-  "chain": "Toronet",
-  "icon": "toronet",
-  "rpc": [
-    "https://www.toronet.org/rpc2/"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Toroe",
-    "symbol": "TOROE",
-    "decimals": 18
+  name: "Toronet Mainnet",
+  shortName: "Toronet",
+  chain: "Toronet",
+  icon: "toronet",
+  rpc: ["https://www.toronet.org/rpc2/"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Toroe",
+    symbol: "TOROE",
+    decimals: 18,
   },
-  "infoURL": "https://toronet.org",
-  "chainId": 77777,
-  "networkId": 77777,
-  "ens": {
-    "registry": "0x1f45a71f4aAD769E27c969c4359E0e250C67165c"
+  infoURL: "https://toronet.org",
+  chainId: 77777,
+  networkId: 77777,
+  ens: {
+    registry: "0x1f45a71f4aAD769E27c969c4359E0e250C67165c",
   },
-  "explorers": [
+  explorers: [
     {
-      "name": "toronet_explorer",
-      "url": "https://toronet.org/explorer",
-      "standard": "none"
-    }
-  ]
+      name: "toronet_explorer",
+      url: "https://toronet.org/explorer",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

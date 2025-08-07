@@ -1,38 +1,36 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_994873017 = {
-  "name": "Lumia Mainnet",
-  "shortName": "lumia-mainnet",
-  "title": "Lumia Mainnet",
-  "chain": "ETH",
-  "icon": "lumia",
-  "rpc": [
-    "https://mainnet-rpc.lumia.org"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Lumia",
-    "symbol": "LUMIA",
-    "decimals": 18
+  name: "Lumia Mainnet",
+  shortName: "lumia-mainnet",
+  title: "Lumia Mainnet",
+  chain: "ETH",
+  icon: "lumia",
+  rpc: ["https://mainnet-rpc.lumia.org"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Lumia",
+    symbol: "LUMIA",
+    decimals: 18,
   },
-  "infoURL": "https://lumia.org",
-  "chainId": 994873017,
-  "networkId": 994873017,
-  "explorers": [
+  infoURL: "https://lumia.org",
+  chainId: 994873017,
+  networkId: 994873017,
+  explorers: [
     {
-      "name": "Lumia Mainnet Explorer",
-      "url": "https://explorer.lumia.org",
-      "standard": "EIP3091"
-    }
+      name: "Lumia Mainnet Explorer",
+      url: "https://explorer.lumia.org",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge.lumia.org"
-      }
-    ]
-  }
+        url: "https://bridge.lumia.org",
+      },
+    ],
+  },
 } satisfies Chain

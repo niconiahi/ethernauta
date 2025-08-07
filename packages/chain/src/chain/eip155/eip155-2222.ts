@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2222 = {
-  "name": "Kava",
-  "shortName": "kava",
-  "chain": "KAVA",
-  "icon": "kava",
-  "rpc": [
+  name: "Kava",
+  shortName: "kava",
+  chain: "KAVA",
+  icon: "kava",
+  rpc: [
     "https://evm.kava.io",
     "https://kava-rpc.gateway.pokt.network",
     "https://kava-evm.rpc.thirdweb.com",
@@ -17,22 +17,22 @@ export const eip155_2222 = {
     "https://rpc.ankr.com/kava_evm",
     "wss://wevm.kava-rpc.com",
     "https://kava.drpc.org",
-    "wss://kava.drpc.org"
+    "wss://kava.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Kava",
-    "symbol": "KAVA",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Kava",
+    symbol: "KAVA",
+    decimals: 18,
   },
-  "infoURL": "https://www.kava.io",
-  "chainId": 2222,
-  "networkId": 2222,
-  "explorers": [
+  infoURL: "https://www.kava.io",
+  chainId: 2222,
+  networkId: 2222,
+  explorers: [
     {
-      "name": "Kava EVM Explorer",
-      "url": "https://kavascan.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Kava EVM Explorer",
+      url: "https://kavascan.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

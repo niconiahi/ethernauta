@@ -1,33 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_43111 = {
-  "name": "Hemi",
-  "shortName": "hemi",
-  "chain": "ETH",
-  "icon": "hemi",
-  "rpc": [
-    "https://rpc.hemi.network/rpc"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  name: "Hemi",
+  shortName: "hemi",
+  chain: "ETH",
+  icon: "hemi",
+  rpc: ["https://rpc.hemi.network/rpc"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://hemi.xyz",
-  "chainId": 43111,
-  "networkId": 43111,
-  "explorers": [
+  infoURL: "https://hemi.xyz",
+  chainId: 43111,
+  networkId: 43111,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://explorer.hemi.xyz",
-      "standard": "EIP3091"
-    }
+      name: "blockscout",
+      url: "https://explorer.hemi.xyz",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1"
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
   },
-  "status": "active"
+  status: "active",
 } satisfies Chain

@@ -1,31 +1,27 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_96371 = {
-  "name": "Wonder Testnet",
-  "shortName": "wndr",
-  "chain": "WNDR",
-  "icon": "wonder",
-  "rpc": [
-    "https://rpc.testnet.wonderchain.org"
-  ],
-  "faucets": [
-    "https://wonderchain.org/faucet"
-  ],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  name: "Wonder Testnet",
+  shortName: "wndr",
+  chain: "WNDR",
+  icon: "wonder",
+  rpc: ["https://rpc.testnet.wonderchain.org"],
+  faucets: ["https://wonderchain.org/faucet"],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://wonderchain.org",
-  "chainId": 96371,
-  "networkId": 96371,
-  "explorers": [
+  infoURL: "https://wonderchain.org",
+  chainId: 96371,
+  networkId: 96371,
+  explorers: [
     {
-      "name": "wonderexplorer",
-      "url": "https://explorer.testnet.wonderchain.org",
-      "standard": "EIP3091"
-    }
+      name: "wonderexplorer",
+      url: "https://explorer.testnet.wonderchain.org",
+      standard: "EIP3091",
+    },
   ],
-  "status": "active"
+  status: "active",
 } satisfies Chain

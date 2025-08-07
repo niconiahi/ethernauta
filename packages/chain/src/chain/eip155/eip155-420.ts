@@ -1,34 +1,34 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_420 = {
-  "name": "Optimism Goerli Testnet",
-  "shortName": "ogor",
-  "chain": "ETH",
-  "rpc": [
+  name: "Optimism Goerli Testnet",
+  shortName: "ogor",
+  chain: "ETH",
+  rpc: [
     "https://goerli.optimism.io",
     "https://optimism-goerli-rpc.publicnode.com",
     "wss://optimism-goerli-rpc.publicnode.com",
     "https://optimism-goerli.gateway.tenderly.co",
     "wss://optimism-goerli.gateway.tenderly.co",
     "https://optimism-testnet.drpc.org",
-    "wss://optimism-testnet.drpc.org"
+    "wss://optimism-testnet.drpc.org",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Goerli Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Goerli Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://optimism.io",
-  "chainId": 420,
-  "networkId": 420,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://optimism.io",
+  chainId: 420,
+  networkId: 420,
+  slip44: 1,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://optimism-goerli.blockscout.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "blockscout",
+      url: "https://optimism-goerli.blockscout.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

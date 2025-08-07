@@ -1,12 +1,12 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1287 = {
-  "name": "Moonbase Alpha",
-  "shortName": "mbase",
-  "chain": "MOON",
-  "icon": "moonbasealpha",
-  "rpc": [
+  name: "Moonbase Alpha",
+  shortName: "mbase",
+  chain: "MOON",
+  icon: "moonbasealpha",
+  rpc: [
     "https://rpc.api.moonbase.moonbeam.network",
     "wss://wss.api.moonbase.moonbeam.network",
     "https://moonbase-alpha.public.blastapi.io",
@@ -18,25 +18,24 @@ export const eip155_1287 = {
     "https://moonbase.unitedbloc.com",
     "wss://moonbase.unitedbloc.com",
     "https://moonbase-alpha.drpc.org",
-    "wss://moonbase-alpha.drpc.org"
+    "wss://moonbase-alpha.drpc.org",
   ],
-  "faucets": [
-    "https://faucet.moonbeam.network/"
-  ],
-  "nativeCurrency": {
-    "name": "Dev",
-    "symbol": "DEV",
-    "decimals": 18
+  faucets: ["https://faucet.moonbeam.network/"],
+  nativeCurrency: {
+    name: "Dev",
+    symbol: "DEV",
+    decimals: 18,
   },
-  "infoURL": "https://docs.moonbeam.network/learn/platform/networks/moonbase/",
-  "chainId": 1287,
-  "networkId": 1287,
-  "slip44": 1,
-  "explorers": [
+  infoURL:
+    "https://docs.moonbeam.network/learn/platform/networks/moonbase/",
+  chainId: 1287,
+  networkId: 1287,
+  slip44: 1,
+  explorers: [
     {
-      "name": "moonscan",
-      "url": "https://moonbase.moonscan.io",
-      "standard": "none"
-    }
-  ]
+      name: "moonscan",
+      url: "https://moonbase.moonscan.io",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

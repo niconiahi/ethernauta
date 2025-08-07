@@ -1,50 +1,50 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_61166 = {
-  "name": "Treasure",
-  "shortName": "treasure",
-  "chain": "Treasure",
-  "icon": "treasure",
-  "rpc": [
+  name: "Treasure",
+  shortName: "treasure",
+  chain: "Treasure",
+  icon: "treasure",
+  rpc: [
     "https://rpc.treasure.lol",
-    "wss://rpc.treasure.lol/ws"
+    "wss://rpc.treasure.lol/ws",
   ],
-  "faucets": [
+  faucets: [
     "https://app.treasure.lol/chain/faucet",
-    "https://thirdweb.com/treasure"
+    "https://thirdweb.com/treasure",
   ],
-  "features": [
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "MAGIC",
-    "symbol": "MAGIC",
-    "decimals": 18
+  nativeCurrency: {
+    name: "MAGIC",
+    symbol: "MAGIC",
+    decimals: 18,
   },
-  "infoURL": "https://app.treasure.lol",
-  "chainId": 61166,
-  "networkId": 61166,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://app.treasure.lol",
+  chainId: 61166,
+  networkId: 61166,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Treasure Block Explorer",
-      "url": "https://treasurescan.io",
-      "standard": "EIP3091"
-    }
+      name: "Treasure Block Explorer",
+      url: "https://treasurescan.io",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://app.treasure.lol/chain/bridge"
-      }
-    ]
-  }
+        url: "https://app.treasure.lol/chain/bridge",
+      },
+    ],
+  },
 } satisfies Chain

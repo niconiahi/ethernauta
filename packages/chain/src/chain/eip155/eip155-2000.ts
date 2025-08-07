@@ -1,30 +1,30 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2000 = {
-  "name": "Dogechain Mainnet",
-  "shortName": "dc",
-  "chain": "DC",
-  "icon": "dogechain",
-  "rpc": [
+  name: "Dogechain Mainnet",
+  shortName: "dc",
+  chain: "DC",
+  icon: "dogechain",
+  rpc: [
     "https://rpc.dogechain.dog",
     "https://rpc01-sg.dogechain.dog",
-    "https://rpc.ankr.com/dogechain"
+    "https://rpc.ankr.com/dogechain",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Dogecoin",
-    "symbol": "DOGE",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Dogecoin",
+    symbol: "DOGE",
+    decimals: 18,
   },
-  "infoURL": "https://dogechain.dog",
-  "chainId": 2000,
-  "networkId": 2000,
-  "explorers": [
+  infoURL: "https://dogechain.dog",
+  chainId: 2000,
+  networkId: 2000,
+  explorers: [
     {
-      "name": "dogechain explorer",
-      "url": "https://explorer.dogechain.dog",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "dogechain explorer",
+      url: "https://explorer.dogechain.dog",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

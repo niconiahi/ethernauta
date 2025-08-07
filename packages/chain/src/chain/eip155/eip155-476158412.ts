@@ -1,33 +1,31 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_476158412 = {
-  "name": "Deprecated SKALE Europa Hub Testnet",
-  "shortName": "deprecated-europa-testnet",
-  "title": "Deprecated Europa Hub Testnet",
-  "chain": "staging-legal-crazy-castor",
-  "icon": "europa",
-  "rpc": [
-    "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor"
+  name: "Deprecated SKALE Europa Hub Testnet",
+  shortName: "deprecated-europa-testnet",
+  title: "Deprecated Europa Hub Testnet",
+  chain: "staging-legal-crazy-castor",
+  icon: "europa",
+  rpc: [
+    "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor",
   ],
-  "faucets": [
-    "https://sfuel.dirtroad.dev/staging"
-  ],
-  "nativeCurrency": {
-    "name": "sFUEL",
-    "symbol": "sFUEL",
-    "decimals": 18
+  faucets: ["https://sfuel.dirtroad.dev/staging"],
+  nativeCurrency: {
+    name: "sFUEL",
+    symbol: "sFUEL",
+    decimals: 18,
   },
-  "infoURL": "https://europahub.network/",
-  "chainId": 476158412,
-  "networkId": 476158412,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://europahub.network/",
+  chainId: 476158412,
+  networkId: 476158412,
+  slip44: 1,
+  explorers: [
     {
-      "name": "Blockscout",
-      "url": "https://staging-legal-crazy-castor.explorer.staging-v3.skalenodes.com",
-      "standard": "EIP3091"
-    }
+      name: "Blockscout",
+      url: "https://staging-legal-crazy-castor.explorer.staging-v3.skalenodes.com",
+      standard: "EIP3091",
+    },
   ],
-  "status": "deprecated"
+  status: "deprecated",
 } satisfies Chain

@@ -1,36 +1,36 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_49321 = {
-  "name": "GUNZ Testnet",
-  "shortName": "Stork",
-  "chain": "tGUN",
-  "icon": "guntestnet",
-  "rpc": [
-    "https://rpc.gunz.dev/ext/bc/ryk9vkvNuKtewME2PeCgybo9sdWXGmCkBrrx4VPuZPdVdAak8/rpc"
+  name: "GUNZ Testnet",
+  shortName: "Stork",
+  chain: "tGUN",
+  icon: "guntestnet",
+  rpc: [
+    "https://rpc.gunz.dev/ext/bc/ryk9vkvNuKtewME2PeCgybo9sdWXGmCkBrrx4VPuZPdVdAak8/rpc",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "GUN",
-    "symbol": "GUN",
-    "decimals": 18
+  nativeCurrency: {
+    name: "GUN",
+    symbol: "GUN",
+    decimals: 18,
   },
-  "infoURL": "https://gunbygunz.com",
-  "chainId": 49321,
-  "networkId": 49321,
-  "explorers": [
+  infoURL: "https://gunbygunz.com",
+  chainId: 49321,
+  networkId: 49321,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://testnet.gunzscan.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "blockscout",
+      url: "https://testnet.gunzscan.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

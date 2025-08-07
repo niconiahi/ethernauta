@@ -1,30 +1,30 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_109 = {
-  "name": "Shibarium",
-  "shortName": "shibariumecosystem",
-  "chain": "Shibarium",
-  "icon": "shibarium",
-  "rpc": [
+  name: "Shibarium",
+  shortName: "shibariumecosystem",
+  chain: "Shibarium",
+  icon: "shibarium",
+  rpc: [
     "https://www.shibrpc.com",
     "https://rpc.shibrpc.com",
-    "https://shib.nownodes.io"
+    "https://shib.nownodes.io",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "BONE Shibarium",
-    "symbol": "BONE",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "BONE Shibarium",
+    symbol: "BONE",
+    decimals: 18,
   },
-  "infoURL": "https://shibariumecosystem.com",
-  "chainId": 109,
-  "networkId": 109,
-  "explorers": [
+  infoURL: "https://shibariumecosystem.com",
+  chainId: 109,
+  networkId: 109,
+  explorers: [
     {
-      "name": "shibariumscan",
-      "url": "https://www.shibariumscan.io",
-      "standard": "none"
-    }
-  ]
+      name: "shibariumscan",
+      url: "https://www.shibariumscan.io",
+      standard: "none",
+    },
+  ],
 } satisfies Chain

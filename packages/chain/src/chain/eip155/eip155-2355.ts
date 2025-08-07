@@ -1,43 +1,43 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2355 = {
-  "name": "Silicon zkEVM",
-  "shortName": "silicon-zk",
-  "title": "Silicon zkEVM Mainnet",
-  "chain": "Silicon",
-  "icon": "silicon",
-  "rpc": [
+  name: "Silicon zkEVM",
+  shortName: "silicon-zk",
+  title: "Silicon zkEVM Mainnet",
+  chain: "Silicon",
+  icon: "silicon",
+  rpc: [
     "https://rpc.silicon.network",
-    "https://silicon-mainnet.nodeinfra.com"
+    "https://silicon-mainnet.nodeinfra.com",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://docs.silicon.network",
-  "chainId": 2355,
-  "networkId": 2355,
-  "explorers": [
+  infoURL: "https://docs.silicon.network",
+  chainId: 2355,
+  networkId: 2355,
+  explorers: [
     {
-      "name": "siliconscope",
-      "url": "https://scope.silicon.network",
-      "standard": "EIP3091"
-    }
+      name: "siliconscope",
+      url: "https://scope.silicon.network",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge.silicon.network"
+        url: "https://bridge.silicon.network",
       },
       {
-        "url": "https://bridge.orbitchain.io"
-      }
-    ]
+        url: "https://bridge.orbitchain.io",
+      },
+    ],
   },
-  "status": "active"
+  status: "active",
 } satisfies Chain

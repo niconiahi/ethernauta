@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "run-p \"build:*:watch\"",
-    "build": "run-p \"build:*[!watch]\"",
+    "build": "run-p \"build:*[!watch]\" && pnpm run format",
     "build:manifest": "vite build --config vite.manifest.config.ts",
     "build:extension": "vite build --config vite.extension.config.ts",
     "build:manifest:watch": "vite build --watch --config vite.manifest.config.ts",

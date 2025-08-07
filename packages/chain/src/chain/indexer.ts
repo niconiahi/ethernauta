@@ -88,7 +88,7 @@ export function runIndexer(): void {
                         chainPath,
                         chainFile,
                       )
-                      const content = `/* eslint no-template-curly-in-string: 0 */
+                      const content = `// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain`

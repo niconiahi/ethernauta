@@ -1,32 +1,32 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_555666 = {
-  "name": "Eclipse Testnet",
-  "shortName": "eclipset",
-  "chain": "ECLIPSE",
-  "rpc": [
-    "https://subnets.avax.network/eclipsecha/testnet/rpc"
+  name: "Eclipse Testnet",
+  shortName: "eclipset",
+  chain: "ECLIPSE",
+  rpc: [
+    "https://subnets.avax.network/eclipsecha/testnet/rpc",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Eclipse",
-    "symbol": "ECLPS",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Eclipse",
+    symbol: "ECLPS",
+    decimals: 18,
   },
-  "infoURL": "http://eclipsenet.io",
-  "chainId": 555666,
-  "networkId": 555666,
-  "explorers": [
+  infoURL: "http://eclipsenet.io",
+  chainId: 555666,
+  networkId: 555666,
+  explorers: [
     {
-      "name": "ECLIPSE Explorer",
-      "url": "https://subnets-test.avax.network/eclipsecha",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "ECLIPSE Explorer",
+      url: "https://subnets-test.avax.network/eclipsecha",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

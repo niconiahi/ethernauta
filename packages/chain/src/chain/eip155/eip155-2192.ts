@@ -1,28 +1,26 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_2192 = {
-  "name": "SnaxChain",
-  "shortName": "snax",
-  "chain": "ETH",
-  "icon": "snax",
-  "rpc": [
-    "https://mainnet.snaxchain.io"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Ether",
-    "symbol": "ETH",
-    "decimals": 18
+  name: "SnaxChain",
+  shortName: "snax",
+  chain: "ETH",
+  icon: "snax",
+  rpc: ["https://mainnet.snaxchain.io"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
   },
-  "infoURL": "https://synthetix.io",
-  "chainId": 2192,
-  "networkId": 2192,
-  "explorers": [
+  infoURL: "https://synthetix.io",
+  chainId: 2192,
+  networkId: 2192,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://explorer.snaxchain.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "blockscout",
+      url: "https://explorer.snaxchain.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

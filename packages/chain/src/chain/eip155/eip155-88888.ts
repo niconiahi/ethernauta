@@ -1,41 +1,39 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_88888 = {
-  "name": "Chiliz Chain Mainnet",
-  "shortName": "chzmainnet",
-  "chain": "CHZ",
-  "icon": "chilizchain",
-  "rpc": [
+  name: "Chiliz Chain Mainnet",
+  shortName: "chzmainnet",
+  chain: "CHZ",
+  icon: "chilizchain",
+  rpc: [
     "https://rpc.chiliz.com",
     "https://rpc.ankr.com/chiliz",
-    "https://chiliz.publicnode.com"
+    "https://chiliz.publicnode.com",
   ],
-  "faucets": [
+  faucets: [
     "https://spicy-faucet.chiliz.com",
-    "https://tatum.io/faucets/chiliz"
+    "https://tatum.io/faucets/chiliz",
   ],
-  "nativeCurrency": {
-    "name": "Chiliz",
-    "symbol": "CHZ",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Chiliz",
+    symbol: "CHZ",
+    decimals: 18,
   },
-  "infoURL": "https://chiliz.com",
-  "chainId": 88888,
-  "networkId": 88888,
-  "explorers": [
+  infoURL: "https://chiliz.com",
+  chainId: 88888,
+  networkId: 88888,
+  explorers: [
     {
-      "name": "chiliscan",
-      "url": "https://chiliscan.com",
-      "standard": "EIP3091"
+      name: "chiliscan",
+      url: "https://chiliscan.com",
+      standard: "EIP3091",
     },
     {
-      "name": "chilizscan",
-      "url": "https://scan.chiliz.com",
-      "standard": "EIP3091"
-    }
+      name: "chilizscan",
+      url: "https://scan.chiliz.com",
+      standard: "EIP3091",
+    },
   ],
-  "redFlags": [
-    "reusedChainId"
-  ]
+  redFlags: ["reusedChainId"],
 } satisfies Chain

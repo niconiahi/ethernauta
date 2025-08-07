@@ -1,29 +1,27 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_3939 = {
-  "name": "DOS Testnet",
-  "shortName": "dost",
-  "chain": "DOS",
-  "icon": "doschain",
-  "rpc": [
-    "https://test.doschain.com/"
-  ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "DOS",
-    "symbol": "DOS",
-    "decimals": 18
+  name: "DOS Testnet",
+  shortName: "dost",
+  chain: "DOS",
+  icon: "doschain",
+  rpc: ["https://test.doschain.com/"],
+  faucets: [],
+  nativeCurrency: {
+    name: "DOS",
+    symbol: "DOS",
+    decimals: 18,
   },
-  "infoURL": "http://doschain.io/",
-  "chainId": 3939,
-  "networkId": 3939,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "http://doschain.io/",
+  chainId: 3939,
+  networkId: 3939,
+  slip44: 1,
+  explorers: [
     {
-      "name": "DOScan-Test",
-      "url": "https://test.doscan.io",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "DOScan-Test",
+      url: "https://test.doscan.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

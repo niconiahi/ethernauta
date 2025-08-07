@@ -1,47 +1,47 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_19 = {
-  "name": "Songbird Canary-Network",
-  "shortName": "sgb",
-  "chain": "SGB",
-  "icon": "songbird",
-  "rpc": [
+  name: "Songbird Canary-Network",
+  shortName: "sgb",
+  chain: "SGB",
+  icon: "songbird",
+  rpc: [
     "https://songbird-api.flare.network/ext/C/rpc",
     "https://01-gravelines-006-01.rpc.tatum.io/ext/bc/C/rpc",
     "https://01-vinthill-006-02.rpc.tatum.io/ext/bc/C/rpc",
     "https://02-tokyo-006-03.rpc.tatum.io/ext/bc/C/rpc",
     "https://rpc.au.cc/songbird",
     "https://songbird.enosys.global/ext/C/rpc",
-    "https://songbird.solidifi.app/ext/C/rpc"
+    "https://songbird.solidifi.app/ext/C/rpc",
   ],
-  "faucets": [],
-  "features": [
+  faucets: [],
+  features: [
     {
-      "name": "EIP155"
+      name: "EIP155",
     },
     {
-      "name": "EIP1559"
-    }
+      name: "EIP1559",
+    },
   ],
-  "nativeCurrency": {
-    "name": "Songbird",
-    "symbol": "SGB",
-    "decimals": 18
+  nativeCurrency: {
+    name: "Songbird",
+    symbol: "SGB",
+    decimals: 18,
   },
-  "infoURL": "https://flare.network",
-  "chainId": 19,
-  "networkId": 19,
-  "explorers": [
+  infoURL: "https://flare.network",
+  chainId: 19,
+  networkId: 19,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://songbird-explorer.flare.network",
-      "standard": "EIP3091"
+      name: "blockscout",
+      url: "https://songbird-explorer.flare.network",
+      standard: "EIP3091",
     },
     {
-      "name": "Routescan",
-      "url": "https://songbird.flarescan.com",
-      "standard": "EIP3091"
-    }
-  ]
+      name: "Routescan",
+      url: "https://songbird.flarescan.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

@@ -1,30 +1,28 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_65010002 = {
-  "name": "Autonity Bakerloo (Sumida) Testnet",
-  "shortName": "bakerloo-02",
-  "chain": "AUT",
-  "icon": "autonity",
-  "rpc": [],
-  "faucets": [
-    "https://faucet.autonity.org/"
-  ],
-  "nativeCurrency": {
-    "name": "Bakerloo Auton",
-    "symbol": "ATN",
-    "decimals": 18
+  name: "Autonity Bakerloo (Sumida) Testnet",
+  shortName: "bakerloo-02",
+  chain: "AUT",
+  icon: "autonity",
+  rpc: [],
+  faucets: ["https://faucet.autonity.org/"],
+  nativeCurrency: {
+    name: "Bakerloo Auton",
+    symbol: "ATN",
+    decimals: 18,
   },
-  "infoURL": "https://autonity.org/",
-  "chainId": 65010002,
-  "networkId": 65010002,
-  "slip44": 1,
-  "explorers": [
+  infoURL: "https://autonity.org/",
+  chainId: 65010002,
+  networkId: 65010002,
+  slip44: 1,
+  explorers: [
     {
-      "name": "autonity-blockscout",
-      "url": "https://bakerloo.autonity.org",
-      "standard": "EIP3091"
-    }
+      name: "autonity-blockscout",
+      url: "https://bakerloo.autonity.org",
+      standard: "EIP3091",
+    },
   ],
-  "status": "deprecated"
+  status: "deprecated",
 } satisfies Chain

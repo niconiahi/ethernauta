@@ -1,40 +1,40 @@
-/* eslint no-template-curly-in-string: 0 */
+// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
 export const eip155_1088 = {
-  "name": "Metis Andromeda Mainnet",
-  "shortName": "metis-andromeda",
-  "chain": "ETH",
-  "rpc": [
+  name: "Metis Andromeda Mainnet",
+  shortName: "metis-andromeda",
+  chain: "ETH",
+  rpc: [
     "https://andromeda.metis.io/?owner=1088",
     "https://metis.drpc.org",
     "wss://metis.drpc.org",
     "https://metis-rpc.publicnode.com",
-    "wss://metis-rpc.publicnode.com"
+    "wss://metis-rpc.publicnode.com",
   ],
-  "faucets": [],
-  "nativeCurrency": {
-    "name": "Metis",
-    "symbol": "METIS",
-    "decimals": 18
+  faucets: [],
+  nativeCurrency: {
+    name: "Metis",
+    symbol: "METIS",
+    decimals: 18,
   },
-  "infoURL": "https://www.metis.io",
-  "chainId": 1088,
-  "networkId": 1088,
-  "explorers": [
+  infoURL: "https://www.metis.io",
+  chainId: 1088,
+  networkId: 1088,
+  explorers: [
     {
-      "name": "blockscout",
-      "url": "https://andromeda-explorer.metis.io",
-      "standard": "EIP3091"
-    }
+      name: "blockscout",
+      url: "https://andromeda-explorer.metis.io",
+      standard: "EIP3091",
+    },
   ],
-  "parent": {
-    "type": "L2",
-    "chain": "eip155-1",
-    "bridges": [
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
       {
-        "url": "https://bridge.metis.io"
-      }
-    ]
-  }
+        url: "https://bridge.metis.io",
+      },
+    ],
+  },
 } satisfies Chain

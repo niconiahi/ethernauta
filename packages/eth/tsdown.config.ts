@@ -1,13 +1,14 @@
 import { defineConfig } from "tsdown"
 
 export default defineConfig({
-  entry: ["./src/**/*.ts", "!./src/**/*.test.ts"],
+  entry: ["./src/index.ts"],
   clean: true,
   format: ["esm"],
   dts: { sourcemap: true },
   sourcemap: true,
   outDir: "./dist",
-  bundle: false,
+  unbundle: true,
   minify: false,
+  external: [/^@ethernauta\//],
   tsconfig: "./tsconfig.json",
 })
