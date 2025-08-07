@@ -10,24 +10,13 @@
     "url": "https://github.com/niconiahi/cryptoman"
   },
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
-    }
-  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
+    "build": "tsup",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",

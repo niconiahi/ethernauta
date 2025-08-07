@@ -12,6 +12,8 @@
     "jsxImportSource": "preact",
     "allowImportingTsExtensions": true,
     "types": ["vitest/globals", "chrome"],
+    "declaration": true,
+    "declarationMap": true,
     "baseUrl": ".",
     "paths": {
       "@cryptoman/transport": ["./packages/transport/src"],
