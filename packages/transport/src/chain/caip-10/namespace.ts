@@ -7,6 +7,8 @@ function isNamespace(input: unknown): boolean {
     /^[-a-z0-9]{3,8}$/.test(input)
   )
 }
-const namespaceSchema = custom<string>(isNamespace)
+const caip10_namespaceSchema = custom<string>(isNamespace)
 // eslint-disable-next-line no-unused-vars, unused-imports/no-unused-vars
-export type Namespace = InferOutput<typeof namespaceSchema>
+export type caip10_Namespace = InferOutput<
+  typeof caip10_namespaceSchema
+>

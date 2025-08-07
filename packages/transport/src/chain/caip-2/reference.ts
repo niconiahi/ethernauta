@@ -7,5 +7,8 @@ function isReference(input: unknown): boolean {
     /^[-a-zA-Z0-9]{1,32}$/.test(input)
   )
 }
-export const referenceSchema = custom<string>(isReference)
-export type Reference = InferOutput<typeof referenceSchema>
+export const caip2_referenceSchema =
+  custom<string>(isReference)
+export type caip2_Reference = InferOutput<
+  typeof caip2_referenceSchema
+>
