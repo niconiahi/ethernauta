@@ -7,7 +7,7 @@
     "lint": "pnpm -r --parallel lint",
     "lint:fix": "pnpm -r --parallel lint:fix",
     "format": "pnpm --recursive format",
-    "publish": "pnpm --filter @cryptoman/transport --filter @cryptoman/eth --filter @cryptoman/chain publish"
+    "publish": "pnpm publish --filter @cryptoman/transport --filter @cryptoman/eth --filter @cryptoman/chain"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
