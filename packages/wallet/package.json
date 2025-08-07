@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/wallet",
   "type": "module",
-  "private": true,
   "sideEffects": false,
   "files": [
     "dist"
