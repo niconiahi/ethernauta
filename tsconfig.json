@@ -3,16 +3,19 @@
   "extends": "@total-typescript/tsconfig/tsc/dom/library",
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "types": ["vitest/globals", "chrome"],
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "types": [
+      "vitest/globals"
+    ],
     "paths": {
-      "@ethernauta/*": ["./packages/*/src"]
+      "@ethernauta/*": [
+        "./packages/*/src"
+      ]
     }
   }
 }
