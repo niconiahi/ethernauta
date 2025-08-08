@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/eth",
   "type": "module",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "publishConfig": {
     "access": "public"
   },
@@ -26,11 +26,7 @@
   },
   "dependencies": {
     "@ethernauta/transport": "workspace:*",
-    "@ethernauta/chain": "workspace:*",
-    "@noble/hashes": "^1.8.0",
-    "@noble/secp256k1": "^2.3.0",
-    "@scure/bip32": "^1.7.0",
-    "@scure/bip39": "^1.6.0"
+    "@ethernauta/chain": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
