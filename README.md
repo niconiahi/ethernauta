@@ -1,4 +1,4 @@
-![logo](https://github.com/niconiahi/ethernauta/assets/8381041/50f4739d-808d-410e-bc2c-e228b5a35cdd)
+![logo](https://github.com/niconiahi/ethernauta/assets/logo.svg)
 
 ## Philosophy
 
