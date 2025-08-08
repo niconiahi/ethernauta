@@ -4,9 +4,6 @@
   "type": "module",
   "private": true,
   "sideEffects": false,
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "dev": "run-p \"build:*:watch\"",
     "build": "run-p \"build:*[!watch]\" && pnpm run format",
