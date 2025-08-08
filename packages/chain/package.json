@@ -1,7 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/chain",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "publishConfig": {
     "access": "public"
   },
@@ -23,8 +24,8 @@
     "test:unit": "vitest",
     "indexer": "node --loader tsm src/chain/indexer.ts && pnpm run format"
   },
-  "dependencies": {
-    "valibot": "1.1.0"
+  "peerDependencies": {
+    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "simple-git": "^3.21.0",

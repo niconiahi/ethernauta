@@ -1,7 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/transport",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "publishConfig": {
     "access": "public"
   },
@@ -25,8 +26,10 @@
   },
   "dependencies": {
     "@ethernauta/eth": "workspace:*",
-    "@ethernauta/chain": "workspace:*",
-    "valibot": "1.1.0"
+    "@ethernauta/chain": "workspace:*"
+  },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.1.1",
