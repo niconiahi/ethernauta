@@ -1,4 +1,4 @@
-import * as v from "valibot"
+import { parse } from "valibot"
 import {
   CryptomanEventSchema,
   CryptomanRequestSchema,
@@ -12,12 +12,9 @@ function compose_key(id: string) {
 
 chrome.runtime.onMessage.addListener(
   async (message, sender) => {
-    const event = v.parse(CryptomanEventSchema, message)
+    const event = parse(CryptomanEventSchema, message)
     if (event.type.startsWith("ETHERNAUTA_REQUEST")) {
-      const request = v.parse(
-        CryptomanRequestSchema,
-        message,
-      )
+      const request = parse(CryptomanRequestSchema, message)
       console.log("receiving request", request)
       const tab_id = sender.tab?.id
       invariant(tab_id, "request must come from a tab")
@@ -41,7 +38,7 @@ chrome.runtime.onMessage.addListener(
       return true // enables sendResponse to be executed later on
     }
     if (event.type.startsWith("ETHERNAUTA_RESPONSE")) {
-      const response = v.parse(
+      const response = parse(
         CryptomanResponseSchema,
         message,
       )

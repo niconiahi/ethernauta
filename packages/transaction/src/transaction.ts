@@ -1,10 +1,21 @@
-import * as v from "valibot"
-import { eth_getTransactionReceipt } from "@ethernauta/eth"
+import {
+  eth_getTransactionReceipt,
+  Hash32Schema,
+  type Hash32,
+} from "@ethernauta/eth"
 import { encodeChainId } from "@ethernauta/transport"
 import { eip155_11155111 } from "@ethernauta/chain"
 import { createReader } from "@ethernauta/transport"
 import { http } from "@ethernauta/transport"
 import invariant from "./tiny-invariant"
+import {
+  literal,
+  number,
+  object,
+  string,
+  union,
+  type InferOutput,
+} from "valibot"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -26,61 +37,52 @@ function hex_to_number(hex: `0x${string}`): number {
   return Number(hex)
 }
 
-function isHash32(input: unknown): boolean {
-  return (
-    typeof input === "string" &&
-    /^0x[0-9a-f]{64}$/.test(input)
-  )
-}
-const Hash32Schema = v.custom<`0x${string}`>(isHash32)
-export type Hash32 = v.InferOutput<typeof Hash32Schema>
-
-export const PendingTransactionSchema = v.object({
+export const PendingTransactionSchema = object({
   hash: Hash32Schema,
-  status: v.literal("pending"),
+  status: literal("pending"),
 })
-export const MinedTransactionSchema = v.object({
+export const MinedTransactionSchema = object({
   hash: Hash32Schema,
-  status: v.literal("mined"),
-  blockNumber: v.number(),
+  status: literal("mined"),
+  blockNumber: number(),
   blockHash: Hash32Schema,
-  gasUsed: v.string(),
+  gasUsed: string(),
 })
-// export const ConfirmedTransactionSchema = v.object({
+// export const ConfirmedTransactionSchema = object({
 //   hash: Hash32Schema,
-//   status: v.literal("confirmed"),
-//   blockNumber: v.number(),
+//   status: literal("confirmed"),
+//   blockNumber: number(),
 //   blockHash: Hash32Schema,
-//   gasUsed: v.string(),
-//   confirmations: v.number(),
+//   gasUsed: string(),
+//   confirmations: number(),
 // })
-export const RevertedTransactionSchema = v.object({
+export const RevertedTransactionSchema = object({
   hash: Hash32Schema,
-  status: v.literal("reverted"),
-  blockNumber: v.number(),
+  status: literal("reverted"),
+  blockNumber: number(),
   blockHash: Hash32Schema,
-  gasUsed: v.string(),
+  gasUsed: string(),
 })
-export const TransactionSchema = v.union([
+export const TransactionSchema = union([
   PendingTransactionSchema,
   MinedTransactionSchema,
   // ConfirmedTransactionSchema,
   RevertedTransactionSchema,
 ])
 
-export type PendingTransaction = v.InferOutput<
+export type PendingTransaction = InferOutput<
   typeof PendingTransactionSchema
 >
-export type MinedTransaction = v.InferOutput<
+export type MinedTransaction = InferOutput<
   typeof MinedTransactionSchema
 >
-// export type ConfirmedTransaction = v.InferOutput<
+// export type ConfirmedTransaction = InferOutput<
 //   typeof ConfirmedTransactionSchema
 // >
-export type RevertedTransaction = v.InferOutput<
+export type RevertedTransaction = InferOutput<
   typeof RevertedTransactionSchema
 >
-export type Transaction = v.InferOutput<
+export type Transaction = InferOutput<
   typeof TransactionSchema
 >
 

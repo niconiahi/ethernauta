@@ -8,21 +8,28 @@ import {
   private_key_to_address,
   seed_to_master_key,
 } from "./crypto"
-import * as v from "valibot"
+import {
+  instance,
+  object,
+  optional,
+  parse,
+  string,
+  type InferOutput,
+} from "valibot"
 
-const StorableWalletSchema = v.object({
-  address: v.string(),
-  private_key: v.string(),
+const StorableWalletSchema = object({
+  address: string(),
+  private_key: string(),
 })
-type StorableWallet = v.InferOutput<
+type StorableWallet = InferOutput<
   typeof StorableWalletSchema
 >
 
-const WalletSchema = v.object({
-  address: v.string(),
-  key: v.instance(HDKey),
+const WalletSchema = object({
+  address: string(),
+  key: instance(HDKey),
 })
-type Wallet = v.InferOutput<typeof WalletSchema>
+type Wallet = InferOutput<typeof WalletSchema>
 
 export const wallet = signal<Wallet>({
   address: "",
@@ -44,9 +51,9 @@ export async function save_wallet(wallet: Wallet) {
 }
 
 export async function restore_wallet() {
-  const storage = v.parse(
-    v.object({
-      wallet: v.optional(StorableWalletSchema),
+  const storage = parse(
+    object({
+      wallet: optional(StorableWalletSchema),
     }),
     await chrome.storage.sync.get("wallet"),
   )

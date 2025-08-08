@@ -1,6 +1,5 @@
 import { encode } from "./rlp"
 import { hex_to_bytes } from "./hex"
-import * as secp from "@noble/secp256k1"
 import { hmac } from "@noble/hashes/hmac"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { sha256 } from "@noble/hashes/sha2"
@@ -15,7 +14,12 @@ import {
 } from "@ethernauta/eth"
 import type { Reader, ChainId } from "@ethernauta/transport"
 import type { Transaction } from "./transaction"
-import * as v from "valibot"
+import { hexadecimal, parse, pipe, string } from "valibot"
+import {
+  etc,
+  sign,
+  type RecoveredSignature,
+} from "@noble/secp256k1"
 
 export interface Eip1559TransactionUnsigned {
   chain_id: bigint
@@ -59,10 +63,10 @@ export function big_to_bytes(
 export function sign_transaction_hash(
   hash: Uint8Array<ArrayBufferLike>,
   private_key: Uint8Array,
-): secp.RecoveredSignature {
-  secp.etc.hmacSha256Sync = (k, ...m) =>
-    hmac(sha256, k, secp.etc.concatBytes(...m))
-  return secp.sign(hash, private_key)
+): RecoveredSignature {
+  etc.hmacSha256Sync = (k, ...m) =>
+    hmac(sha256, k, etc.concatBytes(...m))
+  return sign(hash, private_key)
 }
 
 export function compose_y_parity(
@@ -114,9 +118,9 @@ function get_fields_from_transaction(
 } {
   switch (method) {
     case "transfer": {
-      const to = v.parse(addressSchema, params[0])
-      const value = v.parse(
-        v.pipe(v.string(), v.hexadecimal()),
+      const to = parse(addressSchema, params[0])
+      const value = parse(
+        pipe(string(), hexadecimal()),
         params[1],
       ) as `0x${string}`
       return {

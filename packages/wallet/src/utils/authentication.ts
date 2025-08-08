@@ -1,4 +1,4 @@
-import * as v from "valibot"
+import { number, object, optional, parse } from "valibot"
 import { vault_exists } from "./vault"
 import { view } from "./view"
 
@@ -8,9 +8,9 @@ export async function set_timestamp() {
 }
 
 export async function get_timestamp() {
-  const storage = v.parse(
-    v.object({
-      timestamp: v.optional(v.number()),
+  const storage = parse(
+    object({
+      timestamp: optional(number()),
     }),
     await chrome.storage.sync.get("timestamp"),
   )

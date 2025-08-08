@@ -1,23 +1,23 @@
-import { Password } from "./views/password/index.tsx"
-import { Wallet } from "./views/wallet/index.tsx"
-import { Mnemonics } from "./views/mnemonics/index.tsx"
-import { Sign } from "./views/sign/index.tsx"
+import { Password } from "./views/password/index"
+import { Wallet } from "./views/wallet/index"
+import { Mnemonics } from "./views/mnemonics/index"
+import { Sign } from "./views/sign/index"
 import { useEffect } from "preact/hooks"
-import { view } from "./utils/view.ts"
-import * as v from "valibot"
-import { CryptomanRequestSchema } from "./utils/event.ts"
+import { view } from "./utils/view"
+import { CryptomanRequestSchema } from "./utils/event"
 import {
   is_authenticated,
   validate_vault,
-} from "./utils/authentication.ts"
-import { restore_wallet } from "./utils/wallet.ts"
-import { transaction_request } from "./utils/transaction.ts"
+} from "./utils/authentication"
+import { restore_wallet } from "./utils/wallet"
+import { transaction_request } from "./utils/transaction"
+import { parse } from "valibot"
 
 export function Controller() {
   useEffect(() => {
     chrome.runtime.onMessage.addListener(
       async (message) => {
-        const request = v.parse(
+        const request = parse(
           CryptomanRequestSchema,
           message,
         )

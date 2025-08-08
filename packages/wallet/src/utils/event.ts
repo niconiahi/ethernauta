@@ -1,51 +1,59 @@
-import * as v from "valibot"
+import {
+  array,
+  literal,
+  object,
+  string,
+  union,
+  unknown,
+  type InferOutput,
+} from "valibot"
 
-export const SignTransactionRequestSchema = v.object({
-  id: v.string(),
-  type: v.literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
-  method: v.string(),
-  params: v.array(v.unknown()),
+export const SignTransactionRequestSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
+  method: string(),
+  params: array(unknown()),
 })
-export type SignTransactionRequest = v.InferOutput<
+export type SignTransactionRequest = InferOutput<
   typeof SignTransactionRequestSchema
 >
 
-export const SignTransactionResponseSchema = v.object({
-  id: v.string(),
-  type: v.literal("ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"),
-  signed_transaction: v.string(),
+export const SignTransactionResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"),
+  signed_transaction: string(),
 })
-export type SignTransactionResponse = v.InferOutput<
+export type SignTransactionResponse = InferOutput<
   typeof SignTransactionResponseSchema
 >
 
-const ConnectRequestSchema = v.object({
-  id: v.string(),
-  type: v.literal("ETHERNAUTA_REQUEST_CONNECT"),
+const ConnectRequestSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_REQUEST_CONNECT"),
 })
-export type ConnectRequest = v.InferOutput<
+export type ConnectRequest = InferOutput<
   typeof ConnectRequestSchema
 >
 
-export const CryptomanRequestSchema = v.union([
+export const CryptomanRequestSchema = union([
   SignTransactionRequestSchema,
   ConnectRequestSchema,
 ])
-export type CryptomanRequest = v.InferOutput<
+export type CryptomanRequest = InferOutput<
   typeof CryptomanRequestSchema
 >
 
-export const CryptomanResponseSchema = v.union([
+export const CryptomanResponseSchema = union([
   SignTransactionResponseSchema,
 ])
-export type CryptomanResponse = v.InferOutput<
+export type CryptomanResponse = InferOutput<
   typeof CryptomanResponseSchema
 >
 
-export const CryptomanEventSchema = v.union([
+export const CryptomanEventSchema = union([
   CryptomanRequestSchema,
   CryptomanResponseSchema,
 ])
-export type CryptomanEvent = v.InferOutput<
+export type CryptomanEvent = InferOutput<
   typeof CryptomanEventSchema
 >

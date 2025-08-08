@@ -1,11 +1,11 @@
 import { useState } from "preact/hooks"
-import * as v from "valibot"
 import { set_vault } from "../../utils/vault"
 import { view } from "../../utils/view"
 import { set_timestamp } from "../../utils/authentication"
+import { minLength, parse, pipe, string } from "valibot"
 
-const PasswordSchema = v.pipe(v.string(), v.minLength(8))
-const MnemonicsSchema = v.pipe(v.string(), v.minLength(1))
+const PasswordSchema = pipe(string(), minLength(8))
+const MnemonicsSchema = pipe(string(), minLength(1))
 
 export function Mnemonics() {
   const [password, set_password] = useState("")
@@ -33,14 +33,11 @@ export function Mnemonics() {
       <button
         type="button"
         onClick={async () => {
-          const _mnemonics = v.parse(
+          const _mnemonics = parse(
             MnemonicsSchema,
             mnemonics,
           )
-          const _password = v.parse(
-            PasswordSchema,
-            password,
-          )
+          const _password = parse(PasswordSchema, password)
           set_vault(_mnemonics, _password)
           await set_timestamp()
           view.value = "password"
