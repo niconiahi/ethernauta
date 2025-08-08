@@ -9,6 +9,6 @@ export default defineConfig({
   outDir: "./dist",
   unbundle: true,
   minify: false,
-  external: [/^@ethernauta\//, "valibot"],
+  external: [/^valibot(\/.*)?$/, /^@ethernauta\//],
   tsconfig: "./tsconfig.json",
 })
