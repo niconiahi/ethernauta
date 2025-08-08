@@ -1,8 +1,8 @@
+[![bundlejs](https://deno.bundlejs.com/badge?q=@ethernauta/transport@0.0.10&treeshake=[*])](https://deno.bundlejs.com/?q=@ethernauta/transport@0.0.10&treeshake=[*])
+
 This module aims to be an un-opinionated representation of the defined:
 
 - [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification)
-
-## API
 
 ### reader
 
