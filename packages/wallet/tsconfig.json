@@ -1,14 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../tsconfig.json",
-  "include": [
-    "src",
-    "manifest"
-  ],
+  "include": ["src", "manifest"],
   "compilerOptions": {
-    "types": [
-      "chrome"
-    ],
+    "types": ["chrome"],
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   }
