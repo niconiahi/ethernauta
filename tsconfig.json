@@ -1,27 +1,17 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@total-typescript/tsconfig/tsc/dom/library",
-  "include": ["packages/**/*", "utils/**/*"],
-  "exclude": ["**/dist/**", "**/node_modules/**"],
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "module": "esnext",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
     "allowImportingTsExtensions": true,
     "types": ["vitest/globals", "chrome"],
     "declaration": true,
     "declarationMap": true,
-    "baseUrl": ".",
     "paths": {
-      "@ethernauta/transport": ["./packages/transport/src"],
-      "@ethernauta/eth": ["./packages/eth/src"],
-      "@ethernauta/chain": ["./packages/chain/src"],
-      "@ethernauta/connector": ["./packages/connector/src"],
-      "@ethernauta/wallet": ["./packages/wallet/src"],
-      "@utils/*": ["./utils/*"]
+      "@ethernauta/*": ["./packages/*/src"]
     }
   }
 }

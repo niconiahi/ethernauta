@@ -29,8 +29,8 @@ It's ESM-first, it should run anywhere in the web. Only [Web APIs](https://devel
 - [x] Methods for interacting with Metamask ([EIP-1102](https://eips.ethereum.org/EIPS/eip-1102))
 - [x] A function that allows to read the blockchain
 - [x] Support multiple transports for reader
-- [ ] A function that allows to write the blockchain
-- [ ] Support multiple transports for writer
+- [x] A function that allows to write the blockchain
+- [x] Support multiple transports for writer
 - [ ] WalletConnect's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
 ## API
