@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "dev": "tsdown --watch",
-    "build": "tsdown && pnpm run format",
+    "build": "tsdown && biome format --write dist",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",

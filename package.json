@@ -3,13 +3,13 @@
   "name": "cryptoman",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground dev",
+    "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground run dev",
     "test": "pnpm --recursive --filter !@ethernauta/connector run test:unit",
-    "build": "pnpm --parallel --filter @ethernauta/eth --filter @ethernauta/wallet --filter @ethernauta/transport run build",
-    "lint": "pnpm --recursive --parallel lint",
-    "lint:fix": "pnpm -recursive --parallel lint:fix",
-    "format": "pnpm --recursive format",
-    "publish": "pnpm publish --filter @ethernauta/transport --filter @ethernauta/eth --filter @ethernauta/chain --filter @ethernauta/transaction"
+    "build": "pnpm --filter @ethernauta/chain run build && pnpm --filter @ethernauta/transport run build && pnpm --filter @ethernauta/eth run build && pnpm --filter @ethernauta/transaction run build",
+    "lint": "pnpm --recursive --parallel run lint",
+    "lint:fix": "pnpm --recursive --parallel run lint:fix",
+    "format": "pnpm --recursive run format",
+    "publish": "pnpm --filter @ethernauta/transport --filter @ethernauta/eth --filter @ethernauta/chain --filter @ethernauta/transaction run publish"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
