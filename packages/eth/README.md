@@ -1,3 +1,5 @@
+[![bundlejs](https://deno.bundlejs.com/badge?q=@ethernauta/eth@0.0.10&treeshake=[*])](https://deno.bundlejs.com/badge?q=@ethernauta/eth@0.0.10&treeshake=[*])
+
 ## Philosophy
 
 This module aims to be an un-opinionated representation of the defined:
