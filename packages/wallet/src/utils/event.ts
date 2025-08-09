@@ -35,25 +35,25 @@ export type ConnectRequest = InferOutput<
   typeof ConnectRequestSchema
 >
 
-export const CryptomanRequestSchema = union([
+export const EthernautaRequestSchema = union([
   SignTransactionRequestSchema,
   ConnectRequestSchema,
 ])
-export type CryptomanRequest = InferOutput<
-  typeof CryptomanRequestSchema
+export type EthernautaRequest = InferOutput<
+  typeof EthernautaRequestSchema
 >
 
-export const CryptomanResponseSchema = union([
+export const EthernautaResponseSchema = union([
   SignTransactionResponseSchema,
 ])
-export type CryptomanResponse = InferOutput<
-  typeof CryptomanResponseSchema
+export type EthernautaResponse = InferOutput<
+  typeof EthernautaResponseSchema
 >
 
-export const CryptomanEventSchema = union([
-  CryptomanRequestSchema,
-  CryptomanResponseSchema,
+export const EthernautaEventSchema = union([
+  EthernautaRequestSchema,
+  EthernautaResponseSchema,
 ])
-export type CryptomanEvent = InferOutput<
-  typeof CryptomanEventSchema
+export type EthernautaEvent = InferOutput<
+  typeof EthernautaEventSchema
 >

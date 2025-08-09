@@ -1,5 +1,5 @@
 const script = document.createElement("script")
-script.src = chrome.runtime.getURL("cryptoman.mjs")
+script.src = chrome.runtime.getURL("wallet.mjs")
 script.onload = () => script.remove()
 document.head.appendChild(script)
 

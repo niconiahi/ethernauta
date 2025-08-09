@@ -11,7 +11,7 @@ const PBKDF2_CONFIG = {
   hash: "SHA-256",
 } as const
 const DATABASE_CONFIG = {
-  name: "cryptoman/signer",
+  name: "ethernauta/signer",
   version: 1,
   store_name: "vault",
   vault_key: "credentials",

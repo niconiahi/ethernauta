@@ -9,8 +9,8 @@ export default defineConfig({
     outDir: "../dist",
     lib: {
       entry: {
+        wallet: "wallet.ts",
         "browser.entry": "browser.entry.ts",
-        cryptoman: "cryptoman.ts",
         "extension.entry": "extension.entry.ts",
       },
       formats: ["es"],

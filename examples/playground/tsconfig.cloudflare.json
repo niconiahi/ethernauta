@@ -6,27 +6,45 @@
     "app/**/.server/**/*",
     "app/**/.client/**/*",
     "workers/**/*",
-    "worker-configuration.d.ts"
+    "worker-configuration.d.ts",
+    "types/**/*.d.ts"
   ],
   "compilerOptions": {
     "strict": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["vite/client", "./app/cryptoman.d.ts"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
+    "types": [
+      "vite/client"
+    ],
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
-    "rootDirs": [".", "./.react-router/types"],
+    "rootDirs": [
+      ".",
+      "./.react-router/types"
+    ],
     "paths": {
-      "~/*": ["./app/*"],
+      "~/*": [
+        "./app/*"
+      ],
       "@ethernauta/transport": [
         "../../packages/transport/src"
       ],
-      "@ethernauta/chain": ["../../packages/chain/src"],
-      "@ethernauta/eth": ["../../packages/eth/src"],
-      "@ethernauta/wallet": ["../../packages/wallet/src"]
+      "@ethernauta/chain": [
+        "../../packages/chain/src"
+      ],
+      "@ethernauta/eth": [
+        "../../packages/eth/src"
+      ],
+      "@ethernauta/wallet": [
+        "../../packages/wallet/src"
+      ]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

@@ -10,18 +10,29 @@
   "background": {
     "service_worker": "extension.entry.mjs"
   },
-  "permissions": ["storage", "activeTab"],
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["browser.entry.mjs"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "browser.entry.mjs"
+      ],
       "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
-      "matches": ["<all_urls>"],
-      "resources": ["cryptoman.mjs"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "wallet.mjs"
+      ]
     }
   ]
 }

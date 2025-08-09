@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with the Cryptoman codebase.
+This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with the Ethernauta codebase.
 
 ## Objective
 
-**Cryptoman** is a secure cryptocurrency wallet Chrome extension that provides:
+**Ethernauta** is a secure cryptocurrency wallet Chrome extension that provides:
 - Wallet creation from mnemonic phrases with password protection
 - Secure mnemonic storage using IndexedDB with AES-GCM encryption
 - Transaction signing for Ethereum-compatible networks
@@ -14,7 +14,7 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 ## Project Architecture
 
 ### Monorepo Structure
-Cryptoman is organized as a pnpm workspace monorepo with the following packages:
+Ethernauta is organized as a pnpm workspace monorepo with the following packages:
 
 #### Core Packages
 - **@ethernauta/wallet** - Main Chrome extension with UI and crypto operations

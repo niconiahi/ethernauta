@@ -44,6 +44,9 @@ importers:
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../../packages/eth
+      '@ethernauta/transaction':
+        specifier: workspace:*
+        version: link:../../packages/transaction
       '@ethernauta/transport':
         specifier: workspace:*
         version: link:../../packages/transport

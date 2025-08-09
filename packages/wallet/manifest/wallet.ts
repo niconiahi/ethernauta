@@ -4,7 +4,7 @@ import type {
   SignTransactionResponse,
 } from "../src/utils/event"
 
-type Cryptoman = {
+type Wallet = {
   connect: () => Promise<void>
   sign: (
     method: string,
@@ -14,11 +14,11 @@ type Cryptoman = {
 
 declare global {
   interface Window {
-    cryptoman: Cryptoman
+    wallet: Wallet
   }
 }
 
-window.cryptoman = {
+window.wallet = {
   sign: async (
     method: string,
     params: unknown[],

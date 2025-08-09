@@ -1,8 +1,8 @@
 import { parse } from "valibot"
 import {
-  CryptomanEventSchema,
-  CryptomanRequestSchema,
-  CryptomanResponseSchema,
+  EthernautaEventSchema,
+  EthernautaRequestSchema,
+  EthernautaResponseSchema,
 } from "../src/utils/event"
 import invariant from "../src/utils/tiny-invariant"
 
@@ -12,9 +12,12 @@ function compose_key(id: string) {
 
 chrome.runtime.onMessage.addListener(
   async (message, sender) => {
-    const event = parse(CryptomanEventSchema, message)
+    const event = parse(EthernautaEventSchema, message)
     if (event.type.startsWith("ETHERNAUTA_REQUEST")) {
-      const request = parse(CryptomanRequestSchema, message)
+      const request = parse(
+        EthernautaRequestSchema,
+        message,
+      )
       console.log("receiving request", request)
       const tab_id = sender.tab?.id
       invariant(tab_id, "request must come from a tab")
@@ -39,7 +42,7 @@ chrome.runtime.onMessage.addListener(
     }
     if (event.type.startsWith("ETHERNAUTA_RESPONSE")) {
       const response = parse(
-        CryptomanResponseSchema,
+        EthernautaResponseSchema,
         message,
       )
       console.log("returning response", response)

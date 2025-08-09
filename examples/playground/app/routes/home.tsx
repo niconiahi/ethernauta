@@ -4,10 +4,12 @@ import {
   createWriter,
   encodeChainId,
   http,
+} from "@ethernauta/transport"
+import {
   register_transaction,
   watch_transaction,
   type Transaction,
-} from "@ethernauta/transport"
+} from "@ethernauta/transaction"
 import { number_to_hex } from "@ethernauta/wallet"
 import { useEffect, useState } from "react"
 
@@ -50,7 +52,7 @@ export default function () {
         <button
           type="button"
           onClick={() => {
-            window.cryptoman.connect()
+            window.wallet.connect()
           }}
         >
           connect
@@ -65,7 +67,7 @@ export default function () {
               "0x515e9e0565fdddd4f8a9759744734154da453585"
             const params = [ADDRESS, number_to_hex(1)]
             const signed_transaction =
-              await window.cryptoman.sign(method, params)
+              await window.wallet.sign(method, params)
             const writable = eth_sendRawTransaction([
               signed_transaction,
             ])

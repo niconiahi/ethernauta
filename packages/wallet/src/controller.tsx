@@ -4,7 +4,7 @@ import { Mnemonics } from "./views/mnemonics/index"
 import { Sign } from "./views/sign/index"
 import { useEffect } from "preact/hooks"
 import { view } from "./utils/view"
-import { CryptomanRequestSchema } from "./utils/event"
+import { EthernautaRequestSchema } from "./utils/event"
 import {
   is_authenticated,
   validate_vault,
@@ -18,7 +18,7 @@ export function Controller() {
     chrome.runtime.onMessage.addListener(
       async (message) => {
         const request = parse(
-          CryptomanRequestSchema,
+          EthernautaRequestSchema,
           message,
         )
         switch (request.type) {

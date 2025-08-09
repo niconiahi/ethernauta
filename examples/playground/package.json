@@ -22,6 +22,7 @@
     "@ethernauta/chain": "workspace:*",
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/transport": "workspace:*",
+    "@ethernauta/transaction": "workspace:*",
     "@ethernauta/wallet": "workspace:*"
   },
   "devDependencies": {

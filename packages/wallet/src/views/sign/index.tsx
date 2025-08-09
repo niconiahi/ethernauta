@@ -4,7 +4,7 @@ import {
   sign_transaction,
 } from "../../utils/sign-transaction"
 import { bytes_to_hex } from "../../utils/hex"
-import type { CryptomanResponse } from "../../utils/event"
+import type { EthernautaResponse } from "../../utils/event"
 import { wallet } from "../../utils/wallet"
 import type { Address } from "@ethernauta/eth"
 import {
@@ -61,7 +61,7 @@ export function Sign() {
               params: transaction_request.value.params,
             },
           )
-          const response: CryptomanResponse = {
+          const response: EthernautaResponse = {
             id: transaction_request.value.id,
             type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
             signed_transaction: bytes_to_hex(

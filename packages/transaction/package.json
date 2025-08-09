@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/niconiahi/cryptoman"
+    "url": "https://github.com/niconiahi/ethernauta"
   },
   "sideEffects": false,
   "main": "./dist/index.js",
