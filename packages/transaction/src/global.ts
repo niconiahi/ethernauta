@@ -1,5 +1,5 @@
 import type { Hash32 } from "@ethernauta/eth"
-import type { Transaction } from "@ethernauta/transaction"
+import type { Transaction } from "./transaction"
 
 declare global {
   interface Window {
