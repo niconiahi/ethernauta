@@ -14,11 +14,11 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 
 ## Modules
 
-- [eth](packages/eth/README.md)
-- [wallet](packages/wallet/README.md)
-- [connector](packages/connector/README.md)
-- [transport](packages/transport/README.md)
-- [transaction](packages/transaction/README.md)
+- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/README.md)
+- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/README.md)
+- [connector](https://github.com/niconiahi/ethernauta/blob/main/packages/connector/README.md)
+- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/README.md)
+- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/README.md)
 
 ## Features
 
