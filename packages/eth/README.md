@@ -40,11 +40,11 @@ const NAMESPACE = {
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-const SEPOLIA_CHAIN_ID = encodeChainId({
+export const SEPOLIA_CHAIN_ID = encodeChainId({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
-const reader = createReader([
+export const reader = createReader([
   {
     chainId: SEPOLIA_CHAIN_ID,
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
@@ -57,34 +57,13 @@ const reader = createReader([
 ```ts
 import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
 import { createReader, encodeChainId, http } from "@ethernauta/transport";
+import { reader, SEPOLIA_CHAIN_ID } from "./reader";
 
-const reader = createReader([
-  {
-    chainId: "eip155:1",
-    transports: [
-      http(
-        "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"
-      ),
-    ],
-  },
-  {
-    chainId: "eip155:1",
-    transports: [
-      http(
-        "https://snowy-fragrant-haze.ethereum-sepolia.quiknode.pro/x3bdg0c56ebg5b1c70957bfaa17483faxaba81z1/"
-      ),
-    ],
-  },
-]);
 const readable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
 ]);
-const chainId = encodeChainId({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-});
-const block = await readable(reader(chainId));
+const block = await readable(reader(SEPOLIA_CHAIN_ID));
 ```
 
 ### Creating a writer
@@ -102,11 +81,11 @@ const NAMESPACE = {
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-const SEPOLIA_CHAIN_ID = encodeChainId({
+export const SEPOLIA_CHAIN_ID = encodeChainId({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
-const writer = createWriter([
+export const writer = createWriter([
   {
     chainId: SEPOLIA_CHAIN_ID,
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
@@ -119,7 +98,6 @@ const writer = createWriter([
 ```ts
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/wallet"
-import { writer, sepolia_chain_id } from "./writer"
 
 const method = "transfer"
 const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
@@ -135,7 +113,7 @@ const signed_transaction = await window.wallet.sign(
 ```ts
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/wallet"
-import { writer, sepolia_chain_id } from "./writer"
+import { writer, SEPOLIA_CHAIN_ID } from "./writer"
 
 const method = "transfer"
 const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
@@ -147,7 +125,7 @@ const signed_transaction = await window.wallet.sign(
 const writable = eth_sendRawTransaction([
   signed_transaction,
 ])
-await writable(writer(sepolia_chain_id))
+await writable(writer(SEPOLIA_CHAIN_ID))
 ```
 
 ### Reacting to transaction states
@@ -155,7 +133,7 @@ await writable(writer(sepolia_chain_id))
 ```ts
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/wallet"
-import { writer, sepolia_chain_id } from "./writer"
+import { writer, SEPOLIA_CHAIN_ID } from "./writer"
 
 const method = "transfer"
 const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
@@ -167,7 +145,7 @@ const signed_transaction = await window.wallet.sign(
 const writable = eth_sendRawTransaction([
   signed_transaction,
 ])
-const hash = await writable(writer(sepolia_chain_id))
+const hash = await writable(writer(SEPOLIA_CHAIN_ID))
 // initial transaction state 
 // with "type" key equal "pending"
 const transaction = register_transaction(hash)
