@@ -25,33 +25,6 @@ This module aims to be an un-opinionated representation of the defined:
 
 ## API
 
-### Creating reader
-
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  createReader,
-  encodeChainId,
-  http,
-} from "@ethernauta/transport"
-
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-export const SEPOLIA_CHAIN_ID = encodeChainId({
-  namespace: NAMESPACE.ETHEREUM,
-  reference: eip155_11155111.chainId,
-})
-export const reader = createReader([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
-  },
-])
-```
-
 ### Reading from the blockchain
 
 ```ts
@@ -63,33 +36,6 @@ const readable = eth_getBlockByHash([
   false,
 ]);
 const block = await readable(reader(SEPOLIA_CHAIN_ID));
-```
-
-### Creating a writer
-
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  createWriter,
-  encodeChainId,
-  http,
-} from "@ethernauta/transport"
-
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-export const SEPOLIA_CHAIN_ID = encodeChainId({
-  namespace: NAMESPACE.ETHEREUM,
-  reference: eip155_11155111.chainId,
-})
-export const writer = createWriter([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
-  },
-])
 ```
 
 ### Signing a transaction

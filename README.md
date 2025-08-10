@@ -36,56 +36,132 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - [ ] Metamask's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 - [ ] WalletConnect's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
-## Complete example
+## Examples
 
-### Reading from the blockchain
+### Creating reader
 
-```tsx
-import { eth_getBlockByHash } from "@ethernauta/eth"
-import { createReader, encodeChainId, http } from "@ethernauta/transport"
-import { eip155_11155111, encodeChainId, decodeChainId } from "@ethernauta/chain"
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  createReader,
+  encodeChainId,
+  http,
+} from "@ethernauta/transport"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
 }
-const SEPOLIA_CHAIN_ID = encodeChainId({
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
+export const SEPOLIA_CHAIN_ID = encodeChainId({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
-const reader = createReader([
+export const reader = createReader([
   {
     chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http(
-        "https://snow-fragment-stone.ethereum-sepolia.quiknode.pro/71bd09c56eb85b1c709871faa17483fa65ba8177/"
-      ),
-    ],
-  }
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
 ])
+```
+
+### Reading from the blockchain
+
+```ts
+import { eth_getBlockByHash } from "@ethernauta/eth";
+import { reader, SEPOLIA_CHAIN_ID } from "./reader";
+
 const readable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
-])
-const block = await readable(reader(ethereumSepolia))
+]);
+const block = await readable(reader(SEPOLIA_CHAIN_ID));
 ```
 
-### Writing to the blockchain
+### Creating a writer
 
-```tsx
-import { mainnet, rinkeby } from "@ethernauta/chain"
-import { createWalletConnect } from "@ethernauta/connectors"
-import { eth_sendTransaction } from "@ethernauta/eth"
-import { createWriter, http } from "@ethernauta/transport"
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  createWriter,
+  encodeChainId,
+  http,
+} from "@ethernauta/transport"
 
-const walletConnect = createWalletConnect(env.WALLET_CONNECT_PROJECT_ID)
-const writer = createWriter(
-  http(walletConnect(env.ENVIRONMENT === "production" ? mainnet : rinkeby))
-)
-const writable = eth_sendTransaction([
+const NAMESPACE = {
+  ETHEREUM: "eip155",
+}
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
+export const SEPOLIA_CHAIN_ID = encodeChainId({
+  namespace: NAMESPACE.ETHEREUM,
+  reference: eip155_11155111.chainId,
+})
+export const writer = createWriter([
   {
-    from: "0xF344B01DA08b142D2466dae9e47E333f22e64588",
-    data: "0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675",
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
   },
 ])
-const hash = await writable(writer)
+```
+
+### Signing a transaction
+
+```ts
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/wallet"
+
+const method = "transfer"
+const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
+const params = [ADDRESS, number_to_hex(1)]
+const signed_transaction = await window.wallet.sign(
+  method,
+  params,
+)
+```
+
+### Writting to the blockchain
+
+```ts
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/wallet"
+import { writer, SEPOLIA_CHAIN_ID } from "./writer"
+
+const method = "transfer"
+const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
+const params = [ADDRESS, number_to_hex(1)]
+const signed_transaction = await window.wallet.sign(
+  method,
+  params,
+)
+const writable = eth_sendRawTransaction([
+  signed_transaction,
+])
+await writable(writer(SEPOLIA_CHAIN_ID))
+```
+
+### Reacting to transaction states
+
+```ts
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/wallet"
+import { writer, SEPOLIA_CHAIN_ID } from "./writer"
+
+const method = "transfer"
+const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
+const params = [ADDRESS, number_to_hex(1)]
+const signed_transaction = await window.wallet.sign(
+  method,
+  params,
+)
+const writable = eth_sendRawTransaction([
+  signed_transaction,
+])
+const hash = await writable(writer(SEPOLIA_CHAIN_ID))
+// initial transaction state 
+// with "type" key equal "pending"
+const transaction = register_transaction(hash)
+watch_transaction(hash, (transaction) => {
+  // subsequent states that the transaction goes trough
+})
 ```
