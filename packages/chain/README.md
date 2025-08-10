@@ -29,6 +29,6 @@ console.log(reference)// 11155111
 
 ### chain
 
-- [indexer.tsx](src/chain/indexer/indexer.ts)
-- [shared.tsx](src/chain/shared/shared.ts)
-- [eip155-1](src/chain/eip155/eip155-1/eip155-1.ts)
+- [indexer.tsx](src/indexer.ts)
+- [shared.tsx](src/chain/shared.ts)
+- [eip155-1](src/chain/eip155/eip155-1.ts)
