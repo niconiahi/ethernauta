@@ -1,9 +1,18 @@
 [![bundlejs](https://deno.bundlejs.com/badge?q=@ethernauta/transaction@0.0.10&treeshake=[*])](https://deno.bundlejs.com/badge?q=@ethernauta/transaction@0.0.10&treeshake=[*])
 
+## Philosophy
 
 This module aims to be an un-opinionated representation of the defined:
 
 - [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification)
+
+## Modules
+
+- [chain](https://github.com/niconiahi/ethernauta/blob/main/packages/chain/README.md)
+- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/README.md)
+- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/README.md)
+- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/README.md)
+- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/README.md)
 
 ## API
 
