@@ -31,8 +31,9 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - [x] Support multiple transports for reader
 - [x] A function that allows to write the blockchain
 - [x] Support multiple transports for writer
-- [x] Sign transaction with wallet
+- [x] Sign transaction with wallet ([EIP-1559](https://eips.ethereum.org/EIPS/eip-1559))
 - [x] Transaction tracking system
+- [ ] Metamask's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 - [ ] WalletConnect's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
 ## Complete example
