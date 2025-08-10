@@ -18,13 +18,13 @@ const NAMESPACE = {
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://little-bitter-wave.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-const sepolia_chain_id = encodeChainId({
+const SEPOLIA_CHAIN_ID = encodeChainId({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
 const writer = createWriter([
   {
-    chainId: sepolia_chain_id,
+    chainId: SEPOLIA_CHAIN_ID,
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
   },
 ])
@@ -72,7 +72,7 @@ export default function () {
               signed_transaction,
             ])
             const hash = await writable(
-              writer(sepolia_chain_id),
+              writer(SEPOLIA_CHAIN_ID),
             )
             setHash(hash)
           }}

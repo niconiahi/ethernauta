@@ -25,7 +25,36 @@ This module aims to be an un-opinionated representation of the defined:
 
 ## API
 
-```tsx
+### Creating reader
+
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  createReader,
+  encodeChainId,
+  http,
+} from "@ethernauta/transport"
+
+const NAMESPACE = {
+  ETHEREUM: "eip155",
+}
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
+const SEPOLIA_CHAIN_ID = encodeChainId({
+  namespace: NAMESPACE.ETHEREUM,
+  reference: eip155_11155111.chainId,
+})
+const reader = createReader([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
+])
+```
+
+### Reading from the blockchain
+
+```ts
 import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
 import { createReader, encodeChainId, http } from "@ethernauta/transport";
 
@@ -56,6 +85,95 @@ const chainId = encodeChainId({
   reference: eip155_1.chainId,
 });
 const block = await readable(reader(chainId));
+```
+
+### Creating a writer
+
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  createWriter,
+  encodeChainId,
+  http,
+} from "@ethernauta/transport"
+
+const NAMESPACE = {
+  ETHEREUM: "eip155",
+}
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
+const SEPOLIA_CHAIN_ID = encodeChainId({
+  namespace: NAMESPACE.ETHEREUM,
+  reference: eip155_11155111.chainId,
+})
+const writer = createWriter([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
+])
+```
+
+### Signing a transaction
+
+```ts
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/wallet"
+import { writer, sepolia_chain_id } from "./writer"
+
+const method = "transfer"
+const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
+const params = [ADDRESS, number_to_hex(1)]
+const signed_transaction = await window.wallet.sign(
+  method,
+  params,
+)
+```
+
+### Writting to the blockchain
+
+```ts
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/wallet"
+import { writer, sepolia_chain_id } from "./writer"
+
+const method = "transfer"
+const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
+const params = [ADDRESS, number_to_hex(1)]
+const signed_transaction = await window.wallet.sign(
+  method,
+  params,
+)
+const writable = eth_sendRawTransaction([
+  signed_transaction,
+])
+await writable(writer(sepolia_chain_id))
+```
+
+### Reacting to transaction states
+
+```ts
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/wallet"
+import { writer, sepolia_chain_id } from "./writer"
+
+const method = "transfer"
+const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
+const params = [ADDRESS, number_to_hex(1)]
+const signed_transaction = await window.wallet.sign(
+  method,
+  params,
+)
+const writable = eth_sendRawTransaction([
+  signed_transaction,
+])
+const hash = await writable(writer(sepolia_chain_id))
+// initial transaction state 
+// with "type" key equal "pending"
+const transaction = register_transaction(hash)
+watch_transaction(hash, (transaction) => {
+  // subsequent states that the transaction goes trough
+})
 ```
 
 ## Files to pay attention
