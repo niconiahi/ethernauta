@@ -55,8 +55,7 @@ export const reader = createReader([
 ### Reading from the blockchain
 
 ```ts
-import { eip155_1, eth_getBlockByHash } from "@ethernauta/eth";
-import { createReader, encodeChainId, http } from "@ethernauta/transport";
+import { eth_getBlockByHash } from "@ethernauta/eth";
 import { reader, SEPOLIA_CHAIN_ID } from "./reader";
 
 const readable = eth_getBlockByHash([
