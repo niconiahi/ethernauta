@@ -8,6 +8,14 @@ This module aims to be an un-opinionated representation of the defined:
 - [Ethereum base methods](https://github.com/ethereum/execution-apis/tree/main/src/eth)
 - [abi-spec](https://docs.soliditylang.org/en/latest/abi-spec.html)
 
+## Modules
+
+- [eth](README.md)
+- [wallet](../wallet/README.md)
+- [connector](../connector/README.md)
+- [transport](../transport/README.md)
+- [transaction](../transaction/README.md)
+
 ## Table of contents
 
 1. [API](#api)

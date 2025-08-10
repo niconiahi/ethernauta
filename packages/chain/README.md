@@ -7,6 +7,14 @@ This module aims to be an un-opinionated representation of the defined:
 - [Ethereum chains](https://github.com/ethereum-lists/chains/tree/master/_data/chains)
 - [chain schema](https://github.com/ethereum-lists/chains/blob/master/tools/schema/chainSchema.json)
 
+## Modules
+
+- [eth](../eth/README.md)
+- [wallet](README.md)
+- [connector](../connector/README.md)
+- [transport](../transport/README.md)
+- [transaction](../transaction/README.md)
+
 ## Table of contents
 
 1. [chain](#chain)
