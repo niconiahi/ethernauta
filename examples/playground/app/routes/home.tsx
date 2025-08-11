@@ -11,7 +11,9 @@ import {
   http,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/wallet"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import invariant from "../../../../packages/wallet/src/utils/tiny-invariant"
+import type { TransactionInfo } from "@ethernauta/eth"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -29,75 +31,103 @@ const writer = createWriter([
   },
 ])
 
-export default function () {
+// green #0FA05C
+
+export default function() {
   const [hash, setHash] = useState<`0x${string}` | null>(
     null,
   )
   const [transaction_log, set_transaction_log] = useState<
     Transaction[]
   >([])
+  const popover_ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!hash) return
-    const transaction = register_transaction(hash)
-    set_transaction_log([transaction])
     watch_transaction(hash, (transaction) => {
       set_transaction_log((prev_transaction_logs) => {
         return [...prev_transaction_logs, transaction]
       })
     })
   }, [hash])
+  const last_transaction =
+    transaction_log[transaction_log.length - 1]
   return (
-    <div>
-      <p>
-        <button
-          type="button"
-          onClick={() => {
-            window.wallet.connect()
-          }}
+    <div className="flex flex-col justify-center h-full p-4 gap-2">
+      <button
+        type="button"
+        className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer"
+        onClick={() => {
+          window.wallet.connect()
+        }}
+      >
+        Connect wallet
+      </button>
+      <button
+        type="button"
+        className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer"
+        onClick={async () => {
+          const method = "transfer"
+          const ADDRESS =
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94"
+          const params = [ADDRESS, number_to_hex(1)]
+          const signed_transaction =
+            await window.wallet.sign(method, params)
+          const writable = eth_sendRawTransaction([
+            signed_transaction,
+          ])
+          const hash = await writable(
+            writer(SEPOLIA_CHAIN_ID),
+          )
+          setHash(hash)
+          const transaction = register_transaction(hash)
+          set_transaction_log([transaction])
+          popover_ref.current?.showPopover()
+        }}
+      >
+        Send transfer
+      </button>
+      {transaction_log.length > 0 ? (
+        <div
+          ref={popover_ref}
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-4 right-4 border-2 rounded-md p-4"
         >
-          connect
-        </button>
-      </p>
-      <p>
-        <button
-          type="button"
-          onClick={async () => {
-            const method = "transfer"
-            const ADDRESS =
-              "0x636c0fcd6da2207abfa80427b556695a4ad0af94"
-            const params = [ADDRESS, number_to_hex(1)]
-            const signed_transaction =
-              await window.wallet.sign(method, params)
-            const writable = eth_sendRawTransaction([
-              signed_transaction,
-            ])
-            const hash = await writable(
-              writer(SEPOLIA_CHAIN_ID),
-            )
-            setHash(hash)
-          }}
-        >
-          send transfer
-        </button>
-      </p>
-      <ul>
-        {transaction_log.map((transaction) => {
-          const key = `transaction-${transaction.hash}-${transaction.status}`
-          switch (transaction.status) {
-            case "mined": {
-              return (
-                <li key={key}>
-                  {transaction.status} at block number{" "}
-                  {transaction.blockNumber}
-                </li>
-              )
-            }
-            default: {
-              return <li key={key}>{transaction.status}</li>
-            }
-          }
-        })}
-      </ul>
+          {render_transaction(
+            last_transaction as Transaction,
+          )}
+        </div>
+      ) : null}
     </div>
   )
+}
+
+function render_transaction(transaction: Transaction) {
+  const key = `transaction-${transaction.hash}-${transaction.status}`
+  switch (transaction.status) {
+    case "pending": {
+      return <p key={key}>Your transaction has started</p>
+    }
+    case "mined": {
+      return (
+        <p key={key} className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-md border-2 bg-[#0FA05C] border-dashed" />
+          Successful transaction
+          <a
+            href={`https://sepolia.etherscan.io/tx/${transaction.hash}`}
+            className="underline"
+          >
+            See on Etherscan
+          </a>
+        </p>
+      )
+    }
+    default: {
+      return (
+        <li key={key}>
+          unhandled status: {transaction.status}
+        </li>
+      )
+    }
+  }
 }

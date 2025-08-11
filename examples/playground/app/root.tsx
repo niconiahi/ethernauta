@@ -8,6 +8,8 @@ import {
 } from "react-router"
 
 import type { Route } from "./+types/root"
+import "./styles/tailwind.css"
+import "./styles/global.css"
 
 export const links: Route.LinksFunction = () => [
   {
