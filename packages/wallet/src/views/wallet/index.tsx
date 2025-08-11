@@ -1,19 +1,73 @@
-import { useEffect } from "preact/hooks"
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  type Block,
+  eth_blockNumber,
+  eth_getBlockByNumber,
+  type TransactionInfo,
+  TransactionInfoSchema,
+} from "@ethernauta/eth"
+import {
+  createReader,
+  encodeChainId,
+  http,
+} from "@ethernauta/transport"
+import { useEffect, useState } from "preact/hooks"
+import { array, parse } from "valibot"
 import {
   balance,
   fetch_balance,
   wei_to_eth,
 } from "../../utils/balance"
+import {
+  hex_to_number,
+  number_to_hex,
+} from "../../utils/crypto"
+import invariant from "../../utils/tiny-invariant"
 import { wallet } from "../../utils/wallet"
 
-// const BATCH_SIZE = 50
-// async function get_blocks(start: number, end: number) {
-//   for (let i = 0; i < end; i += BATCH_SIZE) {
-//     const last = Math.min(start + BATCH_SIZE - 1, end)
-//   }
-// }
+const NAMESPACE = {
+  ETHEREUM: "eip155",
+}
+const ETHEREUM_SEPOLIA_RPC_URL =
+  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+const SEPOLIA_CHAIN_ID = encodeChainId({
+  namespace: NAMESPACE.ETHEREUM,
+  reference: eip155_11155111.chainId,
+})
+const reader = createReader([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
+])
+const BLOCK_AMOUNT = 30
+async function get_blocks() {
+  const readable = eth_blockNumber()
+  const block_number = hex_to_number(
+    await readable(reader(SEPOLIA_CHAIN_ID)),
+  )
+  const blocks: Block[] = []
+  for (
+    let x = block_number - BLOCK_AMOUNT;
+    x <= block_number;
+    x++
+  ) {
+    const readable = eth_getBlockByNumber([
+      number_to_hex(x),
+      true,
+    ])
+    const block = await readable(reader(SEPOLIA_CHAIN_ID))
+    if (!block) continue
+    blocks.push(block)
+  }
+  return blocks
+}
 
 export function Wallet() {
+  const [loading, setLoading] = useState<boolean>(false)
+  const [transactions, setTransactions] = useState<
+    TransactionInfo[]
+  >([])
   const address = wallet.value.address as `0x${string}`
   useEffect(() => {
     async function run() {
@@ -22,10 +76,52 @@ export function Wallet() {
     }
     run()
   }, [])
+  useEffect(() => {
+    async function run() {
+      setLoading(true)
+      const blocks = await get_blocks()
+      const transactions = parse(
+        array(TransactionInfoSchema),
+        blocks
+          .flatMap((block) => {
+            return block.transactions.map((transaction) => {
+              invariant(
+                typeof transaction === "object",
+                "transaction should be an object",
+              )
+              return transaction
+            })
+          })
+          .filter((transaction) => {
+            return (
+              transaction.from === wallet.value.address &&
+              hex_to_number(transaction.value) > 0
+            )
+          }),
+      )
+      setTransactions(transactions)
+      setLoading(false)
+    }
+    run()
+  }, [])
   return (
     <div>
       <p>the connected address is {address}</p>
       <p>it's balance is {wei_to_eth(balance.value)}</p>
+      {loading ? (
+        <span>loading past transfers</span>
+      ) : (
+        <ul>
+          {transactions.map((transaction) => {
+            return (
+              <li key={`transfer_${transaction.value}`}>
+                <p>{transaction.from}</p>
+                <p>{transaction.to}</p>
+              </li>
+            )
+          })}
+        </ul>
+      )}
     </div>
   )
 }

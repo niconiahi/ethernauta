@@ -21,7 +21,7 @@
     "dev": "tsdown --watch",
     "build": "tsdown && biome format --write dist",
     "lint": "biome check .",
-    "lint:fix": "biome check --write .",
+    "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "test:unit": "vitest"
   },

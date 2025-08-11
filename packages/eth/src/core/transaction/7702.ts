@@ -1,5 +1,5 @@
 import type { InferOutput } from "valibot"
-import { array, nullable, object, optional } from "valibot"
+import { object, optional } from "valibot"
 
 import {
   addressSchema,
@@ -8,7 +8,6 @@ import {
   uintSchema,
 } from "../base"
 import { accessListSchema } from "./access-list"
-import { authorizationListSchema } from "./authorization-list"
 
 const transaction7702UnsignedSchema = object({
   type: byteSchema,

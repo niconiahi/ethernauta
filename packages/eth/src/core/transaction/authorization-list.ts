@@ -1,4 +1,4 @@
-import { array, object, type InferOutput } from "valibot"
+import { array, type InferOutput, object } from "valibot"
 import { addressSchema, uintSchema } from "../base"
 
 export const authorizationSchema = object({

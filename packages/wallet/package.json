@@ -12,7 +12,7 @@
     "build:manifest:watch": "vite build --watch --config vite.manifest.config.ts",
     "build:extension:watch": "vite build --watch --config vite.extension.config.ts",
     "lint": "biome check .",
-    "lint:fix": "biome check --write .",
+    "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "zip": "cd dist && zip -r ../extension.zip .",
     "test:unit": "vitest"

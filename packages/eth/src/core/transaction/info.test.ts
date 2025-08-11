@@ -1,9 +1,9 @@
-import { describe, expect, test } from "vitest"
 import { array, parse } from "valibot"
+import { describe, expect, it } from "vitest"
 import { TransactionInfoSchema } from "./info"
 
-describe("TransactionInfoSchema", () => {
-  test("should validate legacy transaction info", () => {
+describe("info.ts", () => {
+  it("should validate legacy transaction info", () => {
     const TRANSACTION = {
       blockHash:
         "0xdb9a5f2320c0a10d28bfa1c563a1bbf592665e9080ade70a08cc29b86af1eb6f",
@@ -35,7 +35,7 @@ describe("TransactionInfoSchema", () => {
       parse(TransactionInfoSchema, TRANSACTION),
     ).not.toThrow()
   })
-  test("should validate many different transactions", () => {
+  it("should validate many different transactions", () => {
     const TRANSACTIONS = [
       {
         blockHash:

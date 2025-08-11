@@ -24,5 +24,5 @@ export const TransactionInfoSchema = intersect([
   TransactionSignedSchema,
 ])
 export type TransactionInfo = InferOutput<
-  typeof TransactionSignedSchema
+  typeof TransactionInfoSchema
 >
