@@ -13,8 +13,8 @@ This module allows you to sign any transaction. It will return the hashed transa
 
 ### Files to pay attention
 
-- [utils/rlp.ts](src/utils/rlp.ts)
-- [utils/event.ts](src/utils/event.ts)
-- [utils/vault.ts](src/utils/vault.ts)
-- [utils/crypto.ts](src/utils/crypto.ts)
-- [utils/sign-transaction.ts](src/utils/sign-transaction.ts)
+- [utils/rlp.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/rlp.ts)
+- [utils/event.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/event.ts)
+- [utils/vault.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/vault.ts)
+- [utils/crypto.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/crypto.ts)
+- [utils/sign-transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/sign-transaction.ts)

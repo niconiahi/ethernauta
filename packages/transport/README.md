@@ -72,10 +72,13 @@ export const writer = createWriter([
 
 ## Files to pay attention
 
-- [call.ts](src/call.ts)
-- [http.ts](src/http/http.ts)
-- [json-rpc.ts](src/json-rpc/json-rpc.ts)
-- [reader.ts](src/reader/reader.ts)
-- [writer.ts](src/writer/writer.ts)
-- [chain/encode-chain-id.ts](src/chain/encode-chain-id.ts)
-- [chain/decode-chain-id.ts](src/chain/decode-chain-id.ts)
+- [call.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/call.ts)
+- [http.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/http.ts)
+- [json-rpc.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/json-rpc.ts)
+- [reader.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/reader.ts)
+- [writer.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/writer.ts)
+
+### chain
+
+- [chain/encode-chain-id.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/chain/encode-chain-id.ts)
+- [chain/decode-chain-id.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/chain/decode-chain-id.ts)

@@ -40,7 +40,7 @@ watch_transaction(hash, (transaction) => {
 
 ### Files to pay attention
 
-- [transaction.ts](./src/transaction.ts)
-- [set-transaction.ts](./src/set-transaction.ts)
-- [watch-transaction.ts](./src/watch-transaction.ts)
-- [register-transaction.ts](./src/register-transaction.ts)
+- [transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/src/transaction.ts)
+- [set-transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/src/set-transaction.ts)
+- [watch-transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/src/watch-transaction.ts)
+- [register-transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/src/register-transaction.ts)

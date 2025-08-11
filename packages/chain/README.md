@@ -35,8 +35,9 @@ console.log(reference)// 11155111
 
 ## Files to pay attention
 
+- [indexer.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/chain/src/indexer.ts)
+
 ### chain
 
-- [indexer.tsx](src/indexer.ts)
-- [shared.tsx](src/chain/shared.ts)
-- [eip155-1](src/chain/eip155/eip155-1.ts)
+- [chain/shared.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/chain/src/chain/shared.ts)
+- [chain/eip155/eip155-1.tsx](https://github.com/niconiahi/ethernauta/blob/main/packages/chain/src/chain/eip155/eip155-1.ts)
