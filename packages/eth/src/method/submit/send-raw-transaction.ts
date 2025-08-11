@@ -23,7 +23,6 @@ export function eth_sendRawTransaction(
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
-    console.log("response", response)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

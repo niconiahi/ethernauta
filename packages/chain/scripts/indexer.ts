@@ -129,7 +129,7 @@ export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain`
                   throw new Error(error.message)
                 }
                 console.log(
-                  `Generated ${imports.length} chain files and index`,
+                  `generated ${imports.length} chain files and index`,
                 )
                 // Clean up the cloned repository
                 if (existsSync(outputPath)) {
@@ -144,7 +144,7 @@ export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain`
       })
     })
     .catch((err) => {
-      console.error("Error in indexer:", err)
+      console.error("error in indexer:", err)
       if (existsSync(outputPath)) {
         rmSync(outputPath, { recursive: true })
       }

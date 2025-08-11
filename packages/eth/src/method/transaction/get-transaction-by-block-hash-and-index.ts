@@ -9,7 +9,7 @@ import {
   uintSchema,
 } from "../../core/base"
 import type { TransactionInfo } from "../../core/transaction"
-import { transactionInfoSchema } from "../../core/transaction"
+import { TransactionInfoSchema } from "../../core/transaction"
 
 const parametersSchema = union([
   tuple([Hash32Schema, uintSchema]),
@@ -38,7 +38,7 @@ export function eth_getTransactionByBlockHashAndIndex(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([transactionInfoSchema, notFoundSchema]),
+      union([TransactionInfoSchema, notFoundSchema]),
       response.result,
     )
     return result

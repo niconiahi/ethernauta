@@ -1,17 +1,25 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { eth_sendRawTransaction } from "@ethernauta/eth"
+import {
+  eth_blockNumber,
+  eth_getBlockByNumber,
+  eth_sendRawTransaction,
+} from "@ethernauta/eth"
 import {
   register_transaction,
   type Transaction,
   watch_transaction,
 } from "@ethernauta/transaction"
 import {
+  createReader,
   createWriter,
   encodeChainId,
   http,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/wallet"
 import { useEffect, useState } from "react"
+import { hex_to_number } from "../../../../packages/wallet/src/utils/crypto"
+import type { Block } from "@ethernauta/eth"
+import invariant from "../../../../packages/wallet/src/utils/tiny-invariant"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -28,8 +36,37 @@ const writer = createWriter([
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
   },
 ])
+const reader = createReader([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+  },
+])
+const BLOCK_AMOUNT = 30
 
-export default function () {
+async function get_blocks() {
+  const readable = eth_blockNumber()
+  const block_number = hex_to_number(
+    await readable(reader(SEPOLIA_CHAIN_ID)),
+  )
+  const blocks: Block[] = []
+  for (
+    let x = block_number - BLOCK_AMOUNT;
+    x <= block_number;
+    x++
+  ) {
+    const readable = eth_getBlockByNumber([
+      number_to_hex(x),
+      true,
+    ])
+    const block = await readable(reader(SEPOLIA_CHAIN_ID))
+    if (!block) continue
+    blocks.push(block)
+  }
+  return blocks
+}
+
+export default function() {
   const [hash, setHash] = useState<`0x${string}` | null>(
     null,
   )
@@ -46,6 +83,25 @@ export default function () {
       })
     })
   }, [hash])
+  useEffect(() => {
+    async function run() {
+      const blocks = await get_blocks()
+      const transfers = blocks.flatMap((block) => {
+        return block.transactions.filter((transaction) => {
+          invariant(
+            typeof transaction === "object",
+            "transaction should be an object",
+          )
+          return (
+            transaction.from ===
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94"
+          )
+        })
+      })
+      console.log("transfers", transfers)
+    }
+    run()
+  }, [])
   return (
     <div>
       <p>

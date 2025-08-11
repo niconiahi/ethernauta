@@ -6,7 +6,7 @@ import type { NotFound } from "../../core/base"
 import { notFoundSchema, uintSchema } from "../../core/base"
 import { blockNumberOrTagSchema } from "../../core/block"
 import type { TransactionInfo } from "../../core/transaction"
-import { transactionInfoSchema } from "../../core/transaction"
+import { TransactionInfoSchema } from "../../core/transaction"
 
 const parametersSchema = union([
   tuple([blockNumberOrTagSchema, uintSchema]),
@@ -36,7 +36,7 @@ export function eth_getTransactionByBlockNumberAndIndex(
     }
 
     const result = parse(
-      union([transactionInfoSchema, notFoundSchema]),
+      union([TransactionInfoSchema, notFoundSchema]),
       response.result,
     )
 

@@ -15,7 +15,7 @@ import {
   Hash32Schema,
   uintSchema,
 } from "./base"
-import { transactionInfoSchema } from "./transaction"
+import { TransactionInfoSchema } from "./transaction"
 import { withdrawalSchema } from "./withdrawal"
 
 export const blockTagSchema = union([
@@ -70,7 +70,7 @@ export const blockSchema = object({
   size: uintSchema,
   transactions: union([
     array(Hash32Schema),
-    array(transactionInfoSchema),
+    array(TransactionInfoSchema),
   ]),
   withdrawals: optional(array(withdrawalSchema)),
   uncles: array(Hash32Schema),
