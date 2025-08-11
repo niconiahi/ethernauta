@@ -1,12 +1,11 @@
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-
 import { uintSchema } from "../../core/base"
-import { filterResultsSchema } from "../../core/filter"
 import type { FilterResults } from "../../core/filter"
+import { filterResultsSchema } from "../../core/filter"
 
 const parametersSchema = union([
   tuple([uintSchema]),

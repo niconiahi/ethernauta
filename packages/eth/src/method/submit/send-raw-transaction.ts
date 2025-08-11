@@ -1,11 +1,9 @@
+import type { Http, Writable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-
-import type { Writable, Http } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-
-import { bytesSchema, Hash32Schema } from "../../core/base"
 import type { Hash32 } from "../../core/base"
+import { bytesSchema, Hash32Schema } from "../../core/base"
 
 const parametersSchema = union([
   tuple([bytesSchema]),

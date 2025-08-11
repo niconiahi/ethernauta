@@ -1,10 +1,17 @@
 import { useEffect } from "preact/hooks"
-import { wallet } from "../../utils/wallet"
 import {
   balance,
   fetch_balance,
   wei_to_eth,
 } from "../../utils/balance"
+import { wallet } from "../../utils/wallet"
+
+// const BATCH_SIZE = 50
+// async function get_blocks(start: number, end: number) {
+//   for (let i = 0; i < end; i += BATCH_SIZE) {
+//     const last = Math.min(start + BATCH_SIZE - 1, end)
+//   }
+// }
 
 export function Wallet() {
   const address = wallet.value.address as `0x${string}`

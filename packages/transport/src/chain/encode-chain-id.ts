@@ -1,9 +1,8 @@
 import { parse } from "valibot"
-
-import type { ChainId } from "./chain-id"
-import { chainIdSchema } from "./chain-id"
 import { caip2_namespaceSchema } from "./caip-2/namespace"
 import { caip2_referenceSchema } from "./caip-2/reference"
+import type { ChainId } from "./chain-id"
+import { chainIdSchema } from "./chain-id"
 
 const DELIMITER = ":"
 export function encodeChainId({

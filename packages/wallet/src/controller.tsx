@@ -1,17 +1,17 @@
-import { Password } from "./views/password/index"
-import { Wallet } from "./views/wallet/index"
-import { Mnemonics } from "./views/mnemonics/index"
-import { Sign } from "./views/sign/index"
 import { useEffect } from "preact/hooks"
-import { view } from "./utils/view"
-import { EthernautaRequestSchema } from "./utils/event"
+import { parse } from "valibot"
 import {
   is_authenticated,
   validate_vault,
 } from "./utils/authentication"
-import { restore_wallet } from "./utils/wallet"
+import { EthernautaRequestSchema } from "./utils/event"
 import { transaction_request } from "./utils/transaction"
-import { parse } from "valibot"
+import { view } from "./utils/view"
+import { restore_wallet } from "./utils/wallet"
+import { Mnemonics } from "./views/mnemonics/index"
+import { Password } from "./views/password/index"
+import { Sign } from "./views/sign/index"
+import { Wallet } from "./views/wallet/index"
 
 export function Controller() {
   useEffect(() => {

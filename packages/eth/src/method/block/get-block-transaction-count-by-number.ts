@@ -1,8 +1,7 @@
-import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
-
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 import type { NotFound, Uint } from "../../core/base"
 import { notFoundSchema, uintSchema } from "../../core/base"

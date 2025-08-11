@@ -3,8 +3,8 @@ import { object } from "valibot"
 
 import {
   addressSchema,
-  uint256Schema,
   uint64Schema,
+  uint256Schema,
 } from "./base"
 
 export const withdrawalSchema = object({

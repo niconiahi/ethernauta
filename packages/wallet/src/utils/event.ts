@@ -1,11 +1,11 @@
 import {
   array,
+  type InferOutput,
   literal,
   object,
   string,
   union,
   unknown,
-  type InferOutput,
 } from "valibot"
 
 export const SignTransactionRequestSchema = object({

@@ -1,10 +1,10 @@
 import { signal } from "@preact/signals"
 import {
   array,
+  type InferOutput,
   object,
   string,
   unknown,
-  type InferOutput,
 } from "valibot"
 
 export const TransactionSchema = object({

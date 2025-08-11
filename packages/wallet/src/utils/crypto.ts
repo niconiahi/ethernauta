@@ -1,13 +1,13 @@
+import { keccak_256 } from "@noble/hashes/sha3"
+import { getPublicKey } from "@noble/secp256k1"
+import { HDKey } from "@scure/bip32"
 import {
   mnemonicToSeedSync,
   validateMnemonic,
 } from "@scure/bip39"
 import { wordlist } from "@scure/bip39/wordlists/english"
-import { HDKey } from "@scure/bip32"
-import { keccak_256 } from "@noble/hashes/sha3"
-import { getPublicKey } from "@noble/secp256k1"
-import invariant from "./tiny-invariant"
 import { bytes_to_hex } from "./hex"
+import invariant from "./tiny-invariant"
 
 export function mnemonic_to_seed(mnemonic: string) {
   if (!validateMnemonic(mnemonic, wordlist)) {

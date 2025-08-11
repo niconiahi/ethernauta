@@ -1,10 +1,8 @@
-import { literal, parse, union } from "valibot"
-
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-
-import { syncingStatusSchema } from "../../core/client"
+import { literal, parse, union } from "valibot"
 import type { SyncingStatus } from "../../core/client"
+import { syncingStatusSchema } from "../../core/client"
 
 export function eth_syncing(): Readable<SyncingStatus> {
   return async (

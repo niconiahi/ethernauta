@@ -1,9 +1,9 @@
-import { it, expect, describe } from "vitest"
+import { describe, expect, it } from "vitest"
 import {
-  mnemonic_to_seed as mnemonics_to_seed,
-  seed_to_master_key,
   derive_private_key,
+  mnemonic_to_seed as mnemonics_to_seed,
   private_key_to_address,
+  seed_to_master_key,
 } from "./crypto"
 import { bytes_to_hex } from "./hex"
 

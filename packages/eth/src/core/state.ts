@@ -6,8 +6,8 @@ import {
   bytes32Schema,
   bytesSchema,
   Hash32Schema,
-  uint256Schema,
   uint64Schema,
+  uint256Schema,
 } from "./base"
 
 const storageProofSchema = object({

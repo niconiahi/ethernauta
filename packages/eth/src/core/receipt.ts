@@ -12,10 +12,10 @@ import {
   addressSchema,
   byteSchema,
   bytes32Schema,
+  bytes256Schema,
   bytesSchema,
   Hash32Schema,
   uintSchema,
-  bytes256Schema,
 } from "./base"
 
 export const logSchema = object({

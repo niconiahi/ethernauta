@@ -1,21 +1,21 @@
 import { signal } from "@preact/signals"
 import { HDKey } from "@scure/bip32"
-import { get_vault } from "./vault"
-import invariant from "./tiny-invariant"
+import {
+  type InferOutput,
+  instance,
+  object,
+  optional,
+  parse,
+  string,
+} from "valibot"
 import {
   derive_private_key,
   mnemonic_to_seed,
   private_key_to_address,
   seed_to_master_key,
 } from "./crypto"
-import {
-  instance,
-  object,
-  optional,
-  parse,
-  string,
-  type InferOutput,
-} from "valibot"
+import invariant from "./tiny-invariant"
+import { get_vault } from "./vault"
 
 const StorableWalletSchema = object({
   address: string(),

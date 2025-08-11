@@ -1,3 +1,5 @@
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   boolean,
@@ -6,9 +8,6 @@ import {
   tuple,
   union,
 } from "valibot"
-
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
 
 import {
   addressSchema,

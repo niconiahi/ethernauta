@@ -1,15 +1,15 @@
 import { safeParse } from "valibot"
 import { describe, expect, it } from "vitest"
-
+import { eip155_1 } from "../../../../chain/src"
 import {
   createReader,
   encodeChainId,
   http,
 } from "../../../../transport/src"
-import { eip155_1 } from "../../../../chain/src"
 import { uintSchema } from "../../core"
 
 import { eth_blockNumber } from "./block-number"
+
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
 

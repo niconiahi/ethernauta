@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks"
-import { validate_password } from "../../utils/vault"
-import { set_wallet } from "../../utils/wallet"
-import { view } from "../../utils/view"
 import { set_timestamp } from "../../utils/authentication"
+import { validate_password } from "../../utils/vault"
+import { view } from "../../utils/view"
+import { set_wallet } from "../../utils/wallet"
 
 export function Password() {
   const [password, set_password] = useState("")

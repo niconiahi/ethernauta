@@ -1,12 +1,12 @@
-import { it, expect, beforeEach } from "vitest"
+import { beforeEach, expect, it } from "vitest"
 import "fake-indexeddb/auto"
 import {
-  set_vault,
-  get_vault,
-  vault_exists,
   delete_vault,
+  get_vault,
+  set_vault,
   validate_mnemonic,
   validate_password,
+  vault_exists,
 } from "./vault"
 
 const TEST_MNEMONIC =

@@ -7,9 +7,9 @@ import {
   number,
   object,
   optional,
+  pipe,
   record,
   string,
-  pipe,
   union,
   unknown,
 } from "valibot"

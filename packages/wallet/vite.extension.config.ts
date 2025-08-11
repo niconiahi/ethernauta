@@ -1,7 +1,7 @@
-import preact from "@preact/preset-vite"
-import tsconfigPaths from "vite-tsconfig-paths"
 import { readFileSync } from "node:fs"
+import preact from "@preact/preset-vite"
 import { defineConfig } from "vite"
+import tsconfigPaths from "vite-tsconfig-paths"
 
 const package_json = JSON.parse(
   readFileSync("./package.json", "utf-8"),

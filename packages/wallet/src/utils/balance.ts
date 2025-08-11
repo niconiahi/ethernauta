@@ -1,7 +1,7 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
-  eth_getBalance,
   type Address,
+  eth_getBalance,
 } from "@ethernauta/eth"
 import {
   createReader,

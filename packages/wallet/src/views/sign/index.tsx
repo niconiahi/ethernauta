@@ -1,18 +1,18 @@
-import { transaction_request } from "../../utils/transaction"
+import { eip155_11155111 } from "@ethernauta/chain"
+import type { Address } from "@ethernauta/eth"
+import {
+  createReader,
+  encodeChainId,
+  http,
+} from "@ethernauta/transport"
+import type { EthernautaResponse } from "../../utils/event"
+import { bytes_to_hex } from "../../utils/hex"
 import {
   get_nonce,
   sign_transaction,
 } from "../../utils/sign-transaction"
-import { bytes_to_hex } from "../../utils/hex"
-import type { EthernautaResponse } from "../../utils/event"
+import { transaction_request } from "../../utils/transaction"
 import { wallet } from "../../utils/wallet"
-import type { Address } from "@ethernauta/eth"
-import {
-  http,
-  createReader,
-  encodeChainId,
-} from "@ethernauta/transport"
-import { eip155_11155111 } from "@ethernauta/chain"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",

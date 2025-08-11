@@ -1,16 +1,17 @@
-import { describe, expect, it } from "vitest"
+import { eip155_1 } from "@ethernauta/chain"
 
 import {
   createReader,
   encodeChainId,
   http,
 } from "@ethernauta/transport"
-
-import { eip155_1 } from "@ethernauta/chain"
+import { describe, expect, it } from "vitest"
 
 import { eth_getBalance } from "./get-balance"
+
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+
 import { bigToUint } from "../../utils/big-to-uint"
 
 describe("eth_getBalance", () => {

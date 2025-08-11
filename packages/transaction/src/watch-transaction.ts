@@ -1,20 +1,20 @@
+import { eip155_11155111 } from "@ethernauta/chain"
 import {
   eth_getTransactionReceipt,
   type Hash32,
 } from "@ethernauta/eth"
-import type {
-  MinedTransaction,
-  RevertedTransaction,
-  Transaction,
-} from "./transaction"
 import {
   createReader,
   encodeChainId,
   http,
 } from "@ethernauta/transport"
-import { eip155_11155111 } from "@ethernauta/chain"
-import invariant from "./tiny-invariant"
 import { set_transaction } from "./set-transaction"
+import invariant from "./tiny-invariant"
+import type {
+  MinedTransaction,
+  RevertedTransaction,
+  Transaction,
+} from "./transaction"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",

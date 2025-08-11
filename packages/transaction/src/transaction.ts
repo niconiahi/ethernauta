@@ -1,4 +1,5 @@
 import { Hash32Schema } from "@ethernauta/eth"
+import type { InferOutput } from "valibot"
 import {
   literal,
   number,
@@ -6,7 +7,6 @@ import {
   string,
   union,
 } from "valibot"
-import type { InferOutput } from "valibot"
 
 export const PendingTransactionSchema = object({
   hash: Hash32Schema,

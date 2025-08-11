@@ -1,5 +1,3 @@
-import { array, parse } from "valibot"
-
 import type {
   Address,
   Http,
@@ -9,6 +7,7 @@ import {
   addressSchema,
   callSchema,
 } from "@ethernauta/transport"
+import { array, parse } from "valibot"
 
 export function requestAccounts(): Writable<
   Array<Address>

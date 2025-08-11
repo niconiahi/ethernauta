@@ -9,8 +9,8 @@ import {
 
 import {
   addressSchema,
-  bytes256Schema,
   bytes8Schema,
+  bytes256Schema,
   bytesSchema,
   Hash32Schema,
   uintSchema,

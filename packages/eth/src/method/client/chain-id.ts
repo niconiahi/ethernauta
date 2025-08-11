@@ -1,10 +1,8 @@
-import { parse } from "valibot"
-
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-
-import { uintSchema } from "../../core/base"
+import { parse } from "valibot"
 import type { Uint } from "../../core/base"
+import { uintSchema } from "../../core/base"
 
 export function eth_chainId(): Readable<Uint> {
   return async (transports: Http[]): Promise<Uint> => {

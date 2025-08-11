@@ -1,16 +1,15 @@
-import type { InferOutput } from "valibot"
-import { array, object, parse, tuple, union } from "valibot"
-
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { array, object, parse, tuple, union } from "valibot"
 
 import {
   addressSchema,
   bytesMax32Schema,
 } from "../../core/base"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
-import { accountProofSchema } from "../../core/state"
 import type { AccountProof } from "../../core/state"
+import { accountProofSchema } from "../../core/state"
 
 const parametersSchema = union([
   tuple([

@@ -1,15 +1,15 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
+  register_transaction,
+  type Transaction,
+  watch_transaction,
+} from "@ethernauta/transaction"
+import {
   createWriter,
   encodeChainId,
   http,
 } from "@ethernauta/transport"
-import {
-  register_transaction,
-  watch_transaction,
-  type Transaction,
-} from "@ethernauta/transaction"
 import { number_to_hex } from "@ethernauta/wallet"
 import { useEffect, useState } from "react"
 

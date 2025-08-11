@@ -1,3 +1,5 @@
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   array,
@@ -10,9 +12,6 @@ import {
   tuple,
   union,
 } from "valibot"
-
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
 
 import { ratioSchema, uintSchema } from "../../core/base"
 import { blockNumberOrTagSchema } from "../../core/block"

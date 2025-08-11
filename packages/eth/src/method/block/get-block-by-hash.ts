@@ -1,3 +1,5 @@
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   boolean,
@@ -7,16 +9,13 @@ import {
   union,
 } from "valibot"
 
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-
 import type { NotFound } from "../../core/base"
 import {
   Hash32Schema,
   notFoundSchema,
 } from "../../core/base"
-import { blockSchema } from "../../core/block"
 import type { Block } from "../../core/block"
+import { blockSchema } from "../../core/block"
 
 const parametersSchema = union([
   tuple([Hash32Schema, boolean()]),

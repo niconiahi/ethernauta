@@ -1,11 +1,11 @@
 import type { InferOutput } from "valibot"
 import {
   array,
+  custom,
   literal,
   number,
   object,
   optional,
-  custom,
   string,
 } from "valibot"
 

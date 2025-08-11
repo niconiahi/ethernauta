@@ -1,16 +1,14 @@
-import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
-
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
+import type { NotFound } from "../../core/base"
 import {
   Hash32Schema,
   notFoundSchema,
 } from "../../core/base"
-import type { NotFound } from "../../core/base"
-import { receiptInfoSchema } from "../../core/receipt"
 import type { ReceiptInfo } from "../../core/receipt"
+import { receiptInfoSchema } from "../../core/receipt"
 
 const parametersSchema = union([
   tuple([Hash32Schema]),

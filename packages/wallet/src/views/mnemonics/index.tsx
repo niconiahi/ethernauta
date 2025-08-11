@@ -1,8 +1,8 @@
 import { useState } from "preact/hooks"
+import { minLength, parse, pipe, string } from "valibot"
+import { set_timestamp } from "../../utils/authentication"
 import { set_vault } from "../../utils/vault"
 import { view } from "../../utils/view"
-import { set_timestamp } from "../../utils/authentication"
-import { minLength, parse, pipe, string } from "valibot"
 
 const PasswordSchema = pipe(string(), minLength(8))
 const MnemonicsSchema = pipe(string(), minLength(1))

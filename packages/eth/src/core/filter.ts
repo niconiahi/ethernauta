@@ -2,8 +2,8 @@ import type { InferOutput } from "valibot"
 import { array, null_, object, union } from "valibot"
 
 import {
-  addressSchema,
   addressesSchema,
+  addressSchema,
   bytes32Schema,
   Hash32Schema,
   uintSchema,

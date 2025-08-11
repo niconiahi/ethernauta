@@ -3,13 +3,13 @@ import { array, parse, union } from "valibot"
 
 import { errorSchema } from "./error"
 import { eventSchema } from "./event"
+import type { _Function } from "./function"
 import {
   constructorSchema,
   fallbackSchema,
   functionSchema,
   receiveSchema,
 } from "./function"
-import type { _Function } from "./function"
 
 export const jsonSchema = union([
   functionSchema,

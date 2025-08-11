@@ -1,10 +1,8 @@
-import { parse } from "valibot"
-
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-
-import { addressSchema } from "../../core/base"
+import { parse } from "valibot"
 import type { Address } from "../../core/base"
+import { addressSchema } from "../../core/base"
 
 export function eth_coinbase(): Readable<Address> {
   return async (transports: Http[]): Promise<Address> => {
