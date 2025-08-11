@@ -2,15 +2,15 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/eth",
   "type": "module",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "publishConfig": {
     "access": "public"
   },
-  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/niconiahi/ethernauta"
   },
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
