@@ -1,67 +1,49 @@
 # CLAUDE.md
 
-This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with the Ethernauta codebase.
+This file provides comprehensive guidance to Claude Code when working with the Ethernauta codebase.
 
-## Objective
+## Project Overview
 
-**Ethernauta** is a secure cryptocurrency wallet Chrome extension that provides:
-- Wallet creation from mnemonic phrases with password protection
-- Secure mnemonic storage using IndexedDB with AES-GCM encryption
-- Transaction signing for Ethereum-compatible networks
+**Ethernauta** is a secure cryptocurrency wallet Chrome extension built with modern web technologies. The project focuses on:
+- Secure wallet creation from mnemonic phrases with password protection
+- Encrypted mnemonic storage using IndexedDB with AES-GCM encryption
+- EIP-1559 transaction signing for Ethereum-compatible networks
 - Clean, minimal UI built with Preact
-- Extensible architecture supporting multiple blockchain networks
+- Extensible monorepo architecture supporting multiple blockchain networks
 
-## Project Architecture
+## Architecture & Structure
 
-### Monorepo Structure
+### Monorepo Organization
 Ethernauta is organized as a pnpm workspace monorepo with the following packages:
 
-#### Core Packages
-- **@ethernauta/wallet** - Main Chrome extension with UI and crypto operations
-- **@ethernauta/transport** - Transport layer for JSON-RPC communication and blockchain interactions
-- **@ethernauta/chain** - Chain definitions and utilities (extensive EIP-155 chain support)
-- **@ethernauta/eth** - Ethereum-specific functionality and methods
-- **@ethernauta/connector** - External wallet connection utilities (WalletConnect support)
+```
+packages/
+├── wallet/          # Main Chrome extension (private)
+├── transport/       # Blockchain communication layer (published)
+├── chain/          # Chain definitions and utilities (published)
+├── eth/            # Ethereum-specific functionality (published)
+└── transaction/    # Transaction management utilities (published)
 
-#### Development Packages  
-- **playground** - React Router development environment for testing wallet integration
+examples/
+└── playground/     # React Router development environment
+```
 
-### Technology Stack
-
-#### Frontend & State Management
-- **Preact 10.26.9** - Lightweight React alternative for the extension UI
-- **@preact/signals 2.2.1** - Reactive state management (replaces previous XState implementation)
-- **Valibot 1.1.0** - Schema validation for forms and API data across all packages
-
-#### Cryptography & Security
-- **@noble/hashes 1.8.0** - Cryptographic hash functions (Keccak-256, SHA-256)
-- **@noble/secp256k1 2.3.0** - Elliptic curve cryptography for key operations
-- **@scure/bip39 1.6.0** - BIP39 mnemonic phrase generation and validation
-- **@scure/bip32 1.7.0** - HD key derivation (BIP32/BIP44)
-- **PBKDF2** (100,000 iterations) for password-based key derivation
-- **AES-GCM** for mnemonic encryption in IndexedDB storage
-
-#### Build & Development Tools
-- **Vite 7.0.5** - Build tool with HMR for development
-- **Biome 2.1.1** - Fast linter and formatter
-- **Vitest 3.2.4** - Unit testing framework
-- **TypeScript 5.8.3** - Type safety across all packages
-- **pnpm** - Package manager with workspace support
-
-### Package Details
+### Core Packages
 
 #### @ethernauta/wallet (`packages/wallet/`)
 The main Chrome extension package containing:
 
-**Core Files:**
-- `src/controller.tsx` - Main view controller with message handling
-- `src/utils/view.ts` - View state management using Preact signals
-- `src/utils/vault.ts` - Secure mnemonic storage with IndexedDB + encryption
-- `src/utils/crypto.ts` - Cryptographic operations (mnemonic → seed → keys → addresses)
-- `src/utils/authentication.ts` - Vault authentication and validation
-- `src/utils/wallet.ts` - Wallet restoration and management
-- `src/utils/transaction.ts` - Transaction signing and management
-- `src/utils/sign-transaction.ts` - Transaction signature utilities
+**Architecture Files:**
+- `src/controller.tsx:16-76` - Main controller with message handling and view routing
+- `src/utils/view.ts:1-5` - Simple signal-based view state management
+- `manifest/extension.entry.ts:13-67` - Background script for Chrome extension messaging
+- `public/manifest.json:1-28` - Chrome extension manifest v3 configuration
+
+**Security & Crypto Files:**
+- `src/utils/vault.ts:1-242` - Secure mnemonic storage with IndexedDB + AES-GCM encryption
+- `src/utils/crypto.ts:1-70` - Cryptographic operations (mnemonic → seed → keys → addresses)
+- `src/utils/authentication.ts:1-42` - Authentication flow with 5-minute session timeout
+- `src/utils/sign-transaction.ts:1-310` - EIP-1559 transaction signing with ECDSA
 
 **Views:**
 - `src/views/mnemonics/` - Initial wallet setup with mnemonic generation
@@ -69,25 +51,18 @@ The main Chrome extension package containing:
 - `src/views/wallet/` - Main wallet interface
 - `src/views/sign/` - Transaction signing interface
 
-**Extension Architecture:**
-- `manifest/extension.entry.ts` - Background script for message handling
-- `manifest/browser.entry.ts` - Content script injection
-- `manifest/cryptoman.ts` - Web-accessible resources
-- `public/manifest.json` - Chrome extension manifest v3
-
 #### @ethernauta/transport (`packages/transport/`)
 Blockchain communication layer providing:
-- JSON-RPC client implementation
-- HTTP transport with error handling
-- Transaction management and monitoring
+- JSON-RPC client implementation with HTTP transport
+- Transaction management and monitoring utilities
 - Chain ID encoding/decoding (CAIP-2, CAIP-10, CAIP-19 standards)
 - Reader/Writer pattern for blockchain operations
 
 #### @ethernauta/chain (`packages/chain/`)
 Comprehensive chain definitions including:
-- 500+ EIP-155 chain configurations (Ethereum, Polygon, BSC, L2s, testnets)
-- Chain indexer for automatic updates
-- Shared utilities for chain operations
+- 500+ EIP-155 chain configurations (located in `src/chain/eip155/`)
+- Ethereum mainnet, Polygon, BSC, L2s, testnets support
+- Chain indexer for automatic updates via `scripts/indexer.ts:26`
 - CAIP standard implementations
 
 #### @ethernauta/eth (`packages/eth/`)
@@ -96,196 +71,236 @@ Ethereum-specific functionality:
 - Block, transaction, and receipt utilities
 - Method implementations for common operations
 - Fee market (EIP-1559) support
-- State management utilities
 
-#### @ethernauta/connector (`packages/connector/`)
-External wallet integration:
-- WalletConnect protocol implementation
-- Cross-wallet compatibility layer
+#### @ethernauta/transaction (`packages/transaction/`)
+Transaction management utilities:
+- Transaction state management
+- Transaction watching and monitoring
+- Type definitions for transaction operations
 
-#### playground (`packages/playground/`)
+#### @ethernauta/playground (`examples/playground/`)
 Development testing environment:
 - React Router 7.7.1 application
 - Cloudflare Pages deployment configuration
 - Integration examples and testing utilities
-- Live wallet interaction demos
 
-## Commands & Scripts
+## Technology Stack
 
-### Development
-```bash
-pnpm dev                 # Start wallet extension development build
-pnpm test               # Run unit tests for all packages except connector
-pnpm test:chain         # Run chain package tests specifically
-pnpm test:eth           # Run eth package tests specifically
-```
+### Frontend & State Management
+- **Preact 10.26.9** - Lightweight React alternative for extension UI
+- **@preact/signals 2.2.1** - Reactive state management (simple signal-based approach)
+- **Valibot 1.1.0** - Schema validation for forms and API data across all packages
 
-### Code Quality
-```bash
-biome check             # Run linter and formatter checks
-biome format --write    # Format code according to project standards
-```
+### Cryptography & Security
+- **@noble/hashes 1.8.0** - Cryptographic hash functions (Keccak-256, SHA-256)
+- **@noble/secp256k1 2.3.0** - Elliptic curve cryptography for key operations
+- **@scure/bip39 1.6.0** - BIP39 mnemonic phrase generation and validation
+- **@scure/bip32 1.7.0** - HD key derivation (BIP32/BIP44)
+- **PBKDF2** (100,000 iterations) for password-based key derivation
+- **AES-GCM** for authenticated encryption in IndexedDB storage
 
-### Extension Build & Distribution
-```bash
-# From packages/wallet/
-pnpm build              # Production build (creates both manifest and extension)
-pnpm zip                # Create extension.zip for Chrome Web Store (run from dist/)
-```
-
-### Package-Specific Scripts
-```bash
-# Transport, eth, connector packages
-pnpm dev                # Watch mode builds with tsup
-pnpm build              # Production builds
-
-# Chain package  
-pnpm run:indexer        # Update chain definitions from git repositories
-
-# Playground
-pnpm dev                # React Router development server
-pnpm deploy             # Build and deploy to Cloudflare Pages
-```
+### Build & Development Tools
+- **Vite 7.0.5** - Build tool with HMR for development
+- **Biome 2.1.1** - Fast linter and formatter
+- **Vitest 3.2.4** - Unit testing framework with edge-runtime environment
+- **TypeScript 5.8.3** - Type safety across all packages
+- **tsdown 0.13.3** - TypeScript bundler for published packages
+- **pnpm** - Package manager with workspace support
 
 ## Development Workflow
 
 ### State Management Pattern
 The extension uses a simple, signal-based architecture:
 
-1. **View Signal** (`packages/wallet/src/utils/view.ts`):
-   ```typescript
-   export const INITIAL_VIEW = "password"
-   export const view = signal(INITIAL_VIEW)
-   ```
+```typescript
+// packages/wallet/src/utils/view.ts:3-4
+export const INITIAL_VIEW = "password"
+export const view = signal(INITIAL_VIEW)
+```
 
-2. **Controller Pattern** (`packages/wallet/src/controller.tsx`):
-   - Message handling for Chrome extension communication
-   - Simple switch-based view rendering
-   - Authentication flow management
-
-3. **Views Navigation**:
-   - `"password"` - Initial view for vault unlock
-   - `"mnemonics"` - New wallet setup (if no vault exists)
-   - `"wallet"` - Main wallet interface (after authentication)
-   - `"sign"` - Transaction signing interface
+### View Navigation Flow
+1. **"password"** - Initial view for vault unlock
+2. **"mnemonics"** - New wallet setup (if no vault exists)
+3. **"wallet"** - Main wallet interface (after authentication)
+4. **"sign"** - Transaction signing interface
 
 ### Extension Communication Flow
-1. **Content Script** → **Background Script** → **Popup**
-2. **Message Types**:
-   - `ETHERNAUTA_REQUEST_CONNECT` - Wallet connection request
-   - `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` - Transaction signing request
-   - `ETHERNAUTA_RESPONSE_*` - Response messages back to content script
+```
+Content Script → Background Script → Popup
+```
 
-### Secure Storage Implementation
-The vault system (`packages/wallet/src/utils/vault.ts`) provides:
+**Message Types:**
+- `ETHERNAUTA_REQUEST_CONNECT` - Wallet connection request
+- `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` - Transaction signing request
+- `ETHERNAUTA_RESPONSE_*` - Response messages back to content script
 
-**Encryption Process**:
+### Authentication System
+Authentication is managed via `packages/wallet/src/utils/authentication.ts:20-32`:
+- 5-minute session timeout
+- Timestamp-based authentication checks
+- Automatic vault validation and view routing
+
+## Security Implementation
+
+### Secure Storage (packages/wallet/src/utils/vault.ts)
+The vault system provides encrypted mnemonic storage:
+
+**Encryption Process:**
 1. User password + random salt → PBKDF2 (100,000 iterations) → encryption key
 2. Mnemonic + random IV → AES-GCM encryption → encrypted cipher
-3. Store: `{salt, iv, cipher}` in IndexedDB (`cryptoman/signer` database)
+3. Store: `{salt, iv, cipher}` in IndexedDB (`ethernauta/signer` database)
 
-**Security Features**:
+**Security Features:**
 - Password-based key derivation (PBKDF2 with SHA-256)
 - Authenticated encryption (AES-GCM)
 - Secure random number generation for salts and IVs
 - Base64 encoding for storage serialization
 
-### Build Configuration
+### Cryptographic Operations (packages/wallet/src/utils/crypto.ts)
+- **Mnemonic Validation:** BIP39 wordlist validation with English wordlist
+- **Seed Generation:** `mnemonicToSeedSync` for deterministic seed creation
+- **Key Derivation:** HD key derivation using path `m/44'/60'/0'/0/0`
+- **Address Generation:** Keccak-256 hash of public key for Ethereum addresses
 
-#### TypeScript Configuration
-- **Root tsconfig**: Extends `@total-typescript/tsconfig/tsc/dom/library`
-- **Path Aliases**:
-  ```json
-  {
-    "@ethernauta/transport": ["./packages/transport/src"],
-    "@ethernauta/eth": ["./packages/eth/src"],
-    "@ethernauta/chain": ["./packages/chain/src"],
-    "@ethernauta/connector": ["./packages/connector/src"],
-    "@ethernauta/wallet": ["./packages/wallet/src"],
-    "@utils/*": ["./utils/*"]
-  }
-  ```
-- **JSX**: Configured for Preact with `react-jsx` transform
-- **Types**: Includes Vitest globals and Chrome extension APIs
+### Transaction Signing (packages/wallet/src/utils/sign-transaction.ts)
+- **EIP-1559 Support:** Type 2 transactions with dynamic fees
+- **ECDSA Signing:** secp256k1 signatures with recovery
+- **Chain ID:** Sepolia testnet (chain ID 11155111) by default
+- **RLP Encoding:** Custom implementation for transaction serialization
 
-#### Vite Build Configuration
+## Build Configuration
+
+### TypeScript Configuration
+- **Root tsconfig:** Extends `@total-typescript/tsconfig/tsc/dom/library`
+- **Path Aliases:** Configured for `@ethernauta/*` packages
+- **JSX:** Configured for Preact with `react-jsx` transform
+- **Types:** Includes Vitest globals and Chrome extension APIs
+
+### Vite Build Configuration
 **Extension Build** (`packages/wallet/vite.extension.config.ts`):
 - Preact preset with tsconfig paths
 - ES modules output format
 - Manual chunking for vendor libraries
-- Hash-based file names in production
 - Watch mode support for development
 
 **Manifest Build** (`packages/wallet/vite.manifest.config.ts`):
-- Separate build for extension background script
-- Service worker output format
+- Separate build for extension components
+- Library format for background script and content script
 
-#### Biome Configuration
-**Code Style Standards**:
-- **Line Width**: 60 characters for compact, readable code
-- **Naming Convention**: snake_case for variables and functions
-- **Semicolons**: As needed (asNeeded)
-- **Indentation**: 2 spaces
-- **Rules**: No parameter reassignment, self-closing elements, enum initializers
+### Biome Configuration
+**Code Style Standards:**
+- **Line Width:** 60 characters for compact, readable code
+- **Naming Convention:** snake_case for variables and functions
+- **Semicolons:** As needed (asNeeded)
+- **Indentation:** 2 spaces
+- **Rules:** Enhanced style rules for consistent code quality
 
-**Linting Rules**:
-- Recommended rules enabled
-- Accessibility rules customized for extension context
-- Style rules enforced (const assertions, number namespace, etc.)
+## Testing Strategy
 
-### Testing Strategy
+### Test Configuration
+- **Framework:** Vitest with edge-runtime environment
+- **Root Config:** `vitest.config.mjs:8-15` includes all `packages/**/*.test.ts`
+- **Mocking:** `fake-indexeddb` for vault storage testing
+- **Coverage:** Unit tests for cryptographic functions and utilities
 
-#### Test Configuration
-- **Framework**: Vitest with edge-runtime environment
-- **Root Config**: `vitest.config.mjs` includes all `packages/**/*.test.ts`
-- **Mocking**: `fake-indexeddb` for vault storage testing
-- **Coverage**: Unit tests for cryptographic functions and utilities
+### Test Examples
+Key test files demonstrate security-critical functionality:
+- `packages/wallet/src/utils/vault.test.ts:1-180` - Comprehensive vault encryption tests
+- `packages/wallet/src/utils/crypto.test.ts` - Cryptographic operation tests
+- `packages/wallet/src/utils/sign-transaction.test.ts` - Transaction signing tests
 
-#### Test Patterns
-```typescript
-// Example test structure
-describe('crypto utilities', () => {
-  test('mnemonic validation', () => {
-    expect(validateMnemonic('valid mnemonic phrase...')).toBe(true)
-  })
-})
+## Commands & Scripts
+
+### Development Commands
+```bash
+pnpm dev                 # Start wallet extension + playground development
+pnpm test               # Run unit tests (excludes connector package)
+pnpm build              # Build all packages in dependency order
 ```
 
-### Package Dependencies
+### Code Quality Commands
+```bash
+biome check             # Run linter and formatter checks
+biome format --write    # Format code according to project standards
+```
 
-#### Workspace Dependencies
-- All packages use `valibot@1.1.0` for schema validation
+### Extension-Specific Commands (from packages/wallet/)
+```bash
+pnpm build              # Production build (manifest + extension)
+pnpm zip                # Create extension.zip for Chrome Web Store
+pnpm dev                # Watch mode builds for development
+```
+
+### Package-Specific Commands
+```bash
+# Transport, eth, transaction packages
+pnpm dev                # Watch mode builds with tsdown
+pnpm build              # Production builds
+
+# Chain package
+pnpm run indexer        # Update chain definitions from repositories
+
+# Playground
+pnpm dev                # React Router development server
+pnpm deploy             # Build and deploy to Cloudflare Pages
+```
+
+## Package Dependencies
+
+### Workspace Dependencies
+- All packages use `valibot@1.1.0` for consistent schema validation
 - Crypto packages share `@noble/*` and `@scure/*` libraries
 - Internal packages reference each other via `workspace:*`
 
-#### Development Dependencies
-- `tsup` for package builds (transport, eth, connector)
-- `npm-run-all` for parallel script execution
-- `fake-indexeddb` for IndexedDB testing
-- `@types/chrome` for extension API types
+### Development Dependencies
+- `tsdown` for efficient package builds (transport, eth, transaction)
+- `fake-indexeddb` for IndexedDB testing without browser environment
+- `@types/chrome` for Chrome extension API types
 
 ## Development Guidelines
 
 ### Code Organization
-- **Test files**: Co-located with source files (`.test.ts` suffix)
-- **Utils**: Shared utilities in each package's `utils/` directory  
-- **Types**: TypeScript interfaces and schemas alongside implementation
-- **Index files**: Clean re-exports for package APIs
+- **Test files:** Co-located with source files (`.test.ts` suffix)
+- **Utils:** Shared utilities in each package's `utils/` directory
+- **Types:** TypeScript interfaces and schemas alongside implementation
+- **Index files:** Clean re-exports for package APIs
 
 ### Security Best Practices
-- **Never log sensitive data**: Mnemonics, private keys, passwords
-- **Validate all inputs**: Use Valibot schemas for runtime validation
-- **Secure random generation**: Use `crypto.getRandomValues()` for salts/IVs
-- **Constant-time operations**: Use timing-safe equality checks where needed
+- **Never log sensitive data:** Mnemonics, private keys, passwords
+- **Validate all inputs:** Use Valibot schemas for runtime validation
+- **Secure random generation:** Use `crypto.getRandomValues()` for salts/IVs
+- **Constant-time operations:** Use timing-safe equality checks where needed
 
-### Extension Development
-- **Manifest V3**: Uses service workers instead of background pages
-- **Permissions**: Minimal permissions (`storage`, `activeTab`)
-- **Content Security Policy**: Strict CSP for security
-- **Message Passing**: Structured communication between contexts
+### Chrome Extension Development
+- **Manifest V3:** Uses service workers instead of background pages
+- **Permissions:** Minimal permissions (`storage`, `activeTab`)
+- **Content Security Policy:** Strict CSP for security
+- **Message Passing:** Structured communication between extension contexts
 
 ### Performance Considerations
-- **Code Splitting**: Manual chunks for vendor libraries
-- **Tree Shaking**: ES modules for optimal bundling
-- **Lazy Loading**: Views loaded only when needed
-- **Memory Management**: Signals for efficient reactivity
+- **Code Splitting:** Manual chunks for vendor libraries
+- **Tree Shaking:** ES modules for optimal bundling
+- **Lazy Loading:** Views loaded only when needed
+- **Memory Management:** Signals for efficient reactivity
+
+## Key File References
+
+### Core Architecture
+- Controller: `packages/wallet/src/controller.tsx:16-76`
+- View State: `packages/wallet/src/utils/view.ts:1-5`
+- Extension Entry: `packages/wallet/manifest/extension.entry.ts:13-67`
+
+### Security Implementation
+- Vault Storage: `packages/wallet/src/utils/vault.ts:83-128` (set_vault)
+- Vault Retrieval: `packages/wallet/src/utils/vault.ts:130-185` (get_vault)
+- Authentication: `packages/wallet/src/utils/authentication.ts:20-32`
+- Transaction Signing: `packages/wallet/src/utils/sign-transaction.ts:138-171`
+
+### Testing
+- Vault Tests: `packages/wallet/src/utils/vault.test.ts:57-65`
+- Test Config: `vitest.config.mjs:8-15`
+
+### Build Configuration
+- Extension Build: `packages/wallet/vite.extension.config.ts:9-42`
+- TypeScript: `tsconfig.json:15-20` (path aliases)
+- Biome: `biome.json:15-27` (formatter settings)
