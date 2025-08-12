@@ -4,7 +4,7 @@ import type {
   Transaction,
 } from "./transaction"
 
-export function registerTransaction(
+export function register_transaction(
   hash: PendingTransaction["hash"],
 ) {
   // TODO: inject a "store" that will implement a "set" method

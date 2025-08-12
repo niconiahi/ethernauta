@@ -4,8 +4,8 @@ import {
   eth_getBalance,
 } from "@ethernauta/eth"
 import {
-  createReader,
-  encodeChainId,
+  create_reader,
+  encode_chain_id,
   http,
 } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
@@ -16,11 +16,11 @@ const NAMESPACE = {
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
-const sepolia_chain_id = encodeChainId({
+const sepolia_chain_id = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
-const reader = createReader([
+const reader = create_reader([
   {
     chainId: sepolia_chain_id,
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],

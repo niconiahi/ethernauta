@@ -1,8 +1,8 @@
 import { eip155_1 } from "@ethernauta/chain"
 
 import {
-  createReader,
-  encodeChainId,
+  create_reader,
+  encode_chain_id,
   http,
 } from "@ethernauta/transport"
 import { describe, expect, it } from "vitest"
@@ -13,7 +13,7 @@ const ETHEREUM_SEPOLIA_RPC_URL =
 
 describe("eth_getBlockByHash", () => {
   it("should return block when valid hash is provided", async () => {
-    const reader = createReader([
+    const reader = create_reader([
       {
         chainId: "eip155:1",
         transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
@@ -25,7 +25,7 @@ describe("eth_getBlockByHash", () => {
       VALID_BLOCK_HASH,
       false,
     ])
-    const chainId = encodeChainId({
+    const chainId = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
@@ -34,7 +34,7 @@ describe("eth_getBlockByHash", () => {
   })
 
   it("should return null when invalid hash is provided", async () => {
-    const reader = createReader([
+    const reader = create_reader([
       {
         chainId: "eip155:1",
         transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
@@ -46,7 +46,7 @@ describe("eth_getBlockByHash", () => {
       INVALID_BLOCK_HASH,
       false,
     ])
-    const chainId = encodeChainId({
+    const chainId = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
@@ -55,7 +55,7 @@ describe("eth_getBlockByHash", () => {
   })
 
   it("should accept arguments as an object and return block when valid hash is provided", async () => {
-    const reader = createReader([
+    const reader = create_reader([
       {
         chainId: "eip155:1",
         transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
@@ -67,7 +67,7 @@ describe("eth_getBlockByHash", () => {
       blockHash: VALID_BLOCK_HASH,
       hydratedTransactions: false,
     })
-    const chainId = encodeChainId({
+    const chainId = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })

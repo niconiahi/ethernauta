@@ -1,13 +1,13 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import { transfer } from "@ethernauta/eth"
 import {
-  registerTransaction,
+  register_transaction,
   type Transaction,
-  watchTransaction,
+  watch_transaction,
 } from "@ethernauta/transaction"
 import {
-  createWriter,
-  encodeChainId,
+  create_writer,
+  encode_chain_id,
   http,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/wallet"
@@ -18,11 +18,11 @@ const NAMESPACE = {
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
   "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
-const SEPOLIA_CHAIN_ID = encodeChainId({
+const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
-const writer = createWriter([
+const writer = create_writer([
   {
     chainId: SEPOLIA_CHAIN_ID,
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
@@ -57,9 +57,9 @@ export default function () {
           const hash = await writable(
             writer(SEPOLIA_CHAIN_ID),
           )
-          const transaction = registerTransaction(hash)
+          const transaction = register_transaction(hash)
           setTransactions([transaction])
-          watchTransaction(hash, (transaction) => {
+          watch_transaction(hash, (transaction) => {
             setTransactions((prev_transaction_logs) => {
               return [...prev_transaction_logs, transaction]
             })

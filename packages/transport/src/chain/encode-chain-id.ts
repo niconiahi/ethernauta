@@ -5,7 +5,7 @@ import type { ChainId } from "./chain-id"
 import { chainIdSchema } from "./chain-id"
 
 const DELIMITER = ":"
-export function encodeChainId({
+export function encode_chain_id({
   namespace: _namespace,
   reference: _reference,
 }: {

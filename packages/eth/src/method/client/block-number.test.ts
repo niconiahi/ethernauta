@@ -2,8 +2,8 @@ import { safeParse } from "valibot"
 import { describe, expect, it } from "vitest"
 import { eip155_1 } from "../../../../chain/src"
 import {
-  createReader,
-  encodeChainId,
+  create_reader,
+  encode_chain_id,
   http,
 } from "../../../../transport/src"
 import { uintSchema } from "../../core"
@@ -15,14 +15,14 @@ const ETHEREUM_SEPOLIA_RPC_URL =
 
 describe("eth_blockNumber", () => {
   it("should correctly get the latest mined block", async () => {
-    const reader = createReader([
+    const reader = create_reader([
       {
         chainId: "eip155:1",
         transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
       },
     ])
     const readable = eth_blockNumber()
-    const chainId = encodeChainId({
+    const chainId = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })

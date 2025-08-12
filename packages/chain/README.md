@@ -22,13 +22,13 @@ This module aims to be an un-opinionated representation of the defined:
 ## API
 
 ```tsx
-import { eip155_1, encodeChainId, decodeChainId } from "@ethernauta/chain"
-const chainId = encodeChainId({
+import { eip155_1, encode_chain_id, decode_chain_id } from "@ethernauta/chain"
+const chainId = encode_chain_id({
   namespace: "eip155",
   reference: eip155_1.chainId,
 }) 
 console.log(chainId)// eip155:11155111
-const { namespace, reference } = decodeChainId(chainId)
+const { namespace, reference } = decode_chain_id(chainId)
 console.log(namespace)// eip155
 console.log(reference)// 11155111
 ```

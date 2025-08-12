@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 import { caip2_namespaceSchema } from "./caip-2/namespace"
 import { caip2_referenceSchema } from "./caip-2/reference"
 
-import { encodeChainId } from "./encode-chain-id"
+import { encode_chain_id } from "./encode-chain-id"
 
 describe("encode-chain-id.ts", () => {
   it("should correctly parse a encode with valid parameters", async () => {
@@ -18,7 +18,10 @@ describe("encode-chain-id.ts", () => {
       caip2_referenceSchema,
       _reference,
     )
-    const encoded = encodeChainId({ namespace, reference })
+    const encoded = encode_chain_id({
+      namespace,
+      reference,
+    })
     expect(encoded).toEqual("eip155:1")
   })
 })

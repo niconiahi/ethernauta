@@ -3,7 +3,7 @@ import { parse } from "valibot"
 import { chainIdSchema } from "./chain"
 import type { Http } from "./http"
 
-export function createReader(
+export function create_reader(
   chains: Array<{ chainId: string; transports: Http[] }>,
 ): (_targetChain: string) => Http[] {
   return (_targetChain: string): Http[] => {
@@ -19,7 +19,7 @@ export function createReader(
     return chain.transports
   }
 }
-export type Reader = ReturnType<typeof createReader>
+export type Reader = ReturnType<typeof create_reader>
 export type Readable<T> = (
   _transports: Http[],
 ) => Promise<T>
