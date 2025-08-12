@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite"
 import { readFileSync } from "node:fs"
 import preact from "@preact/preset-vite"
 import { defineConfig } from "vite"
@@ -7,7 +8,7 @@ const package_json = JSON.parse(
   readFileSync("./package.json", "utf-8"),
 )
 export default defineConfig({
-  plugins: [preact(), tsconfigPaths()],
+  plugins: [preact(), tsconfigPaths(), tailwindcss()],
   root: "src",
   publicDir: "../public",
   build: {

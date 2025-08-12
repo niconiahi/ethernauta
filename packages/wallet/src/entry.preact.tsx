@@ -1,5 +1,5 @@
 import { render } from "preact"
-import { Controller } from "./controller.tsx"
+import { Controller } from "./controller"
 
 render(
   <Controller />,

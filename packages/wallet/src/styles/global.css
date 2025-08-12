@@ -11,6 +11,15 @@
   }
 
   body {
+    width: fit-content;
     background: linear-gradient(#feece7, #f9f7f1);
   }
+}
+
+input {
+  background: #fff;
+}
+
+input:focus-visible {
+  outline-color: black;
 }

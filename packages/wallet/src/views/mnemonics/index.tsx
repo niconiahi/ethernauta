@@ -13,10 +13,11 @@ export function Mnemonics() {
     "smile price bomb movie minimum treat hurdle adult wing come space cross",
   )
   return (
-    <main>
+    <main className="flex flex-col gap-2 p-2">
       <input
         placeholder="Mnemonics"
         value={mnemonics}
+        className="p-2 border-2 rounded-md cursor-pointer text-base"
         onInput={(event) => {
           const value = event.currentTarget.value
           set_mnemonics(value)
@@ -25,6 +26,7 @@ export function Mnemonics() {
       <input
         placeholder="Password"
         value={password}
+        className="p-2 border-2 rounded-md cursor-pointer text-base"
         onInput={(event) => {
           const value = event.currentTarget.value
           set_password(value)
@@ -32,6 +34,7 @@ export function Mnemonics() {
       />
       <button
         type="button"
+        className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer text-base"
         onClick={async () => {
           const _mnemonics = parse(
             MnemonicsSchema,
@@ -43,7 +46,7 @@ export function Mnemonics() {
           view.value = "password"
         }}
       >
-        save wallet
+        Save wallet
       </button>
     </main>
   )

@@ -105,9 +105,20 @@ export function Wallet() {
     run()
   }, [])
   return (
-    <div>
-      <p>the connected address is {address}</p>
-      <p>it's balance is {wei_to_eth(balance.value)}</p>
+    <main className="flex flex-col gap-2 p-2">
+      <p className="flex gap-1 text-base">
+        <span>Address:</span>
+        <span className="underline underline-offset-2 decoration-[#FF5005]">
+          {truncate(address, 5)}
+        </span>
+      </p>
+      <p className="flex gap-1 text-base">
+        <span>Balance:</span>
+        <span className="underline underline-offset-2 decoration-[#FF5005]">
+          {strip_decimals(wei_to_eth(balance.value), 5)}
+        </span>{" "}
+        ETH
+      </p>
       {loading ? (
         <span>loading past transfers</span>
       ) : (
@@ -122,6 +133,19 @@ export function Wallet() {
           })}
         </ul>
       )}
-    </div>
+    </main>
   )
+}
+
+function truncate(address: string, amount: number) {
+  return (
+    address.slice(0, amount) +
+    "..." +
+    address.slice(address.length - amount, address.length)
+  )
+}
+
+function strip_decimals(address: string, amount: number) {
+  const comma = address.indexOf(".")
+  return address.slice(0, comma + amount + 1)
 }

@@ -7,10 +7,11 @@ import { set_wallet } from "../../utils/wallet"
 export function Password() {
   const [password, set_password] = useState("")
   return (
-    <div>
+    <main className="flex flex-col gap-2 p-2">
       <input
         placeholder="Password"
         value={password}
+        className="p-2 border-2 rounded-md cursor-pointer text-base"
         onInput={(event) => {
           const value = event.currentTarget.value
           set_password(value)
@@ -18,6 +19,7 @@ export function Password() {
       />
       <button
         type="button"
+        className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer text-base"
         onClick={async () => {
           const valid = await validate_password(password)
           if (!valid) return
@@ -26,8 +28,8 @@ export function Password() {
           view.value = "wallet"
         }}
       >
-        unlock
+        Unlock
       </button>
-    </div>
+    </main>
   )
 }
