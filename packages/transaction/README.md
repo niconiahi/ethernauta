@@ -18,6 +18,10 @@ This module allows to track transactions submitted to the blockchain. It impleme
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/wallet"
 import { writer, SEPOLIA_CHAIN_ID } from "./writer"
+import {
+  watch_transaction,
+  register_transaction
+} from "@ethernauta/transaction"
 
 const method = "transfer"
 const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"

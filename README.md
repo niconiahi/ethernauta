@@ -127,39 +127,31 @@ const signed_transaction = await window.wallet.sign(
 ### Writting to the blockchain
 
 ```ts
-import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { transfer } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/wallet"
 import { writer, SEPOLIA_CHAIN_ID } from "./writer"
 
-const method = "transfer"
-const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
-const params = [ADDRESS, number_to_hex(1)]
-const signed_transaction = await window.wallet.sign(
-  method,
-  params,
-)
-const writable = eth_sendRawTransaction([
-  signed_transaction,
+const writable = transfer([
+  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+  number_to_hex(1),
 ])
-await writable(writer(SEPOLIA_CHAIN_ID))
+const hash = await writable(writer(SEPOLIA_CHAIN_ID))
 ```
 
 ### Reacting to transaction states
 
 ```ts
-import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { transfer } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/wallet"
 import { writer, SEPOLIA_CHAIN_ID } from "./writer"
+import {
+  watch_transaction,
+  register_transaction
+} from "@ethernauta/transaction"
 
-const method = "transfer"
-const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
-const params = [ADDRESS, number_to_hex(1)]
-const signed_transaction = await window.wallet.sign(
-  method,
-  params,
-)
-const writable = eth_sendRawTransaction([
-  signed_transaction,
+const writable = transfer([
+  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+  number_to_hex(1),
 ])
 const hash = await writable(writer(SEPOLIA_CHAIN_ID))
 // initial transaction state 
