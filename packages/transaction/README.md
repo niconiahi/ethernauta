@@ -6,11 +6,11 @@ This module allows to track transactions submitted to the blockchain. It impleme
 
 ## Modules
 
-- [chain](https://github.com/niconiahi/ethernauta/blob/main/packages/chain/README.md)
-- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/README.md)
-- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/README.md)
-- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/README.md)
-- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/README.md)
+- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth)
+- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet)
+- [connector](https://github.com/niconiahi/ethernauta/blob/main/packages/connector)
+- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport)
+- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction)
 
 ## API
 

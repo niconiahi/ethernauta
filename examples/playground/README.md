@@ -4,8 +4,8 @@ Oficially maintained example repository. Check for real world usage of the libra
 
 ## Modules
 
-- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/README.md)
-- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/README.md)
-- [connector](https://github.com/niconiahi/ethernauta/blob/main/packages/connector/README.md)
-- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/README.md)
-- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction/README.md)
+- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth)
+- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet)
+- [connector](https://github.com/niconiahi/ethernauta/blob/main/packages/connector)
+- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport)
+- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction)
