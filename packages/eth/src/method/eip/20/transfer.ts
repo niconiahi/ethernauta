@@ -4,8 +4,8 @@ import { object, tuple, union } from "valibot"
 
 import {
   addressSchema,
-  uint256Schema,
   type Hash32,
+  uint256Schema,
 } from "../../../core/base"
 import { eth_sendRawTransaction } from "../../submit"
 

@@ -1,6 +1,6 @@
-import tailwindcss from "@tailwindcss/vite"
 import { readFileSync } from "node:fs"
 import preact from "@preact/preset-vite"
+import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 
