@@ -12,6 +12,10 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - It uses validation schemas to validate every piece of data that flows through the library
 - Seamless API for interacting with multiple blockchain ecosystems (currently: [Ethereum](https://ethereum.org/))
 
+## Example
+
+You can check the [officially maintained repository](https://github.com/niconiahi/ethernauta/blob/main/examples/playground/README.md) for a full overview of the libraries usage
+
 ## Modules
 
 - [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/README.md)
