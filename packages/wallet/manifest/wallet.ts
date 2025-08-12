@@ -21,7 +21,7 @@ declare global {
 window.wallet = {
   sign: async (
     method: string,
-    params: unknown[],
+    params: unknown[] | Record<string, unknown>,
   ): Promise<string> => {
     return new Promise<string>((resolve) => {
       const id = crypto.randomUUID()

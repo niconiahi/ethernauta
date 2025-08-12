@@ -38,7 +38,7 @@ function hex_to_number(hex: `0x${string}`): number {
 
 const POOLING_INTERVAL = 2000
 type Callback = (transaction: Transaction) => void
-export function watch_transaction(
+export function watchTransaction(
   hash: Hash32,
   callback: Callback,
 ) {

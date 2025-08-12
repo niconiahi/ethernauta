@@ -1,9 +1,9 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { transfer } from "@ethernauta/eth"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
-  registerTransaction,
+  register_transaction,
   type Transaction,
-  watchTransaction,
+  watch_transaction,
 } from "@ethernauta/transaction"
 import {
   createWriter,
@@ -11,7 +11,7 @@ import {
   http,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/wallet"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -29,12 +29,26 @@ const writer = createWriter([
   },
 ])
 
+// green #0FA05C
+
 export default function () {
-  const [transactions, setTransactions] = useState<
+  const [hash, setHash] = useState<`0x${string}` | null>(
+    null,
+  )
+  const [transaction_log, set_transaction_log] = useState<
     Transaction[]
   >([])
+  const popover_ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!hash) return
+    watch_transaction(hash, (transaction) => {
+      set_transaction_log((prev_transaction_logs) => {
+        return [...prev_transaction_logs, transaction]
+      })
+    })
+  }, [hash])
   const last_transaction =
-    transactions[transactions.length - 1]
+    transaction_log[transaction_log.length - 1]
   return (
     <div className="flex flex-col justify-center h-full p-4 gap-2">
       <button
@@ -50,31 +64,36 @@ export default function () {
         type="button"
         className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer"
         onClick={async () => {
-          const writable = transfer([
-            "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-            number_to_hex(1),
+          const method = "transfer"
+          const ADDRESS =
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94"
+          const params = [ADDRESS, number_to_hex(1)]
+          const signed_transaction =
+            await window.wallet.sign(method, params)
+          const writable = eth_sendRawTransaction([
+            signed_transaction,
           ])
           const hash = await writable(
             writer(SEPOLIA_CHAIN_ID),
           )
-          const transaction = registerTransaction(hash)
-          setTransactions([transaction])
-          watchTransaction(hash, (transaction) => {
-            setTransactions((prev_transaction_logs) => {
-              return [...prev_transaction_logs, transaction]
-            })
-          })
+          setHash(hash)
+          const transaction = register_transaction(hash)
+          set_transaction_log([transaction])
+          popover_ref.current?.showPopover()
         }}
       >
         Send transfer
       </button>
-      {last_transaction ? (
+      {transaction_log.length > 0 ? (
         <div
+          ref={popover_ref}
           role="status"
           aria-live="polite"
           className="fixed bottom-4 right-4 border-2 rounded-md p-4"
         >
-          {render_transaction(last_transaction)}
+          {render_transaction(
+            last_transaction as Transaction,
+          )}
         </div>
       ) : null}
     </div>
@@ -90,7 +109,7 @@ function render_transaction(transaction: Transaction) {
     case "mined": {
       return (
         <p key={key} className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded-md border-2 bg-[#0FA05C] border-dashed" />
+          <div className="w-4 h-4 rounded-md border-2 bg-[#0FA05C] border-dashed" />
           Successful transaction
           <a
             href={`https://sepolia.etherscan.io/tx/${transaction.hash}`}

@@ -1,18 +1,13 @@
 import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import {
-  boolean,
-  object,
-  parse,
-  tuple,
-  union,
-} from "valibot"
+import { object, tuple, union } from "valibot"
 
 import {
   addressSchema,
   uint256Schema,
+  type Hash32,
 } from "../../../core/base"
+import { eth_sendRawTransaction } from "../../submit"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
@@ -24,17 +19,17 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function transfer(
   _parameters: Parameters,
-): Readable<boolean> {
-  return async (transports: Http[]): Promise<boolean> => {
+): Readable<Hash32> {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "transfer"
-    const call = parse(callSchema, [method])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
+    const signed_transaction = await window.wallet.sign(
+      method,
+      _parameters,
     )
-    if ("error" in response) {
-      throw new Error(response.error.message)
-    }
-    const result = parse(boolean(), response.result)
-    return result
+    const writable = eth_sendRawTransaction([
+      signed_transaction,
+    ])
+    const hash = await writable(transports)
+    return hash
   }
 }
