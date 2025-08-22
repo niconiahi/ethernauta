@@ -23,17 +23,13 @@ import {
   register_transaction
 } from "@ethernauta/transaction"
 
-const method = "transfer"
-const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
-const params = [ADDRESS, number_to_hex(1)]
-const signed_transaction = await window.wallet.sign(
-  method,
-  params,
-)
-const writable = eth_sendRawTransaction([
-  signed_transaction,
+const writable = transfer([
+  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+  number_to_hex(1),
 ])
-const hash = await writable(writer(SEPOLIA_CHAIN_ID))
+const hash = await writable(
+  writer(SEPOLIA_CHAIN_ID),
+)
 // initial transaction state 
 // with "type" key equal "pending"
 const transaction = register_transaction(hash)
