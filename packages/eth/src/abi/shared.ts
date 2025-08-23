@@ -1,3 +1,4 @@
+import type { InferOutput } from "valibot"
 import { literal, object, string, union } from "valibot"
 
 export const typeSchema = union([
@@ -11,6 +12,8 @@ export const typeSchema = union([
   literal("byte[]"),
   literal("bytes"),
   literal("bytes[]"),
+  literal("bytes4"),
+  literal("bytes4[]"),
   literal("bytes8"),
   literal("bytes8[]"),
   literal("bytes32"),
@@ -34,6 +37,7 @@ export const typeSchema = union([
   literal("uint256"),
   literal("uint256[]"),
 ])
+export type Type = InferOutput<typeof typeSchema>
 
 export const tupleSchema = object({
   name: string(),

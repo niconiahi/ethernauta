@@ -1,3 +1,5 @@
+import type { Address } from "@ethernauta/eth"
+import { addressSchema } from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
@@ -9,33 +11,31 @@ import {
   union,
 } from "valibot"
 
-import {
-  addressSchema,
-  uint256Schema,
-} from "../../../core/base"
-
 const parametersSchema = union([
-  tuple([addressSchema, addressSchema, uint256Schema]),
+  tuple([addressSchema, boolean()]),
   object({
-    from: addressSchema,
-    to: addressSchema,
-    value: uint256Schema,
+    operator: addressSchema,
+    approved: boolean(),
   }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
-export function transferFrom(
+export function setApprovalForAll(
   _parameters: Parameters,
-): Readable<boolean> {
-  return async (transports: Http[]): Promise<boolean> => {
-    const method = "transferFrom"
-    const call = parse(callSchema, [method])
+): Readable<Address> {
+  return async (transports: Http[]): Promise<Address> => {
+    const method = "setApprovalForAll"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(boolean(), response.result)
+    const result = parse(
+      union([addressSchema]),
+      response.result,
+    )
     return result
   }
 }

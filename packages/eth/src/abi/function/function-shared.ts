@@ -1,5 +1,6 @@
 import {
   array,
+  type InferOutput,
   literal,
   object,
   string,
@@ -38,4 +39,7 @@ export const function_inputSchema = variant("type", [
   }),
   function_tupleSchema,
 ])
+export type FunctionInput = InferOutput<
+  typeof function_inputSchema
+>
 export const function_outputSchema = function_inputSchema
