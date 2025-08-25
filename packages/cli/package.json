@@ -11,6 +11,9 @@
     "url": "https://github.com/niconiahi/ethernauta"
   },
   "sideEffects": false,
+  "bin": {
+    "ethernauta": "./dist/bin.js"
+  },
   "files": [
     "dist",
     "src"
@@ -26,7 +29,8 @@
   },
   "dependencies": {
     "@ethernauta/chain": "workspace:*",
-    "@ethernauta/transport": "workspace:*"
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/eth": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
