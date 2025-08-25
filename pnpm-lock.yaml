@@ -159,6 +159,9 @@ importers:
       '@ethernauta/testing':
         specifier: workspace:*
         version: link:../testing
+      '@ethernauta/transport':
+        specifier: workspace:*
+        version: link:../transport
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
