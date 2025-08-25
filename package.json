@@ -9,7 +9,8 @@
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "format": "pnpm --recursive run format",
-    "publish": "pnpm --filter !@ethernauta/wallet --filter !@ethernauta/playground --filter !@ethernauta/testing publish"
+    "publish": "pnpm --filter !@ethernauta/wallet --filter !@ethernauta/playground --filter !@ethernauta/testing publish",
+    "publish:dry": "pnpm --filter !@ethernauta/wallet --filter !@ethernauta/playground --filter !@ethernauta/testing publish --dry-run"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
