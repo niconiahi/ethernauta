@@ -17,7 +17,6 @@ switch (command) {
     await execute(process.argv.slice(3))
     break
   case "help":
-  case undefined:
     console.log(
       `
 Usage:
