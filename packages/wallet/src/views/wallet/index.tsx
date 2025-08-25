@@ -11,6 +11,7 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
+import { invariant } from "@ethernauta/utils"
 import { useEffect, useState } from "preact/hooks"
 import { array, parse } from "valibot"
 import {
@@ -22,7 +23,6 @@ import {
   hex_to_number,
   number_to_hex,
 } from "../../utils/crypto"
-import invariant from "../../utils/tiny-invariant"
 import { wallet } from "../../utils/wallet"
 
 const NAMESPACE = {

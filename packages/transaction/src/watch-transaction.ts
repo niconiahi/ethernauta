@@ -8,8 +8,8 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
+import { invariant } from "@ethernauta/utils"
 import { set_transaction } from "./set-transaction"
-import invariant from "./tiny-invariant"
 import type {
   MinedTransaction,
   RevertedTransaction,

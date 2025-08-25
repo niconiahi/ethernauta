@@ -1,10 +1,10 @@
 import { resolve } from "node:path"
-import { array, parse, string } from "valibot"
 import {
   type Description,
   DescriptionSchema,
-} from "@ethernauta/eth"
-import { compile } from "@ethernauta/eth"
+  generate,
+} from "@ethernauta/abi"
+import { array, parse, string } from "valibot"
 
 function validate_args(args: string[]) {
   if (args.length !== 4) {
@@ -48,7 +48,7 @@ export async function execute(
 ): Promise<void> {
   const args = validate_args(_args)
   const descriptions = await get_descriptions(args.abi_path)
-  compile(descriptions, args.out_dir)
+  generate(descriptions, args.out_dir)
   const count = descriptions.length
   console.log(
     `compiled ${count} ${pluralize("description", count)}`,

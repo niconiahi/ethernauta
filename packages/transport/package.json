@@ -25,15 +25,10 @@
     "format": "biome format --write .",
     "test:unit": "vitest"
   },
-  "dependencies": {
-    "@ethernauta/eth": "workspace:*",
-    "@ethernauta/chain": "workspace:*"
-  },
   "peerDependencies": {
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "@types/chrome": "^0.1.1",
     "tsdown": "^0.13.3"
   }
 }

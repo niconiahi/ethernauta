@@ -28,7 +28,8 @@
   "dependencies": {
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/chain": "workspace:*",
-    "@ethernauta/transport": "workspace:*"
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"

@@ -5,6 +5,7 @@ import {
   eth_getTransactionCount,
 } from "@ethernauta/eth"
 import type { ChainId, Reader } from "@ethernauta/transport"
+import { invariant } from "@ethernauta/utils"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -18,7 +19,6 @@ import { hexadecimal, parse, pipe, string } from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
 import { hex_to_bytes } from "./hex"
 import { encode } from "./rlp"
-import invariant from "./tiny-invariant"
 import type { Transaction } from "./transaction"
 
 export interface Eip1559TransactionUnsigned {
@@ -255,7 +255,7 @@ export function encode_access_list(
 
 export function make_signed_fields(
   unsigned_fields: Field[],
-  signature: secp.RecoveredSignature,
+  signature: RecoveredSignature,
 ): Field[] {
   const fields = new Array<Field>(12)
   invariant(

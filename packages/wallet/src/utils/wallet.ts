@@ -1,3 +1,4 @@
+import { invariant } from "@ethernauta/utils"
 import { signal } from "@preact/signals"
 import { HDKey } from "@scure/bip32"
 import {
@@ -14,7 +15,6 @@ import {
   private_key_to_address,
   seed_to_master_key,
 } from "./crypto"
-import invariant from "./tiny-invariant"
 import { get_vault } from "./vault"
 
 const StorableWalletSchema = object({

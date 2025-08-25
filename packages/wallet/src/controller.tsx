@@ -41,6 +41,8 @@ export function Controller() {
                 transaction_request.value = {
                   id: request.id,
                   method: request.method,
+                  // @ts-expect-error support params as object
+                  // TODO: support params as object
                   params: request.params,
                 }
                 view.value = "sign"

@@ -4,13 +4,14 @@ import {
   type InferOutput,
   object,
   string,
+  union,
   unknown,
 } from "valibot"
 
 export const TransactionSchema = object({
   id: string(),
   method: string(),
-  params: array(unknown()),
+  params: union([array(unknown())]),
 })
 export type Transaction = InferOutput<
   typeof TransactionSchema

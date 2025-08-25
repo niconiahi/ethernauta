@@ -24,19 +24,16 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
-    "test:unit": "vitest",
-    "test:cli": "bun src/compiler/cli.ts --abi src/erc/165/IERC165.abi.json --out src/erc/165"
+    "test:unit": "vitest"
   },
   "dependencies": {
-    "@ethernauta/chain": "workspace:*",
-    "@ethernauta/transport": "workspace:*",
     "@ethernauta/eth": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "bun": "^1.2.20",
+    "@types/node": "^24.3.0",
     "tsdown": "^0.13.3"
   }
 }

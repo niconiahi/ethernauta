@@ -3,6 +3,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "types"],
   "compilerOptions": {
-    "types": ["types/transactions.d.ts"]
+    "types": ["./types/transactions.d.ts"]
   }
 }

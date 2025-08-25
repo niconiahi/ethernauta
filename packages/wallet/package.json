@@ -24,7 +24,8 @@
     "@scure/bip32": "1.7.0",
     "@scure/bip39": "1.6.0",
     "preact": "10.26.9",
-    "valibot": "1.1.0"
+    "valibot": "1.1.0",
+    "@ethernauta/utils": "workspace:*"
   },
   "devDependencies": {
     "@preact/preset-vite": "2.10.2",

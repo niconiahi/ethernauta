@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { parseArgs } from "node:util"
 import { execute } from "./execute"
 
@@ -13,7 +14,7 @@ const args = parseArgs({
 const command = args.positionals[0]
 
 switch (command) {
-  case "compile":
+  case "generate":
     await execute(process.argv.slice(3))
     break
   case "help":
@@ -21,7 +22,7 @@ switch (command) {
       `
 Usage:
 
-ethernauta compile --abi SOME_ABI.abi.json --out OUT_DIR`.trim(),
+ethernauta generate --abi SOME_ABI.abi.json --out OUT_DIR`.trim(),
     )
     break
   default:

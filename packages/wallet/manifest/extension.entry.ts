@@ -1,10 +1,10 @@
+import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import {
   EthernautaEventSchema,
   EthernautaRequestSchema,
   EthernautaResponseSchema,
 } from "../src/utils/event"
-import invariant from "../src/utils/tiny-invariant"
 
 function compose_key(id: string) {
   return `pending_${id}`
