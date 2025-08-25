@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/erc",
   "type": "module",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "publishConfig": {
     "access": "public"
   },
@@ -32,7 +32,8 @@
   "dependencies": {
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/abi": "workspace:*",
-    "@ethernauta/testing": "workspace:*"
+    "@ethernauta/testing": "workspace:*",
+    "@ethernauta/transport": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
