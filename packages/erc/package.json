@@ -38,7 +38,6 @@
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "tsdown": "^0.13.3",
-    "@ethernauta/testing": "workspace:*"
+    "tsdown": "^0.13.3"
   }
 }

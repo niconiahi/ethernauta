@@ -5,7 +5,7 @@ import {
   DescriptionSchema,
   generate,
 } from "@ethernauta/abi"
-import { this_directory } from "@ethernauta/testing"
+import { this_directory } from "../utils"
 import { camel_to_kebab } from "@ethernauta/utils"
 import { array, parse } from "valibot"
 import { describe, expect, it } from "vitest"
