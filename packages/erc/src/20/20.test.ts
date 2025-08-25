@@ -8,8 +8,8 @@ import {
 import { camel_to_kebab } from "@ethernauta/utils"
 import { array, parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import ERC20_ABI from "./IERC20.abi.json"
 import { this_directory } from "../utils"
+import ERC20_ABI from "./IERC20.abi.json"
 
 describe("ERC20", () => {
   it("should correctly generate the ERC20 method's files", () => {

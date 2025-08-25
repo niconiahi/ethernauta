@@ -5,10 +5,10 @@ import {
   DescriptionSchema,
   generate,
 } from "@ethernauta/abi"
-import { this_directory } from "../utils"
 import { camel_to_kebab } from "@ethernauta/utils"
 import { array, parse } from "valibot"
 import { describe, expect, it } from "vitest"
+import { this_directory } from "../utils"
 import ERC165_ABI from "./IERC165.abi.json"
 
 describe("ERC165", () => {
