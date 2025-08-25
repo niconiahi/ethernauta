@@ -9,6 +9,12 @@ import invariant from "../utils/tiny-invariant"
 import type { Description } from "../abi/description"
 import type { FunctionInput, FunctionOutput } from "../abi"
 
+export type Import = {
+  name: string
+  schema: string
+  type: string
+}
+
 export function compile(
   descriptions: Description[],
   out_dir: string,
@@ -22,7 +28,7 @@ export function compile(
             continue
           }
           case "nonpayable": {
-            make_nonpayable_function(description, out_dir)
+            make_view_function(description, out_dir)
             continue
           }
         }
@@ -31,44 +37,35 @@ export function compile(
   }
 }
 
-function compose_tuple_items(
+function make_imports(
   inputs: FunctionInput[] | FunctionOutput[],
 ): {
-  output: string
-  union: string
   package_imports: Set<Import>
   valibot_imports: Set<Import>
 } {
   let package_imports: Set<Import> = new Set([])
   let valibot_imports: Set<Import> = new Set([])
-  let schemas: string[] = []
-  let types: string[] = []
   for (const input of inputs) {
     if (input.type === "bool") {
       const schema = "boolean()"
       const type = "boolean"
-      types.push(type)
-      schemas.push(schema)
+      const name = input.name
       valibot_imports.add({
+        name,
         schema,
         type,
       })
       continue
     }
     const { schema, type } = get_schema_for_type(input.type)
-    schemas.push(schema)
-    types.push(type)
+    const name = input.name
     package_imports.add({
+      name,
       schema,
       type,
     })
   }
-  const output = schemas.join(", ").trim()
-  const union =
-    types.length === 0 ? "void" : types.join(" | ").trim()
   return {
-    output,
-    union,
     package_imports,
     valibot_imports,
   }
@@ -98,101 +95,6 @@ function get_schema_for_type(
   }
 }
 
-export type Import = {
-  schema: string
-  type: string
-}
-
-// set-approval-for-all
-// is-approved-for-all
-function compose_object_parameter_items(
-  inputs: FunctionInput[],
-): {
-  output: string
-  package_imports: Set<Import>
-  valibot_imports: Set<Import>
-} {
-  let package_imports: Set<Import> = new Set([])
-  let valibot_imports: Set<Import> = new Set([])
-  const lines: string[] = []
-  for (const input of inputs) {
-    if (input.type === "bool") {
-      const schema = "boolean()"
-      const type = "boolean"
-      lines.push(`${input.name}: ${schema}`)
-      valibot_imports.add({
-        schema,
-        type,
-      })
-      continue
-    }
-    const { schema, type } = get_schema_for_type(input.type)
-    lines.push(`${input.name}: ${schema}`)
-    package_imports.add({
-      schema,
-      type,
-    })
-  }
-  const output = lines.join(",\n    ").trim()
-  return {
-    output,
-    valibot_imports,
-    package_imports,
-  }
-}
-
-function compose_outputs(outputs: FunctionOutput[]) {
-  const {
-    output,
-    valibot_imports,
-    package_imports,
-    union,
-  } = compose_tuple_items(outputs)
-  return {
-    union,
-    return_values: output,
-    package_imports,
-    valibot_imports,
-  }
-}
-
-function compose_parameters(inputs: FunctionInput[]) {
-  const {
-    output: tuple_output,
-    valibot_imports: tuple_valibot_imports,
-    package_imports: tuple_package_imports,
-  } = compose_tuple_items(inputs)
-  const tuple_parameter = `tuple([${tuple_output}])`
-  const {
-    output: object_output,
-    valibot_imports: object_valibot_imports,
-    package_imports: object_package_imports,
-  } = compose_object_parameter_items(inputs)
-  const object_parameter = `
-object({
-    ${object_output}
-  })`.trim()
-  invariant(
-    tuple_package_imports.size ===
-      object_package_imports.size,
-    "tuple and object must match the amount of package imports",
-  )
-  invariant(
-    tuple_valibot_imports.size ===
-      object_valibot_imports.size,
-    "tuple and object must match the amount of valibot imports",
-  )
-  const parameters = [
-    tuple_parameter,
-    object_parameter,
-  ].join(",\n  ")
-  return {
-    parameters,
-    package_imports: dedupe_imports(tuple_package_imports),
-    valibot_imports: dedupe_imports(tuple_valibot_imports),
-  }
-}
-
 export function get_schemas(set: Set<Import>): string[] {
   return Array.from(set).map((import_) => {
     return import_.schema
@@ -209,12 +111,23 @@ function format_for_import(items: string[]): string {
   return items.join(",\n  ").trim()
 }
 
+function format_as_comma_separated(
+  items: string[],
+): string {
+  return items.join(", ").trim()
+}
+
 function format_as_union(items: string[]): string {
   return items.join(" | ").trim()
 }
 
-function format_for_union(items: string[]): string {
-  return items.join(", ").trim()
+function format_as_key_values(set: Set<Import>): string {
+  return Array.from(set)
+    .map((import_) => {
+      return `${import_.name}: ${import_.schema}`
+    })
+    .join(",\n")
+    .trim()
 }
 
 export function dedupe_imports(
@@ -250,6 +163,83 @@ export function merge_imports(
   return dedupe_imports(merged)
 }
 
+function compose_parameters_template(
+  imports: Set<Import>,
+  name: string,
+) {
+  return imports.size > 0
+    ? `
+const parametersSchema = union([
+  tuple([${format_as_comma_separated(get_schemas(imports))}]),
+  object({
+    ${format_as_key_values(imports)}
+  }),
+])
+type Parameters = InferOutput<typeof parametersSchema>
+export function ${name}(_parameters: Parameters)`.trim()
+    : `
+export function ${name}()`.trim()
+}
+
+function compose_call_template(imports: Set<Import>) {
+  return imports.size > 0
+    ? `
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])`.trim()
+    : `
+    const call = parse(callSchema, [method, []])`.trim()
+}
+
+function compose_valibot_imports(
+  valibot_imports: Set<Import>,
+  package_imports: Set<Import>,
+  inputs: Set<Import>,
+) {
+  if (valibot_imports.size > 0) {
+    return `
+import type { InferOutput } from "valibot"
+import {
+  parse,
+  tuple,
+  object,
+  union,
+  ${format_for_import(
+    remove_parenthesis(get_schemas(valibot_imports)),
+  )}
+} from "valibot"`.trim()
+  }
+  if (package_imports.size > 0 && inputs.size === 0) {
+    return `
+import {
+  parse,
+  union,
+} from "valibot"`.trim()
+  }
+  if (package_imports.size > 0) {
+    return `
+import type { InferOutput } from "valibot"
+import {
+  parse,
+  union,
+  tuple,
+  object
+} from "valibot"`.trim()
+  }
+  return ""
+}
+
+function compose_type_package_imports(
+  imports: Set<Import>,
+) {
+  if (imports.size > 0) {
+    return `
+import type {
+  ${format_for_import(get_types(imports))}
+} from "@ethernauta/eth"`.trim()
+  }
+  return ""
+}
+
 export function remove_parenthesis(strings: string[]) {
   return strings.map((string) => {
     return string.slice(0, -2)
@@ -264,81 +254,65 @@ function make_view_function(
     description.type === "function",
     "the description has to a function to make a view function",
   )
-  invariant(
-    description.stateMutability === "view",
-    "the function's state mutability has to be a view to make a view function",
+  // invariant(
+  //   description.stateMutability === "view",
+  //   "the function's state mutability has to be a view to make a view function",
+  // )
+  const {
+    valibot_imports: inputs_valibot_imports,
+    package_imports: inputs_package_imports,
+  } = make_imports(description.inputs)
+  const inputs = merge_imports(
+    inputs_package_imports,
+    inputs_valibot_imports,
   )
   const {
-    parameters,
-    package_imports: parameters_package_imports,
-    valibot_imports: parameters_valibot_imports,
-  } = compose_parameters(description.inputs)
-  const {
-    return_values,
-    union,
-    package_imports: return_values_package_imports,
-    valibot_imports: return_values_valibot_imports,
-  } = compose_outputs(description.outputs)
-  // const union_ = compose_union()
-  const method = description.name
+    valibot_imports: outputs_valibot_imports,
+    package_imports: outputs_package_imports,
+  } = make_imports(description.outputs)
+  const outputs = merge_imports(
+    outputs_package_imports,
+    outputs_valibot_imports,
+  )
   const valibot_imports = merge_imports(
-    parameters_valibot_imports,
-    return_values_valibot_imports,
+    inputs_valibot_imports,
+    outputs_valibot_imports,
   )
   const package_imports = merge_imports(
-    parameters_package_imports,
-    return_values_package_imports,
+    inputs_package_imports,
+    outputs_package_imports,
   )
-  if (description.name === "totalSupply") {
-    console.log("description", description)
-    console.log("parameters", parameters)
-  }
+  // if (description.name === "totalSupply") {
+  //   console.log("description", description)
+  //   console.log(
+  //     "inputs_valibot_imports",
+  //     inputs_valibot_imports,
+  //   )
+  //   console.log(
+  //     "outputs_valibot_imports",
+  //     outputs_valibot_imports,
+  //   )
+  //   console.log("valibot_imports", valibot_imports)
+  //   console.log("valibot_imports", valibot_imports)
+  //   console.log("package_imports", package_imports)
+  // }
+  const name = description.name
   const template = `
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import {
-  object,
-  parse,
-  tuple,
-  union,
-  ${format_for_import(
-    remove_parenthesis(get_schemas(valibot_imports)),
-  )}
-} from "valibot"
-
+${compose_valibot_imports(valibot_imports, package_imports, inputs)}
 import {
   ${format_for_import(get_schemas(package_imports))}
 } from "@ethernauta/eth"
-import type {
-  ${format_for_import(get_types(return_values_package_imports))}
-} from "@ethernauta/eth"
+${compose_type_package_imports(outputs_package_imports)}
 
-${
-  parameters.length > 0
-    ? `
-const parametersSchema = union([
-  ${parameters}
-])
-type Parameters = InferOutput<typeof parametersSchema>
-`.trim()
-    : null
-}
-export function ${method}(
-${
-  parameters.length > 0
-    ? `
-  _parameters: Parameters,
-`.trim()
-    : null
-}
-): Readable<${union}> {
+${compose_parameters_template(inputs, name)}
+: Readable<${format_as_union(get_types(outputs))}> {
   return async (
     transports: Http[],
-  ): Promise<${union}> => {
-    const method = "${method}"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+  ): Promise<${format_as_union(get_types(outputs))}> => {
+    const method = "${name}"
+    ${compose_call_template(inputs)}
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -346,7 +320,7 @@ ${
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([${return_values}]),
+      union([${format_as_union(get_schemas(outputs))}]),
       response.result,
     )
     return result
@@ -358,110 +332,7 @@ ${
   }
   const file_path = join(
     resolved_out_dir,
-    `${camel_to_kebab(method)}.ts`,
-  )
-  writeFileSync(file_path, template)
-}
-
-function make_nonpayable_function(
-  description: Description,
-  out_dir: string,
-) {
-  invariant(
-    description.type === "function",
-    "the description has to be a function to make a nonpayable function",
-  )
-  invariant(
-    description.stateMutability === "nonpayable",
-    "the function's state mutability has to be nonpayable to make a nonpayable function",
-  )
-  const {
-    parameters,
-    package_imports: parameters_package_imports,
-    valibot_imports: parameters_valibot_imports,
-  } = compose_parameters(description.inputs)
-  const {
-    return_values,
-    union,
-    package_imports: return_values_package_imports,
-    valibot_imports: return_values_valibot_imports,
-  } = compose_outputs(description.outputs)
-  const method = description.name
-  const valibot_imports = merge_imports(
-    parameters_valibot_imports,
-    return_values_valibot_imports,
-  )
-  const package_imports = merge_imports(
-    parameters_package_imports,
-    return_values_package_imports,
-  )
-  const template = `
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import {
-  object,
-  parse,
-  tuple,
-  union,
-  ${format_for_import(
-    remove_parenthesis(get_schemas(valibot_imports)),
-  )}
-} from "valibot"
-
-import {
-  ${format_for_import(get_schemas(package_imports))}
-} from "@ethernauta/eth"
-import type {
-  ${format_for_import(get_types(return_values_package_imports))}
-} from "@ethernauta/eth"
-
-${
-  parameters.length > 0
-    ? `
-const parametersSchema = union([
-  ${parameters}
-])
-type Parameters = InferOutput<typeof parametersSchema>
-`.trim()
-    : null
-}
-export function ${method}(
-${
-  parameters.length > 0
-    ? `
-  _parameters: Parameters,
-`.trim()
-    : null
-}
-): Readable<${union}> {
-  return async (
-    transports: Http[],
-  ): Promise<${union}> => {
-    const method = "${method}"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
-    }
-    const result = parse(
-      union([${return_values}]),
-      response.result,
-    )
-    return result
-  }
-}`.trim()
-
-  const resolved_out_dir = resolve(out_dir, "methods")
-  if (!existsSync(resolved_out_dir)) {
-    mkdirSync(resolved_out_dir)
-  }
-  const file_path = join(
-    resolved_out_dir,
-    `${camel_to_kebab(method)}.ts`,
+    `${camel_to_kebab(name)}.ts`,
   )
   writeFileSync(file_path, template)
 }

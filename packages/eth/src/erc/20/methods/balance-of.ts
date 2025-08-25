@@ -1,8 +1,7 @@
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
-
+import { parse, union, tuple, object } from "valibot"
 import {
   addressSchema,
   uint256Schema,

@@ -1,8 +1,7 @@
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
-
+import { parse, union, tuple, object } from "valibot"
 import {
   addressSchema,
   uint256Schema,
@@ -10,10 +9,9 @@ import {
 import type { Uint256 } from "@ethernauta/eth"
 
 const parametersSchema = union([
-  tuple([addressSchema, addressSchema]),
+  tuple([addressSchema]),
   object({
     owner: addressSchema,
-    spender: addressSchema,
   }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
