@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@ethernauta/utils",
+  "name": "@ethernauta/testing",
   "type": "module",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "publishConfig": {
     "access": "public"
   },
