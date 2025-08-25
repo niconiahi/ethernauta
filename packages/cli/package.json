@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@ethernauta/cli",
+  "type": "module",
+  "version": "0.0.28",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niconiahi/ethernauta"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown && biome format --write dist",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "format": "biome format --write .",
+    "test:unit": "vitest",
+    "test:cli": "bun src/compiler/cli.ts --abi src/erc/165/IERC165.abi.json --out src/erc/165"
+  },
+  "dependencies": {
+    "@ethernauta/chain": "workspace:*",
+    "@ethernauta/transport": "workspace:*"
+  },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
+  "devDependencies": {
+    "bun": "^1.2.20",
+    "tsdown": "^0.13.3"
+  }
+}
