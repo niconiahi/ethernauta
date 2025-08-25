@@ -43,3 +43,6 @@ export type FunctionInput = InferOutput<
   typeof function_inputSchema
 >
 export const function_outputSchema = function_inputSchema
+export type FunctionOutput = InferOutput<
+  typeof function_outputSchema
+>

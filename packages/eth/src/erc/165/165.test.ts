@@ -7,6 +7,7 @@ import { compile } from "../../compiler"
 import { camel_to_kebab } from "../../utils/camel-to-kebab"
 import { this_directory } from "../../utils/this-directory"
 import ERC165_ABI from "./IERC165.abi.json"
+import { execSync } from "node:child_process"
 
 describe("ERC165", () => {
   it("should correctly generate the ERC165 method's files", () => {
@@ -20,6 +21,7 @@ describe("ERC165", () => {
     const this_dir = this_directory(import.meta.url)
     compile(functions, this_dir)
     const methods_dir = join(this_dir, "methods")
+    execSync(`biome format --write ${methods_dir}/*.ts`)
     const generated_files = readdirSync(methods_dir)
     for (const function_ of functions) {
       const file_name = `${camel_to_kebab(function_.name)}.ts`

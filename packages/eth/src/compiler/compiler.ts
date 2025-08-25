@@ -6,12 +6,9 @@ import {
 import { join, resolve } from "node:path"
 import { camel_to_kebab } from "../utils/camel-to-kebab"
 import invariant from "../utils/tiny-invariant"
-import type { Description } from "./description"
-import type { FunctionInput } from "./function"
+import type { Description } from "../abi/description"
+import type { FunctionInput, FunctionOutput } from "../abi"
 
-/*
- * creates the corresponding ABI files to call the chain
- * */
 export function compile(
   descriptions: Description[],
   out_dir: string,
@@ -34,20 +31,23 @@ export function compile(
   }
 }
 
-function compose_tuple_parameter_items(
-  inputs: FunctionInput[],
+function compose_tuple_items(
+  inputs: FunctionInput[] | FunctionOutput[],
 ): {
   output: string
+  union: string
   package_imports: Set<Import>
   valibot_imports: Set<Import>
 } {
   let package_imports: Set<Import> = new Set([])
   let valibot_imports: Set<Import> = new Set([])
   let schemas: string[] = []
+  let types: string[] = []
   for (const input of inputs) {
     if (input.type === "bool") {
       const schema = "boolean()"
       const type = "boolean"
+      types.push(type)
       schemas.push(schema)
       valibot_imports.add({
         schema,
@@ -55,41 +55,29 @@ function compose_tuple_parameter_items(
       })
       continue
     }
-    const { schema, type } = get_schema_for_input(input)
+    const { schema, type } = get_schema_for_type(input.type)
     schemas.push(schema)
+    types.push(type)
     package_imports.add({
       schema,
       type,
     })
   }
   const output = schemas.join(", ").trim()
+  const union =
+    types.length === 0 ? "void" : types.join(" | ").trim()
   return {
     output,
+    union,
     package_imports,
     valibot_imports,
   }
 }
-// {
-//   "inputs": [
-//     {
-//       "internalType": "address",
-//       "name": "to",
-//       "type": "address"
-//     },
-//     {
-//       "internalType": "uint256",
-//       "name": "tokenId",
-//       "type": "uint256"
-//     }
-//   ],
-//   "name": "approve",
-//   "outputs": [],
-//   "stateMutability": "nonpayable",
-//   "type": "function"
-// },
 
-function get_schema_for_input(input: FunctionInput) {
-  switch (input.type) {
+function get_schema_for_type(
+  type: FunctionInput["type"] | FunctionOutput["type"],
+) {
+  switch (type) {
     case "address": {
       return { schema: "addressSchema", type: "Address" }
     }
@@ -104,7 +92,7 @@ function get_schema_for_input(input: FunctionInput) {
     }
     default: {
       throw new Error(
-        `unhandled function input type ${input.type}. Please inform this to the library owner`,
+        `unhandled function input type ${type}. Please inform this to the library owner`,
       )
     }
   }
@@ -138,7 +126,7 @@ function compose_object_parameter_items(
       })
       continue
     }
-    const { schema, type } = get_schema_for_input(input)
+    const { schema, type } = get_schema_for_type(input.type)
     lines.push(`${input.name}: ${schema}`)
     package_imports.add({
       schema,
@@ -153,12 +141,27 @@ function compose_object_parameter_items(
   }
 }
 
+function compose_outputs(outputs: FunctionOutput[]) {
+  const {
+    output,
+    valibot_imports,
+    package_imports,
+    union,
+  } = compose_tuple_items(outputs)
+  return {
+    union,
+    return_values: output,
+    package_imports,
+    valibot_imports,
+  }
+}
+
 function compose_parameters(inputs: FunctionInput[]) {
   const {
     output: tuple_output,
     valibot_imports: tuple_valibot_imports,
     package_imports: tuple_package_imports,
-  } = compose_tuple_parameter_items(inputs)
+  } = compose_tuple_items(inputs)
   const tuple_parameter = `tuple([${tuple_output}])`
   const {
     output: object_output,
@@ -206,7 +209,7 @@ function format_for_import(items: string[]): string {
   return items.join(",\n  ").trim()
 }
 
-function format_for_type(items: string[]): string {
+function format_as_union(items: string[]): string {
   return items.join(" | ").trim()
 }
 
@@ -233,6 +236,20 @@ export function dedupe_imports(
   return out
 }
 
+export function merge_imports(
+  imports_a: Set<Import>,
+  imports_b: Set<Import>,
+): Set<Import> {
+  const merged: Set<Import> = new Set([])
+  for (const import_ of imports_a) {
+    merged.add(import_)
+  }
+  for (const import_ of imports_b) {
+    merged.add(import_)
+  }
+  return dedupe_imports(merged)
+}
+
 export function remove_parenthesis(strings: string[]) {
   return strings.map((string) => {
     return string.slice(0, -2)
@@ -251,9 +268,31 @@ function make_view_function(
     description.stateMutability === "view",
     "the function's state mutability has to be a view to make a view function",
   )
-  const { parameters, package_imports, valibot_imports } =
-    compose_parameters(description.inputs)
+  const {
+    parameters,
+    package_imports: parameters_package_imports,
+    valibot_imports: parameters_valibot_imports,
+  } = compose_parameters(description.inputs)
+  const {
+    return_values,
+    union,
+    package_imports: return_values_package_imports,
+    valibot_imports: return_values_valibot_imports,
+  } = compose_outputs(description.outputs)
+  // const union_ = compose_union()
   const method = description.name
+  const valibot_imports = merge_imports(
+    parameters_valibot_imports,
+    return_values_valibot_imports,
+  )
+  const package_imports = merge_imports(
+    parameters_package_imports,
+    return_values_package_imports,
+  )
+  if (description.name === "totalSupply") {
+    console.log("description", description)
+    console.log("parameters", parameters)
+  }
   const template = `
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
@@ -272,19 +311,31 @@ import {
   ${format_for_import(get_schemas(package_imports))}
 } from "@ethernauta/eth"
 import type {
-  ${format_for_import(get_types(package_imports))}
+  ${format_for_import(get_types(return_values_package_imports))}
 } from "@ethernauta/eth"
 
+${
+  parameters.length > 0
+    ? `
 const parametersSchema = union([
   ${parameters}
 ])
 type Parameters = InferOutput<typeof parametersSchema>
+`.trim()
+    : null
+}
 export function ${method}(
+${
+  parameters.length > 0
+    ? `
   _parameters: Parameters,
-): Readable<${format_for_type(get_types(package_imports))}> {
+`.trim()
+    : null
+}
+): Readable<${union}> {
   return async (
     transports: Http[],
-  ): Promise<${format_for_type(get_types(package_imports))}> => {
+  ): Promise<${union}> => {
     const method = "${method}"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
@@ -295,7 +346,7 @@ export function ${method}(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([${format_for_union(get_schemas(package_imports))}]),
+      union([${return_values}]),
       response.result,
     )
     return result
@@ -324,9 +375,26 @@ function make_nonpayable_function(
     description.stateMutability === "nonpayable",
     "the function's state mutability has to be nonpayable to make a nonpayable function",
   )
-  const { parameters, package_imports, valibot_imports } =
-    compose_parameters(description.inputs)
+  const {
+    parameters,
+    package_imports: parameters_package_imports,
+    valibot_imports: parameters_valibot_imports,
+  } = compose_parameters(description.inputs)
+  const {
+    return_values,
+    union,
+    package_imports: return_values_package_imports,
+    valibot_imports: return_values_valibot_imports,
+  } = compose_outputs(description.outputs)
   const method = description.name
+  const valibot_imports = merge_imports(
+    parameters_valibot_imports,
+    return_values_valibot_imports,
+  )
+  const package_imports = merge_imports(
+    parameters_package_imports,
+    return_values_package_imports,
+  )
   const template = `
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
@@ -336,26 +404,40 @@ import {
   parse,
   tuple,
   union,
-  ${format_for_import(remove_parenthesis(get_schemas(valibot_imports)))}
+  ${format_for_import(
+    remove_parenthesis(get_schemas(valibot_imports)),
+  )}
 } from "valibot"
 
 import {
   ${format_for_import(get_schemas(package_imports))}
 } from "@ethernauta/eth"
 import type {
-  ${format_for_import(get_types(package_imports))}
+  ${format_for_import(get_types(return_values_package_imports))}
 } from "@ethernauta/eth"
 
+${
+  parameters.length > 0
+    ? `
 const parametersSchema = union([
   ${parameters}
 ])
 type Parameters = InferOutput<typeof parametersSchema>
+`.trim()
+    : null
+}
 export function ${method}(
+${
+  parameters.length > 0
+    ? `
   _parameters: Parameters,
-): Readable<${format_for_type(get_types(package_imports))}> {
+`.trim()
+    : null
+}
+): Readable<${union}> {
   return async (
     transports: Http[],
-  ): Promise<${format_for_type(get_types(package_imports))}> => {
+  ): Promise<${union}> => {
     const method = "${method}"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
@@ -366,12 +448,13 @@ export function ${method}(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([${format_for_union(get_schemas(package_imports))}]),
+      union([${return_values}]),
       response.result,
     )
     return result
   }
 }`.trim()
+
   const resolved_out_dir = resolve(out_dir, "methods")
   if (!existsSync(resolved_out_dir)) {
     mkdirSync(resolved_out_dir)
