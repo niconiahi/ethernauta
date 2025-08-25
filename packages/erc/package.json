@@ -32,13 +32,13 @@
   "dependencies": {
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/abi": "workspace:*",
-    "@ethernauta/testing": "workspace:*",
     "@ethernauta/transport": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "tsdown": "^0.13.3"
+    "tsdown": "^0.13.3",
+    "@ethernauta/testing": "workspace:*"
   }
 }
