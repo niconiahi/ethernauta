@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground run dev",
     "test": "pnpm --recursive --filter !@ethernauta/connector run test:unit",
-    "build": "pnpm --filter @ethernauta/transaction... run build",
+    "build": "pnpm --filter @ethernauta/transaction... --filter @ethernauta/abi run build",
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "format": "pnpm --recursive run format",
