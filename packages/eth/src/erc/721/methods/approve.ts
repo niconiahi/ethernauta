@@ -1,12 +1,11 @@
-import type { Address, Uint256 } from "@ethernauta/eth"
+import type { Http, Writable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { parse, union, tuple, object } from "valibot"
 import {
   addressSchema,
   uint256Schema,
 } from "@ethernauta/eth"
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
@@ -18,10 +17,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function approve(
   _parameters: Parameters,
-): Readable<Address | Uint256> {
-  return async (
-    transports: Http[],
-  ): Promise<Address | Uint256> => {
+): Writable<void> {
+  return async (transports: Http[]): Promise<void> => {
     const method = "approve"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
@@ -31,10 +28,7 @@ export function approve(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(
-      union([addressSchema, uint256Schema]),
-      response.result,
-    )
+    const result = parse(union([]), response.result)
     return result
   }
 }

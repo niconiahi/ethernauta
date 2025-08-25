@@ -22,16 +22,7 @@ export function compile(
   for (const description of descriptions) {
     switch (description.type) {
       case "function": {
-        switch (description.stateMutability) {
-          case "view": {
-            make_view_function(description, out_dir)
-            continue
-          }
-          case "nonpayable": {
-            make_view_function(description, out_dir)
-            continue
-          }
-        }
+        make_function(description, out_dir)
       }
     }
   }
@@ -246,7 +237,7 @@ export function remove_parenthesis(strings: string[]) {
   })
 }
 
-function make_view_function(
+function make_function(
   description: Description,
   out_dir: string,
 ) {
@@ -254,10 +245,10 @@ function make_view_function(
     description.type === "function",
     "the description has to a function to make a view function",
   )
-  // invariant(
-  //   description.stateMutability === "view",
-  //   "the function's state mutability has to be a view to make a view function",
-  // )
+  const reader_or_writer =
+    description.stateMutability === "view"
+      ? "Readable"
+      : "Writable"
   const {
     valibot_imports: inputs_valibot_imports,
     package_imports: inputs_package_imports,
@@ -297,8 +288,9 @@ function make_view_function(
   //   console.log("package_imports", package_imports)
   // }
   const name = description.name
+  const type_union = format_as_union(get_types(outputs))
   const template = `
-import type { Http, Readable } from "@ethernauta/transport"
+import type { Http, ${reader_or_writer} } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 ${compose_valibot_imports(valibot_imports, package_imports, inputs)}
 import {
@@ -307,10 +299,10 @@ import {
 ${compose_type_package_imports(outputs_package_imports)}
 
 ${compose_parameters_template(inputs, name)}
-: Readable<${format_as_union(get_types(outputs))}> {
+: ${reader_or_writer}<${type_union === "" ? "void" : type_union}> {
   return async (
     transports: Http[],
-  ): Promise<${format_as_union(get_types(outputs))}> => {
+  ): Promise<${type_union === "" ? "void" : type_union}> => {
     const method = "${name}"
     ${compose_call_template(inputs)}
     const response = await Promise.any(

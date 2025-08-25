@@ -1,4 +1,4 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type { Http, Writable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
@@ -23,7 +23,7 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function transferFrom(
   _parameters: Parameters,
-): Readable<boolean> {
+): Writable<boolean> {
   return async (transports: Http[]): Promise<boolean> => {
     const method = "transferFrom"
     const parameters = parse(parametersSchema, _parameters)

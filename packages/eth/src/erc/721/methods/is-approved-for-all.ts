@@ -1,22 +1,26 @@
-import type { Address } from "@ethernauta/eth"
-import { addressSchema } from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+import {
+  parse,
+  tuple,
+  object,
+  union,
+  boolean,
+} from "valibot"
+import { addressSchema } from "@ethernauta/eth"
 
 const parametersSchema = union([
-  tuple([addressSchema, addressSchema]),
+  tuple([addressSchema]),
   object({
     owner: addressSchema,
-    operator: addressSchema,
   }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 export function isApprovedForAll(
   _parameters: Parameters,
-): Readable<Address> {
-  return async (transports: Http[]): Promise<Address> => {
+): Readable<boolean> {
+  return async (transports: Http[]): Promise<boolean> => {
     const method = "isApprovedForAll"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
@@ -27,7 +31,7 @@ export function isApprovedForAll(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([addressSchema]),
+      union([boolean()]),
       response.result,
     )
     return result

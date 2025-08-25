@@ -1,9 +1,14 @@
-import type { Bytes4 } from "@ethernauta/eth"
-import { bytes4Schema } from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+import {
+  parse,
+  tuple,
+  object,
+  union,
+  boolean,
+} from "valibot"
+import { bytes4Schema } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([bytes4Schema]),
@@ -14,8 +19,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function supportsInterface(
   _parameters: Parameters,
-): Readable<Bytes4> {
-  return async (transports: Http[]): Promise<Bytes4> => {
+): Readable<boolean> {
+  return async (transports: Http[]): Promise<boolean> => {
     const method = "supportsInterface"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
@@ -26,7 +31,7 @@ export function supportsInterface(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([bytes4Schema]),
+      union([boolean()]),
       response.result,
     )
     return result
