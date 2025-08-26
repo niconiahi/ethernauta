@@ -1,12 +1,12 @@
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import { parse, union, tuple, object } from "valibot"
+import type { Uint256 } from "@ethernauta/eth"
 import {
   addressSchema,
   uint256Schema,
 } from "@ethernauta/eth"
-import type { Uint256 } from "@ethernauta/eth"
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([addressSchema]),

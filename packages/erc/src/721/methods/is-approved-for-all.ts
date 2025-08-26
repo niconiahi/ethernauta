@@ -1,14 +1,14 @@
+import { addressSchema } from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
+  boolean,
+  object,
   parse,
   tuple,
-  object,
   union,
-  boolean,
 } from "valibot"
-import { addressSchema } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([addressSchema]),

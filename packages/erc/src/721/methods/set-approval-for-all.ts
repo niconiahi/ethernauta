@@ -1,18 +1,18 @@
-import type { Http, Writable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import {
-  parse,
-  tuple,
-  object,
-  union,
-  boolean,
-} from "valibot"
+import type { Hash32 } from "@ethernauta/eth"
 import {
   addressSchema,
   Hash32Schema,
 } from "@ethernauta/eth"
-import type { Hash32 } from "@ethernauta/eth"
+import type { Http, Writable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import {
+  boolean,
+  object,
+  parse,
+  tuple,
+  union,
+} from "valibot"
 
 const parametersSchema = union([
   tuple([addressSchema, boolean()]),

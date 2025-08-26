@@ -1,14 +1,14 @@
+import { bytes4Schema } from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
+  boolean,
+  object,
   parse,
   tuple,
-  object,
   union,
-  boolean,
 } from "valibot"
-import { bytes4Schema } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([bytes4Schema]),
