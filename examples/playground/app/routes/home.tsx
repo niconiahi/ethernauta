@@ -1,5 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { transfer } from "@ethernauta/eth"
+import { transfer } from "@ethernauta/erc/20"
 import {
   register_transaction,
   type Transaction,

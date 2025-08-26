@@ -38,12 +38,18 @@ importers:
 
   examples/playground:
     dependencies:
+      '@ethernauta/abi':
+        specifier: workspace:*
+        version: link:../../packages/abi
       '@ethernauta/chain':
         specifier: workspace:*
         version: link:../../packages/chain
       '@ethernauta/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@ethernauta/erc':
+        specifier: workspace:*
+        version: link:../../packages/erc
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../../packages/eth
@@ -163,9 +169,6 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
     devDependencies:
-      '@ethernauta/testing':
-        specifier: workspace:*
-        version: link:../testing
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(typescript@5.8.3)
@@ -185,15 +188,6 @@ importers:
       bun:
         specifier: ^1.2.20
         version: 1.2.21
-      tsdown:
-        specifier: ^0.13.3
-        version: 0.13.5(typescript@5.8.3)
-
-  packages/testing:
-    devDependencies:
-      '@types/node':
-        specifier: ^24.3.0
-        version: 24.3.0
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(typescript@5.8.3)
