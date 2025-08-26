@@ -1,11 +1,29 @@
 [![bundlejs](https://deno.bundlejs.com/badge?q=@ethernauta/eth@0.0.10&treeshake=[*])](https://deno.bundlejs.com/badge?q=@ethernauta/eth@0.0.10&treeshake=[*])
 
+## What will you find here?
+
+In here you will find many ERC functions ready to be used, either to read the blockchain or to write to it
+
 ## Philosophy
 
 This module aims to be an un-opinionated representation of the defined:
 
 - [EIPs](https://eips.ethereum.org/all#final)
 - [OpenZeppelin contracts](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts)
+
+## Currently supports
+
+- [x] Token Standard ([EIP-20](https://eips.ethereum.org/EIPS/eip-20))
+- [x] Standard Interface Detection ([EIP-165](https://eips.ethereum.org/EIPS/eip-165))
+- [x] Non-Fungible Token Standard ([EIP-721](https://eips.ethereum.org/EIPS/eip-721))
+
+### Want to see one added?
+
+Please, if this is the case, ask for it in an issue
+
+### Want to generate them yourself?
+
+That said, you can generate your own functions (ready to be used) if you provide a valid ABI in `.json` format. Check the [CLI package](https://github.com/niconiahi/ethernauta/blob/main/packages/cli)
 
 ## Modules
 
