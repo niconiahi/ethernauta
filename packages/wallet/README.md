@@ -4,16 +4,11 @@ This module allows you to sign any transaction. It will return the hashed transa
 
 ## Modules
 
-- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth)
-- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet)
-- [connector](https://github.com/niconiahi/ethernauta/blob/main/packages/connector)
-- [transport](https://github.com/niconiahi/ethernauta/blob/main/packages/transport)
-- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction)
-
-### Files to pay attention
-
-- [utils/rlp.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/rlp.ts)
-- [utils/event.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/event.ts)
-- [utils/vault.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/vault.ts)
-- [utils/crypto.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/crypto.ts)
-- [utils/sign-transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/utils/sign-transaction.ts)
+- [abi](https://github.com/niconiahi/ethernauta/blob/main/packages/abi) [NPM](https://www.npmjs.com/package/@ethernauta/abi)
+- [chain](https://github.com/niconiahi/ethernauta/blob/main/packages/chain) [NPM](https://www.npmjs.com/package/@ethernauta/chain)
+- [cli](https://github.com/niconiahi/ethernauta/blob/main/packages/cli) [NPM](https://www.npmjs.com/package/@ethernauta/cli)
+- [erc](https://github.com/niconiahi/ethernauta/blob/main/packages/erc) [NPM](https://www.npmjs.com/package/@ethernauta/erc)
+- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth) [NPM](https://www.npmjs.com/package/@ethernauta/eth)
+- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction) [NPM](https://www.npmjs.com/package/@ethernauta/transaction)
+- [utils](https://github.com/niconiahi/ethernauta/blob/main/packages/utils) [NPM](https://www.npmjs.com/package/@ethernauta/utils)
+- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet) [NPM](https://www.npmjs.com/package/@ethernauta/wallet)
