@@ -1,12 +1,12 @@
-import type { Address } from "@ethernauta/eth"
-import {
-  addressSchema,
-  uint256Schema,
-} from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+import { parse, union, tuple, object } from "valibot"
+import {
+  uint256Schema,
+  addressSchema,
+} from "@ethernauta/eth"
+import type { Address } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([uint256Schema]),
@@ -17,8 +17,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function ownerOf(
   _parameters: Parameters,
-): Readable<Address> {
-  return async (transports: Http[]): Promise<Address> => {
+): Readable<Hash32> {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "ownerOf"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

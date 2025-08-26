@@ -49,8 +49,8 @@ import { parse, union } from "valibot"
 import { uint256Schema } from "@ethernauta/eth"
 import type { Uint256 } from "@ethernauta/eth"
 
-export function totalSupply(): Readable<Uint256> {
-  return async (transports: Http[]): Promise<Uint256> => {
+export function totalSupply(): Readable<Hash32> {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "totalSupply"
     const call = parse(callSchema, [method, []])
     const response = await Promise.any(

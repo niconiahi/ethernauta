@@ -1,12 +1,12 @@
-import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-} from "@ethernauta/eth"
 import type { Http, Writable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+import { parse, union, tuple, object } from "valibot"
+import {
+  addressSchema,
+  uint256Schema,
+  bytesSchema,
+} from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema, bytesSchema]),
@@ -19,8 +19,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function safeTransferFrom(
   _parameters: Parameters,
-): Writable<void> {
-  return async (transports: Http[]): Promise<void> => {
+): Writable<Hash32> {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "safeTransferFrom"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

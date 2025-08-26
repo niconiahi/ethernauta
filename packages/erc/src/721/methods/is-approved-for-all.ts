@@ -1,14 +1,14 @@
-import { addressSchema } from "@ethernauta/eth"
 import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
-  boolean,
-  object,
   parse,
   tuple,
+  object,
   union,
+  boolean,
 } from "valibot"
+import { addressSchema } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([addressSchema]),
@@ -19,8 +19,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function isApprovedForAll(
   _parameters: Parameters,
-): Readable<boolean> {
-  return async (transports: Http[]): Promise<boolean> => {
+): Readable<Hash32> {
+  return async (transports: Http[]): Promise<Hash32> => {
     const method = "isApprovedForAll"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
