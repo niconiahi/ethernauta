@@ -19,8 +19,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function supportsInterface(
   _parameters: Parameters,
-): Readable<Hash32> {
-  return async (transports: Http[]): Promise<Hash32> => {
+): Readable<boolean> {
+  return async (transports: Http[]): Promise<boolean> => {
     const method = "supportsInterface"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

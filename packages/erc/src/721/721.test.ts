@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process"
-import { readdirSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import {
   DescriptionSchema,
@@ -29,5 +29,65 @@ describe("ERC721", () => {
       const file_name = `${camel_to_kebab(function_.name)}.ts`
       expect(generated_files).toContain(file_name)
     }
+  })
+  it("should create the correct transferFrom", () => {
+    const descriptions = parse(
+      array(DescriptionSchema),
+      ERC721_ABI,
+    )
+    const functions = descriptions.filter((description) => {
+      return description.type === "function"
+    })
+    const this_dir = this_directory(import.meta.url)
+    generate(functions, this_dir)
+    const methods_dir = join(this_dir, "methods")
+    execSync(`biome format --write ${methods_dir}/*.ts`)
+    const SNAPSHOT = `
+import type { Http, Readable } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import {
+  parse,
+  tuple,
+  object,
+  union,
+  boolean,
+} from "valibot"
+import { addressSchema } from "@ethernauta/eth"
+
+const parametersSchema = union([
+  tuple([addressSchema]),
+  object({
+    owner: addressSchema,
+  }),
+])
+type Parameters = InferOutput<typeof parametersSchema>
+export function isApprovedForAll(
+  _parameters: Parameters,
+): Readable<boolean> {
+  return async (transports: Http[]): Promise<boolean> => {
+    const method = "isApprovedForAll"
+    const parameters = parse(parametersSchema, _parameters)
+    const call = parse(callSchema, [method, parameters])
+    const response = await Promise.any(
+      transports.map((transport) => transport(call)),
+    )
+    if ("error" in response) {
+      throw new Error(response.error.message)
+    }
+    const result = parse(
+      union([boolean()]),
+      response.result,
+    )
+    return result
+  }
+}`
+    const path = join(
+      this_dir,
+      "methods",
+      "is-approved-for-all.ts",
+    )
+    const content = readFileSync(path, { encoding: "utf8" })
+    expect(content.trim()).toBe(SNAPSHOT.trim())
   })
 })

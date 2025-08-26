@@ -6,7 +6,9 @@ import {
   addressSchema,
   uint256Schema,
   bytesSchema,
+  Hash32Schema,
 } from "@ethernauta/eth"
+import type { Hash32 } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema, bytesSchema]),
@@ -30,7 +32,10 @@ export function safeTransferFrom(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(union([]), response.result)
+    const result = parse(
+      union([Hash32Schema]),
+      response.result,
+    )
     return result
   }
 }

@@ -17,8 +17,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function ownerOf(
   _parameters: Parameters,
-): Readable<Hash32> {
-  return async (transports: Http[]): Promise<Hash32> => {
+): Readable<Address> {
+  return async (transports: Http[]): Promise<Address> => {
     const method = "ownerOf"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

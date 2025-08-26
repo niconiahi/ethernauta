@@ -17,8 +17,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function getApproved(
   _parameters: Parameters,
-): Readable<Hash32> {
-  return async (transports: Http[]): Promise<Hash32> => {
+): Readable<Address> {
+  return async (transports: Http[]): Promise<Address> => {
     const method = "getApproved"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

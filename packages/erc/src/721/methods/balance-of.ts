@@ -17,8 +17,8 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function balanceOf(
   _parameters: Parameters,
-): Readable<Hash32> {
-  return async (transports: Http[]): Promise<Hash32> => {
+): Readable<Uint256> {
+  return async (transports: Http[]): Promise<Uint256> => {
     const method = "balanceOf"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

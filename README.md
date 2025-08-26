@@ -161,3 +161,33 @@ watch_transaction(hash, (transaction) => {
   // subsequent states that the transaction goes trough
 })
 ```
+
+### Executing ERC20 method
+
+```ts
+import { transfer } from "@ethernauta/erc/20";
+import { writer, SEPOLIA_CHAIN_ID } from "./writer";
+
+const writable = transfer([
+  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+  number_to_hex(1),
+])
+const hash = await writable(
+  writer(SEPOLIA_CHAIN_ID),
+)
+```
+
+### Executing ERC721 method
+
+```ts
+import { approve } from "@ethernauta/erc/721";
+import { writer, SEPOLIA_CHAIN_ID } from "./writer";
+
+const writable = approve([
+  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+  "57896044618658097711785492504343953926634992332820282019728792003956564819967",
+])
+const hash = await writable(
+  writer(SEPOLIA_CHAIN_ID),
+)
+```

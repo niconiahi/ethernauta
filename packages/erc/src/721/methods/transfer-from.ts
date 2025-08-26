@@ -5,7 +5,9 @@ import { parse, union, tuple, object } from "valibot"
 import {
   addressSchema,
   uint256Schema,
+  Hash32Schema,
 } from "@ethernauta/eth"
+import type { Hash32 } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
@@ -28,7 +30,10 @@ export function transferFrom(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(union([]), response.result)
+    const result = parse(
+      union([Hash32Schema]),
+      response.result,
+    )
     return result
   }
 }

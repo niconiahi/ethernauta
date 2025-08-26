@@ -1,17 +1,13 @@
 import type { Http, Writable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import {
-  parse,
-  tuple,
-  object,
-  union,
-  boolean,
-} from "valibot"
+import { parse, tuple, object, union } from "valibot"
 import {
   addressSchema,
   uint256Schema,
+  Hash32Schema,
 } from "@ethernauta/eth"
+import type { Hash32 } from "@ethernauta/eth"
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
@@ -35,7 +31,7 @@ export function approve(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([boolean()]),
+      union([Hash32Schema]),
       response.result,
     )
     return result
