@@ -275,22 +275,7 @@ function make_function(
     inputs_package_imports,
     outputs_package_imports,
   )
-  // if (description.name === "totalSupply") {
-  //   console.log("description", description)
-  //   console.log(
-  //     "inputs_valibot_imports",
-  //     inputs_valibot_imports,
-  //   )
-  //   console.log(
-  //     "outputs_valibot_imports",
-  //     outputs_valibot_imports,
-  //   )
-  //   console.log("valibot_imports", valibot_imports)
-  //   console.log("valibot_imports", valibot_imports)
-  //   console.log("package_imports", package_imports)
-  // }
   const name = description.name
-  const type_union = format_as_union(get_types(outputs))
   const template = `
 import type { Http, ${reader_or_writer} } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
@@ -301,10 +286,10 @@ import {
 ${compose_type_package_imports(outputs_package_imports)}
 
 ${compose_parameters_template(inputs, name)}
-: ${reader_or_writer}<${type_union === "" ? "void" : type_union}> {
+: ${reader_or_writer}<Hash32> {
   return async (
     transports: Http[],
-  ): Promise<${type_union === "" ? "void" : type_union}> => {
+  ): Promise<Hash32> => {
     const method = "${name}"
     ${compose_call_template(inputs)}
     const response = await Promise.any(
@@ -330,3 +315,7 @@ ${compose_parameters_template(inputs, name)}
   )
   writeFileSync(file_path, template)
 }
+
+// const type_union = format_as_union(get_types(outputs))
+// : ${reader_or_writer}<${type_union === "" ? "void" : type_union}> {
+// ): Promise<${type_union === "" ? "void" : type_union}> => {
