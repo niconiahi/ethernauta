@@ -24,8 +24,10 @@ async function get_descriptions(
   path: string,
 ): Promise<Description[]> {
   const absolute_path = resolve(process.cwd(), path)
-  const module = await import(absolute_path)
-  const JSON_ABI = module.default
+  const { default: JSON_ABI } = await import(
+    absolute_path,
+    { with: { type: "json" } }
+  )
   const descriptions = parse(
     array(DescriptionSchema),
     JSON_ABI,
