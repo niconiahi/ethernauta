@@ -1,5 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { transfer } from "@ethernauta/erc/20"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
   register_transaction,
   type Transaction,
@@ -17,7 +17,7 @@ const NAMESPACE = {
   ETHEREUM: "eip155",
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
@@ -50,20 +50,31 @@ export default function () {
         type="button"
         className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer"
         onClick={async () => {
-          const writable = transfer([
-            "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-            number_to_hex(1),
+          const METHOD = "transfer"
+          const ADDRESS =
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94"
+          const params = [ADDRESS, number_to_hex(1)]
+          const signed_transaction =
+            await window.wallet.sign(METHOD, params)
+          const writable = eth_sendRawTransaction([
+            signed_transaction,
           ])
           const hash = await writable(
             writer(SEPOLIA_CHAIN_ID),
           )
           const transaction = register_transaction(hash)
           setTransactions([transaction])
-          watch_transaction(hash, (transaction) => {
-            setTransactions((prev_transaction_logs) => {
-              return [...prev_transaction_logs, transaction]
-            })
-          })
+          watch_transaction(
+            transaction.hash,
+            (transaction) => {
+              setTransactions((prev_transaction_logs) => {
+                return [
+                  ...prev_transaction_logs,
+                  transaction,
+                ]
+              })
+            },
+          )
         }}
       >
         Send transfer

@@ -29,7 +29,7 @@ const NAMESPACE = {
   ETHEREUM: "eip155",
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
@@ -109,7 +109,7 @@ export function Wallet() {
       <p className="flex gap-1 text-base">
         <span>Address:</span>
         <span className="underline underline-offset-2 decoration-[#FF5005]">
-          {truncate(address, 5)}
+          {address}
         </span>
       </p>
       <p className="flex gap-1 text-base">

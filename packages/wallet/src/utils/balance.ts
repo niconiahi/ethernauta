@@ -15,7 +15,7 @@ const NAMESPACE = {
   ETHEREUM: "eip155",
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 const sepolia_chain_id = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
@@ -31,6 +31,7 @@ export const balance = signal<bigint>(0n)
 
 export async function fetch_balance(address: Address) {
   const readable = eth_getBalance([address, "latest"])
+  console.log("readable", readable)
   const balance = await readable(reader(sepolia_chain_id))
   return hex_to_big(balance)
 }

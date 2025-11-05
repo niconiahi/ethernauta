@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest"
 import { eth_getBlockByHash } from "./get-block-by-hash"
 
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 
 describe("eth_getBlockByHash", () => {
   it("should return block when valid hash is provided", async () => {

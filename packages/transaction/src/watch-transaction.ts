@@ -20,7 +20,7 @@ const NAMESPACE = {
   ETHEREUM: "eip155",
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 const sepolia_chain_id = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,

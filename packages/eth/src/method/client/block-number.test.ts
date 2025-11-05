@@ -11,7 +11,7 @@ import { uintSchema } from "../../core"
 import { eth_blockNumber } from "./block-number"
 
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 
 describe("eth_blockNumber", () => {
   it("should correctly get the latest mined block", async () => {

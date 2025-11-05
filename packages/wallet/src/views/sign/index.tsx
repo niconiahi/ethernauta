@@ -13,12 +13,13 @@ import {
 } from "../../utils/sign-transaction"
 import { transaction_request } from "../../utils/transaction"
 import { wallet } from "../../utils/wallet"
+import * as v from "valibot"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
 }
 const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://muddy-radial-borough.ethereum-sepolia.quiknode.pro/e0d1ca422dd966c7b388455f296fb1483f738bef/"
+  "https://ethereum-sepolia-rpc.publicnode.com"
 const sepolia_chain_id = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
@@ -32,19 +33,36 @@ const reader = create_reader([
 
 export function Sign() {
   return (
-    <div>
-      <h1>you are about to sign</h1>
-      <p>method {transaction_request.value.method}</p>
-      <p>
-        params{" "}
-        {JSON.stringify(
-          transaction_request.value.params,
-          null,
-          2,
-        )}
-      </p>
+    <main className="flex flex-col gap-2 p-2 text-base">
+      <h1 className="text-center">You are about to sign</h1>
+      <fieldset>
+        <legend>Method</legend>
+        <p className="font-bold">
+          {transaction_request.value.method}
+        </p>
+      </fieldset>
+      <fieldset>
+        <legend>Params</legend>
+        <ul>
+          {transaction_request.value.params.map(
+            (_param, index) => {
+              const param = v.parse(v.string(), _param)
+              const id = `param-${param}`
+              return (
+                <li key={id} className="flex gap-2">
+                  <span className="w-2 text-center">
+                    {index}
+                  </span>
+                  <span className="font-bold">{param}</span>
+                </li>
+              )
+            },
+          )}
+        </ul>
+      </fieldset>
       <button
         type="button"
+        className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer text-base"
         onClick={async () => {
           const address = wallet.value.address as Address
           const key = wallet.value.key
@@ -71,8 +89,8 @@ export function Sign() {
           chrome.runtime.sendMessage(response)
         }}
       >
-        sign
+        Sign
       </button>
-    </div>
+    </main>
   )
 }
