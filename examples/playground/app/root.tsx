@@ -13,7 +13,7 @@ import "./styles/global.css"
 
 export const links: Route.LinksFunction = () => [
   {
-    rel: "preconnect",
+    rel: "preconnects",
     href: "https://fonts.googleapis.com",
   },
   {
