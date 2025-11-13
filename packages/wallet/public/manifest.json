@@ -10,18 +10,24 @@
   "background": {
     "service_worker": "extension.entry.mjs"
   },
-  "permissions": ["storage", "activeTab"],
-  "host_permissions": ["https://*/*"],
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://ethernauta.niconiahi.workers.dev/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://ethernauta.niconiahi.workers.dev/*"
+      ],
       "js": ["browser.entry.mjs"],
       "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://ethernauta.niconiahi.workers.dev/*"
+      ],
       "resources": ["wallet.mjs"]
     }
   ]
