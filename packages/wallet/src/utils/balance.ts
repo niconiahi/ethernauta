@@ -1,39 +1,20 @@
-import { eip155_11155111 } from "@ethernauta/chain"
 import {
   type Address,
   eth_getBalance,
 } from "@ethernauta/eth"
-import {
-  create_reader,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
 import { signal } from "@preact/signals"
+import { get_reader, selected_chain } from "./chain"
 import { hex_to_big } from "./crypto"
-
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://ethereum-sepolia-rpc.publicnode.com"
-const sepolia_chain_id = encode_chain_id({
-  namespace: NAMESPACE.ETHEREUM,
-  reference: eip155_11155111.chainId,
-})
-const reader = create_reader([
-  {
-    chainId: sepolia_chain_id,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
-  },
-])
 
 export const balance = signal<bigint>(0n)
 
 export async function fetch_balance(address: Address) {
+  const { chain_id, reader } = get_reader(
+    selected_chain.value,
+  )
   const readable = eth_getBalance([address, "latest"])
-  console.log("readable", readable)
-  const balance = await readable(reader(sepolia_chain_id))
-  return hex_to_big(balance)
+  const result = await readable(reader(chain_id))
+  return hex_to_big(result)
 }
 
 export function wei_to_eth(wei: bigint): string {
