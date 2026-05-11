@@ -1,31 +1,23 @@
+import {
+  create_provider,
+  ERROR_CODE,
+  type Provider,
+} from "@ethernauta/eip/1193"
+import { announce } from "@ethernauta/eip/6963"
 import type {
-  ConnectRequest,
   NativeExtensionCloseResponse,
   SignTransactionRequest,
   SignTransactionResponse,
   TransactionRejectedResponse,
 } from "../src/utils/event"
+import icon from "../public/icons/icon-128.png?inline"
 
-type Wallet = {
-  connect: () => void
-  sign: (
+function create_signer() {
+  return (
     method: string,
-    params: unknown[],
-  ) => Promise<string>
-}
-
-declare global {
-  interface Window {
-    wallet: Wallet
-  }
-}
-
-window.wallet = {
-  sign: async (
-    method: string,
-    params: unknown[] | Record<string, unknown>,
+    params: unknown,
   ): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const id = crypto.randomUUID()
       window.addEventListener(
         "message",
@@ -37,49 +29,69 @@ window.wallet = {
           >,
         ) {
           if (
-            event.data.type.startsWith(
+            !event.data.type.startsWith(
               "ETHERNAUTA_RESPONSE",
-            ) &&
-            event.data.id === id
+            ) ||
+            event.data.id !== id
+          )
+            return
+          window.removeEventListener("message", handler)
+          if (
+            event.data.type ===
+            "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
           ) {
-            window.removeEventListener("message", handler)
-            if (
-              event.data.type ===
-              "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
-            ) {
-              reject(
-                new Error("Transaction rejected by user"),
-              )
-              return
-            }
-            if (
-              event.data.type ===
-              "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-            ) {
-              reject(new Error("Extension closed"))
-              return
-            }
-            resolve(
-              (event.data as SignTransactionResponse)
-                .signed_transaction,
-            )
+            reject({
+              code: ERROR_CODE.USER_REJECTED_REQUEST,
+              message: "User rejected request",
+            })
+            return
           }
+          if (
+            event.data.type ===
+            "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
+          ) {
+            reject({
+              code: ERROR_CODE.USER_REJECTED_REQUEST,
+              message: "Extension closed",
+            })
+            return
+          }
+          resolve(
+            (event.data as SignTransactionResponse)
+              .signed_transaction,
+          )
         },
       )
       const request: SignTransactionRequest = {
         type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
         id,
         method,
-        params,
+        params: params as unknown[],
       }
       window.postMessage(request, window.location.origin)
     })
-  },
-  connect: () => {
-    const request: ConnectRequest = {
-      type: "ETHERNAUTA_REQUEST_CONNECT",
-      id: crypto.randomUUID(),
-    }
-    window.postMessage(request, window.location.origin)
-  },
+  }
 }
+
+const provider = create_provider(
+  [{ chainId: "0xaa36a7", transports: [] }],
+  create_signer(),
+)
+
+announce({
+  info: {
+    uuid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    name: "Ethernauta",
+    icon,
+    rdns: "com.ethernauta.wallet",
+  },
+  provider,
+})
+
+declare global {
+  interface Window {
+    ethereum: Provider
+  }
+}
+
+window.ethereum = provider
