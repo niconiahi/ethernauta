@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json.schemastore.org/chrome-manifest",
+  "manifest_version": 3,
+  "name": "Ethernauta",
+  "version": "0.0.2",
+  "description": "Self-custody Ethereum wallet. Create a wallet, store your keys encrypted locally, and sign transactions — nothing ever leaves your device.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "extension.entry.mjs"
+  },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://ethernauta.niconiahi.workers.dev/*",
+    "http://localhost/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://ethernauta.niconiahi.workers.dev/*",
+        "http://localhost/*"
+      ],
+      "js": ["browser.entry.mjs"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://ethernauta.niconiahi.workers.dev/*",
+        "http://localhost/*"
+      ],
+      "resources": ["wallet.mjs"]
+    }
+  ]
+}

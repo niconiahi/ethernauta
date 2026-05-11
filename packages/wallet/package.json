@@ -14,7 +14,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
-    "zip": "cd dist && zip -r ../extension.zip .",
+    "zip": "node scripts/strip-manifest.mjs && rm -f extension.zip && cd dist && zip -r ../extension.zip . --exclude 'manifest.dev.json'",
     "test:unit": "vitest"
   },
   "dependencies": {
