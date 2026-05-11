@@ -4,7 +4,11 @@ import {
   fetch_balance,
   wei_to_eth,
 } from "../../utils/balance"
-import { CHAINS, selected_chain } from "../../utils/chain"
+import {
+  CHAINS,
+  get_chain_id,
+  selected_chain,
+} from "../../utils/chain"
 import { wallet } from "../../utils/wallet"
 
 export function Wallet() {
@@ -19,7 +23,7 @@ export function Wallet() {
   return (
     <main className="flex flex-col gap-2 p-2">
       <select
-        className="p-2 border-2 rounded-md cursor-pointer text-base"
+        className="self-start bg-white p-2 border-2 rounded-md cursor-pointer text-base"
         value={selected_chain.value.id}
         onChange={(event) => {
           const id = Number(event.currentTarget.value)
@@ -29,7 +33,7 @@ export function Wallet() {
       >
         {CHAINS.map((chain) => (
           <option key={chain.id} value={chain.id}>
-            {chain.name}
+            {get_chain_id(chain)} — {chain.name}
           </option>
         ))}
       </select>
