@@ -15,6 +15,10 @@ import { Wallet } from "./views/wallet/index"
 
 export function Controller() {
   useEffect(() => {
+    chrome.runtime.connect({ name: "popup" })
+    chrome.runtime.sendMessage({
+      type: "ETHERNAUTA_POPUP_READY",
+    })
     chrome.runtime.onMessage.addListener(
       async (message) => {
         const request = parse(

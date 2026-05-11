@@ -1,11 +1,14 @@
-import { eip155_11155111 } from "@ethernauta/chain"
 import type { Address } from "@ethernauta/eth"
+import * as v from "valibot"
+import { Button } from "../../components/button"
 import {
-  create_reader,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-import type { EthernautaResponse } from "../../utils/event"
+  get_reader,
+  selected_chain,
+} from "../../utils/chain"
+import type {
+  EthernautaResponse,
+  TransactionRejectedResponse,
+} from "../../utils/event"
 import { bytes_to_hex } from "../../utils/hex"
 import {
   get_nonce,
@@ -13,23 +16,6 @@ import {
 } from "../../utils/sign-transaction"
 import { transaction_request } from "../../utils/transaction"
 import { wallet } from "../../utils/wallet"
-import * as v from "valibot"
-
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://ethereum-sepolia-rpc.publicnode.com"
-const sepolia_chain_id = encode_chain_id({
-  namespace: NAMESPACE.ETHEREUM,
-  reference: eip155_11155111.chainId,
-})
-const reader = create_reader([
-  {
-    chainId: sepolia_chain_id,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
-  },
-])
 
 export function Sign() {
   return (
@@ -60,16 +46,17 @@ export function Sign() {
           )}
         </ul>
       </fieldset>
-      <button
-        type="button"
-        className="bg-[#FF5005] border-2 rounded-md p-2 cursor-pointer text-base"
+      <Button
         onClick={async () => {
           const address = wallet.value.address as Address
           const key = wallet.value.key
+          const { chain_id, reader } = get_reader(
+            selected_chain.value,
+          )
           const nonce = await get_nonce(
             address,
             reader,
-            sepolia_chain_id,
+            chain_id,
           )
           const signed_transaction = await sign_transaction(
             {
@@ -87,10 +74,23 @@ export function Sign() {
             ),
           }
           chrome.runtime.sendMessage(response)
+          window.close()
         }}
       >
         Sign
-      </button>
+      </Button>
+      <Button
+        onClick={() => {
+          const response: TransactionRejectedResponse = {
+            id: transaction_request.value.id,
+            type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED",
+          }
+          chrome.runtime.sendMessage(response)
+          window.close()
+        }}
+      >
+        Reject
+      </Button>
     </main>
   )
 }

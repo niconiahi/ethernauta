@@ -1,11 +1,13 @@
 import type {
   ConnectRequest,
+  NativeExtensionCloseResponse,
   SignTransactionRequest,
   SignTransactionResponse,
+  TransactionRejectedResponse,
 } from "../src/utils/event"
 
 type Wallet = {
-  connect: () => Promise<void>
+  connect: () => void
   sign: (
     method: string,
     params: unknown[],
@@ -23,12 +25,16 @@ window.wallet = {
     method: string,
     params: unknown[] | Record<string, unknown>,
   ): Promise<string> => {
-    return new Promise<string>((resolve) => {
+    return new Promise<string>((resolve, reject) => {
       const id = crypto.randomUUID()
       window.addEventListener(
         "message",
         function handler(
-          event: MessageEvent<SignTransactionResponse>,
+          event: MessageEvent<
+            | SignTransactionResponse
+            | TransactionRejectedResponse
+            | NativeExtensionCloseResponse
+          >,
         ) {
           if (
             event.data.type.startsWith(
@@ -37,7 +43,26 @@ window.wallet = {
             event.data.id === id
           ) {
             window.removeEventListener("message", handler)
-            resolve(event.data.signed_transaction)
+            if (
+              event.data.type ===
+              "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
+            ) {
+              reject(
+                new Error("Transaction rejected by user"),
+              )
+              return
+            }
+            if (
+              event.data.type ===
+              "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
+            ) {
+              reject(new Error("Extension closed"))
+              return
+            }
+            resolve(
+              (event.data as SignTransactionResponse)
+                .signed_transaction,
+            )
           }
         },
       )
@@ -47,17 +72,14 @@ window.wallet = {
         method,
         params,
       }
-      window.postMessage(request, "*")
+      window.postMessage(request, window.location.origin)
     })
   },
-  connect: async (): Promise<void> => {
-    return new Promise<void>(() => {
-      const id = crypto.randomUUID()
-      const request: ConnectRequest = {
-        type: "ETHERNAUTA_REQUEST_CONNECT",
-        id,
-      }
-      window.postMessage(request, "*")
-    })
+  connect: () => {
+    const request: ConnectRequest = {
+      type: "ETHERNAUTA_REQUEST_CONNECT",
+      id: crypto.randomUUID(),
+    }
+    window.postMessage(request, window.location.origin)
   },
 }
