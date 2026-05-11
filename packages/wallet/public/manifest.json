@@ -26,12 +26,14 @@
   "permissions": ["storage"],
   "host_permissions": [
     "https://ethernauta.niconiahi.workers.dev/*",
-    "https://ethereum-sepolia-rpc.publicnode.com/*"
+    "https://ethereum-sepolia-rpc.publicnode.com/*",
+    "http://localhost/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://ethernauta.niconiahi.workers.dev/*"
+        "https://ethernauta.niconiahi.workers.dev/*",
+        "http://localhost/*"
       ],
       "js": ["browser.entry.mjs"],
       "run_at": "document_end"
@@ -40,7 +42,8 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "https://ethernauta.niconiahi.workers.dev/*"
+        "https://ethernauta.niconiahi.workers.dev/*",
+        "http://localhost/*"
       ],
       "resources": ["wallet.mjs"]
     }
