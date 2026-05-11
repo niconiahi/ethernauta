@@ -179,7 +179,7 @@ export async function get_vault(
           "Invalid password or corrupted vault",
         )
       }
-      throw new Error("invalid unkwown error")
+      throw new Error("invalid unknown error")
     })
   return new TextDecoder().decode(content_buffer)
 }
