@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "name": "Ethernauta",
   "version": "0.0.2",
-  "description": "Self-custody Ethereum wallet. Create a wallet, store your keys encrypted locally, and sign transactions — nothing ever leaves your device.",
+  "description": "Self-custody Ethereum wallet. Store your keys encrypted locally and sign transactions — nothing ever leaves your device.",
   "homepage_url": "https://ethernauta.niconiahi.workers.dev/privacy-policy",
   "icons": {
     "16": "icons/icon-16.png",
