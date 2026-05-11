@@ -47,7 +47,9 @@ export async function save_wallet(wallet: Wallet) {
     address: wallet.address,
     private_key: wallet.key.toJSON().xpriv,
   }
-  await chrome.storage.sync.set({ wallet: storable_wallet })
+  await chrome.storage.local.set({
+    wallet: storable_wallet,
+  })
 }
 
 export async function restore_wallet() {
@@ -55,7 +57,7 @@ export async function restore_wallet() {
     object({
       wallet: optional(StorableWalletSchema),
     }),
-    await chrome.storage.sync.get("wallet"),
+    await chrome.storage.local.get("wallet"),
   )
   const stored_wallet = storage.wallet
   if (stored_wallet) {

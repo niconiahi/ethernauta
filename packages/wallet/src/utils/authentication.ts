@@ -4,7 +4,7 @@ import { view } from "./view"
 
 export async function set_timestamp() {
   const now = Date.now()
-  await chrome.storage.sync.set({ timestamp: now })
+  await chrome.storage.local.set({ timestamp: now })
 }
 
 export async function get_timestamp() {
@@ -12,7 +12,7 @@ export async function get_timestamp() {
     object({
       timestamp: optional(number()),
     }),
-    await chrome.storage.sync.get("timestamp"),
+    await chrome.storage.local.get("timestamp"),
   )
   return storage.timestamp
 }
