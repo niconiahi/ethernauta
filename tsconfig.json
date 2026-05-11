@@ -15,6 +15,9 @@
     "paths": {
       "@ethernauta/*": [
         "./packages/*/src"
+      ],
+      "@ethernauta/eip/*": [
+        "./packages/eip/src/*"
       ]
     }
   }
