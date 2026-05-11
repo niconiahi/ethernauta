@@ -5,7 +5,7 @@ export type Wallet = {
     method: string,
     params: unknown[] | Record<string, unknown>,
   ) => Promise<Hash32>
-  connect: () => Promise<void>
+  connect: () => void
 }
 
 declare global {

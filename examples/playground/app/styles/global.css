@@ -1,7 +1,23 @@
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+a:hover {
+  cursor: pointer;
+  text-underline-offset: 4px;
+  text-decoration: underline;
+}
+
 @layer base {
   html,
   body {
-    height: 100%;
+    min-height: 100%;
   }
 
   * {
