@@ -1,18 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/chrome-manifest",
   "manifest_version": 3,
-  "name": "@ethernauta/wallet",
-  "version": "0.0.1",
-  "description": "A wallet browser extension that only signs",
+  "name": "Ethernauta",
+  "version": "0.0.2",
+  "description": "Self-custody Ethereum wallet. Create a wallet, store your keys encrypted locally, and sign transactions — nothing ever leaves your device.",
+  "homepage_url": "https://ethernauta.niconiahi.workers.dev/privacy-policy",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
   },
   "background": {
     "service_worker": "extension.entry.mjs"
   },
   "permissions": ["storage"],
   "host_permissions": [
-    "https://ethernauta.niconiahi.workers.dev/*"
+    "https://ethernauta.niconiahi.workers.dev/*",
+    "https://ethereum-sepolia-rpc.publicnode.com/*"
   ],
   "content_scripts": [
     {
