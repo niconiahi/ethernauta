@@ -64,6 +64,7 @@ export function Sign() {
               nonce,
               method: transaction_request.value.method,
               params: transaction_request.value.params,
+              to: transaction_request.value.to,
             },
           )
           const response: EthernautaResponse = {

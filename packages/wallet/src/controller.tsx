@@ -5,7 +5,10 @@ import {
   validate_vault,
 } from "./utils/authentication"
 import { EthernautaRequestSchema } from "./utils/event"
-import { transaction_request } from "./utils/transaction"
+import {
+  connection_request,
+  transaction_request,
+} from "./utils/transaction"
 import { view } from "./utils/view"
 import { restore_wallet } from "./utils/wallet"
 import { Mnemonics } from "./views/mnemonics/index"
@@ -34,6 +37,7 @@ export function Controller() {
           if (!authenticated) return
           await restore_wallet()
           if (request.method === "eth_requestAccounts") {
+            connection_request.value = { id: request.id }
             view.value = "wallet"
             return
           }
@@ -41,6 +45,7 @@ export function Controller() {
             id: request.id,
             method: request.method,
             params: request.params as unknown[],
+            to: request.to,
           }
           view.value = "sign"
         }

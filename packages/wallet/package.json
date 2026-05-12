@@ -25,6 +25,7 @@
     "@scure/bip39": "1.6.0",
     "preact": "10.26.9",
     "valibot": "1.1.0",
+    "@ethernauta/abi": "workspace:*",
     "@ethernauta/utils": "workspace:*",
     "@ethernauta/eip": "workspace:*"
   },

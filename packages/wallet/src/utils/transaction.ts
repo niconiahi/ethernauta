@@ -3,6 +3,7 @@ import {
   array,
   type InferOutput,
   object,
+  optional,
   string,
   union,
   unknown,
@@ -12,6 +13,7 @@ export const TransactionSchema = object({
   id: string(),
   method: string(),
   params: union([array(unknown())]),
+  to: optional(string()),
 })
 export type Transaction = InferOutput<
   typeof TransactionSchema
@@ -21,3 +23,6 @@ export const transaction_request = signal<Transaction>({
   method: "hello_world",
   params: [],
 })
+export const connection_request = signal<{
+  id: string
+} | null>(null)

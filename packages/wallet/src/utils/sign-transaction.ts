@@ -1,3 +1,4 @@
+import { encode_call } from "@ethernauta/abi"
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
   type Address,
@@ -111,6 +112,7 @@ function get_max_priority_fee_per_gas(): bigint {
 function get_fields_from_transaction(
   method: Transaction["method"],
   params: Transaction["params"],
+  to?: string,
 ): {
   to: Address
   data: Uint8Array<ArrayBufferLike>
@@ -129,6 +131,19 @@ function get_fields_from_transaction(
         data: new Uint8Array([]),
       }
     }
+    case "safeMint": {
+      const contract = parse(addressSchema, to)
+      const nft_recipient = parse(addressSchema, params[0])
+      const uri = parse(string(), params[1])
+      return {
+        to: contract,
+        value: 0n,
+        data: encode_call("safeMint(address,string)", [
+          nft_recipient,
+          uri,
+        ]),
+      }
+    }
   }
   throw new Error(
     `there is no support for the sent ${method} method`,
@@ -140,18 +155,21 @@ export async function sign_transaction({
   nonce,
   method,
   params,
+  to,
 }: {
   key: HDKey
   nonce: bigint
   method: Transaction["method"]
   params: Transaction["params"]
+  to?: string
 }) {
-  const { to, value, data } = get_fields_from_transaction(
-    method,
-    params,
-  )
+  const {
+    to: resolved_to,
+    value,
+    data,
+  } = get_fields_from_transaction(method, params, to)
   const transaction: Eip1559TransactionUnsigned = {
-    to,
+    to: resolved_to,
     data,
     value,
     nonce,

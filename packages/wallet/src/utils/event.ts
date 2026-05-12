@@ -15,6 +15,7 @@ export const SignTransactionRequestSchema = object({
   type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
   method: string(),
   chainId: string(),
+  to: optional(string()),
   params: optional(
     union([array(unknown()), record(string(), unknown())]),
   ),
