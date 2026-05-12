@@ -2,6 +2,7 @@ import {
   create_provider,
   ERROR_CODE,
   type Provider,
+  type Signer,
 } from "@ethernauta/eip/1193"
 import { announce } from "@ethernauta/eip/6963"
 import type {
@@ -12,71 +13,74 @@ import type {
 } from "../src/utils/event"
 import icon from "../public/icons/icon-128.png?inline"
 
-function create_signer() {
-  return (
-    method: string,
-    params: unknown,
-  ): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const id = crypto.randomUUID()
-      window.addEventListener(
-        "message",
-        function handler(
-          event: MessageEvent<
-            | SignTransactionResponse
-            | TransactionRejectedResponse
-            | NativeExtensionCloseResponse
-          >,
-        ) {
-          if (
-            !event.data.type.startsWith(
-              "ETHERNAUTA_RESPONSE",
-            ) ||
-            event.data.id !== id
-          )
-            return
-          window.removeEventListener("message", handler)
-          if (
-            event.data.type ===
-            "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
+const CHAINS = [{ chainId: "0xaa36a7", transports: [] }]
+
+function create_signer(
+  chains: Array<{ chainId: string }>,
+): (chainId: string) => Signer {
+  return (chainId: string): Signer => {
+    const chain = chains.find((c) => c.chainId === chainId)
+    if (!chain)
+      throw new Error(`no chain configured for: ${chainId}`)
+    return (method, params) =>
+      new Promise((resolve, reject) => {
+        const id = crypto.randomUUID()
+        window.addEventListener(
+          "message",
+          function handler(
+            event: MessageEvent<
+              | SignTransactionResponse
+              | TransactionRejectedResponse
+              | NativeExtensionCloseResponse
+            >,
           ) {
-            reject({
-              code: ERROR_CODE.USER_REJECTED_REQUEST,
-              message: "User rejected request",
-            })
-            return
-          }
-          if (
-            event.data.type ===
-            "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-          ) {
-            reject({
-              code: ERROR_CODE.USER_REJECTED_REQUEST,
-              message: "Extension closed",
-            })
-            return
-          }
-          resolve(
-            (event.data as SignTransactionResponse)
-              .signed_transaction,
-          )
-        },
-      )
-      const request: SignTransactionRequest = {
-        type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
-        id,
-        method,
-        params: params as unknown[],
-      }
-      window.postMessage(request, window.location.origin)
-    })
+            if (
+              !event.data.type.startsWith(
+                "ETHERNAUTA_RESPONSE",
+              ) ||
+              event.data.id !== id
+            )
+              return
+            window.removeEventListener("message", handler)
+            if (
+              event.data.type ===
+              "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
+            ) {
+              reject({
+                code: ERROR_CODE.USER_REJECTED_REQUEST,
+                message: "User rejected request",
+              })
+              return
+            }
+            if (
+              event.data.type ===
+              "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
+            ) {
+              reject({
+                code: ERROR_CODE.USER_REJECTED_REQUEST,
+                message: "Extension closed",
+              })
+              return
+            }
+            resolve(
+              (event.data as SignTransactionResponse)
+                .signed_transaction,
+            )
+          },
+        )
+        const request: SignTransactionRequest = {
+          type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
+          id,
+          method,
+          chainId,
+          params: params as unknown[],
+        }
+        window.postMessage(request, window.location.origin)
+      })
   }
 }
 
-const provider = create_provider({
-  chains: [{ chainId: "0xaa36a7", transports: [] }],
-  signer: create_signer(),
-})
+const provider = create_provider({ chains: CHAINS })
 
 announce({
   info: {

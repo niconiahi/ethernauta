@@ -82,19 +82,18 @@ export type Signer = (
   params: unknown,
 ) => Promise<string>
 
+export type Signable<T> = (_signer: Signer) => Promise<T>
+
 export function create_provider({
   chains,
-  signer,
 }: {
   chains: Array<{ chainId: string; transports: Http[] }>
-  signer?: Signer
 }): Provider {
   const listeners: Listeners = new Map()
 
   return {
     async request({
       method,
-      params,
     }: RequestArguments): Promise<unknown> {
       switch (method) {
         case "eth_chainId": {
@@ -107,12 +106,10 @@ export function create_provider({
           return chain.chainId
         }
         default: {
-          if (!signer)
-            throw {
-              code: ERROR_CODE.UNSUPPORTED_METHOD,
-              message: `method not supported: ${method}`,
-            }
-          return signer(method, params)
+          throw {
+            code: ERROR_CODE.UNSUPPORTED_METHOD,
+            message: `method not supported: ${method}`,
+          }
         }
       }
     },
