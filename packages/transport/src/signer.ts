@@ -14,6 +14,7 @@ type SignTransactionRequest = {
   type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION"
   method: string
   chainId: string
+  to?: string
   params?: unknown[] | Record<string, unknown>
 }
 
@@ -33,13 +34,20 @@ type NativeExtensionCloseResponse = {
   type: "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
 }
 
+type Input = {
+  chain_id: string
+  to?: string
+}
+
 export function create_signer(
   chains: Array<{ chainId: string }>,
-): (chainId: string) => Signer {
-  return (chainId: string): Signer => {
-    const chain = chains.find((c) => c.chainId === chainId)
+): (input: Input) => Signer {
+  return ({ chain_id, to }: Input): Signer => {
+    const chain = chains.find((c) => c.chainId === chain_id)
     if (!chain)
-      throw new Error(`no chain configured for: ${chainId}`)
+      throw new Error(
+        `no chain configured for: ${chain_id}`,
+      )
     return (method, params) =>
       new Promise((resolve, reject) => {
         const id = crypto.randomUUID()
@@ -90,7 +98,8 @@ export function create_signer(
           type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
           id,
           method,
-          chainId,
+          chainId: chain_id,
+          ...(to ? { to } : {}),
           params: params as unknown[],
         }
         window.postMessage(request, window.location.origin)
