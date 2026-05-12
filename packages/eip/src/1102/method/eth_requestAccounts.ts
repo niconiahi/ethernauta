@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-1102
 
-import type { Signable, Signer } from "../../1193"
+import type { Signable, Signer } from "@ethernauta/transport"
 
 export function eth_requestAccounts(): Signable<string[]> {
   return (signer: Signer) =>

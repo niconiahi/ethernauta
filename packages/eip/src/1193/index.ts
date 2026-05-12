@@ -77,12 +77,6 @@ export const ERROR_CODE = {
   CHAIN_DISCONNECTED: 4901,
 } as const
 
-export type Signer = (
-  method: string,
-  params: unknown,
-) => Promise<string>
-
-export type Signable<T> = (_signer: Signer) => Promise<T>
 
 export function create_provider({
   chains,
