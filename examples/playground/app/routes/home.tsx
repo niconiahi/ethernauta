@@ -1,4 +1,6 @@
 import { eip155_11155111 } from "@ethernauta/chain"
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { create_provider } from "@ethernauta/eip/1193"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
   register_transaction,
@@ -6,11 +8,12 @@ import {
   watch_transaction,
 } from "@ethernauta/transaction"
 import {
+  create_signer,
   create_writer,
   encode_chain_id,
   http,
+  number_to_hex,
 } from "@ethernauta/transport"
-import { number_to_hex } from "@ethernauta/wallet"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
 
@@ -23,12 +26,15 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
 })
-const writer = create_writer([
+const CHAINS = [
   {
     chainId: SEPOLIA_CHAIN_ID,
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
   },
-])
+]
+const writer = create_writer(CHAINS)
+const signer = create_signer(CHAINS)
+const provider = create_provider({ chains: CHAINS })
 
 export default function () {
   const [transactions, setTransactions] = useState<
@@ -136,9 +142,7 @@ export default function () {
           <Button
             variant="secondary"
             onClick={() => {
-              window.ethereum.request({
-                method: "eth_requestAccounts",
-              })
+              eth_requestAccounts()(signer(SEPOLIA_CHAIN_ID))
             }}
           >
             Connect wallet
@@ -149,13 +153,13 @@ export default function () {
               set_error(null)
               try {
                 const signed_transaction =
-                  await window.ethereum.request({
-                    method: "transfer",
-                    params: [
+                  await signer(SEPOLIA_CHAIN_ID)(
+                    "transfer",
+                    [
                       "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
                       number_to_hex(1),
                     ],
-                  })
+                  )
                 const writable = eth_sendRawTransaction([
                   signed_transaction,
                 ])
@@ -535,9 +539,7 @@ function TestWalletButton() {
       onClick={async () => {
         await navigator.clipboard.writeText(TEST_MNEMONIC)
         setCopied(true)
-        window.ethereum.request({
-          method: "eth_requestAccounts",
-        })
+        eth_requestAccounts()(signer(SEPOLIA_CHAIN_ID))
       }}
     >
       {copied
@@ -565,7 +567,6 @@ function ExtensionMockup({
         boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
       }}
     >
-      {/* Browser chrome */}
       <div
         style={{
           background: "#2d2d2d",

@@ -47,6 +47,9 @@ importers:
       '@ethernauta/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@ethernauta/eip':
+        specifier: workspace:*
+        version: link:../../packages/eip
       '@ethernauta/erc':
         specifier: workspace:*
         version: link:../../packages/erc
