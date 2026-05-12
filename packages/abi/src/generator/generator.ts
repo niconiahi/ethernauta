@@ -50,6 +50,14 @@ function make_imports(
       })
       continue
     }
+    if (input.type === "string") {
+      valibot_imports.add({
+        name: input.name,
+        schema: "string()",
+        type: "string",
+      })
+      continue
+    }
     const { schema, type } = get_schema_for_type(input.type)
     const name = input.name
     package_imports.add({
@@ -276,10 +284,11 @@ function make_function(
     description.type === "function",
     "the description has to a function to make a view function",
   )
-  const reader_or_writer =
-    description.stateMutability === "view"
+  const kind =
+    description.stateMutability === "view" ||
+    description.stateMutability === "pure"
       ? "Readable"
-      : "Writable"
+      : "Signable"
   const {
     valibot_imports: inputs_valibot_imports,
     package_imports: inputs_package_imports,
@@ -296,26 +305,6 @@ function make_function(
     outputs_package_imports,
     outputs_valibot_imports,
   )
-  if (reader_or_writer === "Writable") {
-    // NOTE:
-    // for now, force the writable output as hash32
-    // the hash32 to be tracked while being executed
-    // in the blockchain
-    // I don't understand yet where to use the typed
-    // output
-    outputs.clear()
-    outputs_package_imports.clear()
-    outputs_package_imports.add({
-      name: "",
-      type: "Hash32",
-      schema: "Hash32Schema",
-    })
-    outputs.add({
-      name: "",
-      type: "Hash32",
-      schema: "Hash32Schema",
-    })
-  }
   const valibot_imports = merge_imports(
     inputs_valibot_imports,
     outputs_valibot_imports,
@@ -326,25 +315,17 @@ function make_function(
   )
   const name = description.name
   const type_union = format_as_union(get_types(outputs))
-  // if (description.name === "isApprovedForAll") {
-  //   console.log("inputs", inputs)
-  //   console.log("outputs", outputs)
-  //   console.log("package_imports", package_imports)
-  //   console.log("valibot_imports", valibot_imports)
-  //   console.log(
-  //     "inputs_valibot_imports",
-  //     inputs_valibot_imports,
-  //   )
-  // }
-  const template = `
-import type { Http, ${reader_or_writer} } from "@ethernauta/transport"
+  const template =
+    kind === "Readable"
+      ? `
+import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 ${compose_valibot_imports(valibot_imports, package_imports, inputs, outputs_package_imports, inputs_valibot_imports)}
 ${compose_package_imports(package_imports)}
 ${compose_type_package_imports(outputs_package_imports)}
 
 ${compose_parameters_template(inputs, name)}
-: ${reader_or_writer}<${type_union === "" ? "void" : type_union}> {
+: Readable<${type_union === "" ? "void" : type_union}> {
   return async (
     transports: Http[],
   ): Promise<${type_union === "" ? "void" : type_union}> => {
@@ -361,6 +342,21 @@ ${compose_parameters_template(inputs, name)}
       response.result,
     )
     return result
+  }
+}`.trim()
+      : `
+import type { Signable, Signer } from "@ethernauta/transport"
+${compose_valibot_imports(valibot_imports, package_imports, inputs, outputs_package_imports, inputs_valibot_imports)}
+${compose_package_imports(package_imports)}
+${outputs_package_imports.size > 0 ? compose_type_package_imports(outputs_package_imports) : ""}
+${outputs.size > 0 ? `export const OutputSchema = union([${format_as_comma_separated(get_schemas(outputs))}])
+export type Output = InferOutput<typeof OutputSchema>
+` : ""}
+${compose_parameters_template(inputs, name)}
+: Signable<string> {
+  return (_signer: Signer): Promise<string> => {
+    ${inputs.size > 0 ? `const parameters = parse(parametersSchema, _parameters)
+    return _signer("${name}", parameters)` : `return _signer("${name}", undefined)`}
   }
 }`.trim()
   const resolved_out_dir = resolve(out_dir, "methods")

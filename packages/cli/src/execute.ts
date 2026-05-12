@@ -2,8 +2,8 @@ import { resolve } from "node:path"
 import {
   type Description,
   DescriptionSchema,
-  generate,
 } from "@ethernauta/abi"
+import { generate } from "@ethernauta/abi/generator"
 import { array, parse, string } from "valibot"
 
 function validate_args(args: string[]) {
