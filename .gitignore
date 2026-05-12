@@ -4,3 +4,4 @@ dist
 .npmrc
 .tool-versions
 tmp
+.claude/settings.local.json
