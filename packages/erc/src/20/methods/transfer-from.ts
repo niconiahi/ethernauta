@@ -1,13 +1,22 @@
-import type { Hash32 } from "@ethernauta/eth"
+import type {
+  Signable,
+  Signer,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import {
+  parse,
+  tuple,
+  object,
+  union,
+  boolean,
+} from "valibot"
 import {
   addressSchema,
-  Hash32Schema,
   uint256Schema,
 } from "@ethernauta/eth"
-import type { Http, Writable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+
+export const OutputSchema = union([boolean()])
+export type Output = InferOutput<typeof OutputSchema>
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
@@ -19,21 +28,9 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function transferFrom(
   _parameters: Parameters,
-): Writable<Hash32> {
-  return async (transports: Http[]): Promise<Hash32> => {
-    const method = "transferFrom"
+): Signable<string> {
+  return (_signer: Signer): Promise<string> => {
     const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
-    }
-    const result = parse(
-      union([Hash32Schema]),
-      response.result,
-    )
-    return result
+    return _signer("transferFrom", parameters)
   }
 }
