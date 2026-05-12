@@ -2,6 +2,7 @@
 
 import type { Http } from "@ethernauta/transport"
 import * as v from "valibot"
+import { eth_requestAccounts } from "../1102"
 
 export const ListenerSchema = v.instance(Function)
 export type Listener = v.InferOutput<typeof ListenerSchema>
@@ -102,6 +103,9 @@ export function create_provider(
               message: "No chain configured",
             }
           return chain.chainId
+        }
+        case "eth_requestAccounts": {
+          return eth_requestAccounts(signer, params)
         }
         default: {
           return signer(method, params)
