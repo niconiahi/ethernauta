@@ -1,5 +1,6 @@
 const script = document.createElement("script")
 script.src = chrome.runtime.getURL("wallet.mjs")
+script.type = "module"
 script.onload = () => script.remove()
 document.head.appendChild(script)
 
