@@ -1,17 +1,39 @@
 import { execSync } from "node:child_process"
-import { readdirSync, readFileSync } from "node:fs"
-import { join } from "node:path"
 import {
-  DescriptionSchema,
-  generate,
-} from "@ethernauta/abi"
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+import { DescriptionSchema } from "@ethernauta/abi"
+import { generate } from "@ethernauta/abi/generator"
 import { camel_to_kebab } from "@ethernauta/utils"
 import { array, parse } from "valibot"
-import { describe, expect, it } from "vitest"
-import { this_directory } from "../utils"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import ERC721_ABI from "./IERC721.abi.json"
 
+function format_and_read(
+  path: string,
+  content: string,
+): string {
+  writeFileSync(path, content)
+  execSync(`biome format --write ${path}`)
+  return readFileSync(path, { encoding: "utf8" })
+}
+
 describe("ERC721", () => {
+  let tmp_dir: string
+
+  beforeEach(() => {
+    tmp_dir = mkdtempSync(join(tmpdir(), "erc721-"))
+  })
+
+  afterEach(() => {
+    rmSync(tmp_dir, { recursive: true })
+  })
+
   it("should correctly generate the ERC721 method's files", () => {
     const descriptions = parse(
       array(DescriptionSchema),
@@ -20,17 +42,20 @@ describe("ERC721", () => {
     const functions = descriptions.filter((description) => {
       return description.type === "function"
     })
-    const this_dir = this_directory(import.meta.url)
-    generate(functions, this_dir)
-    const methods_dir = join(this_dir, "methods")
+    generate(functions, tmp_dir)
+    const methods_dir = join(tmp_dir, "methods")
     execSync(`biome format --write ${methods_dir}/*.ts`)
-    const generated_files = readdirSync(methods_dir)
+    const generated_files = execSync(`ls ${methods_dir}`)
+      .toString()
+      .trim()
+      .split("\n")
     for (const function_ of functions) {
       const file_name = `${camel_to_kebab(function_.name)}.ts`
       expect(generated_files).toContain(file_name)
     }
   })
-  it("should create the correct transferFrom", () => {
+
+  it("should create the correct isApprovedForAll", () => {
     const descriptions = parse(
       array(DescriptionSchema),
       ERC721_ABI,
@@ -38,21 +63,19 @@ describe("ERC721", () => {
     const functions = descriptions.filter((description) => {
       return description.type === "function"
     })
-    const this_dir = this_directory(import.meta.url)
-    generate(functions, this_dir)
-    const methods_dir = join(this_dir, "methods")
+    generate(functions, tmp_dir)
+    const methods_dir = join(tmp_dir, "methods")
     execSync(`biome format --write ${methods_dir}/*.ts`)
-    const SNAPSHOT = `
-import type { Http, Readable } from "@ethernauta/transport"
+    const actual = readFileSync(
+      join(methods_dir, "is-approved-for-all.ts"),
+      { encoding: "utf8" },
+    )
+    const expected = format_and_read(
+      join(methods_dir, "is-approved-for-all.expected.ts"),
+      `import type { Http, Readable } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import {
-  parse,
-  tuple,
-  object,
-  union,
-  boolean,
-} from "valibot"
+import { parse, tuple, object, union, boolean } from "valibot"
 import { addressSchema } from "@ethernauta/eth"
 
 const parametersSchema = union([
@@ -62,9 +85,7 @@ const parametersSchema = union([
   }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
-export function isApprovedForAll(
-  _parameters: Parameters,
-): Readable<boolean> {
+export function isApprovedForAll(_parameters: Parameters): Readable<boolean> {
   return async (transports: Http[]): Promise<boolean> => {
     const method = "isApprovedForAll"
     const parameters = parse(parametersSchema, _parameters)
@@ -81,13 +102,8 @@ export function isApprovedForAll(
     )
     return result
   }
-}`
-    const path = join(
-      this_dir,
-      "methods",
-      "is-approved-for-all.ts",
+}`,
     )
-    const content = readFileSync(path, { encoding: "utf8" })
-    expect(content.trim()).toBe(SNAPSHOT.trim())
+    expect(actual.trim()).toBe(expected.trim())
   })
 })

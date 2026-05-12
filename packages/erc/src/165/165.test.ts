@@ -1,10 +1,8 @@
 import { execSync } from "node:child_process"
 import { readdirSync } from "node:fs"
 import { join } from "node:path"
-import {
-  DescriptionSchema,
-  generate,
-} from "@ethernauta/abi"
+import { DescriptionSchema } from "@ethernauta/abi"
+import { generate } from "@ethernauta/abi/generator"
 import { camel_to_kebab } from "@ethernauta/utils"
 import { array, parse } from "valibot"
 import { describe, expect, it } from "vitest"
