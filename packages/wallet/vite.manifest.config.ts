@@ -7,6 +7,7 @@ export default defineConfig({
   publicDir: "../public",
   build: {
     outDir: "../dist",
+    emptyOutDir: true,
     lib: {
       entry: {
         wallet: "wallet.ts",
@@ -15,6 +16,11 @@ export default defineConfig({
       },
       formats: ["es"],
       fileName: (_, entryName) => `${entryName}.mjs`,
+    },
+    rollupOptions: {
+      output: {
+        chunkFileNames: "[name].mjs",
+      },
     },
   },
 })
