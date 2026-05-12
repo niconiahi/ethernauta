@@ -142,7 +142,9 @@ export default function () {
           <Button
             variant="secondary"
             onClick={() => {
-              eth_requestAccounts()(signer(SEPOLIA_CHAIN_ID))
+              eth_requestAccounts()(
+                signer({ chain_id: SEPOLIA_CHAIN_ID }),
+              )
             }}
           >
             Connect wallet
@@ -153,7 +155,9 @@ export default function () {
               set_error(null)
               try {
                 const signed_transaction =
-                  await signer(SEPOLIA_CHAIN_ID)(
+                  await signer({
+                    chain_id: SEPOLIA_CHAIN_ID,
+                  })(
                     "transfer",
                     [
                       "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
@@ -539,7 +543,9 @@ function TestWalletButton() {
       onClick={async () => {
         await navigator.clipboard.writeText(TEST_MNEMONIC)
         setCopied(true)
-        eth_requestAccounts()(signer(SEPOLIA_CHAIN_ID))
+        eth_requestAccounts()(
+          signer({ chain_id: SEPOLIA_CHAIN_ID }),
+        )
       }}
     >
       {copied
