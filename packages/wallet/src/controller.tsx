@@ -25,35 +25,24 @@ export function Controller() {
           EthernautaRequestSchema,
           message,
         )
-        switch (request.type) {
-          case "ETHERNAUTA_REQUEST_CONNECT": {
-            const authenticated = await is_authenticated()
-            await validate_vault()
-            if (authenticated) {
-              await restore_wallet()
-              view.value = "wallet"
-              return
-            }
-            break
+        if (
+          request.type ===
+          "ETHERNAUTA_REQUEST_SIGN_TRANSACTION"
+        ) {
+          const authenticated = await is_authenticated()
+          await validate_vault()
+          if (!authenticated) return
+          await restore_wallet()
+          if (request.method === "eth_requestAccounts") {
+            view.value = "wallet"
+            return
           }
-          case "ETHERNAUTA_REQUEST_SIGN_TRANSACTION":
-            {
-              const authenticated = await is_authenticated()
-              await validate_vault()
-              if (authenticated) {
-                await restore_wallet()
-                transaction_request.value = {
-                  id: request.id,
-                  method: request.method,
-                  // @ts-expect-error support params as object
-                  // TODO: support params as object
-                  params: request.params,
-                }
-                view.value = "sign"
-                return
-              }
-            }
-            break
+          transaction_request.value = {
+            id: request.id,
+            method: request.method,
+            params: request.params as unknown[],
+          }
+          view.value = "sign"
         }
       },
     )

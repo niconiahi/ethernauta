@@ -2,7 +2,6 @@
 
 import type { Http } from "@ethernauta/transport"
 import * as v from "valibot"
-import { eth_requestAccounts } from "../1102"
 
 export const ListenerSchema = v.instance(Function)
 export type Listener = v.InferOutput<typeof ListenerSchema>
@@ -83,10 +82,13 @@ export type Signer = (
   params: unknown,
 ) => Promise<string>
 
-export function create_provider(
-  chains: Array<{ chainId: string; transports: Http[] }>,
-  signer: Signer,
-): Provider {
+export function create_provider({
+  chains,
+  signer,
+}: {
+  chains: Array<{ chainId: string; transports: Http[] }>
+  signer?: Signer
+}): Provider {
   const listeners: Listeners = new Map()
 
   return {
@@ -104,10 +106,12 @@ export function create_provider(
             }
           return chain.chainId
         }
-        case "eth_requestAccounts": {
-          return eth_requestAccounts(signer, params)
-        }
         default: {
+          if (!signer)
+            throw {
+              code: ERROR_CODE.UNSUPPORTED_METHOD,
+              message: `method not supported: ${method}`,
+            }
           return signer(method, params)
         }
       }

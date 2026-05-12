@@ -31,18 +31,8 @@ export type SignTransactionResponse = InferOutput<
   typeof SignTransactionResponseSchema
 >
 
-const ConnectRequestSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_REQUEST_CONNECT"),
-})
-export type ConnectRequest = InferOutput<
-  typeof ConnectRequestSchema
->
-
-export const EthernautaRequestSchema = union([
-  SignTransactionRequestSchema,
-  ConnectRequestSchema,
-])
+export const EthernautaRequestSchema =
+  SignTransactionRequestSchema
 export type EthernautaRequest = InferOutput<
   typeof EthernautaRequestSchema
 >
