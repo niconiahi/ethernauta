@@ -3,6 +3,7 @@ import {
   type InferOutput,
   literal,
   object,
+  optional,
   record,
   string,
   union,
@@ -13,10 +14,9 @@ export const SignTransactionRequestSchema = object({
   id: string(),
   type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
   method: string(),
-  params: union([
-    array(unknown()),
-    record(string(), unknown()),
-  ]),
+  params: optional(
+    union([array(unknown()), record(string(), unknown())]),
+  ),
 })
 export type SignTransactionRequest = InferOutput<
   typeof SignTransactionRequestSchema

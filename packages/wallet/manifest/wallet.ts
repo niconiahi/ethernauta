@@ -5,6 +5,7 @@ import {
 } from "@ethernauta/eip/1193"
 import { announce } from "@ethernauta/eip/6963"
 import type {
+  ConnectRequest,
   NativeExtensionCloseResponse,
   SignTransactionRequest,
   SignTransactionResponse,
@@ -17,6 +18,15 @@ function create_signer() {
     method: string,
     params: unknown,
   ): Promise<string> => {
+    if (method === "eth_requestAccounts") {
+      const id = crypto.randomUUID()
+      const request: ConnectRequest = {
+        id,
+        type: "ETHERNAUTA_REQUEST_CONNECT",
+      }
+      window.postMessage(request, window.location.origin)
+      return Promise.resolve("[]")
+    }
     return new Promise((resolve, reject) => {
       const id = crypto.randomUUID()
       window.addEventListener(
