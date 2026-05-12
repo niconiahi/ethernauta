@@ -136,7 +136,9 @@ export default function () {
           <Button
             variant="secondary"
             onClick={() => {
-              window.wallet.connect()
+              window.ethereum.request({
+                method: "eth_requestAccounts",
+              })
             }}
           >
             Connect wallet
@@ -146,12 +148,14 @@ export default function () {
             onClick={async () => {
               set_error(null)
               try {
-                const METHOD = "transfer"
-                const ADDRESS =
-                  "0x636c0fcd6da2207abfa80427b556695a4ad0af94"
-                const params = [ADDRESS, number_to_hex(1)]
                 const signed_transaction =
-                  await window.wallet.sign(METHOD, params)
+                  await window.ethereum.request({
+                    method: "transfer",
+                    params: [
+                      "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+                      number_to_hex(1),
+                    ],
+                  })
                 const writable = eth_sendRawTransaction([
                   signed_transaction,
                 ])
@@ -531,7 +535,9 @@ function TestWalletButton() {
       onClick={async () => {
         await navigator.clipboard.writeText(TEST_MNEMONIC)
         setCopied(true)
-        window.wallet.connect()
+        window.ethereum.request({
+          method: "eth_requestAccounts",
+        })
       }}
     >
       {copied
