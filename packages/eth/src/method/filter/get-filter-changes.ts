@@ -1,4 +1,7 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
@@ -18,9 +21,10 @@ type Parameters = InferOutput<typeof parametersSchema>
 export function eth_getFilterChanges(
   _parameters: Parameters,
 ): Readable<FilterResults> {
-  return async (
-    transports: Http[],
-  ): Promise<FilterResults> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<FilterResults> => {
     const method = "eth_getFilterChanges"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

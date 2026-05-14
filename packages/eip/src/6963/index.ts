@@ -14,7 +14,8 @@ export interface EIP6963ProviderDetail {
   provider: Provider
 }
 
-export interface EIP6963AnnounceProviderEvent extends CustomEvent {
+export interface EIP6963AnnounceProviderEvent
+  extends CustomEvent {
   type: "eip6963:announceProvider"
   detail: EIP6963ProviderDetail
 }

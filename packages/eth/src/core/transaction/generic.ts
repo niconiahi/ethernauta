@@ -1,4 +1,4 @@
-import { array, nullable, object } from "valibot"
+import { array, nullable, object, optional } from "valibot"
 
 import {
   addressSchema,
@@ -11,21 +11,24 @@ import { accessListSchema } from "../transaction"
 
 /**
  * Generic transaction object applicable to all types.
+ * Per execution-apis, every field is optional — callers
+ * provide only what they want to pin, the endpoint
+ * (wallet / managed-key node) fills the rest.
  */
 export const genericTransactionSchema = object({
-  type: byteSchema,
-  nonce: uintSchema,
-  to: nullable(addressSchema),
-  from: addressSchema,
-  gas: uintSchema,
-  value: uintSchema,
-  input: bytesSchema,
-  gasPrice: uintSchema,
-  maxPriorityFeePerGas: uintSchema,
-  maxFeePerGas: uintSchema,
-  maxFeePerBlobGas: uintSchema,
-  accessList: accessListSchema,
-  blobVersionedHashes: array(Hash32Schema),
-  blobs: array(bytesSchema),
-  chainId: uintSchema,
+  type: optional(byteSchema),
+  nonce: optional(uintSchema),
+  to: optional(nullable(addressSchema)),
+  from: optional(addressSchema),
+  gas: optional(uintSchema),
+  value: optional(uintSchema),
+  input: optional(bytesSchema),
+  gasPrice: optional(uintSchema),
+  maxPriorityFeePerGas: optional(uintSchema),
+  maxFeePerGas: optional(uintSchema),
+  maxFeePerBlobGas: optional(uintSchema),
+  accessList: optional(accessListSchema),
+  blobVersionedHashes: optional(array(Hash32Schema)),
+  blobs: optional(array(bytesSchema)),
+  chainId: optional(uintSchema),
 })

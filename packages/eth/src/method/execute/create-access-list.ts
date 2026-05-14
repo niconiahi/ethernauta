@@ -1,4 +1,7 @@
-import type { Http, Writable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
@@ -37,8 +40,11 @@ const accessListResultSchema = object({
 type Response = InferOutput<typeof accessListResultSchema>
 export function eth_createAccessList(
   _parameters: Parameters,
-): Writable<Response> {
-  return async (transports: Http[]): Promise<Response> => {
+): Readable<Response> {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<Response> => {
     const method = "eth_createAccessList"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

@@ -1,11 +1,17 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 import type { Addresses } from "../../core/base"
 import { addressesSchema } from "../../core/base"
 
 export function eth_acounts(): Readable<Addresses> {
-  return async (transports: Http[]): Promise<Addresses> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<Addresses> => {
     const method = "eth_accounts"
     const call = parse(callSchema, [method])
     const response = await Promise.any(

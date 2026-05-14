@@ -1,5 +1,7 @@
-import type { Http, Writable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import type {
+  ResolvedSigner,
+  Signable,
+} from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Hash32 } from "../../core/base"
@@ -16,18 +18,16 @@ type Parameters = InferOutput<typeof parametersSchema>
  */
 export function eth_sendTransaction(
   _parameters: Parameters,
-): Writable<Hash32> {
-  return async (transports: Http[]): Promise<Hash32> => {
-    const method = "eth_sendTransaction"
+): Signable<Hash32> {
+  return async ([
+    signer,
+    _context,
+  ]: ResolvedSigner): Promise<Hash32> => {
     const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
+    const result = await signer(
+      "eth_sendTransaction",
+      parameters,
     )
-    if ("error" in response) {
-      throw new Error(response.error.message)
-    }
-    const result = parse(Hash32Schema, response.result)
-    return result
+    return parse(Hash32Schema, result)
   }
 }

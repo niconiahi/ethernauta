@@ -1,4 +1,7 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
@@ -22,7 +25,10 @@ type Parameters = InferOutput<typeof parametersSchema>
 export function eth_uninstallFilter(
   _parameters: Parameters,
 ): Readable<boolean> {
-  return async (transports: Http[]): Promise<boolean> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<boolean> => {
     const method = "eth_uninstallFilter"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

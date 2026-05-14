@@ -1,4 +1,7 @@
-import type { Http, Writable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
@@ -19,8 +22,11 @@ const parametersSchema = union([
 type Parameters = InferOutput<typeof parametersSchema>
 export function eth_estimateGas(
   _parameters: Parameters,
-): Writable<Uint> {
-  return async (transports: Http[]): Promise<Uint> => {
+): Readable<Uint> {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<Uint> => {
     const method = "eth_estimateGas"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

@@ -1,4 +1,7 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
@@ -50,9 +53,10 @@ export type FeeHistoryResults = InferOutput<
 export function eth_feeHistory(
   _parameters: Parameters,
 ): Readable<FeeHistoryResults> {
-  return async (
-    transports: Http[],
-  ): Promise<FeeHistoryResults> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<FeeHistoryResults> => {
     const method = "eth_feeHistory"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

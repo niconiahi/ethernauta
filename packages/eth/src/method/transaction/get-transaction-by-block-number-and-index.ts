@@ -1,4 +1,7 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
@@ -22,9 +25,12 @@ type Parameters = InferOutput<typeof parametersSchema>
 export function eth_getTransactionByBlockNumberAndIndex(
   _parameters: Parameters,
 ): Readable<TransactionInfo | NotFound> {
-  return async (
-    transports: Http[],
-  ): Promise<TransactionInfo | NotFound> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<
+    TransactionInfo | NotFound
+  > => {
     const method = "eth_getTransactionByBlockNumberAndIndex"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])

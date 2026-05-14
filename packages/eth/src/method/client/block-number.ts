@@ -1,11 +1,17 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 import type { Uint } from "../../core/base"
 import { uintSchema } from "../../core/base"
 
 export function eth_blockNumber(): Readable<Uint> {
-  return async (transports: Http[]): Promise<Uint> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<Uint> => {
     const method = "eth_blockNumber"
     const call = parse(callSchema, [method])
     const response = await Promise.any(

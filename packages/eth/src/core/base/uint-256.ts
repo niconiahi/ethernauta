@@ -4,7 +4,7 @@ import { custom } from "valibot"
 function isUint256(input: unknown): boolean {
   return (
     typeof input === "string" &&
-    /^0x([1-9a-f]+[0-9a-f]{0,31})|0$/.test(input)
+    /^0x[0-9a-f]{1,64}$/.test(input)
   )
 }
 export const uint256Schema =

@@ -77,7 +77,6 @@ export const ERROR_CODE = {
   CHAIN_DISCONNECTED: 4901,
 } as const
 
-
 export function create_provider({
   chains,
 }: {

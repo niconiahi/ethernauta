@@ -26,7 +26,9 @@ describe("eth_blockNumber", () => {
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
-    const blockNumber_ = await readable(reader(chainId))
+    const blockNumber_ = await readable(
+      reader({ chain_id: chainId }),
+    )
     expect(blockNumber_).toSatisfy(
       (value) => safeParse(uintSchema, value).success,
     )

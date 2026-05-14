@@ -1,4 +1,7 @@
-import type { Http, Readable } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 import type { Uint } from "../../core/base"
@@ -8,7 +11,10 @@ import { uintSchema } from "../../core/base"
  * @returns The created block filter's identifier
  */
 export function eth_newBlockFilter(): Readable<Uint> {
-  return async (transports: Http[]): Promise<Uint> => {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<Uint> => {
     const method = "eth_newFilter"
     const call = parse(callSchema, [method])
     const response = await Promise.any(

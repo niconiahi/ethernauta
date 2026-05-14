@@ -29,7 +29,9 @@ describe("eth_getBlockByHash", () => {
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
-    const block = await readable(reader(chainId))
+    const block = await readable(
+      reader({ chain_id: chainId }),
+    )
     expect(block).toHaveProperty("hash", VALID_BLOCK_HASH)
   })
 
@@ -50,7 +52,9 @@ describe("eth_getBlockByHash", () => {
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
-    const block = await readable(reader(chainId))
+    const block = await readable(
+      reader({ chain_id: chainId }),
+    )
     expect(block).toBeNull()
   })
 
@@ -71,7 +75,9 @@ describe("eth_getBlockByHash", () => {
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
-    const block = await readable(reader(chainId))
+    const block = await readable(
+      reader({ chain_id: chainId }),
+    )
     expect(block).toHaveProperty("hash", VALID_BLOCK_HASH)
   })
 })
