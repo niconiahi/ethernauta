@@ -1,7 +1,10 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import { create_provider } from "@ethernauta/eip/1193"
-import { eth_sendRawTransaction } from "@ethernauta/eth"
+import {
+  eth_sendRawTransaction,
+  eth_signTransaction,
+} from "@ethernauta/eth"
 import {
   register_transaction,
   type Transaction,
@@ -16,6 +19,7 @@ import {
 } from "@ethernauta/transport"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
+import { mint } from "../contracts/methods/mint"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -34,7 +38,7 @@ const CHAINS = [
 ]
 const writer = create_writer(CHAINS)
 const signer = create_signer(CHAINS)
-const provider = create_provider({ chains: CHAINS })
+const _provider = create_provider({ chains: CHAINS })
 
 export default function () {
   const [transactions, setTransactions] = useState<
@@ -155,20 +159,17 @@ export default function () {
               set_error(null)
               try {
                 const signed_transaction =
-                  await signer({
-                    chain_id: SEPOLIA_CHAIN_ID,
-                  })(
-                    "transfer",
-                    [
-                      "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-                      number_to_hex(1),
-                    ],
-                  )
+                  await eth_signTransaction([
+                    {
+                      to: "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+                      value: number_to_hex(1),
+                    },
+                  ])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
                 const writable = eth_sendRawTransaction([
                   signed_transaction,
                 ])
                 const hash = await writable(
-                  writer(SEPOLIA_CHAIN_ID),
+                  writer({ chain_id: SEPOLIA_CHAIN_ID }),
                 )
                 const transaction =
                   register_transaction(hash)
@@ -192,6 +193,28 @@ export default function () {
             }}
           >
             Send transfer
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              set_error(null)
+              try {
+                await mint({ uri: "ipfs://demo-token-uri" })(
+                  signer({
+                    chain_id: SEPOLIA_CHAIN_ID,
+                    to: "0x0B472a2Ea815Fb7eC54338154E7fE59aeddFED52",
+                  }),
+                )
+              } catch (e) {
+                set_error(
+                  e instanceof Error
+                    ? e.message
+                    : "Unknown error",
+                )
+              }
+            }}
+          >
+            Sign mint(string) — sidecar demo
           </Button>
         </div>
         <dialog

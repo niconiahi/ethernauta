@@ -19,7 +19,13 @@ export default function () {
         lineHeight: 1.6,
       }}
     >
-      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 4 }}>
+      <h1
+        style={{
+          fontSize: 28,
+          fontWeight: 800,
+          marginBottom: 4,
+        }}
+      >
         Privacy Policy
       </h1>
       <p style={{ marginBottom: 32, color: "#666" }}>
@@ -28,39 +34,42 @@ export default function () {
 
       <h2 style={h2}>Overview</h2>
       <p style={p}>
-        Ethernauta is a browser extension that functions as a
-        self-custody Ethereum wallet. We are committed to
+        Ethernauta is a browser extension that functions as
+        a self-custody Ethereum wallet. We are committed to
         protecting your privacy. This policy explains what
         data is handled and how.
       </p>
 
       <h2 style={h2}>Data We Do Not Collect</h2>
       <p style={p}>
-        Ethernauta does <strong>not</strong> collect, transmit,
-        or share <em>any</em> personal data. Specifically:
+        Ethernauta does <strong>not</strong> collect,
+        transmit, or share <em>any</em> personal data.
+        Specifically:
       </p>
       <ul style={ul}>
         <li style={li}>
-          We do <em>not</em> collect your name, email, or any
-          identifying information.
+          We do <em>not</em> collect your name, email, or
+          any identifying information.
         </li>
         <li style={li}>
-          We do <em>not</em> transmit your private keys, seed
-          phrases, or passwords to <em>any</em> server.
+          We do <em>not</em> transmit your private keys,
+          seed phrases, or passwords to <em>any</em> server.
         </li>
         <li style={li}>
           We do <em>not</em> use analytics, tracking, or
           telemetry of any kind.
         </li>
         <li style={li}>
-          We do <em>not</em> share any data with third parties.
+          We do <em>not</em> share any data with third
+          parties.
         </li>
       </ul>
 
       <h2 style={h2}>Data Stored Locally</h2>
       <p style={p}>
-        All wallet data is stored <em>exclusively</em> on your
-        device and <em>never</em> leaves it. Specifically:
+        All wallet data is stored <em>exclusively</em> on
+        your device and <em>never</em> leaves it.
+        Specifically:
       </p>
       <ul style={ul}>
         <li style={li}>
@@ -97,17 +106,17 @@ export default function () {
       </p>
       <ul style={ul}>
         <li style={li}>
-          <strong>storage</strong> — to persist your encrypted
-          wallet data locally on your device.
+          <strong>storage</strong> — to persist your
+          encrypted wallet data locally on your device.
         </li>
       </ul>
 
       <h2 style={h2}>Your Responsibility</h2>
       <p style={p}>
         Because Ethernauta is a self-custody wallet, you are{" "}
-        <em>solely</em> responsible for safeguarding your seed
-        phrase and password. We <em>cannot</em> recover lost
-        credentials.
+        <em>solely</em> responsible for safeguarding your
+        seed phrase and password. We <em>cannot</em> recover
+        lost credentials.
       </p>
 
       <h2 style={h2}>Contact</h2>

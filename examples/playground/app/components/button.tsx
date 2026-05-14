@@ -1,8 +1,8 @@
 import {
-  useState,
-  type ButtonHTMLAttributes,
   type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
   type ReactNode,
+  useState,
 } from "react"
 
 function use_interaction(
@@ -47,7 +47,9 @@ function use_interaction(
       outline: pressed ? "2px solid #374151" : "none",
       outlineOffset: pressed ? 2 : 0,
       transition: "background 0.15s ease",
-      ...(squared ? { aspectRatio: "1", padding: "12px" } : {}),
+      ...(squared
+        ? { aspectRatio: "1", padding: "12px" }
+        : {}),
       ...colors,
     },
     onPointerDown: () => set_pressed(true),
@@ -83,7 +85,9 @@ export function Button({
 export function ButtonLink({
   children,
   ...props
-}: { children: ReactNode } & AnchorHTMLAttributes<HTMLAnchorElement>) {
+}: {
+  children: ReactNode
+} & AnchorHTMLAttributes<HTMLAnchorElement>) {
   const interaction = use_interaction("primary", false)
   return (
     <a className="button-link" {...interaction} {...props}>

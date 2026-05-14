@@ -1,0 +1,15 @@
+[
+  {
+    "type": "function",
+    "name": "mint",
+    "inputs": [
+      {
+        "name": "uri",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  }
+]

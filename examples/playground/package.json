@@ -28,7 +28,8 @@
     "@ethernauta/wallet": "workspace:*",
     "@ethernauta/cli": "workspace:*",
     "@ethernauta/abi": "workspace:*",
-    "@ethernauta/erc": "workspace:*"
+    "@ethernauta/erc": "workspace:*",
+    "valibot": "1.1.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.0.12",
