@@ -2,20 +2,20 @@ import {
   create_provider,
   ERROR_CODE,
   type Provider,
-  type Signer,
 } from "@ethernauta/eip/1193"
 import { announce } from "@ethernauta/eip/6963"
+import type { Signer } from "@ethernauta/transport"
+import icon from "../public/icons/icon-128.png?inline"
 import type {
   NativeExtensionCloseResponse,
   SignTransactionRequest,
   SignTransactionResponse,
   TransactionRejectedResponse,
 } from "../src/utils/event"
-import icon from "../public/icons/icon-128.png?inline"
 
 const CHAINS = [{ chainId: "0xaa36a7", transports: [] }]
 
-function create_signer(
+function _create_signer(
   chains: Array<{ chainId: string }>,
 ): (chainId: string) => Signer {
   return (chainId: string): Signer => {

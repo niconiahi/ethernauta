@@ -275,7 +275,6 @@ describe("transaction.ts", () => {
       key,
       nonce,
       method,
-      chainId: number_to_hex(eip155_11155111.chainId),
       params,
     })
     expect(bytes_to_hex(ethernauta_signed)).toBe(
@@ -302,7 +301,6 @@ describe("transaction.ts", () => {
       key,
       nonce: 0n,
       method,
-      chainId: number_to_hex(eip155_11155111.chainId),
       params,
     })
 

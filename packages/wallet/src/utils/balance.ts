@@ -13,7 +13,7 @@ export async function fetch_balance(address: Address) {
     selected_chain.value,
   )
   const readable = eth_getBalance([address, "latest"])
-  const result = await readable(reader(chain_id))
+  const result = await readable(reader({ chain_id }))
   return hex_to_big(result)
 }
 

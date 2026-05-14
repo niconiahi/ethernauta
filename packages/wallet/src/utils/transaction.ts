@@ -1,19 +1,19 @@
+import { parametersSchema } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import {
-  array,
   type InferOutput,
   object,
   optional,
   string,
-  union,
-  unknown,
 } from "valibot"
+import { FunctionSidecarSchema } from "./event"
 
 export const TransactionSchema = object({
   id: string(),
   method: string(),
-  params: union([array(unknown())]),
+  params: parametersSchema,
   to: optional(string()),
+  _function: optional(FunctionSidecarSchema),
 })
 export type Transaction = InferOutput<
   typeof TransactionSchema

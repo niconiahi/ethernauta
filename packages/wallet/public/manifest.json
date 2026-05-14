@@ -46,7 +46,12 @@
         "https://ethernauta.niconiahi.workers.dev/*",
         "http://localhost/*"
       ],
-      "resources": ["wallet.mjs", "index.mjs"]
+      "resources": [
+        "wallet.mjs",
+        "index.mjs",
+        "index-*.js",
+        "assets/*"
+      ]
     }
   ]
 }

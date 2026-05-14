@@ -1,5 +1,5 @@
-import { useState } from "preact/hooks"
 import type { JSX } from "preact"
+import { useState } from "preact/hooks"
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary"

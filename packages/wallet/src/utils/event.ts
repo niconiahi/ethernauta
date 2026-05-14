@@ -10,6 +10,14 @@ import {
   unknown,
 } from "valibot"
 
+export const FunctionSidecarSchema = object({
+  signature: string(),
+  names: array(string()),
+})
+export type FunctionSidecar = InferOutput<
+  typeof FunctionSidecarSchema
+>
+
 export const SignTransactionRequestSchema = object({
   id: string(),
   type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
@@ -19,6 +27,7 @@ export const SignTransactionRequestSchema = object({
   params: optional(
     union([array(unknown()), record(string(), unknown())]),
   ),
+  _function: optional(FunctionSidecarSchema),
 })
 export type SignTransactionRequest = InferOutput<
   typeof SignTransactionRequestSchema

@@ -11,6 +11,7 @@ import {
 } from "./utils/transaction"
 import { view } from "./utils/view"
 import { restore_wallet } from "./utils/wallet"
+import { Connect } from "./views/connect/index"
 import { Mnemonics } from "./views/mnemonics/index"
 import { Password } from "./views/password/index"
 import { Sign } from "./views/sign/index"
@@ -38,7 +39,7 @@ export function Controller() {
           await restore_wallet()
           if (request.method === "eth_requestAccounts") {
             connection_request.value = { id: request.id }
-            view.value = "wallet"
+            view.value = "connect"
             return
           }
           transaction_request.value = {
@@ -46,6 +47,7 @@ export function Controller() {
             method: request.method,
             params: request.params as unknown[],
             to: request.to,
+            _function: request._function,
           }
           view.value = "sign"
         }
@@ -65,6 +67,9 @@ function render_view(view: string) {
     }
     case "wallet": {
       return <Wallet />
+    }
+    case "connect": {
+      return <Connect />
     }
     case "sign": {
       return <Sign />

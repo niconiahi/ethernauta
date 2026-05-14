@@ -4,6 +4,7 @@ import {
   type Address,
   addressSchema,
   eth_getTransactionCount,
+  genericTransactionSchema,
 } from "@ethernauta/eth"
 import type { ChainId, Reader } from "@ethernauta/transport"
 import { invariant } from "@ethernauta/utils"
@@ -16,7 +17,14 @@ import {
   sign,
 } from "@noble/secp256k1"
 import type { HDKey } from "@scure/bip32"
-import { hexadecimal, parse, pipe, string } from "valibot"
+import {
+  hexadecimal,
+  object,
+  optional,
+  parse,
+  pipe,
+  string,
+} from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
 import { hex_to_bytes } from "./hex"
 import { encode } from "./rlp"
@@ -85,7 +93,9 @@ export async function get_nonce(
     address,
     "latest",
   ])
-  const transaction_count = await readable(reader(chain_id))
+  const transaction_count = await readable(
+    reader({ chain_id }),
+  )
   return hex_to_big(transaction_count)
 }
 
@@ -94,7 +104,9 @@ function get_chain_id(): bigint {
 }
 
 function get_gas_limit(): bigint {
-  return 21000n // standard gas limit for ETH transfer
+  // testnet: ceiling. unused gas is refunded under EIP-1559.
+  // revisit once eth_estimateGas is wired through the wallet.
+  return 1_000_000n
 }
 
 function get_access_list(): AccessListItem[] {
@@ -119,6 +131,25 @@ function get_fields_from_transaction(
   value: bigint
 } {
   switch (method) {
+    case "eth_signTransaction": {
+      const raw = Array.isArray(params)
+        ? params[0]
+        : (params as Record<string, unknown>).transaction
+      const tx = parse(genericTransactionSchema, raw)
+      const value_hex =
+        (tx.value as `0x${string}` | undefined) ?? "0x0"
+      const input_hex =
+        (tx.input as `0x${string}` | undefined) ?? "0x"
+      const data =
+        input_hex === "0x"
+          ? new Uint8Array([])
+          : hex_to_bytes(input_hex)
+      return {
+        to: tx.to as Address,
+        value: hex_to_big(value_hex),
+        data,
+      }
+    }
     case "transfer": {
       const to = parse(addressSchema, params[0])
       const value = parse(

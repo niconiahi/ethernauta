@@ -9,9 +9,6 @@ import {
   get_chain_id,
   selected_chain,
 } from "../../utils/chain"
-import { Button } from "../../components/button"
-import type { EthernautaResponse } from "../../utils/event"
-import { connection_request } from "../../utils/transaction"
 import { wallet } from "../../utils/wallet"
 
 export function Wallet() {
@@ -53,22 +50,6 @@ export function Wallet() {
         </span>{" "}
         ETH
       </p>
-      {connection_request.value ? (
-        <Button
-          onClick={() => {
-            const response: EthernautaResponse = {
-              id: connection_request.value!.id,
-              type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
-              signed_transaction: JSON.stringify([address]),
-            }
-            chrome.runtime.sendMessage(response)
-            connection_request.value = null
-            window.close()
-          }}
-        >
-          Connect
-        </Button>
-      ) : null}
     </main>
   )
 }

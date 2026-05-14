@@ -44,7 +44,9 @@ export function watch_transaction(
 ) {
   const interval_id = setInterval(async () => {
     const readable = eth_getTransactionReceipt([hash])
-    const receipt = await readable(reader(sepolia_chain_id))
+    const receipt = await readable(
+      reader({ chain_id: sepolia_chain_id }),
+    )
     if (!receipt) return // transaction still pending
     invariant(
       receipt.status,
