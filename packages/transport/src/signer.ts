@@ -1,9 +1,54 @@
+import type { InferOutput } from "valibot"
+import {
+  array,
+  object,
+  optional,
+  parse,
+  string,
+} from "valibot"
+
+import { addressSchema } from "./chain/address"
+import { chainIdSchema } from "./chain/chain-id"
+
+export const SignContextSchema = object({
+  chain_id: chainIdSchema,
+  to: optional(addressSchema),
+})
+export type SignContext = InferOutput<
+  typeof SignContextSchema
+>
+
+/**
+ * Sidecar metadata describing the ABI function being
+ * invoked by a transaction's `input`. Travels on the
+ * ethernauta transport envelope (NOT the JSON-RPC params),
+ * so the standard transaction object stays spec-compliant.
+ * Verified by the wallet via keccak(signature)[0:4] match
+ * against input[0:4]. `names` are display-only.
+ */
+export const functionSidecarSchema = object({
+  signature: string(),
+  names: array(string()),
+})
+export type FunctionSidecar = InferOutput<
+  typeof functionSidecarSchema
+>
+
+export type SignerContext = {
+  _function?: FunctionSidecar
+}
+
 export type Signer = (
   method: string,
   params: unknown,
+  context?: SignerContext,
 ) => Promise<string>
 
-export type Signable<T> = (_signer: Signer) => Promise<T>
+export type ResolvedSigner = [Signer, SignContext]
+
+export type Signable<T> = (
+  _resolved: ResolvedSigner,
+) => Promise<T>
 
 const ERROR_CODE = {
   USER_REJECTED_REQUEST: 4001,
@@ -14,8 +59,8 @@ type SignTransactionRequest = {
   type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION"
   method: string
   chainId: string
-  to?: string
   params?: unknown[] | Record<string, unknown>
+  _function?: FunctionSidecar
 }
 
 type SignTransactionResponse = {
@@ -34,21 +79,20 @@ type NativeExtensionCloseResponse = {
   type: "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
 }
 
-type Input = {
-  chain_id: string
-  to?: string
-}
-
 export function create_signer(
-  chains: Array<{ chainId: string }>,
-): (input: Input) => Signer {
-  return ({ chain_id, to }: Input): Signer => {
-    const chain = chains.find((c) => c.chainId === chain_id)
-    if (!chain)
+  chains: Array<{ chainId: string; transports?: unknown }>,
+): (_input: SignContext) => ResolvedSigner {
+  return (_input: SignContext): ResolvedSigner => {
+    const sign_context = parse(SignContextSchema, _input)
+    const chain = chains.find(
+      (c) => c.chainId === sign_context.chain_id,
+    )
+    if (!chain) {
       throw new Error(
-        `no chain configured for: ${chain_id}`,
+        `no chain configured for: ${sign_context.chain_id}`,
       )
-    return (method, params) =>
+    }
+    const signer: Signer = (method, params, context) =>
       new Promise((resolve, reject) => {
         const id = crypto.randomUUID()
         window.addEventListener(
@@ -98,11 +142,12 @@ export function create_signer(
           type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
           id,
           method,
-          chainId: chain_id,
-          ...(to ? { to } : {}),
+          chainId: sign_context.chain_id,
           params: params as unknown[],
+          _function: context?._function,
         }
         window.postMessage(request, window.location.origin)
       })
+    return [signer, sign_context]
   }
 }
