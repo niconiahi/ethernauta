@@ -1,96 +1,98 @@
+import { mkdtempSync, readFileSync, rmSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import {
-  // compile,
-  dedupe_imports,
-  get_schemas,
-  type Import,
-  remove_parenthesis,
-} from "./generator"
 
-// import { array, parse } from "valibot"
-// import { DescriptionSchema } from "./description"
+import { generate } from "./generator"
 
-describe("compiler.ts", () => {
-  // it("should run", () => {
-  //   const descriptions = parse(
-  //     array(DescriptionSchema),
-  //     ERC20_ABI,
-  //   )
-  //   compile(descriptions, "./erc/20")
-  // })
+function make_tmp(): string {
+  return mkdtempSync(join(tmpdir(), "ethernauta-gen-"))
+}
 
-  it("should dedupe two equal imports", () => {
-    const imports: Set<Import> = new Set([
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "lend",
-      },
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "lend",
-      },
-    ])
-    const deduped = dedupe_imports(imports)
-    expect(deduped).toHaveLength(1)
+describe("generator.ts", () => {
+  it("should emit a Readable that wraps eth_call for view methods", () => {
+    const out_dir = make_tmp()
+    try {
+      generate(
+        [
+          {
+            type: "function",
+            name: "get_data",
+            inputs: [{ name: "token_id", type: "uint256" }],
+            outputs: [{ name: "", type: "string" }],
+            stateMutability: "view",
+          },
+        ],
+        out_dir,
+      )
+      const file = readFileSync(
+        join(out_dir, "methods", "get_data.ts"),
+        "utf8",
+      )
+      expect(file).toContain("Readable<string>")
+      expect(file).toContain("ResolvedReader")
+      expect(file).toContain('build_signature("get_data"')
+      expect(file).toContain('"eth_call"')
+      expect(file).toContain("decode_function_result")
+    } finally {
+      rmSync(out_dir, { recursive: true, force: true })
+    }
   })
 
-  it("should dedupe three equal imports", () => {
-    const imports: Set<Import> = new Set([
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "lend",
-      },
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "recieve",
-      },
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "lend",
-      },
-    ])
-    const deduped = dedupe_imports(imports)
-    expect(deduped).toHaveLength(1)
+  it("should emit a Signable composing onto eth_signTransaction for nonpayable methods", () => {
+    const out_dir = make_tmp()
+    try {
+      generate(
+        [
+          {
+            type: "function",
+            name: "mint",
+            inputs: [{ name: "data", type: "string" }],
+            outputs: [],
+            stateMutability: "nonpayable",
+          },
+        ],
+        out_dir,
+      )
+      const file = readFileSync(
+        join(out_dir, "methods", "mint.ts"),
+        "utf8",
+      )
+      expect(file).toContain("Signable<Bytes>")
+      expect(file).toContain("ResolvedSigner")
+      expect(file).toContain("eth_signTransaction")
+      expect(file).toContain('build_signature("mint"')
+      expect(file).toContain("encode_function_call")
+    } finally {
+      rmSync(out_dir, { recursive: true, force: true })
+    }
   })
 
-  it("should dedupe 2 different imports", () => {
-    const imports: Set<Import> = new Set([
-      {
-        schema: "hash32Schema",
-        type: "Hash32",
-        name: "send",
-      },
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "recieve",
-      },
-      {
-        schema: "addressSchema",
-        type: "Address",
-        name: "lend",
-      },
-    ])
-    const deduped = dedupe_imports(imports)
-    expect(deduped).toHaveLength(2)
-  })
-
-  it("should remove the parenthesis from a list of valibot schemas", () => {
-    const imports: Set<Import> = new Set([
-      {
-        schema: "boolean()",
-        type: "boolean",
-        name: "lends",
-      },
-    ])
-    const expected = remove_parenthesis(
-      get_schemas(imports),
-    )
-    expect(expected).toContain("boolean")
+  it("should emit a no-param Readable for nullary view methods", () => {
+    const out_dir = make_tmp()
+    try {
+      generate(
+        [
+          {
+            type: "function",
+            name: "totalSupply",
+            inputs: [],
+            outputs: [{ name: "", type: "uint256" }],
+            stateMutability: "view",
+          },
+        ],
+        out_dir,
+      )
+      const file = readFileSync(
+        join(out_dir, "methods", "total-supply.ts"),
+        "utf8",
+      )
+      expect(file).toContain("Readable<Uint256>")
+      expect(file).toContain(
+        "export function totalSupply()",
+      )
+    } finally {
+      rmSync(out_dir, { recursive: true, force: true })
+    }
   })
 })

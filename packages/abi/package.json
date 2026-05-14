@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/abi",
   "type": "module",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "publishConfig": {
     "access": "public"
   },
@@ -13,6 +13,16 @@
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./generator": {
+      "types": "./dist/generator/generator.d.ts",
+      "import": "./dist/generator/generator.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -28,6 +38,8 @@
   },
   "dependencies": {
     "@ethernauta/eth": "workspace:*",
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/utils": "workspace:*",
     "@noble/hashes": "^1.8.0"
   },
   "peerDependencies": {

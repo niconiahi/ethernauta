@@ -18,9 +18,7 @@ function from_hex(hex: string): Uint8Array {
 describe("encode.ts", () => {
   describe("to_selector", () => {
     it("should return first 4 bytes of keccak256 of the signature", () => {
-      const result = to_selector(
-        "safeMint(address,string)",
-      )
+      const result = to_selector("safeMint(address,string)")
       expect(result).toEqual(
         new Uint8Array([210, 4, 196, 94]),
       )

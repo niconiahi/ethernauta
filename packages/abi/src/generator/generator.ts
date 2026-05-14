@@ -8,364 +8,476 @@ import {
   camel_to_kebab,
   invariant,
 } from "@ethernauta/utils"
+
 import type { FunctionInput, FunctionOutput } from "../abi"
 import type { Description } from "../abi/description"
+import { to_selector } from "../encoding/encode"
 
-export type Import = {
-  name: string
-  schema: string
-  type: string
-}
-
-export function generate(
-  descriptions: Description[],
-  out_dir: string,
-): void {
-  for (const description of descriptions) {
-    switch (description.type) {
-      case "function": {
-        make_function(description, out_dir)
-      }
-    }
-  }
-}
-
-function make_imports(
-  inputs: FunctionInput[] | FunctionOutput[],
-): {
-  package_imports: Set<Import>
-  valibot_imports: Set<Import>
-} {
-  let package_imports: Set<Import> = new Set([])
-  let valibot_imports: Set<Import> = new Set([])
-  for (const input of inputs) {
-    if (input.type === "bool") {
-      const schema = "boolean()"
-      const type = "boolean"
-      const name = input.name
-      valibot_imports.add({
-        name,
-        schema,
-        type,
-      })
-      continue
-    }
-    if (input.type === "string") {
-      valibot_imports.add({
-        name: input.name,
-        schema: "string()",
-        type: "string",
-      })
-      continue
-    }
-    const { schema, type } = get_schema_for_type(input.type)
-    const name = input.name
-    package_imports.add({
-      name,
-      schema,
-      type,
-    })
-  }
-  return {
-    package_imports,
-    valibot_imports,
-  }
-}
-
-function get_schema_for_type(
-  type: FunctionInput["type"] | FunctionOutput["type"],
-) {
-  switch (type) {
-    case "address": {
-      return { schema: "addressSchema", type: "Address" }
-    }
-    case "bytes4": {
-      return { schema: "bytes4Schema", type: "Bytes4" }
-    }
-    case "uint256": {
-      return { schema: "uint256Schema", type: "Uint256" }
-    }
-    case "bytes": {
-      return { schema: "bytesSchema", type: "Bytes" }
-    }
-    default: {
-      throw new Error(
-        `unhandled function input type ${type}. Please inform this to the library owner`,
-      )
-    }
-  }
-}
-
-export function get_schemas(set: Set<Import>): string[] {
-  return Array.from(set).map((import_) => {
-    return import_.schema
-  })
-}
-
-function get_types(set: Set<Import>): string[] {
-  return Array.from(set).map((import_) => {
-    return import_.type
-  })
-}
-
-function format_for_import(items: string[]): string {
-  return items.join(",\n  ").trim()
-}
-
-function format_as_comma_separated(
-  items: string[],
-): string {
-  return items.join(", ").trim()
-}
-
-function format_as_union(items: string[]): string {
-  return items.join(" | ").trim()
-}
-
-function format_as_key_values(set: Set<Import>): string {
-  return Array.from(set)
-    .map((import_) => {
-      return `${import_.name}: ${import_.schema}`
-    })
-    .join(",\n")
-    .trim()
-}
-
-export function dedupe_imports(
-  imports: Set<Import>,
-): Set<Import> {
-  const out: Set<Import> = new Set([])
-  const types = new Set(
-    Array.from(imports).map((import_) => {
-      return import_.type
-    }),
-  )
-  for (const import_ of imports) {
-    const type = import_.type
-    if (types.has(type)) {
-      out.add(import_)
-      types.delete(type)
-    }
-  }
-  return out
-}
-
-export function merge_imports(
-  imports_a: Set<Import>,
-  imports_b: Set<Import>,
-): Set<Import> {
-  const merged: Set<Import> = new Set([])
-  for (const import_ of imports_a) {
-    merged.add(import_)
-  }
-  for (const import_ of imports_b) {
-    merged.add(import_)
-  }
-  return dedupe_imports(merged)
-}
-
-function compose_parameters_template(
-  imports: Set<Import>,
+function canonical_signature(
   name: string,
-) {
-  return imports.size > 0
-    ? `
-const parametersSchema = union([
-  tuple([${format_as_comma_separated(get_schemas(imports))}]),
-  object({
-    ${format_as_key_values(imports)}
-  }),
-])
-type Parameters = InferOutput<typeof parametersSchema>
-export function ${name}(_parameters: Parameters)`.trim()
-    : `
-export function ${name}()`.trim()
+  inputs: FunctionInput[],
+): string {
+  return `${name}(${inputs.map((i) => i.type).join(",")})`
 }
 
-function compose_call_template(imports: Set<Import>) {
-  return imports.size > 0
-    ? `
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])`.trim()
-    : `
-    const call = parse(callSchema, [method, []])`.trim()
+function selector_suffix(signature: string): string {
+  const bytes = to_selector(signature)
+  let hex = ""
+  for (const b of bytes) {
+    hex += b.toString(16).padStart(2, "0")
+  }
+  return hex
+}
+
+function count_names(
+  descriptions: Description[],
+): Map<string, number> {
+  const counts = new Map<string, number>()
+  for (const d of descriptions) {
+    if (d.type !== "function") continue
+    counts.set(d.name, (counts.get(d.name) || 0) + 1)
+  }
+  return counts
+}
+
+export function emit_name_for(
+  description: Description,
+  descriptions: Description[],
+): string {
+  if (description.type !== "function") return ""
+  const counts = count_names(descriptions)
+  if ((counts.get(description.name) || 0) <= 1) {
+    return description.name
+  }
+  const sig = canonical_signature(
+    description.name,
+    description.inputs,
+  )
+  return `${description.name}_${selector_suffix(sig)}`
+}
+
+export function emit_file_basename_for(
+  description: Description,
+  descriptions: Description[],
+): string {
+  const js_name = emit_name_for(description, descriptions)
+  // preserve snake_case if the source was already snake_case
+  // (e.g. `get_data` → `get_data.ts`); otherwise kebab-case.
+  if (description.type === "function" && description.name.includes("_")) {
+    return js_name
+  }
+  return camel_to_kebab(js_name)
+}
+
+type AbiType = string
+
+type Type_info = {
+  param_schema: string
+  param_type: string
+  decoded_schema: string
+  decoded_type: string
+  valibot: boolean
+  package: "eth" | null
+}
+
+const VALIBOT_BOOL: Type_info = {
+  param_schema: "boolean()",
+  param_type: "boolean",
+  decoded_schema: "boolean()",
+  decoded_type: "boolean",
+  valibot: true,
+  package: null,
+}
+
+const VALIBOT_STRING: Type_info = {
+  param_schema: "string()",
+  param_type: "string",
+  decoded_schema: "string()",
+  decoded_type: "string",
+  valibot: true,
+  package: null,
+}
+
+function get_type_info(type: AbiType): Type_info {
+  switch (type) {
+    case "bool":
+      return VALIBOT_BOOL
+    case "string":
+      return VALIBOT_STRING
+    case "address":
+      return {
+        param_schema: "addressSchema",
+        param_type: "Address",
+        decoded_schema: "addressSchema",
+        decoded_type: "Address",
+        valibot: false,
+        package: "eth",
+      }
+    case "bytes":
+      return {
+        param_schema: "bytesSchema",
+        param_type: "Bytes",
+        decoded_schema: "bytesSchema",
+        decoded_type: "Bytes",
+        valibot: false,
+        package: "eth",
+      }
+    case "bytes4":
+      return {
+        param_schema: "bytes4Schema",
+        param_type: "Bytes4",
+        decoded_schema: "bytes4Schema",
+        decoded_type: "Bytes4",
+        valibot: false,
+        package: "eth",
+      }
+    case "bytes8":
+      return {
+        param_schema: "bytes8Schema",
+        param_type: "Bytes8",
+        decoded_schema: "bytes8Schema",
+        decoded_type: "Bytes8",
+        valibot: false,
+        package: "eth",
+      }
+    case "bytes32":
+      return {
+        param_schema: "bytes32Schema",
+        param_type: "Bytes32",
+        decoded_schema: "bytes32Schema",
+        decoded_type: "Bytes32",
+        valibot: false,
+        package: "eth",
+      }
+    case "uint":
+    case "uint8":
+    case "uint64":
+    case "uint256":
+      return {
+        param_schema: "uint256Schema",
+        param_type: "Uint256",
+        decoded_schema: "uint256Schema",
+        decoded_type: "Uint256",
+        valibot: false,
+        package: "eth",
+      }
+    case "hash32":
+      return {
+        param_schema: "Hash32Schema",
+        param_type: "Hash32",
+        decoded_schema: "Hash32Schema",
+        decoded_type: "Hash32",
+        valibot: false,
+        package: "eth",
+      }
+    default:
+      throw new Error(
+        `unhandled abi type "${type}". Please add it to packages/abi/src/generator/generator.ts.`,
+      )
+  }
+}
+
+function unique<T>(items: T[]): T[] {
+  return Array.from(new Set(items))
 }
 
 function compose_valibot_imports(
-  valibot_imports: Set<Import>,
-  package_imports: Set<Import>,
-  inputs: Set<Import>,
-  outputs_package_imports: Set<Import>,
-  inputs_valibot_imports: Set<Import>,
-) {
-  if (
-    valibot_imports.size > 0 &&
-    outputs_package_imports.size > 0
-  ) {
-    return `
-import type { InferOutput } from "valibot"
-import {
-  parse,
-  tuple,
-  object,
-  union,
-  ${format_for_import(
-    remove_parenthesis(get_schemas(inputs_valibot_imports)),
-  )}
-} from "valibot"`.trim()
+  names: string[],
+  _is_readable: boolean,
+  has_inputs: boolean,
+): string {
+  const base = new Set<string>(["parse"])
+  if (has_inputs) {
+    base.add("union")
+    base.add("tuple")
+    base.add("object")
   }
-  if (valibot_imports.size > 0) {
-    return `
-import type { InferOutput } from "valibot"
-import {
-  parse,
-  tuple,
-  object,
-  union,
-  ${format_for_import(
-    remove_parenthesis(get_schemas(valibot_imports)),
-  )}
-} from "valibot"`.trim()
-  }
-  if (package_imports.size > 0 && inputs.size === 0) {
-    return `
-import {
-  parse,
-  union,
-} from "valibot"`.trim()
-  }
-  if (package_imports.size > 0) {
-    return `
-import type { InferOutput } from "valibot"
-import {
-  parse,
-  union,
-  tuple,
-  object
-} from "valibot"`.trim()
-  }
-  return ""
+  for (const n of names) base.add(n)
+  const items = Array.from(base).sort()
+  const type_import = has_inputs
+    ? 'import type { InferOutput } from "valibot"\n'
+    : ""
+  return `${type_import}import { ${items.join(", ")} } from "valibot"`
 }
 
-function compose_type_package_imports(
-  imports: Set<Import>,
-) {
-  if (imports.size > 0) {
-    return `
-import type {
-  ${format_for_import(get_types(imports))}
-} from "@ethernauta/eth"`.trim()
+function compose_eth_imports(
+  schemas: string[],
+  types: string[],
+): string {
+  if (schemas.length === 0 && types.length === 0) return ""
+  const value_imports =
+    schemas.length > 0
+      ? `import { ${unique(schemas).sort().join(", ")} } from "@ethernauta/eth"`
+      : ""
+  const type_imports =
+    types.length > 0
+      ? `import type { ${unique(types).sort().join(", ")} } from "@ethernauta/eth"`
+      : ""
+  return [type_imports, value_imports]
+    .filter(Boolean)
+    .join("\n")
+}
+
+function compose_parameters_block(
+  inputs: FunctionInput[],
+): string {
+  if (inputs.length === 0) return ""
+  const infos = inputs.map((i) => ({
+    name: i.name,
+    info: get_type_info(i.type),
+  }))
+  const tuple_items = infos
+    .map((i) => i.info.param_schema)
+    .join(", ")
+  const object_items = infos
+    .map((i) => `${i.name}: ${i.info.param_schema}`)
+    .join(", ")
+  return `const parametersSchema = union([
+  tuple([${tuple_items}]),
+  object({ ${object_items} }),
+])
+type Parameters = InferOutput<typeof parametersSchema>`
+}
+
+function compose_values_extraction(
+  inputs: FunctionInput[],
+): string {
+  if (inputs.length === 0) {
+    return "const values: unknown[] = []"
   }
-  return ""
+  const by_name = inputs.map((i) => `parameters.${i.name}`)
+  return `const parameters = parse(parametersSchema, _parameters)
+    const values = Array.isArray(parameters)
+      ? parameters
+      : [${by_name.join(", ")}]`
 }
 
-function compose_package_imports(imports: Set<Import>) {
-  if (imports.size > 0) {
-    return `
-import {
-  ${format_for_import(get_schemas(dedupe_imports(imports)))}
-} from "@ethernauta/eth"
-`.trim()
-  }
-  return ""
+function compose_param_types_const(
+  inputs: FunctionInput[],
+): string {
+  const types = inputs.map((i) => `"${i.type}"`).join(", ")
+  return `const PARAM_TYPES = [${types}] as const`
 }
 
-export function remove_parenthesis(strings: string[]) {
-  return strings.map((string) => {
-    return string.slice(0, -2)
-  })
+function compose_output_types_const(
+  outputs: FunctionOutput[],
+): string {
+  const types = outputs.map((i) => `"${i.type}"`).join(", ")
+  return `const OUTPUT_TYPES = [${types}] as const`
 }
 
-function make_function(
+function compose_signature_const(
+  name: string,
+  inputs: FunctionInput[],
+): string {
+  const canonical = `${name}(${inputs.map((i) => i.type).join(",")})`
+  const names = inputs
+    .map((i) => JSON.stringify(i.name))
+    .join(", ")
+  return `export const SIGNATURE: {
+  signature: string
+  names: string[]
+} = {
+  signature: ${JSON.stringify(canonical)},
+  names: [${names}],
+}`
+}
+
+function build_readable(
   description: Description,
-  out_dir: string,
-) {
+  emit_name: string,
+): string {
   invariant(
     description.type === "function",
-    "the description has to a function to make a view function",
+    "build_readable requires a function description",
   )
-  const kind =
-    description.stateMutability === "view" ||
-    description.stateMutability === "pure"
-      ? "Readable"
-      : "Signable"
-  const {
-    valibot_imports: inputs_valibot_imports,
-    package_imports: inputs_package_imports,
-  } = make_imports(description.inputs)
-  const inputs = merge_imports(
-    inputs_package_imports,
-    inputs_valibot_imports,
+  const { name, inputs, outputs } = description
+  invariant(
+    outputs.length >= 1,
+    `build_readable requires at least one output (${name} has 0)`,
   )
-  const {
-    valibot_imports: outputs_valibot_imports,
-    package_imports: outputs_package_imports,
-  } = make_imports(description.outputs)
-  const outputs = merge_imports(
-    outputs_package_imports,
-    outputs_valibot_imports,
+  const output = outputs[0] as FunctionOutput
+  const output_info = get_type_info(output.type)
+  const input_infos = inputs.map((i) =>
+    get_type_info(i.type),
   )
-  const valibot_imports = merge_imports(
-    inputs_valibot_imports,
-    outputs_valibot_imports,
-  )
-  const package_imports = merge_imports(
-    inputs_package_imports,
-    outputs_package_imports,
-  )
-  const name = description.name
-  const type_union = format_as_union(get_types(outputs))
-  const template =
-    kind === "Readable"
-      ? `
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-${compose_valibot_imports(valibot_imports, package_imports, inputs, outputs_package_imports, inputs_valibot_imports)}
-${compose_package_imports(package_imports)}
-${compose_type_package_imports(outputs_package_imports)}
 
-${compose_parameters_template(inputs, name)}
-: Readable<${type_union === "" ? "void" : type_union}> {
+  const eth_schemas: string[] = []
+  const eth_types: string[] = []
+  const valibot_names = new Set<string>()
+
+  for (const info of input_infos) {
+    if (info.valibot) {
+      valibot_names.add(info.param_schema.replace("()", ""))
+    } else if (info.package === "eth") {
+      eth_schemas.push(info.param_schema)
+    }
+  }
+  if (output_info.valibot) {
+    valibot_names.add(
+      output_info.decoded_schema.replace("()", ""),
+    )
+  } else if (output_info.package === "eth") {
+    eth_schemas.push(output_info.decoded_schema)
+    eth_types.push(output_info.decoded_type)
+  }
+
+  return `import type { Readable, ResolvedReader } from "@ethernauta/transport"
+import { bytes_to_hex, callSchema } from "@ethernauta/transport"
+import {
+  build_signature,
+  decode_function_result,
+  encode_function_call,
+} from "@ethernauta/abi"
+${compose_valibot_imports(Array.from(valibot_names), true, inputs.length > 0)}
+${compose_eth_imports(eth_schemas, eth_types)}
+
+${compose_param_types_const(inputs)}
+${compose_output_types_const(outputs)}
+
+${compose_signature_const(name, inputs)}
+
+${compose_parameters_block(inputs)}
+
+export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
+: Readable<${output_info.decoded_type}> {
   return async (
-    transports: Http[],
-  ): Promise<${type_union === "" ? "void" : type_union}> => {
-    const method = "${name}"
-    ${compose_call_template(inputs)}
+    [transports, _context]: ResolvedReader,
+  ): Promise<${output_info.decoded_type}> => {
+    if (!_context.to)
+      throw new Error("contract Readable requires a 'to' on the reader resolver")
+    ${compose_values_extraction(inputs)}
+    const signature = build_signature("${name}", [...PARAM_TYPES])
+    const calldata = encode_function_call(
+      signature,
+      [...PARAM_TYPES],
+      values,
+    )
+    const call = parse(callSchema, [
+      "eth_call",
+      [{ to: _context.to, input: bytes_to_hex(calldata) }, "latest"],
+    ])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(
-      union([${format_as_comma_separated(get_schemas(outputs))}]),
-      response.result,
+    const [decoded] = decode_function_result(
+      [...OUTPUT_TYPES],
+      response.result as \`0x\${string}\`,
     )
-    return result
+    return parse(${output_info.decoded_schema}, decoded)
   }
-}`.trim()
-      : `
-import type { Signable, Signer } from "@ethernauta/transport"
-${compose_valibot_imports(valibot_imports, package_imports, inputs, outputs_package_imports, inputs_valibot_imports)}
-${compose_package_imports(package_imports)}
-${outputs_package_imports.size > 0 ? compose_type_package_imports(outputs_package_imports) : ""}
-${outputs.size > 0 ? `export const OutputSchema = union([${format_as_comma_separated(get_schemas(outputs))}])
-export type Output = InferOutput<typeof OutputSchema>
-` : ""}
-${compose_parameters_template(inputs, name)}
-: Signable<string> {
-  return (_signer: Signer): Promise<string> => {
-    ${inputs.size > 0 ? `const parameters = parse(parametersSchema, _parameters)
-    return _signer("${name}", parameters)` : `return _signer("${name}", undefined)`}
+}
+`
+}
+
+function build_signable(
+  description: Description,
+  emit_name: string,
+): string {
+  invariant(
+    description.type === "function",
+    "build_signable requires a function description",
+  )
+  const { name, inputs } = description
+  const input_infos = inputs.map((i) =>
+    get_type_info(i.type),
+  )
+
+  const eth_schemas: string[] = []
+  const valibot_names = new Set<string>()
+  for (const info of input_infos) {
+    if (info.valibot) {
+      valibot_names.add(info.param_schema.replace("()", ""))
+    } else if (info.package === "eth") {
+      eth_schemas.push(info.param_schema)
+    }
   }
-}`.trim()
+
+  return `import type { Bytes } from "@ethernauta/eth"
+import { eth_signTransaction } from "@ethernauta/eth"
+import type { ResolvedSigner, Signable } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/transport"
+import {
+  build_signature,
+  encode_function_call,
+} from "@ethernauta/abi"
+${compose_valibot_imports(Array.from(valibot_names), false, inputs.length > 0)}
+${compose_eth_imports(eth_schemas, [])}
+
+${compose_param_types_const(inputs)}
+
+${compose_signature_const(name, inputs)}
+
+${compose_parameters_block(inputs)}
+
+export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
+: Signable<Bytes> {
+  return async (
+    [signer, _context]: ResolvedSigner,
+  ): Promise<Bytes> => {
+    if (!_context.to)
+      throw new Error("contract Signable requires a 'to' on the signer resolver")
+    ${compose_values_extraction(inputs)}
+    const signature = build_signature("${name}", [...PARAM_TYPES])
+    const calldata = encode_function_call(
+      signature,
+      [...PARAM_TYPES],
+      values,
+    )
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
+    return eth_signTransaction(
+      [{
+        to: _context.to,
+        value: "0x0",
+        input: bytes_to_hex(calldata),
+      }],
+      { _function: SIGNATURE },
+    )([signer, _context])
+  }
+}
+`
+}
+
+export function generate(
+  descriptions: Description[],
+  out_dir: string,
+): void {
   const resolved_out_dir = resolve(out_dir, "methods")
   if (!existsSync(resolved_out_dir)) {
-    mkdirSync(resolved_out_dir)
+    mkdirSync(resolved_out_dir, { recursive: true })
   }
-  const file_path = join(
-    resolved_out_dir,
-    `${camel_to_kebab(name)}.ts`,
-  )
-  writeFileSync(file_path, template)
+  for (const description of descriptions) {
+    if (description.type !== "function") continue
+    const is_readable =
+      description.stateMutability === "view" ||
+      description.stateMutability === "pure"
+    if (is_readable && description.outputs.length > 1) {
+      console.warn(
+        `skipping ${description.name}: multi-output methods not yet supported by generator`,
+      )
+      continue
+    }
+    const emit_name = emit_name_for(
+      description,
+      descriptions,
+    )
+    const file_basename = emit_file_basename_for(
+      description,
+      descriptions,
+    )
+    const body = is_readable
+      ? build_readable(description, emit_name)
+      : build_signable(description, emit_name)
+    const file_path = join(
+      resolved_out_dir,
+      `${file_basename}.ts`,
+    )
+    writeFileSync(file_path, body)
+  }
 }
