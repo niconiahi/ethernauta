@@ -19,7 +19,6 @@ import {
 } from "@ethernauta/transport"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
-import { mint } from "../contracts/methods/mint"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -193,28 +192,6 @@ export default function () {
             }}
           >
             Send transfer
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              set_error(null)
-              try {
-                await mint({ uri: "ipfs://demo-token-uri" })(
-                  signer({
-                    chain_id: SEPOLIA_CHAIN_ID,
-                    to: "0x0B472a2Ea815Fb7eC54338154E7fE59aeddFED52",
-                  }),
-                )
-              } catch (e) {
-                set_error(
-                  e instanceof Error
-                    ? e.message
-                    : "Unknown error",
-                )
-              }
-            }}
-          >
-            Sign mint(string) — sidecar demo
           </Button>
         </div>
         <dialog
