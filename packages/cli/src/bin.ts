@@ -1,31 +1,39 @@
 #!/usr/bin/env node
-import { parseArgs } from "node:util"
-import { execute } from "./execute"
+import { execute_abi, execute_registry } from "./execute"
 
-const args = parseArgs({
-  options: {
-    help: { type: "boolean", short: "h" },
-    version: { type: "boolean", short: "v" },
-  },
-  allowPositionals: true,
-  strict: false,
-})
-
-const command = args.positionals[0]
-
-switch (command) {
-  case "generate":
-    await execute(process.argv.slice(3))
-    break
-  case "help":
-    console.log(
-      `
+const HELP = `
 Usage:
 
-ethernauta generate --abi SOME_ABI.abi.json --out OUT_DIR`.trim(),
-    )
+  ethernauta abi      --in <abi-or-artifact.json> --out <dir>
+  ethernauta registry --in <abi-root-dir>         --out <out-file>
+
+Subcommands:
+
+  abi       Regenerate contract method TypeScript files from an
+            ABI JSON or a foundry artifact.
+
+  registry  Walk a directory for *.abi.json files and emit a
+            single REGISTRY mapping 4-byte selectors to method
+            metadata (signature, name, types, param names).
+`.trim()
+
+const [, , subcommand, ...rest] = process.argv
+
+switch (subcommand) {
+  case "abi":
+    execute_abi(rest)
+    break
+  case "registry":
+    execute_registry(rest)
+    break
+  case "help":
+  case "--help":
+  case "-h":
+  case undefined:
+    console.log(HELP)
     break
   default:
-    console.error(`Unknown command: ${command}`)
+    console.error(`unknown subcommand: ${subcommand}\n`)
+    console.error(HELP)
     process.exit(1)
 }
