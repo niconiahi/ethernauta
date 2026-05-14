@@ -1,0 +1,6 @@
+export { delegate } from "./delegate"
+export { delegateBySig } from "./delegate-by-sig"
+export { delegates } from "./delegates"
+export { getVotes } from "./get-votes"
+export { getPastVotes } from "./get-past-votes"
+export { getPastTotalSupply } from "./get-past-total-supply"

@@ -1,1 +1,1 @@
-export * from "./supports-interface"
+export { supportsInterface } from "./supports-interface"

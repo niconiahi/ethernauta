@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/erc",
   "type": "module",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "publishConfig": {
     "access": "public"
   },
@@ -23,6 +23,8 @@
   ],
   "scripts": {
     "dev": "tsdown --watch",
+    "generate": "ethernauta registry --in src --out src/registry/registry.generated.ts && biome format --write src/registry/registry.generated.ts",
+    "prebuild": "pnpm run generate",
     "build": "tsdown && biome format --write dist",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
@@ -38,6 +40,7 @@
     "valibot": "^1.1.0"
   },
   "devDependencies": {
+    "@ethernauta/cli": "workspace:*",
     "tsdown": "^0.13.3"
   }
 }

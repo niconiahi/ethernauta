@@ -1,0 +1,1 @@
+export { burn } from "./burn"

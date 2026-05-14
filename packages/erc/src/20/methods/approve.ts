@@ -1,36 +1,59 @@
-import type {
-  Signable,
-  Signer,
-} from "@ethernauta/transport"
+import type { Bytes } from "@ethernauta/eth"
+import { eth_signTransaction } from "@ethernauta/eth"
+import type { ResolvedSigner, Signable } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/transport"
+import {
+  build_signature,
+  encode_function_call,
+} from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import {
-  parse,
-  tuple,
-  object,
-  union,
-  boolean,
-} from "valibot"
-import {
-  addressSchema,
-  uint256Schema,
-} from "@ethernauta/eth"
+import { object, parse, tuple, union } from "valibot"
+import { addressSchema, uint256Schema } from "@ethernauta/eth"
 
-export const OutputSchema = union([boolean()])
-export type Output = InferOutput<typeof OutputSchema>
+const PARAM_TYPES = ["address", "uint256"] as const
+
+export const SIGNATURE: {
+  signature: string
+  names: string[]
+} = {
+  signature: "approve(address,uint256)",
+  names: ["spender", "value"],
+}
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
-  object({
-    spender: addressSchema,
-    value: uint256Schema,
-  }),
+  object({ spender: addressSchema, value: uint256Schema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
-export function approve(
-  _parameters: Parameters,
-): Signable<string> {
-  return (_signer: Signer): Promise<string> => {
+
+export function approve(_parameters: Parameters)
+: Signable<Bytes> {
+  return async (
+    [signer, _context]: ResolvedSigner,
+  ): Promise<Bytes> => {
+    if (!_context.to)
+      throw new Error("contract Signable requires a 'to' on the signer resolver")
     const parameters = parse(parametersSchema, _parameters)
-    return _signer("approve", parameters)
+    const values = Array.isArray(parameters)
+      ? parameters
+      : [parameters.spender, parameters.value]
+    const signature = build_signature("approve", [...PARAM_TYPES])
+    const calldata = encode_function_call(
+      signature,
+      [...PARAM_TYPES],
+      values,
+    )
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
+    return eth_signTransaction(
+      [{
+        to: _context.to,
+        value: "0x0",
+        input: bytes_to_hex(calldata),
+      }],
+      { _function: SIGNATURE },
+    )([signer, _context])
   }
 }

@@ -1,39 +1,83 @@
-import type { Http, Readable } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
+import {
+  bytes_to_hex,
+  callSchema,
+} from "@ethernauta/transport"
+import {
+  build_signature,
+  decode_function_result,
+  encode_function_call,
+} from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import {
+  boolean,
+  object,
   parse,
   tuple,
-  object,
   union,
-  boolean,
 } from "valibot"
 import { bytes4Schema } from "@ethernauta/eth"
 
+const PARAM_TYPES = ["bytes4"] as const
+const OUTPUT_TYPES = ["bool"] as const
+
+export const SIGNATURE: {
+  signature: string
+  names: string[]
+} = {
+  signature: "supportsInterface(bytes4)",
+  names: ["interfaceId"],
+}
+
 const parametersSchema = union([
   tuple([bytes4Schema]),
-  object({
-    interfaceId: bytes4Schema,
-  }),
+  object({ interfaceId: bytes4Schema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
+
 export function supportsInterface(
   _parameters: Parameters,
 ): Readable<boolean> {
-  return async (transports: Http[]): Promise<boolean> => {
-    const method = "supportsInterface"
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedReader): Promise<boolean> => {
+    if (!_context.to)
+      throw new Error(
+        "contract Readable requires a 'to' on the reader resolver",
+      )
     const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const values = Array.isArray(parameters)
+      ? parameters
+      : [parameters.interfaceId]
+    const signature = build_signature("supportsInterface", [
+      ...PARAM_TYPES,
+    ])
+    const calldata = encode_function_call(
+      signature,
+      [...PARAM_TYPES],
+      values,
+    )
+    const call = parse(callSchema, [
+      "eth_call",
+      [
+        { to: _context.to, input: bytes_to_hex(calldata) },
+        "latest",
+      ],
+    ])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(
-      union([boolean()]),
-      response.result,
+    const [decoded] = decode_function_result(
+      [...OUTPUT_TYPES],
+      response.result as `0x${string}`,
     )
-    return result
+    return parse(boolean(), decoded)
   }
 }
