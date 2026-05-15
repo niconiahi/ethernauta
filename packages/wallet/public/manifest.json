@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/chrome-manifest",
   "manifest_version": 3,
   "name": "Ethernauta",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Self-custody Ethereum wallet. Store your keys encrypted locally and sign transactions — nothing ever leaves your device.",
   "homepage_url": "https://ethernauta.niconiahi.workers.dev/privacy-policy",
   "icons": {
@@ -25,33 +25,18 @@
     "type": "module"
   },
   "permissions": ["storage"],
-  "host_permissions": [
-    "https://ethernauta.niconiahi.workers.dev/*",
-    "https://ethereum-sepolia-rpc.publicnode.com/*",
-    "http://localhost/*"
-  ],
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
-      "matches": [
-        "https://ethernauta.niconiahi.workers.dev/*",
-        "http://localhost/*"
-      ],
+      "matches": ["<all_urls>"],
       "js": ["browser.entry.mjs"],
       "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
-      "matches": [
-        "https://ethernauta.niconiahi.workers.dev/*",
-        "http://localhost/*"
-      ],
-      "resources": [
-        "wallet.mjs",
-        "index.mjs",
-        "index-*.js",
-        "assets/*"
-      ]
+      "matches": ["<all_urls>"],
+      "resources": ["wallet.mjs", "index.mjs", "assets/*"]
     }
   ]
 }
