@@ -100,7 +100,7 @@ export default function () {
           and sign transactions — nothing ever leaves your
           browser.
         </p>
-        <ButtonLink href="https://chromewebstore.google.com">
+        <ButtonLink href="https://chromewebstore.google.com/detail/ethernauta/lpjalkakmdgkepcogmaoipjjeahnpdjp">
           Add to Chrome
         </ButtonLink>
       </section>
