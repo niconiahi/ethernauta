@@ -1,2 +1,7 @@
+export * from "./bytes-to-hex"
 export * from "./camel-to-kebab"
+export * from "./hex-to-bytes"
+export * from "./hex-to-number"
 export * from "./invariant"
+export * from "./number-to-hex"
+export * from "./strip-hex-prefix"
