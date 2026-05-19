@@ -12,35 +12,43 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - It uses validation schemas to validate every piece of data that flows through the library
 - Seamless API for interacting with multiple blockchain ecosystems (currently: [Ethereum](https://ethereum.org/))
 
-## Example
-
-You can check the [officially maintained repository](https://github.com/niconiahi/ethernauta/blob/main/examples/playground) for a full overview of the libraries usage
-
 ## Modules
 
-- [abi](https://github.com/niconiahi/ethernauta/blob/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
-- [chain](https://github.com/niconiahi/ethernauta/blob/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
-- [cli](https://github.com/niconiahi/ethernauta/blob/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
-- [erc](https://github.com/niconiahi/ethernauta/blob/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
-- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
-- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
-- [utils](https://github.com/niconiahi/ethernauta/blob/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
-- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet)
+- [abi](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
+- [chain](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
+- [cli](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
+- [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
+- [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
+- [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
+- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
+- [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
+- [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
+- [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
 
 ## Features
 
 - [x] Chain manipulation methods ([CAIP](https://github.com/ChainAgnostic/caip-js))
 - [x] Ethereum base methods ([specification](https://github.com/ethereum/execution-apis/tree/main/src/eth))
 - [x] JSON RPC methods ([specification](https://www.jsonrpc.org/specification))
-- [x] Methods for interacting with ERC20 contracts ([EIP-20](https://eips.ethereum.org/EIPS/eip-20))
+- [x] Reader factory for blockchain reads with multiple transports
+- [x] Writer factory for blockchain writes with multiple transports
+- [x] Signer factory for wallet interactions with multiple transports
+- [x] Contract factory for `eth_call` against a specific contract with multiple transports
+- [x] Four method shapes: `Readable<T>`, `Writable<T>`, `Signable<T>`, `Callable<T>`
+- [x] Sign transactions with the wallet ([EIP-1559](https://eips.ethereum.org/EIPS/eip-1559))
+- [x] `FunctionSidecar` protocol for ABI-aware transaction signing in the wallet
 - [x] Methods for interacting with Metamask ([EIP-1102](https://eips.ethereum.org/EIPS/eip-1102))
-- [x] A function that allows to read the blockchain
-- [x] Support multiple transports for reader
-- [x] A function that allows to write the blockchain
-- [x] Support multiple transports for writer
-- [x] Sign transaction with wallet ([EIP-1559](https://eips.ethereum.org/EIPS/eip-1559))
-- [x] Non fungible tokens ([EIP-721](https://eips.ethereum.org/EIPS/eip-721))
+- [x] EIP-1193 provider implementation ([specification](https://eips.ethereum.org/EIPS/eip-1193))
+- [x] Multi-injected provider discovery ([EIP-6963](https://eips.ethereum.org/EIPS/eip-6963))
+- [x] ABI encoding/decoding ([abi-spec](https://docs.soliditylang.org/en/latest/abi-spec.html))
+- [x] ABI code generator (emits `Callable` for view methods, `Signable` for state-changing methods)
+- [x] Token Standard ([ERC-20](https://eips.ethereum.org/EIPS/eip-20))
+- [x] Standard Interface Detection ([ERC-165](https://eips.ethereum.org/EIPS/eip-165))
+- [x] Non-Fungible Token Standard ([ERC-721](https://eips.ethereum.org/EIPS/eip-721))
+- [x] Multi Token Standard ([ERC-1155](https://eips.ethereum.org/EIPS/eip-1155))
+- [x] Tokenized Vault Standard ([ERC-4626](https://eips.ethereum.org/EIPS/eip-4626))
 - [x] Transaction tracking system
+- [x] Chrome extension wallet
 - [ ] Metamask's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 - [ ] WalletConnect's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
@@ -56,19 +64,14 @@ import {
   http,
 } from "@ethernauta/transport"
 
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-export const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: NAMESPACE.ETHEREUM,
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
   reference: eip155_11155111.chainId,
 })
 export const reader = create_reader([
   {
     chainId: SEPOLIA_CHAIN_ID,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
   },
 ])
 ```
@@ -76,14 +79,14 @@ export const reader = create_reader([
 ### Reading from the blockchain
 
 ```ts
-import { eth_getBlockByHash } from "@ethernauta/eth";
-import { reader, SEPOLIA_CHAIN_ID } from "./reader";
+import { eth_getBlockByHash } from "@ethernauta/eth"
+import { reader, SEPOLIA_CHAIN_ID } from "./reader"
 
 const readable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
-]);
-const block = await readable(reader(SEPOLIA_CHAIN_ID));
+])
+const block = await readable(reader({ chain_id: SEPOLIA_CHAIN_ID }))
 ```
 
 ### Creating a writer
@@ -96,102 +99,135 @@ import {
   http,
 } from "@ethernauta/transport"
 
-const NAMESPACE = {
-  ETHEREUM: "eip155",
-}
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://grounded-electronic-house.ethereum-sepolia.quiknode.pro/4d40a4c7ec139649d4b1f43f5d536c3756faacc9/"
-export const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: NAMESPACE.ETHEREUM,
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
   reference: eip155_11155111.chainId,
 })
 export const writer = create_writer([
   {
     chainId: SEPOLIA_CHAIN_ID,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
   },
 ])
 ```
 
-### Signing a transaction
+### Creating a signer
 
 ```ts
-import { eth_sendRawTransaction } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/wallet"
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  create_signer,
+  encode_chain_id,
+} from "@ethernauta/transport"
 
-const method = "transfer"
-const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
-const params = [ADDRESS, number_to_hex(1)]
-const signed_transaction = await window.wallet.sign(
-  method,
-  params,
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+export const signer = create_signer([{ chainId: SEPOLIA_CHAIN_ID }])
+```
+
+### Creating a contract resolver
+
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  create_contract,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+export const contract = create_contract([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+  },
+])
+```
+
+### Requesting accounts from the wallet
+
+```ts
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { signer, SEPOLIA_CHAIN_ID } from "./signer"
+
+const [account] = await eth_requestAccounts()(
+  signer({ chain_id: SEPOLIA_CHAIN_ID }),
 )
 ```
 
-### Writting to the blockchain
+### Signing and broadcasting a transaction
 
 ```ts
-import { transfer } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/wallet"
-import { writer, SEPOLIA_CHAIN_ID } from "./writer"
+import {
+  eth_sendRawTransaction,
+  eth_signTransaction,
+} from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/utils"
+import { signer, writer, SEPOLIA_CHAIN_ID } from "./resolvers"
 
-const writable = transfer([
-  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-  number_to_hex(1),
-])
-const hash = await writable(writer(SEPOLIA_CHAIN_ID))
+const signed_transaction = await eth_signTransaction([
+  {
+    to: "0x515e9e0565fdddd4f8a9759744734154da453585",
+    value: number_to_hex(1),
+  },
+])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+
+const hash = await eth_sendRawTransaction([signed_transaction])(
+  writer({ chain_id: SEPOLIA_CHAIN_ID }),
+)
 ```
 
 ### Reacting to transaction states
 
 ```ts
-import { transfer } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/wallet"
-import { writer, SEPOLIA_CHAIN_ID } from "./writer"
 import {
+  register_transaction,
   watch_transaction,
-  register_transaction
 } from "@ethernauta/transaction"
 
-const writable = transfer([
-  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-  number_to_hex(1),
-])
-const hash = await writable(writer(SEPOLIA_CHAIN_ID))
-// initial transaction state 
-// with "type" key equal "pending"
+// initial transaction state with "type" key equal "pending"
 const transaction = register_transaction(hash)
 watch_transaction(hash, (transaction) => {
-  // subsequent states that the transaction goes trough
+  // subsequent states that the transaction goes through
 })
 ```
 
-### Executing ERC20 method
+### Executing an ERC-20 method
 
 ```ts
-import { transfer } from "@ethernauta/erc/20";
-import { writer, SEPOLIA_CHAIN_ID } from "./writer";
+import { transfer } from "@ethernauta/erc/20"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/utils"
+import { signer, writer, SEPOLIA_CHAIN_ID } from "./resolvers"
 
-const writable = transfer([
+const TOKEN_ADDRESS = "0x..."
+const signed = await transfer([
   "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
   number_to_hex(1),
-])
-const hash = await writable(
-  writer(SEPOLIA_CHAIN_ID),
+])(signer({ chain_id: SEPOLIA_CHAIN_ID, to: TOKEN_ADDRESS }))
+
+const hash = await eth_sendRawTransaction([signed])(
+  writer({ chain_id: SEPOLIA_CHAIN_ID }),
 )
 ```
 
-### Executing ERC721 method
+### Reading from a contract
 
 ```ts
-import { approve } from "@ethernauta/erc/721";
-import { writer, SEPOLIA_CHAIN_ID } from "./writer";
+import { balanceOf } from "@ethernauta/erc/20"
+import { contract, SEPOLIA_CHAIN_ID } from "./contract"
 
-const writable = approve([
-  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-  "57896044618658097711785492504343953926634992332820282019728792003956564819967",
-])
-const hash = await writable(
-  writer(SEPOLIA_CHAIN_ID),
+const TOKEN_ADDRESS = "0x..."
+const balance = await balanceOf({ owner: account })(
+  contract({ chain_id: SEPOLIA_CHAIN_ID, to: TOKEN_ADDRESS }),
 )
 ```
+
+## Full working example
+
+[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for its contract methods, `create_contract` for view reads, `create_signer` + `create_writer` for state changes, and `@ethernauta/transaction` for transaction tracking. The source is the most complete public reference for consuming the library.
