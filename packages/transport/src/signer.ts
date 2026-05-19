@@ -7,12 +7,11 @@ import {
   string,
 } from "valibot"
 
-import { addressSchema } from "./chain/address"
 import { chainIdSchema } from "./chain/chain-id"
 
 export const SignContextSchema = object({
   chain_id: chainIdSchema,
-  to: optional(addressSchema),
+  to: optional(string()),
 })
 export type SignContext = InferOutput<
   typeof SignContextSchema

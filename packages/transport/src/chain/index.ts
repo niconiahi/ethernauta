@@ -1,5 +1,4 @@
 export * from "./account-id"
-export * from "./address"
 export * from "./asset-id"
 export * from "./asset-name"
 export * from "./asset-type"

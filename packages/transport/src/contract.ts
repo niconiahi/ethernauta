@@ -1,7 +1,6 @@
 import type { InferOutput } from "valibot"
-import { object, parse } from "valibot"
+import { object, parse, string } from "valibot"
 
-import { addressSchema } from "./chain/address"
 import { chainIdSchema } from "./chain/chain-id"
 import type { Http } from "./http"
 import {
@@ -11,7 +10,7 @@ import {
 
 export const ContractContextSchema = object({
   chain_id: chainIdSchema,
-  to: addressSchema,
+  to: string(),
 })
 export type ContractContext = InferOutput<
   typeof ContractContextSchema
