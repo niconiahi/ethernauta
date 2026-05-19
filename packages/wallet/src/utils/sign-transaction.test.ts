@@ -38,8 +38,15 @@ import {
 const NAMESPACE = {
   ETHEREUM: "eip155",
 }
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://ethereum-sepolia-rpc.publicnode.com"
+// Promise.any inside the reader resolves on the first
+// transport that succeeds — listing several public RPCs
+// keeps the test green when any single endpoint flakes.
+const SEPOLIA_RPC_URLS = [
+  "https://ethereum-sepolia-rpc.publicnode.com",
+  "https://sepolia.gateway.tenderly.co",
+  "https://rpc.sepolia.org",
+  "https://1rpc.io/sepolia",
+]
 const sepolia_chain_id = encode_chain_id({
   namespace: NAMESPACE.ETHEREUM,
   reference: eip155_11155111.chainId,
@@ -47,7 +54,7 @@ const sepolia_chain_id = encode_chain_id({
 const reader = create_reader([
   {
     chainId: sepolia_chain_id,
-    transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+    transports: SEPOLIA_RPC_URLS.map(http),
   },
 ])
 

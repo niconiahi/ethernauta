@@ -10,15 +10,22 @@ import { uintSchema } from "../../core"
 
 import { eth_blockNumber } from "./block-number"
 
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://ethereum-sepolia-rpc.publicnode.com"
+// Promise.any inside the reader resolves on the first
+// transport that succeeds — listing several public RPCs
+// keeps the test green when any single endpoint flakes.
+const SEPOLIA_RPC_URLS = [
+  "https://ethereum-sepolia-rpc.publicnode.com",
+  "https://sepolia.gateway.tenderly.co",
+  "https://rpc.sepolia.org",
+  "https://1rpc.io/sepolia",
+]
 
 describe("eth_blockNumber", () => {
   it("should correctly get the latest mined block", async () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+        transports: SEPOLIA_RPC_URLS.map(http),
       },
     ])
     const readable = eth_blockNumber()

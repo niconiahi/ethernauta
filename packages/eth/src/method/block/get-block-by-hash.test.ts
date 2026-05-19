@@ -8,15 +8,22 @@ import {
 import { describe, expect, it } from "vitest"
 import { eth_getBlockByHash } from "./get-block-by-hash"
 
-const ETHEREUM_SEPOLIA_RPC_URL =
-  "https://ethereum-sepolia-rpc.publicnode.com"
+// Promise.any inside the reader resolves on the first
+// transport that succeeds — listing several public RPCs
+// keeps the test green when any single endpoint flakes.
+const SEPOLIA_RPC_URLS = [
+  "https://ethereum-sepolia-rpc.publicnode.com",
+  "https://sepolia.gateway.tenderly.co",
+  "https://rpc.sepolia.org",
+  "https://1rpc.io/sepolia",
+]
 
 describe("eth_getBlockByHash", () => {
   it("should return block when valid hash is provided", async () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+        transports: SEPOLIA_RPC_URLS.map(http),
       },
     ])
     const VALID_BLOCK_HASH =
@@ -39,7 +46,7 @@ describe("eth_getBlockByHash", () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+        transports: SEPOLIA_RPC_URLS.map(http),
       },
     ])
     const INVALID_BLOCK_HASH =
@@ -62,7 +69,7 @@ describe("eth_getBlockByHash", () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
+        transports: SEPOLIA_RPC_URLS.map(http),
       },
     ])
     const VALID_BLOCK_HASH =
