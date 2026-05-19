@@ -17,7 +17,7 @@ import type {
   FunctionSidecar,
   TransactionRejectedResponse,
 } from "../../utils/event"
-import { bytes_to_hex } from "../../utils/hex"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   get_nonce,
   sign_transaction,
