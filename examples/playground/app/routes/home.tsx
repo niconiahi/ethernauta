@@ -15,8 +15,8 @@ import {
   create_writer,
   encode_chain_id,
   http,
-  number_to_hex,
 } from "@ethernauta/transport"
+import { number_to_hex } from "@ethernauta/utils"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
 
