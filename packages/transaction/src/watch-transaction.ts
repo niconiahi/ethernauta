@@ -8,7 +8,7 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import { invariant } from "@ethernauta/utils"
+import { hex_to_number, invariant } from "@ethernauta/utils"
 import { set_transaction } from "./set-transaction"
 import type {
   MinedTransaction,
@@ -31,10 +31,6 @@ const reader = create_reader([
     transports: [http(ETHEREUM_SEPOLIA_RPC_URL)],
   },
 ])
-
-function hex_to_number(hex: `0x${string}`): number {
-  return Number(hex)
-}
 
 const POOLING_INTERVAL = 2000
 type Callback = (transaction: Transaction) => void
