@@ -1,13 +1,15 @@
 import type { InferOutput } from "valibot"
-import { object, optional, parse } from "valibot"
+import { object, parse } from "valibot"
 
-import { addressSchema } from "./chain/address"
 import { chainIdSchema } from "./chain/chain-id"
 import type { Http } from "./http"
+import {
+  type ChainEntry,
+  require_chain,
+} from "./require-chain"
 
 export const ReadContextSchema = object({
   chain_id: chainIdSchema,
-  to: optional(addressSchema),
 })
 export type ReadContext = InferOutput<
   typeof ReadContextSchema
@@ -20,19 +22,15 @@ export type Readable<T> = (
 ) => Promise<T>
 
 export function create_reader(
-  chains: Array<{ chainId: string; transports: Http[] }>,
+  chains: ChainEntry[],
 ): (_input: ReadContext) => ResolvedReader {
   return (_input: ReadContext): ResolvedReader => {
     const context = parse(ReadContextSchema, _input)
-    const chain = chains.find(
-      ({ chainId }) => chainId === context.chain_id,
+    const transports = require_chain(
+      chains,
+      context.chain_id,
     )
-    if (!chain) {
-      throw new Error(
-        "you need at least one transport for the targeted chain",
-      )
-    }
-    return [chain.transports, context]
+    return [transports, context]
   }
 }
 

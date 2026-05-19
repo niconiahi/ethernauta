@@ -4,8 +4,8 @@ import {
   encode_function_call,
 } from "@ethernauta/abi"
 import type {
-  Readable,
-  ResolvedReader,
+  Callable,
+  ResolvedContract,
 } from "@ethernauta/transport"
 import {
   bytes_to_hex,
@@ -16,15 +16,11 @@ import { parse, string } from "valibot"
 const PARAM_TYPES = [] as const
 const OUTPUT_TYPES = ["string"] as const
 
-export function symbol(): Readable<string> {
+export function symbol(): Callable<string> {
   return async ([
     transports,
     _context,
-  ]: ResolvedReader): Promise<string> => {
-    if (!_context.to)
-      throw new Error(
-        "contract Readable requires a 'to' on the reader resolver",
-      )
+  ]: ResolvedContract): Promise<string> => {
     const values: unknown[] = []
     const signature = build_signature("symbol", [
       ...PARAM_TYPES,

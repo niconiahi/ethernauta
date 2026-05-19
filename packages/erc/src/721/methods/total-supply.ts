@@ -6,8 +6,8 @@ import {
 import type { Uint256 } from "@ethernauta/eth"
 import { uint256Schema } from "@ethernauta/eth"
 import type {
-  Readable,
-  ResolvedReader,
+  Callable,
+  ResolvedContract,
 } from "@ethernauta/transport"
 import {
   bytes_to_hex,
@@ -18,15 +18,11 @@ import { parse } from "valibot"
 const PARAM_TYPES = [] as const
 const OUTPUT_TYPES = ["uint256"] as const
 
-export function totalSupply(): Readable<Uint256> {
+export function totalSupply(): Callable<Uint256> {
   return async ([
     transports,
     _context,
-  ]: ResolvedReader): Promise<Uint256> => {
-    if (!_context.to)
-      throw new Error(
-        "contract Readable requires a 'to' on the reader resolver",
-      )
+  ]: ResolvedContract): Promise<Uint256> => {
     const values: unknown[] = []
     const signature = build_signature("totalSupply", [
       ...PARAM_TYPES,

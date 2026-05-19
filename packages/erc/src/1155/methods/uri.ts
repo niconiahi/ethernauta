@@ -1,13 +1,25 @@
-import type { Readable, ResolvedReader } from "@ethernauta/transport"
-import { bytes_to_hex, callSchema } from "@ethernauta/transport"
 import {
   build_signature,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { InferOutput } from "valibot"
-import { object, parse, string, tuple, union } from "valibot"
 import { uint256Schema } from "@ethernauta/eth"
+import type {
+  Callable,
+  ResolvedContract,
+} from "@ethernauta/transport"
+import {
+  bytes_to_hex,
+  callSchema,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import {
+  object,
+  parse,
+  string,
+  tuple,
+  union,
+} from "valibot"
 
 const PARAM_TYPES = ["uint256"] as const
 const OUTPUT_TYPES = ["string"] as const
@@ -26,18 +38,20 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function uri(_parameters: Parameters)
-: Readable<string> {
-  return async (
-    [transports, _context]: ResolvedReader,
-  ): Promise<string> => {
-    if (!_context.to)
-      throw new Error("contract Readable requires a 'to' on the reader resolver")
+export function uri(
+  _parameters: Parameters,
+): Callable<string> {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedContract): Promise<string> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
       : [parameters.id]
-    const signature = build_signature("uri", [...PARAM_TYPES])
+    const signature = build_signature("uri", [
+      ...PARAM_TYPES,
+    ])
     const calldata = encode_function_call(
       signature,
       [...PARAM_TYPES],
@@ -45,7 +59,10 @@ export function uri(_parameters: Parameters)
     )
     const call = parse(callSchema, [
       "eth_call",
-      [{ to: _context.to, input: bytes_to_hex(calldata) }, "latest"],
+      [
+        { to: _context.to, input: bytes_to_hex(calldata) },
+        "latest",
+      ],
     ])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),

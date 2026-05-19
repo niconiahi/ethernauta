@@ -3,6 +3,10 @@ import { object, parse } from "valibot"
 
 import { chainIdSchema } from "./chain/chain-id"
 import type { Http } from "./http"
+import {
+  type ChainEntry,
+  require_chain,
+} from "./require-chain"
 
 export const WriteContextSchema = object({
   chain_id: chainIdSchema,
@@ -18,19 +22,15 @@ export type Writable<T> = (
 ) => Promise<T>
 
 export function create_writer(
-  chains: Array<{ chainId: string; transports: Http[] }>,
+  chains: ChainEntry[],
 ): (_input: WriteContext) => ResolvedWriter {
   return (_input: WriteContext): ResolvedWriter => {
     const context = parse(WriteContextSchema, _input)
-    const chain = chains.find(
-      ({ chainId }) => chainId === context.chain_id,
+    const transports = require_chain(
+      chains,
+      context.chain_id,
     )
-    if (!chain) {
-      throw new Error(
-        "you need at least one transport for the targeted chain",
-      )
-    }
-    return [chain.transports, context]
+    return [transports, context]
   }
 }
 

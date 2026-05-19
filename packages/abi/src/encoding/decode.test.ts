@@ -155,10 +155,7 @@ describe("decode.ts", () => {
 
     it("should throw on calldata shorter than 4 bytes", () => {
       expect(() =>
-        decode_function_call(
-          [],
-          "0xab" as `0x${string}`,
-        ),
+        decode_function_call([], "0xab" as `0x${string}`),
       ).toThrow(/calldata too short/)
     })
   })

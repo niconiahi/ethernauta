@@ -1,5 +1,5 @@
 export { balanceOf } from "./balance-of"
-export { setApprovalForAll } from "./set-approval-for-all"
 export { isApprovedForAll } from "./is-approved-for-all"
 export { safeTransferFrom } from "./safe-transfer-from"
+export { setApprovalForAll } from "./set-approval-for-all"
 export { uri } from "./uri"

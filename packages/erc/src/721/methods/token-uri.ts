@@ -5,8 +5,8 @@ import {
 } from "@ethernauta/abi"
 import { uint256Schema } from "@ethernauta/eth"
 import type {
-  Readable,
-  ResolvedReader,
+  Callable,
+  ResolvedContract,
 } from "@ethernauta/transport"
 import {
   bytes_to_hex,
@@ -32,15 +32,11 @@ type Parameters = InferOutput<typeof parametersSchema>
 
 export function tokenURI(
   _parameters: Parameters,
-): Readable<string> {
+): Callable<string> {
   return async ([
     transports,
     _context,
-  ]: ResolvedReader): Promise<string> => {
-    if (!_context.to)
-      throw new Error(
-        "contract Readable requires a 'to' on the reader resolver",
-      )
+  ]: ResolvedContract): Promise<string> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters

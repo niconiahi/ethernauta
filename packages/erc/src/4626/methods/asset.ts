@@ -1,13 +1,19 @@
-import type { Readable, ResolvedReader } from "@ethernauta/transport"
-import { bytes_to_hex, callSchema } from "@ethernauta/transport"
 import {
   build_signature,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import { parse } from "valibot"
 import type { Address } from "@ethernauta/eth"
 import { addressSchema } from "@ethernauta/eth"
+import type {
+  Callable,
+  ResolvedContract,
+} from "@ethernauta/transport"
+import {
+  bytes_to_hex,
+  callSchema,
+} from "@ethernauta/transport"
+import { parse } from "valibot"
 
 const PARAM_TYPES = [] as const
 const OUTPUT_TYPES = ["address"] as const
@@ -20,17 +26,15 @@ export const SIGNATURE: {
   names: [],
 }
 
-
-
-export function asset()
-: Readable<Address> {
-  return async (
-    [transports, _context]: ResolvedReader,
-  ): Promise<Address> => {
-    if (!_context.to)
-      throw new Error("contract Readable requires a 'to' on the reader resolver")
+export function asset(): Callable<Address> {
+  return async ([
+    transports,
+    _context,
+  ]: ResolvedContract): Promise<Address> => {
     const values: unknown[] = []
-    const signature = build_signature("asset", [...PARAM_TYPES])
+    const signature = build_signature("asset", [
+      ...PARAM_TYPES,
+    ])
     const calldata = encode_function_call(
       signature,
       [...PARAM_TYPES],
@@ -38,7 +42,10 @@ export function asset()
     )
     const call = parse(callSchema, [
       "eth_call",
-      [{ to: _context.to, input: bytes_to_hex(calldata) }, "latest"],
+      [
+        { to: _context.to, input: bytes_to_hex(calldata) },
+        "latest",
+      ],
     ])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),

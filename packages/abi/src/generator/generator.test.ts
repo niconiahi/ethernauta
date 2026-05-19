@@ -10,7 +10,7 @@ function make_tmp(): string {
 }
 
 describe("generator.ts", () => {
-  it("should emit a Readable that wraps eth_call for view methods", () => {
+  it("should emit a Callable that wraps eth_call for view methods", () => {
     const out_dir = make_tmp()
     try {
       generate(
@@ -29,8 +29,8 @@ describe("generator.ts", () => {
         join(out_dir, "methods", "get_data.ts"),
         "utf8",
       )
-      expect(file).toContain("Readable<string>")
-      expect(file).toContain("ResolvedReader")
+      expect(file).toContain("Callable<string>")
+      expect(file).toContain("ResolvedContract")
       expect(file).toContain('build_signature("get_data"')
       expect(file).toContain('"eth_call"')
       expect(file).toContain("decode_function_result")
@@ -68,7 +68,7 @@ describe("generator.ts", () => {
     }
   })
 
-  it("should emit a no-param Readable for nullary view methods", () => {
+  it("should emit a no-param Callable for nullary view methods", () => {
     const out_dir = make_tmp()
     try {
       generate(
@@ -87,7 +87,7 @@ describe("generator.ts", () => {
         join(out_dir, "methods", "total-supply.ts"),
         "utf8",
       )
-      expect(file).toContain("Readable<Uint256>")
+      expect(file).toContain("Callable<Uint256>")
       expect(file).toContain(
         "export function totalSupply()",
       )

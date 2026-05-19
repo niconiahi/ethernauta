@@ -63,7 +63,10 @@ export function emit_file_basename_for(
   const js_name = emit_name_for(description, descriptions)
   // preserve snake_case if the source was already snake_case
   // (e.g. `get_data` → `get_data.ts`); otherwise kebab-case.
-  if (description.type === "function" && description.name.includes("_")) {
+  if (
+    description.type === "function" &&
+    description.name.includes("_")
+  ) {
     return js_name
   }
   return camel_to_kebab(js_name)
@@ -322,7 +325,7 @@ function build_readable(
     eth_types.push(output_info.decoded_type)
   }
 
-  return `import type { Readable, ResolvedReader } from "@ethernauta/transport"
+  return `import type { Callable, ResolvedContract } from "@ethernauta/transport"
 import { bytes_to_hex, callSchema } from "@ethernauta/transport"
 import {
   build_signature,
@@ -340,12 +343,10 @@ ${compose_signature_const(name, inputs)}
 ${compose_parameters_block(inputs)}
 
 export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
-: Readable<${output_info.decoded_type}> {
+: Callable<${output_info.decoded_type}> {
   return async (
-    [transports, _context]: ResolvedReader,
+    [transports, _context]: ResolvedContract,
   ): Promise<${output_info.decoded_type}> => {
-    if (!_context.to)
-      throw new Error("contract Readable requires a 'to' on the reader resolver")
     ${compose_values_extraction(inputs)}
     const signature = build_signature("${name}", [...PARAM_TYPES])
     const calldata = encode_function_call(
