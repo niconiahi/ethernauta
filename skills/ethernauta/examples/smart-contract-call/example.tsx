@@ -1,0 +1,84 @@
+// Calling a state-changing contract method.
+// Taken from animatronik's dapp.add.tsx mint flow.
+
+import { eip155_11155111 } from "@ethernauta/chain"
+import { addressSchema } from "@ethernauta/eth"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
+import {
+  register_transaction,
+  type Transaction,
+  watch_transaction,
+} from "@ethernauta/transaction"
+import {
+  create_signer,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+import { useState } from "react"
+import { parse } from "valibot"
+
+// Generated method — encodes calldata + attaches the function
+// sidecar { signature: "mint(string)", names: ["data"] } so the
+// wallet can render a human-readable confirmation.
+import { mint } from "~/generated/animatronik/methods/mint"
+
+const CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+
+const CHAINS = [
+  {
+    chainId: CHAIN_ID,
+    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+  },
+]
+
+const signer = create_signer(CHAINS)
+const writer = create_writer(CHAINS)
+
+export function MintButton({
+  contract_address,
+  data,
+}: {
+  contract_address: string
+  data: string
+}) {
+  const [tx, set_tx] = useState<Transaction | null>(null)
+  const [error, set_error] = useState<string | null>(null)
+
+  async function handle_mint() {
+    set_error(null)
+    try {
+      // Validate the contract address at the boundary.
+      const to = parse(addressSchema, contract_address)
+
+      // Signable: signer({ chain_id, to }) — `to` is the
+      // contract address, supplied here, not baked into mint().
+      const signed = await mint({ data })(
+        signer({ chain_id: CHAIN_ID, to }),
+      )
+
+      // Broadcast identical to a native transfer.
+      const hash = await eth_sendRawTransaction([signed])(
+        writer({ chain_id: CHAIN_ID }),
+      )
+
+      set_tx(register_transaction(hash))
+      watch_transaction(hash, (updated) => set_tx(updated))
+    } catch (err) {
+      set_error(
+        err instanceof Error ? err.message : "Mint failed",
+      )
+    }
+  }
+
+  return (
+    <>
+      <button onClick={handle_mint}>Mint</button>
+      {tx ? <p>{tx.status}</p> : null}
+      {error ? <p>{error}</p> : null}
+    </>
+  )
+}

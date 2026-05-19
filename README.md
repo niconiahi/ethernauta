@@ -1,5 +1,13 @@
 ![logo](https://github.com/niconiahi/ethernauta/blob/main/assets/logo.svg)
 
+## Use Ethernauta with your AI agent
+
+Drop [`skills/ethernauta/SKILL.md`](https://github.com/niconiahi/ethernauta/blob/main/skills/ethernauta/SKILL.md) into your agent's context and it will know — without visiting these docs — how to wire chains, read state, connect a wallet, sign transactions, and call contracts the Ethernauta way. The skill is concept-by-concept (WHAT it is, WHEN to reach for it) and links to a self-contained, copy-pasteable example for every section under [`skills/ethernauta/examples/`](https://github.com/niconiahi/ethernauta/tree/main/skills/ethernauta/examples). Every pattern is lifted from real code in [Animatronik](https://github.com/niconiahi/animatronik) or the in-repo playground — nothing speculative.
+
+## Full working example: Animatronik
+
+[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, `create_signer` + `create_writer` for state changes, and `@ethernauta/transaction` for transaction tracking. The source is the most complete public reference for consuming the library.
+
 ## Philosophy
 
 The monorepo is arquitectured as per described in [Valibot's thesis](https://valibot.dev/thesis.pdf) so that it takes full use of tree-shaking thus making the bundle size of the library much smaller than similar libraries. It comes with the burden of getting used to composing functions (of small bundle size) but this is helped with a clear API
@@ -228,6 +236,3 @@ const balance = await balanceOf({ owner: account })(
 )
 ```
 
-## Full working example
-
-[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for its contract methods, `create_contract` for view reads, `create_signer` + `create_writer` for state changes, and `@ethernauta/transaction` for transaction tracking. The source is the most complete public reference for consuming the library.
