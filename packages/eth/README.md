@@ -1,4 +1,4 @@
-[![bundlejs](https://deno.bundlejs.com/badge?q=@ethernauta/eth@0.0.10&treeshake=[*])](https://deno.bundlejs.com/badge?q=@ethernauta/eth@0.0.10&treeshake=[*])
+[![bundlejs](https://deno.bundlejs.com/badge?q=@ethernauta/eth&treeshake=[*])](https://deno.bundlejs.com/?q=@ethernauta/eth&treeshake=[*])
 
 ## Philosophy
 
@@ -6,91 +6,76 @@ This module aims to be an un-opinionated representation of the defined:
 
 - [Ethereum schemas](https://github.com/ethereum/execution-apis/tree/main/src/schemas)
 - [Ethereum base methods](https://github.com/ethereum/execution-apis/tree/main/src/eth)
-- [abi-spec](https://docs.soliditylang.org/en/latest/abi-spec.html)
+
+Methods come in three shapes:
+
+- `Readable<T>` for state queries (`eth_getBalance`, `eth_getBlockByHash`, …) — consumed by a reader resolver
+- `Writable<T>` for state mutations (`eth_sendRawTransaction`) — consumed by a writer resolver
+- `Signable<T>` for wallet operations (`eth_signTransaction`, `eth_sign`) — consumed by a signer resolver
+
+This package is also the canonical home of the Ethereum schemas — `addressSchema`, `Bytes`, `Uint256`, the block / transaction / receipt schemas. Other packages import these from here.
 
 ## Modules
 
-- [abi](https://github.com/niconiahi/ethernauta/blob/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
-- [chain](https://github.com/niconiahi/ethernauta/blob/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
-- [cli](https://github.com/niconiahi/ethernauta/blob/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
-- [erc](https://github.com/niconiahi/ethernauta/blob/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
-- [eth](https://github.com/niconiahi/ethernauta/blob/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
-- [transaction](https://github.com/niconiahi/ethernauta/blob/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
-- [utils](https://github.com/niconiahi/ethernauta/blob/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
-- [wallet](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet)
-
-## Table of contents
-
-1. [API](#api)
-2. [core](#core)
-5. [method](#method)
+- [abi](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
+- [chain](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
+- [cli](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
+- [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
+- [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
+- [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
+- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
+- [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
+- [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
+- [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
 
 ## API
 
 ### Reading from the blockchain
 
 ```ts
-import { eth_getBlockByHash } from "@ethernauta/eth";
-import { reader, SEPOLIA_CHAIN_ID } from "./reader";
+import { eth_getBlockByHash } from "@ethernauta/eth"
+import { reader, SEPOLIA_CHAIN_ID } from "./reader"
 
 const readable = eth_getBlockByHash([
   "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
   false,
-]);
-const block = await readable(reader(SEPOLIA_CHAIN_ID));
-```
-
-### Signing a transaction
-
-```ts
-import { eth_sendRawTransaction } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/wallet"
-
-const method = "transfer"
-const ADDRESS = "0x515e9e0565fdddd4f8a9759744734154da453585"
-const params = [ADDRESS, number_to_hex(1)]
-const signed_transaction = await window.wallet.sign(
-  method,
-  params,
-)
-```
-
-### Writting to the blockchain
-
-```ts
-import { transfer } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/wallet"
-import { writer, SEPOLIA_CHAIN_ID } from "./writer"
-
-const writable = transfer([
-  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-  number_to_hex(1),
 ])
-const hash = await writable(writer(SEPOLIA_CHAIN_ID))
-await writable(writer(SEPOLIA_CHAIN_ID))
+const block = await readable(reader({ chain_id: SEPOLIA_CHAIN_ID }))
+```
+
+### Signing and broadcasting a transaction
+
+```ts
+import {
+  eth_sendRawTransaction,
+  eth_signTransaction,
+} from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/utils"
+import { signer, writer, SEPOLIA_CHAIN_ID } from "./resolvers"
+
+const signed_transaction = await eth_signTransaction([
+  {
+    to: "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+    value: number_to_hex(1),
+  },
+])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+
+const hash = await eth_sendRawTransaction([signed_transaction])(
+  writer({ chain_id: SEPOLIA_CHAIN_ID }),
+)
 ```
 
 ### Reacting to transaction states
 
 ```ts
-import { transfer } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/wallet"
-import { writer, SEPOLIA_CHAIN_ID } from "./writer"
 import {
+  register_transaction,
   watch_transaction,
-  register_transaction
 } from "@ethernauta/transaction"
 
-const writable = transfer([
-  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-  number_to_hex(1),
-])
-const hash = await writable(writer(SEPOLIA_CHAIN_ID))
-// initial transaction state 
-// with "type" key equal "pending"
 const transaction = register_transaction(hash)
 watch_transaction(hash, (transaction) => {
-  // subsequent states that the transaction goes trough
+  // subsequent states that the transaction goes through
 })
 ```
 
@@ -107,10 +92,10 @@ watch_transaction(hash, (transaction) => {
 
 #### base
 
-- [address.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/address.ts)
-- [addressses.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/addresses.ts)
+- [base/address.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/address.ts)
+- [base/addresses.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/addresses.ts)
 - [base/byte.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/byte.ts)
-- [base/bytes/ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/bytes.ts)
+- [base/bytes.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/bytes.ts)
 - [base/bytes-8.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/bytes-8.ts)
 - [base/bytes-32.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/bytes-32.ts)
 - [base/bytes-48.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/base/bytes-48.ts)
@@ -136,25 +121,7 @@ watch_transaction(hash, (transaction) => {
 - [transaction/signed.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/signed.ts)
 - [transaction/unsigned.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/unsigned.ts)
 
-### abi
-
-- [abi/error.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/error.ts)
-- [abi/client.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/event.ts)
-- [abi/shared.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/shared.ts)
-
-#### function
-
-- [function/shared.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/function/shared.ts)
-- [function/function.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/function/function.ts)
-- [function/constructor.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/function/constructor.ts)
-- [function/fallback.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/function/fallback.ts)
-- [function/receive.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/abi/function/receive.ts)
-
 ### method
-
-#### eip
-
-- [eip/1102/request-accounts/request-accounts.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/method/eip/1102/request-accounts.ts)
 
 #### block
 
