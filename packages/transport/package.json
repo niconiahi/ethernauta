@@ -25,6 +25,9 @@
     "format": "biome format --write .",
     "test:unit": "vitest"
   },
+  "dependencies": {
+    "@ethernauta/utils": "workspace:*"
+  },
   "peerDependencies": {
     "valibot": "^1.1.0"
   },

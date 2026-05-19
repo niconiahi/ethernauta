@@ -1,7 +1,6 @@
 export * from "./call"
 export * from "./chain"
 export * from "./contract"
-export * from "./hex"
 export * from "./http"
 export * from "./json-rpc"
 export * from "./reader"
