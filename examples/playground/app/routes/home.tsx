@@ -70,6 +70,9 @@ export default function () {
         minHeight: "100vh",
       }}
     >
+      {account ? (
+        <ConnectedAddress address={account} />
+      ) : null}
       {/* Hero */}
       <section
         style={{
@@ -156,9 +159,6 @@ export default function () {
           >
             Connect wallet
           </Button>
-          {account ? (
-            <ConnectedAddress address={account} />
-          ) : null}
           <Button
             variant="secondary"
             onClick={async () => {
@@ -572,17 +572,21 @@ function ConnectedAddress({ address }: { address: string }) {
   return (
     <div
       style={{
+        position: "fixed",
+        top: 16,
+        right: 16,
+        zIndex: 10,
         display: "inline-flex",
-        alignSelf: "center",
         alignItems: "center",
         gap: 8,
         padding: "8px 14px",
         borderRadius: 999,
-        background: "color-mix(in srgb, #0FA05C 12%, #faf5f0)",
-        border: "1px solid #0FA05C",
-        color: "#0FA05C",
+        background: "#fff",
+        border: "1px solid #ddd",
+        color: "#1a1a1a",
         fontSize: 13,
         fontWeight: 600,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
       }}
     >
       <span
@@ -593,7 +597,6 @@ function ConnectedAddress({ address }: { address: string }) {
           background: "#0FA05C",
         }}
       />
-      Connected as{" "}
       <span style={{ fontFamily: "monospace" }}>{short}</span>
     </div>
   )
