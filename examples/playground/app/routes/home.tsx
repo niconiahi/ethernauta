@@ -44,6 +44,9 @@ export default function () {
     Transaction[]
   >([])
   const [error, set_error] = useState<string | null>(null)
+  const [account, set_account] = useState<string | null>(
+    null,
+  )
   const last_transaction =
     transactions[transactions.length - 1]
   const dialog_ref = useRef<HTMLDialogElement>(null)
@@ -141,17 +144,21 @@ export default function () {
             gap: 12,
           }}
         >
-          <TestWalletButton />
+          <TestWalletButton on_connected={set_account} />
           <Button
             variant="secondary"
-            onClick={() => {
-              eth_requestAccounts()(
+            onClick={async () => {
+              const accounts = await eth_requestAccounts()(
                 signer({ chain_id: SEPOLIA_CHAIN_ID }),
               )
+              if (accounts[0]) set_account(accounts[0])
             }}
           >
             Connect wallet
           </Button>
+          {account ? (
+            <ConnectedAddress address={account} />
+          ) : null}
           <Button
             variant="secondary"
             onClick={async () => {
@@ -535,7 +542,11 @@ export default function () {
 const TEST_MNEMONIC =
   "smile price bomb movie minimum treat hurdle adult wing come space cross"
 
-function TestWalletButton() {
+function TestWalletButton({
+  on_connected,
+}: {
+  on_connected: (address: string) => void
+}) {
   const [copied, setCopied] = useState(false)
   return (
     <Button
@@ -543,15 +554,48 @@ function TestWalletButton() {
       onClick={async () => {
         await navigator.clipboard.writeText(TEST_MNEMONIC)
         setCopied(true)
-        eth_requestAccounts()(
+        const accounts = await eth_requestAccounts()(
           signer({ chain_id: SEPOLIA_CHAIN_ID }),
         )
+        if (accounts[0]) on_connected(accounts[0])
       }}
     >
       {copied
         ? "Test mnemonics copied — paste in the extension"
         : "Connect with test wallet"}
     </Button>
+  )
+}
+
+function ConnectedAddress({ address }: { address: string }) {
+  const short = `${address.slice(0, 6)}…${address.slice(-4)}`
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignSelf: "center",
+        alignItems: "center",
+        gap: 8,
+        padding: "8px 14px",
+        borderRadius: 999,
+        background: "color-mix(in srgb, #0FA05C 12%, #faf5f0)",
+        border: "1px solid #0FA05C",
+        color: "#0FA05C",
+        fontSize: 13,
+        fontWeight: 600,
+      }}
+    >
+      <span
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          background: "#0FA05C",
+        }}
+      />
+      Connected as{" "}
+      <span style={{ fontFamily: "monospace" }}>{short}</span>
+    </div>
   )
 }
 
