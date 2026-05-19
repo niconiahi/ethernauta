@@ -8,7 +8,7 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 
 const PARAM_TYPES = [] as const

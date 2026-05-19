@@ -9,10 +9,8 @@ import type {
   Callable,
   ResolvedContract,
 } from "@ethernauta/transport"
-import {
-  bytes_to_hex,
-  callSchema,
-} from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 
 const PARAM_TYPES = [] as const

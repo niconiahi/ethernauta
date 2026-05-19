@@ -12,7 +12,7 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
