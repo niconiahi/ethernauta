@@ -58,9 +58,7 @@ function load_abi(path: string): unknown[] {
 
 function signature_key(d: Description): string {
   if (d.type !== "function") return d.type
-  const param_types = d.inputs
-    .map((i) => i.type)
-    .join(",")
+  const param_types = d.inputs.map((i) => i.type).join(",")
   return `${d.name}(${param_types})`
 }
 
@@ -97,9 +95,7 @@ function write_barrel(
     if (seen.has(js_name)) continue
     seen.add(js_name)
     const basename = emit_file_basename_for(f, functions)
-    lines.push(
-      `export { ${js_name} } from "./${basename}"`,
-    )
+    lines.push(`export { ${js_name} } from "./${basename}"`)
   }
   writeFileSync(
     join(out_dir, "methods", "index.ts"),
@@ -119,10 +115,7 @@ function is_generatable(d: Description): boolean {
 export function execute_abi(args: string[]): void {
   const { in_path, out_dir } = parse_flags(args)
   const raw = load_abi(in_path)
-  const descriptions = parse(
-    array(DescriptionSchema),
-    raw,
-  )
+  const descriptions = parse(array(DescriptionSchema), raw)
   const functions = dedupe_by_signature(
     descriptions.filter((d) => d.type === "function"),
   )
