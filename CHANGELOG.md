@@ -5,6 +5,48 @@ Per-package changelogs live under `packages/*/CHANGELOG.md` and
 are produced by the publish pipeline; this file captures the
 shape of each release at a higher level.
 
+## [0.0.43] — 2026-05-19
+
+This release consolidates **hex helpers and address-schema ownership**. Generic byte utilities move out of `@ethernauta/transport` into `@ethernauta/utils`, and `addressSchema` becomes eth-only. Three internal duplicate implementations are removed in the process. The full package README set has also been refreshed against the current API.
+
+### Breaking
+
+- **`@ethernauta/transport`**
+  - The hex helpers `bytes_to_hex`, `hex_to_bytes`, `number_to_hex`, `hex_to_number`, and `strip_hex_prefix` have moved to `@ethernauta/utils`. Consumers that imported them from transport must update their imports.
+  - `addressSchema` is no longer exported. The canonical location is `@ethernauta/eth`; transport's `SignContext` and `ContractContext` accept `to` as a `string` and defer Ethereum-address validation to the eth-method layer where it belongs.
+
+- **Regenerate generated ABI methods.** Files emitted by previous versions of `ethernauta abi` import `bytes_to_hex` from `@ethernauta/transport`. Re-run `ethernauta abi` to get imports pointing at `@ethernauta/utils`.
+
+### Added
+
+- **`@ethernauta/utils`**
+  - `bytes_to_hex(data)` — encode a `Uint8Array` as `0x`-prefixed hex.
+  - `hex_to_bytes(hex)` — decode `0x`-prefixed (or bare) hex to a `Uint8Array`.
+  - `number_to_hex(value)` — encode a `number` as `0x`-prefixed hex.
+  - `hex_to_number(hex)` — decode `0x`-prefixed hex to a `number`.
+  - `strip_hex_prefix(hex)` — drop the leading `0x` from a hex string.
+
+### Changed
+
+- **`@ethernauta/abi`** — the generator's emit templates import `bytes_to_hex` from `@ethernauta/utils` (previously `@ethernauta/transport`).
+- **`@ethernauta/transaction`**, **`@ethernauta/wallet`**, **`@ethernauta/erc`**, **`@ethernauta/abi`**, **`@ethernauta/playground`** — all internal consumers of the moved helpers re-routed to `@ethernauta/utils`. Duplicate `hex_to_number` / `number_to_hex` implementations inside the wallet (`utils/hex.ts`, `utils/crypto.ts`) and inside transaction (`watch-transaction.ts`) were deleted in favor of the shared utils module.
+- **`@ethernauta/wallet`** — `sign-transaction.test.ts` aligned with the current `get_gas_limit()` constant; the previously-failing gas-mismatch assertion now passes.
+
+### Tests
+
+- The Sepolia integration tests in `@ethernauta/eth` and `@ethernauta/wallet` now provide a list of public RPC endpoints to each reader. `Promise.any` inside the reader resolves on the first transport that succeeds, so a single flaky public endpoint no longer red-bars the suite.
+
+### Docs
+
+- Every package README rewritten to reflect the current API: corrected resolver signatures (`reader({ chain_id })` etc.), the four method shapes (`Readable<T>` / `Writable<T>` / `Signable<T>` / `Callable<T>`), the `create_signer` / `create_contract` factories, the `FunctionSidecar` invariant, and the `ethernauta abi` / `ethernauta registry` CLI subcommands.
+- New `@ethernauta/eip` README covering EIP-1102, EIP-1193, and EIP-6963.
+- `@ethernauta/wallet` README now documents the install path, vault model (PBKDF2 + AES-GCM), the five views, the `window.postMessage` wire protocol, the three response envelopes, and the keccak-verified `FunctionSidecar` invariant.
+- Root README's Features list refreshed against reality, and a new "Full working example" section links to [Animatronik](https://github.com/niconiahi/animatronik) as the production reference consumer.
+
+### Maintenance
+
+- Stale `!@ethernauta/connector` and `!@ethernauta/testing` filters removed from root `package.json` scripts (those packages no longer exist in the workspace).
+
 ## [0.0.42] — 2026-05-13
 
 This release introduces the **calldata-decoding pipeline**: dapps
