@@ -256,9 +256,12 @@ describe("transaction.ts", () => {
     const TARGET_ADDRESS =
       "0x515e9e0565fdddd4f8a9759744734154da453585"
     const params = [TARGET_ADDRESS, number_to_hex(1)] // 1 wei
-    const FIXED_GAS = 21000n
-    const FIXED_MAX_FEE = 20000000000n
-    const FIXED_PRIORITY_FEE = 2000000000n
+    // Mirrors the constants in sign_transaction(): testnet
+    // ceiling for gas (refunded under EIP-1559), 20 gwei
+    // max fee, 2 gwei priority fee.
+    const FIXED_GAS = 1_000_000n
+    const FIXED_MAX_FEE = 20_000_000_000n
+    const FIXED_PRIORITY_FEE = 2_000_000_000n
     const viem_signed = await account.signTransaction({
       to: TARGET_ADDRESS,
       value: 1n, // 1 wei
