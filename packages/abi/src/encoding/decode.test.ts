@@ -1,4 +1,4 @@
-import { bytes_to_hex } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
 import {
   decode_function_call,

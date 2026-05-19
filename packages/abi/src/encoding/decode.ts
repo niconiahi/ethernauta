@@ -1,7 +1,7 @@
 import {
   bytes_to_hex,
   hex_to_bytes,
-} from "@ethernauta/transport"
+} from "@ethernauta/utils"
 
 type AbiType =
   | "address"

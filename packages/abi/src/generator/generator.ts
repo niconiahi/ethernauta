@@ -326,7 +326,8 @@ function build_readable(
   }
 
   return `import type { Callable, ResolvedContract } from "@ethernauta/transport"
-import { bytes_to_hex, callSchema } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   build_signature,
   decode_function_result,
@@ -400,7 +401,7 @@ function build_signable(
   return `import type { Bytes } from "@ethernauta/eth"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type { ResolvedSigner, Signable } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   build_signature,
   encode_function_call,
