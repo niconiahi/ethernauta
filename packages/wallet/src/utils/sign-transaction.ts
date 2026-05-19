@@ -26,7 +26,7 @@ import {
   string,
 } from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
-import { hex_to_bytes } from "./hex"
+import { hex_to_bytes } from "@ethernauta/utils"
 import { encode } from "./rlp"
 import type { Transaction } from "./transaction"
 

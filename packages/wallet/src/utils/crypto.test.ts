@@ -5,7 +5,7 @@ import {
   private_key_to_address,
   seed_to_master_key,
 } from "./crypto"
-import { bytes_to_hex } from "./hex"
+import { bytes_to_hex } from "@ethernauta/utils"
 
 const MNEMONICS =
   "smile price bomb movie minimum treat hurdle adult wing come space cross"

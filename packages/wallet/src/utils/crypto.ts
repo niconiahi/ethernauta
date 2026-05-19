@@ -7,7 +7,7 @@ import {
   validateMnemonic,
 } from "@scure/bip39"
 import { wordlist } from "@scure/bip39/wordlists/english"
-import { bytes_to_hex } from "./hex"
+import { bytes_to_hex } from "@ethernauta/utils"
 
 export function mnemonic_to_seed(mnemonic: string) {
   if (!validateMnemonic(mnemonic, wordlist)) {
@@ -57,13 +57,4 @@ export function big_to_hex(number: bigint): `0x${string}` {
 }
 export function hex_to_big(hex: `0x${string}`): bigint {
   return BigInt(hex)
-}
-
-export function number_to_hex(
-  number: number,
-): `0x${string}` {
-  return `0x${number.toString(16)}` satisfies `0x${string}`
-}
-export function hex_to_number(hex: `0x${string}`): number {
-  return Number(hex)
 }

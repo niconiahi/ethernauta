@@ -1,4 +1,4 @@
-import { hex_to_bytes } from "./hex"
+import { hex_to_bytes } from "@ethernauta/utils"
 
 type RLPInput =
   | string

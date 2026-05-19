@@ -14,11 +14,10 @@ import { describe, expect, it } from "vitest"
 import {
   derive_private_key,
   mnemonic_to_seed,
-  number_to_hex,
   private_key_to_address,
   seed_to_master_key,
 } from "./crypto"
-import { bytes_to_hex } from "./hex"
+import { bytes_to_hex, number_to_hex } from "@ethernauta/utils"
 import { encode } from "./rlp"
 import {
   big_to_bytes,
