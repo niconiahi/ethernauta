@@ -4,13 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground run dev",
-    "test": "pnpm --recursive --filter !@ethernauta/connector run test:unit",
-    "build": "pnpm --recursive --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/testing' run build",
+    "test": "pnpm --recursive run test:unit",
+    "build": "pnpm --recursive --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' run build",
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "format": "pnpm --recursive run format",
-    "publish": "pnpm --filter !@ethernauta/wallet --filter !@ethernauta/playground --filter !@ethernauta/testing publish",
-    "publish:dry": "pnpm --filter !@ethernauta/wallet --filter !@ethernauta/playground --filter !@ethernauta/testing publish --dry-run"
+    "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' publish",
+    "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' publish --dry-run"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
