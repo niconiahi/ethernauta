@@ -19,7 +19,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        chunkFileNames: "[name].mjs",
+        chunkFileNames: "assets/[name]-[hash].mjs",
       },
     },
   },

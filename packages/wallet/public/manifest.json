@@ -36,7 +36,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["wallet.mjs", "index.mjs", "assets/*"]
+      "resources": ["wallet.mjs", "assets/*"]
     }
   ]
 }
