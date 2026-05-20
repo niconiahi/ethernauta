@@ -80,7 +80,7 @@ export function PortfolioDemo() {
         return [
           symbol()(ctx),
           decimals()(ctx),
-          balanceOf({ owner: OWNER })(ctx),
+          balanceOf({ account: OWNER })(ctx),
         ] as const
       })
       const start = performance.now()

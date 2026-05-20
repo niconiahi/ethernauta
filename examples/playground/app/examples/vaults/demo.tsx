@@ -51,7 +51,7 @@ const multicall = create_multicall([
 // are vault-specific; we read them first via decimals().
 // For the "assets per share" display we normalise by share
 // decimals on the client.
-const ONE_SHARE = "0x" + (10n ** 18n).toString(16)
+const ONE_SHARE = `0x${(10n ** 18n).toString(16)}` as const
 
 type VaultSnapshot = {
   label: string
