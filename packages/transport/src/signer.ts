@@ -68,6 +68,12 @@ type SignTransactionResponse = {
   signed_transaction: string
 }
 
+type SignTypedDataResponse = {
+  id: string
+  type: "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"
+  signature: string
+}
+
 type TransactionRejectedResponse = {
   id: string
   type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
@@ -99,6 +105,7 @@ export function create_signer(
           function handler(
             event: MessageEvent<
               | SignTransactionResponse
+              | SignTypedDataResponse
               | TransactionRejectedResponse
               | NativeExtensionCloseResponse
             >,
@@ -129,6 +136,13 @@ export function create_signer(
                 code: ERROR_CODE.USER_REJECTED_REQUEST,
                 message: "Extension closed",
               })
+              return
+            }
+            if (
+              event.data.type ===
+              "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"
+            ) {
+              resolve(event.data.signature)
               return
             }
             resolve(

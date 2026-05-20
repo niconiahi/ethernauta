@@ -1,3 +1,4 @@
+import { typedDataSchema } from "@ethernauta/eip/712"
 import { parametersSchema } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import {
@@ -26,3 +27,14 @@ export const transaction_request = signal<Transaction>({
 export const connection_request = signal<{
   id: string
 } | null>(null)
+
+export const TypedDataRequestSchema = object({
+  id: string(),
+  address: string(),
+  typed_data: typedDataSchema,
+})
+export type TypedDataRequest = InferOutput<
+  typeof TypedDataRequestSchema
+>
+export const typed_data_request =
+  signal<TypedDataRequest | null>(null)

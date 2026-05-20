@@ -42,6 +42,15 @@ export type SignTransactionResponse = InferOutput<
   typeof SignTransactionResponseSchema
 >
 
+export const SignTypedDataResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"),
+  signature: string(),
+})
+export type SignTypedDataResponse = InferOutput<
+  typeof SignTypedDataResponseSchema
+>
+
 export const EthernautaRequestSchema =
   SignTransactionRequestSchema
 export type EthernautaRequest = InferOutput<
@@ -68,6 +77,7 @@ export type NativeExtensionCloseResponse = InferOutput<
 
 export const EthernautaResponseSchema = union([
   SignTransactionResponseSchema,
+  SignTypedDataResponseSchema,
   TransactionRejectedResponseSchema,
   NativeExtensionCloseResponseSchema,
 ])
