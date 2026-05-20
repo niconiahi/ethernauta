@@ -26,10 +26,11 @@ import {
   create_multicall,
   create_signer,
 } from "@ethernauta/transport"
+import { deadline_in, parse_unit } from "@ethernauta/utils"
 
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 const SPENDER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
-const VALUE = 100n * 10n ** 6n
+const VALUE = parse_unit("100", 6)
 
 const ctx = contract({
   chain_id: MAINNET_CHAIN_ID,
@@ -42,8 +43,7 @@ const [domain_separator, nonce_hex] = await multicall([
 ] as const)
 
 const nonce = BigInt(nonce_hex)
-const deadline =
-  BigInt(Math.floor(Date.now() / 1000)) + 3600n
+const deadline = deadline_in(3600)
 
 const signature = await eth_signTypedData_v4([
   owner,

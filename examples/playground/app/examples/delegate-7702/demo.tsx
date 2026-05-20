@@ -1,0 +1,269 @@
+import {
+  address,
+  array,
+  bytes,
+  encode_function_call,
+  tuple,
+  uint256,
+} from "@ethernauta/abi"
+import { eip155_11155111 } from "@ethernauta/chain"
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
+import {
+  create_signer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
+import { useState } from "react"
+import { Button } from "../../components/button"
+
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+
+// EIP-7702 expects the on-chain address as a uint256 hex of
+// the chain reference. Sepolia = 11155111 = 0xaa36a7.
+const SEPOLIA_CHAIN_REF_HEX =
+  `0x${eip155_11155111.chainId.toString(16)}` as const
+
+// contracts/src/BatchExecutor.sol deployed to Sepolia.
+// Source + forge tests are in the `contracts/` package;
+// re-deploy via `forge create` if you want your own copy.
+const BATCH_EXECUTOR =
+  "0x5AAC53e7b782CCD32A083F938AEbA843731323Ee" as const
+
+// Two harmless target calls: send 0 wei with no calldata to
+// two distinct burn-friendly addresses. The point is to
+// prove the batch executes atomically — not to move value.
+const TARGETS = [
+  "0x1111111111111111111111111111111111111111" as const,
+  "0x2222222222222222222222222222222222222222" as const,
+]
+
+const CHAINS = [
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
+  },
+]
+const signer = create_signer(CHAINS)
+
+const call_tuple = tuple({
+  to: address(),
+  value: uint256(),
+  data: bytes(),
+})
+const execute_args = [array(call_tuple)] as const
+
+function encode_execute(
+  calls: Array<{
+    to: `0x${string}`
+    value: bigint
+    data: `0x${string}`
+  }>,
+): `0x${string}` {
+  return bytes_to_hex(
+    encode_function_call({
+      name: "execute",
+      args: execute_args,
+      values: [calls],
+    }),
+  )
+}
+
+export function Delegate7702Demo() {
+  const [owner, set_owner] = useState<string | null>(null)
+  const [tx_hash, set_tx_hash] = useState<string | null>(
+    null,
+  )
+  const [loading, set_loading] = useState(false)
+  const [error, set_error] = useState<string | null>(null)
+
+  async function connect() {
+    set_error(null)
+    try {
+      const accounts = await eth_requestAccounts()(
+        signer({ chain_id: SEPOLIA_CHAIN_ID }),
+      )
+      if (accounts[0]) set_owner(accounts[0])
+    } catch (e) {
+      set_error(
+        e instanceof Error ? e.message : "Unknown error",
+      )
+    }
+  }
+
+  async function run_batch() {
+    if (!owner) return
+    set_loading(true)
+    set_error(null)
+    try {
+      const calls = TARGETS.map((to) => ({
+        to,
+        value: 0n,
+        data: "0x" as const,
+      }))
+      const calldata = encode_execute(calls)
+      const hash = await wallet_sendSetCodeTransaction({
+        to: owner as `0x${string}`,
+        data: calldata,
+        delegations: [
+          {
+            chainId: SEPOLIA_CHAIN_REF_HEX,
+            address: BATCH_EXECUTOR,
+          },
+        ],
+      })(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+      set_tx_hash(hash)
+    } catch (e) {
+      set_error(
+        e instanceof Error ? e.message : "Unknown error",
+      )
+    } finally {
+      set_loading(false)
+    }
+  }
+
+  const executor_unset =
+    BATCH_EXECUTOR ===
+    "0x0000000000000000000000000000000000000000"
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ marginBottom: 24 }}>
+        <Row
+          label="Network"
+          value={`${eip155_11155111.name} (chain ${eip155_11155111.chainId})`}
+        />
+        <Row
+          label="Delegation target"
+          value={BATCH_EXECUTOR}
+          mono
+        />
+        <Row label="Batch size" value="2 calls" />
+        {owner && (
+          <Row label="Account" value={owner} mono />
+        )}
+        {tx_hash && (
+          <Row label="Tx hash" value={tx_hash} mono />
+        )}
+      </div>
+      {executor_unset && (
+        <p
+          style={{
+            color: "#996800",
+            fontSize: 13,
+            marginBottom: 12,
+          }}
+        >
+          Deploy `BatchExecutor.sol` to Sepolia and paste
+          its address into `BATCH_EXECUTOR` to enable this
+          demo.
+        </p>
+      )}
+      {error && (
+        <p
+          style={{
+            color: "#e53e3e",
+            fontSize: 14,
+            marginBottom: 16,
+          }}
+        >
+          {error}
+        </p>
+      )}
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          flexWrap: "wrap",
+        }}
+      >
+        {!owner && (
+          <Button onClick={connect}>Connect wallet</Button>
+        )}
+        {owner && (
+          <Button
+            onClick={run_batch}
+            disabled={loading || executor_unset}
+          >
+            {loading
+              ? "Signing & broadcasting…"
+              : tx_hash
+                ? "Run another batch"
+                : "Delegate & batch-execute"}
+          </Button>
+        )}
+        {tx_hash && (
+          <a
+            href={`https://sepolia.etherscan.io/tx/${tx_hash}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              fontSize: 14,
+              color: "#FF5005",
+              alignSelf: "center",
+            }}
+          >
+            View on Sepolia Etherscan ↗
+          </a>
+        )}
+      </div>
+      {!owner && (
+        <p
+          style={{
+            fontSize: 13,
+            color: "#999",
+            marginTop: 12,
+          }}
+        >
+          Needs the Ethernauta extension installed and
+          Sepolia ETH in the connected account.
+        </p>
+      )}
+    </div>
+  )
+}
+
+function Row({
+  label,
+  value,
+  mono,
+}: {
+  label: string
+  value: string
+  mono?: boolean
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        gap: 16,
+        padding: "10px 0",
+        borderBottom: "1px solid #f0f0f0",
+        fontSize: 14,
+      }}
+    >
+      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+        {label}
+      </span>
+      <span
+        style={{
+          fontFamily: mono ? "monospace" : "inherit",
+          color: "#1a1a1a",
+          textAlign: "right",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}

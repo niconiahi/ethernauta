@@ -11,6 +11,10 @@ const EXAMPLES = [
   },
   { to: "/examples/vaults", title: "ERC-4626 vaults" },
   { to: "/examples/permit", title: "Permit signing" },
+  {
+    to: "/examples/delegate-7702",
+    title: "EIP-7702 batched calls",
+  },
 ] as const
 
 export default function ExamplesLayout() {

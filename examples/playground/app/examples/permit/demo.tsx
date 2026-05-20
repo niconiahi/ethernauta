@@ -12,6 +12,11 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
+import {
+  deadline_in,
+  format_unit,
+  parse_unit,
+} from "@ethernauta/utils"
 import { useState } from "react"
 import { Button } from "../../components/button"
 
@@ -28,7 +33,7 @@ const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 // "approve once, swap later" flows.
 const SPENDER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
 
-const VALUE = 100n * 10n ** 6n // 100 USDC (6 decimals)
+const VALUE = parse_unit("100", 6)
 
 const CHAINS = [
   {
@@ -88,8 +93,7 @@ export function PermitDemo() {
           nonces({ owner: owner as `0x${string}` })(ctx),
         ] as const)
       const nonce = BigInt(nonce_hex)
-      const deadline =
-        BigInt(Math.floor(Date.now() / 1000)) + 3600n
+      const deadline = deadline_in(3600)
       const signature = await eth_signTypedData_v4([
         owner as `0x${string}`,
         {
@@ -151,7 +155,7 @@ export function PermitDemo() {
         <Row label="Spender" value={SPENDER} mono />
         <Row
           label="Value"
-          value={`${(VALUE / 10n ** 6n).toString()} USDC`}
+          value={`${format_unit(VALUE, 6)} USDC`}
         />
         {owner && (
           <Row label="Owner" value={owner} mono />

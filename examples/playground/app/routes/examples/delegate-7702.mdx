@@ -1,0 +1,95 @@
+import { Delegate7702Demo } from "../../examples/delegate-7702/demo"
+
+# EIP-7702 — atomic batched calls from an EOA
+
+End-to-end EIP-7702 self-delegation flow on Sepolia. The
+EOA delegates its execution code to `BatchExecutor` for one
+transaction, calls `execute((address,uint256,bytes)[])`
+against itself, and runs a batch of sub-calls atomically.
+The wallet signs the authorization tuple + outer type-4 tx
+and broadcasts in one click.
+
+<Delegate7702Demo />
+
+## What's happening
+
+The dapp asks the wallet to send a *type-4 (SetCode)*
+transaction. The wallet:
+
+1. Fetches the EOA's current nonce.
+2. Signs an authorization tuple per delegation
+   (`hash = keccak(0x05 ‖ rlp([chainId, address, nonce+1]))`),
+   producing `(yParity, r, s)`.
+3. Builds the outer type-4 transaction with the signed
+   `authorization_list`.
+4. Signs the outer transaction with the EOA key.
+5. Broadcasts via `eth_sendRawTransaction` and returns the
+   resulting tx hash.
+
+Because the delegation lives for exactly one transaction,
+the EOA's code reverts to empty as soon as the tx is mined
+— no persistent smart-account state, no upgrade dance.
+
+## The code for this example
+
+```ts
+import {
+  address, array, bytes, encode_function_call, tuple, uint256,
+} from "@ethernauta/abi"
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
+import { create_signer, encode_chain_id, http } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
+
+const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: 11155111 })
+const BATCH_EXECUTOR = "0x..." // your deployment
+
+const call_tuple = tuple({
+  to: address(), value: uint256(), data: bytes(),
+})
+
+const calldata = bytes_to_hex(
+  encode_function_call({
+    name: "execute",
+    args: [array(call_tuple)] as const,
+    values: [[
+      { to: "0x1111...", value: 0n, data: "0x" },
+      { to: "0x2222...", value: 0n, data: "0x" },
+    ]],
+  }),
+)
+
+const signer = create_signer([{ chainId: SEPOLIA, transports: [http(rpc)] }])
+
+const [owner] = await eth_requestAccounts()(signer({ chain_id: SEPOLIA }))
+
+const tx_hash = await wallet_sendSetCodeTransaction({
+  to: owner,
+  data: calldata,
+  delegations: [{ chainId: "0xaa36a7", address: BATCH_EXECUTOR }],
+})(signer({ chain_id: SEPOLIA }))
+```
+
+## The BatchExecutor contract
+
+```solidity
+contract BatchExecutor {
+  struct Call { address to; uint256 value; bytes data; }
+  error Unauthorized();
+  error CallFailed(uint256 index, bytes returnData);
+
+  function execute(Call[] calldata calls) external payable {
+    if (msg.sender != address(this)) revert Unauthorized();
+    for (uint256 i = 0; i < calls.length; ++i) {
+      (bool ok, bytes memory ret) =
+        calls[i].to.call{value: calls[i].value}(calls[i].data);
+      if (!ok) revert CallFailed(i, ret);
+    }
+  }
+}
+```
+
+Source + Foundry tests in `contracts/src/BatchExecutor.sol`.
+The `msg.sender == address(this)` guard is what makes this
+safe under 7702: after delegation, `address(this)` *is* the
+EOA, so only the EOA itself can drive the batch.

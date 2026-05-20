@@ -17,5 +17,9 @@ export default [
     ),
     route("vaults", "./routes/examples/vaults.mdx"),
     route("permit", "./routes/examples/permit.mdx"),
+    route(
+      "delegate-7702",
+      "./routes/examples/delegate-7702.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
