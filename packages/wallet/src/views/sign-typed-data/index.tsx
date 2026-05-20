@@ -119,7 +119,10 @@ export function SignTypedData() {
 
       <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
         <SectionLabel>Message</SectionLabel>
-        <Field label={typed_data.primaryType} value={typed_data.message} />
+        <Field
+          label={typed_data.primaryType}
+          value={typed_data.message}
+        />
       </section>
 
       <div className="flex flex-col gap-2">
@@ -160,4 +163,3 @@ export function SignTypedData() {
     </main>
   )
 }
-

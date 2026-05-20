@@ -45,9 +45,7 @@ export function Controller() {
             view.value = "connect"
             return
           }
-          if (
-            request.method === "eth_signTypedData_v4"
-          ) {
+          if (request.method === "eth_signTypedData_v4") {
             const params = request.params as [
               string,
               unknown,

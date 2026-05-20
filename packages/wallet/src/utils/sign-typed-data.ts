@@ -1,4 +1,7 @@
-import { hash_typed_data, type TypedData } from "@ethernauta/eip/712"
+import {
+  hash_typed_data,
+  type TypedData,
+} from "@ethernauta/eip/712"
 
 import { sign_digest, signature_to_hex } from "./ecdsa"
 
