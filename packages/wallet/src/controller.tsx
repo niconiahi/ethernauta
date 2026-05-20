@@ -1,5 +1,6 @@
 import { typedDataSchema } from "@ethernauta/eip/712"
 import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { sendCallsParameterSchema } from "@ethernauta/eip/5792"
 import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { useEffect } from "preact/hooks"
 import { parse } from "valibot"
@@ -12,6 +13,7 @@ import {
   add_chain_request,
   connection_request,
   personal_sign_request,
+  send_calls_request,
   set_code_request,
   transaction_request,
   typed_data_request,
@@ -25,6 +27,7 @@ import { Mnemonics } from "./views/mnemonics/index"
 import { Password } from "./views/password/index"
 import { PersonalSign } from "./views/personal-sign/index"
 import { SelectChain } from "./views/select-chain/index"
+import { SendCalls } from "./views/send-calls/index"
 import { Sign } from "./views/sign/index"
 import { SignTypedData } from "./views/sign-typed-data/index"
 import { Wallet } from "./views/wallet/index"
@@ -99,6 +102,19 @@ export function Controller() {
             view.value = "add-chain"
             return
           }
+          if (request.method === "wallet_sendCalls") {
+            const params = request.params as [unknown]
+            const parameter = parse(
+              sendCallsParameterSchema,
+              params[0],
+            )
+            send_calls_request.value = {
+              id: request.id,
+              parameter,
+            }
+            view.value = "send-calls"
+            return
+          }
           if (
             request.method ===
             "wallet_sendSetCodeTransaction"
@@ -156,6 +172,9 @@ function render_view(view: string) {
     }
     case "authorize-delegation": {
       return <AuthorizeDelegation />
+    }
+    case "send-calls": {
+      return <SendCalls />
     }
     case "select-chain": {
       return <SelectChain />

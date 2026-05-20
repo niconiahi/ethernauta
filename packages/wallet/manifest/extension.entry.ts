@@ -1,10 +1,15 @@
 import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import {
+  compose_calls_status,
+  compose_capabilities,
+} from "../src/utils/calls-status"
+import {
   EthernautaEventSchema,
   EthernautaRequestSchema,
   EthernautaResponseSchema,
   type NativeExtensionCloseResponse,
+  type SignTransactionResponse,
 } from "../src/utils/event"
 
 function compose_key(id: string) {
@@ -40,6 +45,32 @@ chrome.runtime.onMessage.addListener(
       )
       const tab_id = sender.tab?.id
       invariant(tab_id, "request must come from a tab")
+      if (
+        request.method === "wallet_getCapabilities" ||
+        request.method === "wallet_getCallsStatus"
+      ) {
+        try {
+          const payload =
+            request.method === "wallet_getCapabilities"
+              ? compose_capabilities()
+              : await compose_calls_status(
+                  (request.params as [string])[0],
+                )
+          const response: SignTransactionResponse = {
+            id: request.id,
+            type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
+            signed_transaction: JSON.stringify(payload),
+          }
+          chrome.tabs.sendMessage(tab_id, response)
+        } catch {
+          const rejected = {
+            id: request.id,
+            type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED" as const,
+          }
+          chrome.tabs.sendMessage(tab_id, rejected)
+        }
+        return true
+      }
       const key = compose_key(request.id)
       await chrome.storage.session.set({
         [key]: {

@@ -1,5 +1,6 @@
 import { typedDataSchema } from "@ethernauta/eip/712"
 import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { sendCallsParameterSchema } from "@ethernauta/eip/5792"
 import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { parametersSchema } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
@@ -69,3 +70,13 @@ export type SetCodeRequest = InferOutput<
 >
 export const set_code_request =
   signal<SetCodeRequest | null>(null)
+
+export const SendCallsRequestSchema = object({
+  id: string(),
+  parameter: sendCallsParameterSchema,
+})
+export type SendCallsRequest = InferOutput<
+  typeof SendCallsRequestSchema
+>
+export const send_calls_request =
+  signal<SendCallsRequest | null>(null)
