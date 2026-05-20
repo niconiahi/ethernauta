@@ -1,4 +1,8 @@
-import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Bytes,
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
@@ -27,11 +31,10 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function delegates(_parameters: Parameters)
-: (_context: ContractContext) => Callable<Address> {
-  return (
-    _context: ContractContext,
-  ): Callable<Address> => {
+export function delegates(
+  _parameters: Parameters,
+): (_context: ContractContext) => Callable<Address> {
+  return (_context: ContractContext): Callable<Address> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters

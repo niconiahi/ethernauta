@@ -1,4 +1,8 @@
-import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Bytes,
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   string_,
@@ -6,7 +10,6 @@ import {
   encode_function_call,
 } from "@ethernauta/abi"
 import { parse, string } from "valibot"
-
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [string_()] as const
@@ -19,13 +22,10 @@ export const NAME_SIGNATURE: {
   names: [],
 }
 
-
-
-export function name()
-: (_context: ContractContext) => Callable<string> {
-  return (
-    _context: ContractContext,
-  ): Callable<string> => {
+export function name(): (
+  _context: ContractContext,
+) => Callable<string> {
+  return (_context: ContractContext): Callable<string> => {
     const values: unknown[] = []
     const calldata = encode_function_call({
       name: "name",

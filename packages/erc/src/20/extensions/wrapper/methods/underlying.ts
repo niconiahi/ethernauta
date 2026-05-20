@@ -1,4 +1,8 @@
-import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Bytes,
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
@@ -20,13 +24,10 @@ export const UNDERLYING_SIGNATURE: {
   names: [],
 }
 
-
-
-export function underlying()
-: (_context: ContractContext) => Callable<Address> {
-  return (
-    _context: ContractContext,
-  ): Callable<Address> => {
+export function underlying(): (
+  _context: ContractContext,
+) => Callable<Address> {
+  return (_context: ContractContext): Callable<Address> => {
     const values: unknown[] = []
     const calldata = encode_function_call({
       name: "underlying",

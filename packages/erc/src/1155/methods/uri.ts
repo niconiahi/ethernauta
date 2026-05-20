@@ -1,12 +1,23 @@
-import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Bytes,
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  string_, uint256,
+  string_,
+  uint256,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import { object, parse, string, tuple, union } from "valibot"
+import {
+  object,
+  parse,
+  string,
+  tuple,
+  union,
+} from "valibot"
 import { uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256()] as const
@@ -26,11 +37,10 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function uri(_parameters: Parameters)
-: (_context: ContractContext) => Callable<string> {
-  return (
-    _context: ContractContext,
-  ): Callable<string> => {
+export function uri(
+  _parameters: Parameters,
+): (_context: ContractContext) => Callable<string> {
+  return (_context: ContractContext): Callable<string> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters

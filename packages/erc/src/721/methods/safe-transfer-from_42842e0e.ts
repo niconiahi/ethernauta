@@ -1,16 +1,27 @@
 import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
-import type { ResolvedSigner, Signable } from "@ethernauta/transport"
+import type {
+  ResolvedSigner,
+  Signable,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  address, uint256,
+  address,
+  uint256,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { addressSchema, uint256Schema } from "@ethernauta/core"
+import {
+  addressSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
-const PARAM_CODECS = [address(), address(), uint256()] as const
+const PARAM_CODECS = [
+  address(),
+  address(),
+  uint256(),
+] as const
 
 export const SAFE_TRANSFER_FROM_SIGNATURE: {
   signature: string
@@ -22,17 +33,25 @@ export const SAFE_TRANSFER_FROM_SIGNATURE: {
 
 const parametersSchema = union([
   tuple([addressSchema, addressSchema, uint256Schema]),
-  object({ from: addressSchema, to: addressSchema, tokenId: uint256Schema }),
+  object({
+    from: addressSchema,
+    to: addressSchema,
+    tokenId: uint256Schema,
+  }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function safeTransferFrom_42842e0e(_parameters: Parameters)
-: Signable<Bytes> {
-  return async (
-    [signer, _context]: ResolvedSigner,
-  ): Promise<Bytes> => {
+export function safeTransferFrom_42842e0e(
+  _parameters: Parameters,
+): Signable<Bytes> {
+  return async ([
+    signer,
+    _context,
+  ]: ResolvedSigner): Promise<Bytes> => {
     if (!_context.to)
-      throw new Error("contract Signable requires a 'to' on the signer resolver")
+      throw new Error(
+        "contract Signable requires a 'to' on the signer resolver",
+      )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
@@ -46,13 +65,15 @@ export function safeTransferFrom_42842e0e(_parameters: Parameters)
     //               maxPriorityFeePerGas by querying the network
     //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
     //               Generator MUST leave these fields unset.
-    return eth_signTransaction(
-      [{
+    return eth_signTransaction([
+      {
         to: _context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
-      }],
-      { _function: SAFE_TRANSFER_FROM_SIGNATURE },
-    )([signer, _context])
+        _ethernauta: {
+          function: SAFE_TRANSFER_FROM_SIGNATURE,
+        },
+      },
+    ])([signer, _context])
   }
 }

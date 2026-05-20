@@ -1,4 +1,8 @@
-import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Bytes,
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bytes32,
@@ -20,13 +24,10 @@ export const DOMAIN_SEPARATOR_SIGNATURE: {
   names: [],
 }
 
-
-
-export function DOMAIN_SEPARATOR()
-: (_context: ContractContext) => Callable<Bytes32> {
-  return (
-    _context: ContractContext,
-  ): Callable<Bytes32> => {
+export function DOMAIN_SEPARATOR(): (
+  _context: ContractContext,
+) => Callable<Bytes32> {
+  return (_context: ContractContext): Callable<Bytes32> => {
     const values: unknown[] = []
     const calldata = encode_function_call({
       name: "DOMAIN_SEPARATOR",

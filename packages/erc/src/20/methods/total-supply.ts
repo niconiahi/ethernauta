@@ -1,4 +1,8 @@
-import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Bytes,
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint256,
@@ -20,13 +24,10 @@ export const TOTAL_SUPPLY_SIGNATURE: {
   names: [],
 }
 
-
-
-export function totalSupply()
-: (_context: ContractContext) => Callable<Uint256> {
-  return (
-    _context: ContractContext,
-  ): Callable<Uint256> => {
+export function totalSupply(): (
+  _context: ContractContext,
+) => Callable<Uint256> {
+  return (_context: ContractContext): Callable<Uint256> => {
     const values: unknown[] = []
     const calldata = encode_function_call({
       name: "totalSupply",

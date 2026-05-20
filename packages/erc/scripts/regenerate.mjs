@@ -46,42 +46,58 @@ const targets = [
   },
   {
     name: "ERC-20 Burnable",
-    abis: ["packages/erc/src/20/extensions/burnable/IERC20Burnable.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/burnable/IERC20Burnable.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/burnable",
   },
   {
     name: "ERC-20 Capped",
-    abis: ["packages/erc/src/20/extensions/capped/IERC20Capped.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/capped/IERC20Capped.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/capped",
   },
   {
     name: "ERC-20 Flash Mint",
-    abis: ["packages/erc/src/20/extensions/flash-mint/IERC20FlashMint.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/flash-mint/IERC20FlashMint.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/flash-mint",
   },
   {
     name: "ERC-20 Mintable",
-    abis: ["packages/erc/src/20/extensions/mintable/IERC20Mintable.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/mintable/IERC20Mintable.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/mintable",
   },
   {
     name: "ERC-20 Pausable",
-    abis: ["packages/erc/src/20/extensions/pausable/IERC20Pausable.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/pausable/IERC20Pausable.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/pausable",
   },
   {
     name: "ERC-20 Permit",
-    abis: ["packages/erc/src/20/extensions/permit/IERC20Permit.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/permit/IERC20Permit.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/permit",
   },
   {
     name: "ERC-20 Votes",
-    abis: ["packages/erc/src/20/extensions/votes/IERC20Votes.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/votes/IERC20Votes.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/votes",
   },
   {
     name: "ERC-20 Wrapper",
-    abis: ["packages/erc/src/20/extensions/wrapper/IERC20Wrapper.abi.json"],
+    abis: [
+      "packages/erc/src/20/extensions/wrapper/IERC20Wrapper.abi.json",
+    ],
     out: "packages/erc/src/20/extensions/wrapper",
   },
   {
@@ -95,27 +111,37 @@ const targets = [
   },
   {
     name: "ERC-721 Burnable",
-    abis: ["packages/erc/src/721/extensions/burnable/IERC721Burnable.abi.json"],
+    abis: [
+      "packages/erc/src/721/extensions/burnable/IERC721Burnable.abi.json",
+    ],
     out: "packages/erc/src/721/extensions/burnable",
   },
   {
     name: "ERC-721 Pausable",
-    abis: ["packages/erc/src/721/extensions/pausable/IERC721Pausable.abi.json"],
+    abis: [
+      "packages/erc/src/721/extensions/pausable/IERC721Pausable.abi.json",
+    ],
     out: "packages/erc/src/721/extensions/pausable",
   },
   {
     name: "ERC-721 Permit",
-    abis: ["packages/erc/src/721/extensions/permit/IERC721Permit.abi.json"],
+    abis: [
+      "packages/erc/src/721/extensions/permit/IERC721Permit.abi.json",
+    ],
     out: "packages/erc/src/721/extensions/permit",
   },
   {
     name: "ERC-721 Royalty",
-    abis: ["packages/erc/src/721/extensions/royalty/IERC721Royalty.abi.json"],
+    abis: [
+      "packages/erc/src/721/extensions/royalty/IERC721Royalty.abi.json",
+    ],
     out: "packages/erc/src/721/extensions/royalty",
   },
   {
     name: "ERC-721 Votes",
-    abis: ["packages/erc/src/721/extensions/votes/IERC721Votes.abi.json"],
+    abis: [
+      "packages/erc/src/721/extensions/votes/IERC721Votes.abi.json",
+    ],
     out: "packages/erc/src/721/extensions/votes",
   },
   {
