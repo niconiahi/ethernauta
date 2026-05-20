@@ -2,11 +2,14 @@ import {
   decode_function_call,
   to_selector,
 } from "@ethernauta/abi"
-import { REGISTRY } from "@ethernauta/erc/registry"
 import type { Address } from "@ethernauta/core"
-import type { ComponentChildren } from "preact"
+import { REGISTRY } from "@ethernauta/erc/registry"
+import { genericTransactionSchema } from "@ethernauta/eth"
+import type { FunctionSignature } from "@ethernauta/transport"
 import { parametersSchema } from "@ethernauta/transport"
-import { parse } from "valibot"
+import { bytes_to_hex } from "@ethernauta/utils"
+import type { ComponentChildren } from "preact"
+import { parse, safeParse } from "valibot"
 import { Button } from "../../components/button"
 import {
   get_reader,
@@ -14,10 +17,8 @@ import {
 } from "../../utils/chain"
 import type {
   EthernautaResponse,
-  FunctionSidecar,
   TransactionRejectedResponse,
 } from "../../utils/event"
-import { bytes_to_hex } from "@ethernauta/utils"
 import {
   get_nonce,
   sign_transaction,
@@ -105,7 +106,7 @@ function selector_matches(
 
 function lookup_sidecar(
   selector: string,
-  sidecar: FunctionSidecar | undefined,
+  sidecar: FunctionSignature | undefined,
 ): DecodeEntry | undefined {
   if (!sidecar) return undefined
   if (!selector_matches(sidecar.signature, selector))
@@ -121,11 +122,26 @@ function lookup_sidecar(
   }
 }
 
+function extract_ethernauta_function():
+  | FunctionSignature
+  | undefined {
+  const raw = transaction_request.value.params
+  const candidate = Array.isArray(raw)
+    ? raw[0]
+    : (raw as Record<string, unknown>).transaction
+  const result = safeParse(
+    genericTransactionSchema,
+    candidate,
+  )
+  if (!result.success) return undefined
+  return result.output._ethernauta?.function
+}
+
 function find_decode_entry(
   hex: `0x${string}`,
 ): DecodeEntry | undefined {
   const selector = hex.slice(0, 10).toLowerCase()
-  const sidecar = transaction_request.value._function
+  const sidecar = extract_ethernauta_function()
   return (
     lookup_sidecar(selector, sidecar) ??
     lookup_registry(selector)

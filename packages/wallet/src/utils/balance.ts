@@ -14,18 +14,3 @@ export async function fetch_balance(address: Address) {
   const result = await readable(reader({ chain_id }))
   return hex_to_big(result)
 }
-
-export function wei_to_eth(wei: bigint): string {
-  const WEI_PER_ETH = 10n ** 18n
-  const integer_part = wei / WEI_PER_ETH
-  const fraction_part = wei % WEI_PER_ETH
-  const integer = integer_part.toString()
-  if (fraction_part === 0n) {
-    return integer
-  }
-  const fraction = fraction_part
-    .toString()
-    .padStart(18, "0")
-    .replace(/0+$/, "")
-  return `${integer}.${fraction}`
-}

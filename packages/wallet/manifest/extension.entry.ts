@@ -53,7 +53,8 @@ chrome.runtime.onMessage.addListener(
           chrome.runtime.onMessage.addListener(
             function ready_handler(message) {
               if (
-                message.type === "ETHERNAUTA_POPUP_READY"
+                message.type ===
+                "ETHERNAUTA_NOTIFICATION_POPUP_READY"
               ) {
                 chrome.runtime.onMessage.removeListener(
                   ready_handler,
@@ -88,6 +89,15 @@ chrome.runtime.onMessage.addListener(
       await chrome.storage.session.remove(
         `pending_${response.id}`,
       )
+    }
+    if (
+      event.type ===
+      "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"
+    ) {
+      const tabs = await chrome.tabs.query({})
+      for (const tab of tabs) {
+        if (tab.id) chrome.tabs.sendMessage(tab.id, event)
+      }
     }
   },
 )

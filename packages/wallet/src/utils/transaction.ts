@@ -1,4 +1,6 @@
 import { typedDataSchema } from "@ethernauta/eip/712"
+import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { parametersSchema } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import {
@@ -7,14 +9,12 @@ import {
   optional,
   string,
 } from "valibot"
-import { FunctionSidecarSchema } from "./event"
 
 export const TransactionSchema = object({
   id: string(),
   method: string(),
   params: parametersSchema,
   to: optional(string()),
-  _function: optional(FunctionSidecarSchema),
 })
 export type Transaction = InferOutput<
   typeof TransactionSchema
@@ -38,3 +38,34 @@ export type TypedDataRequest = InferOutput<
 >
 export const typed_data_request =
   signal<TypedDataRequest | null>(null)
+
+export const PersonalSignRequestSchema = object({
+  id: string(),
+  address: string(),
+  message: string(),
+})
+export type PersonalSignRequest = InferOutput<
+  typeof PersonalSignRequestSchema
+>
+export const personal_sign_request =
+  signal<PersonalSignRequest | null>(null)
+
+export const AddChainRequestSchema = object({
+  id: string(),
+  chain: addEthereumChainParameterSchema,
+})
+export type AddChainRequest = InferOutput<
+  typeof AddChainRequestSchema
+>
+export const add_chain_request =
+  signal<AddChainRequest | null>(null)
+
+export const SetCodeRequestSchema = object({
+  id: string(),
+  parameters: sendSetCodeTransactionParametersSchema,
+})
+export type SetCodeRequest = InferOutput<
+  typeof SetCodeRequestSchema
+>
+export const set_code_request =
+  signal<SetCodeRequest | null>(null)

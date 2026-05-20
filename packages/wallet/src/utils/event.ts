@@ -10,13 +10,10 @@ import {
   unknown,
 } from "valibot"
 
-export const FunctionSidecarSchema = object({
-  signature: string(),
-  names: array(string()),
-})
-export type FunctionSidecar = InferOutput<
-  typeof FunctionSidecarSchema
->
+export {
+  type FunctionSignature,
+  functionSignatureSchema,
+} from "@ethernauta/transport"
 
 export const SignTransactionRequestSchema = object({
   id: string(),
@@ -27,7 +24,6 @@ export const SignTransactionRequestSchema = object({
   params: optional(
     union([array(unknown()), record(string(), unknown())]),
   ),
-  _function: optional(FunctionSidecarSchema),
 })
 export type SignTransactionRequest = InferOutput<
   typeof SignTransactionRequestSchema
@@ -49,6 +45,23 @@ export const SignTypedDataResponseSchema = object({
 })
 export type SignTypedDataResponse = InferOutput<
   typeof SignTypedDataResponseSchema
+>
+
+export const PersonalSignResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"),
+  signature: string(),
+})
+export type PersonalSignResponse = InferOutput<
+  typeof PersonalSignResponseSchema
+>
+
+export const AddChainApprovedResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED"),
+})
+export type AddChainApprovedResponse = InferOutput<
+  typeof AddChainApprovedResponseSchema
 >
 
 export const EthernautaRequestSchema =
@@ -78,6 +91,8 @@ export type NativeExtensionCloseResponse = InferOutput<
 export const EthernautaResponseSchema = union([
   SignTransactionResponseSchema,
   SignTypedDataResponseSchema,
+  PersonalSignResponseSchema,
+  AddChainApprovedResponseSchema,
   TransactionRejectedResponseSchema,
   NativeExtensionCloseResponseSchema,
 ])
@@ -85,17 +100,33 @@ export type EthernautaResponse = InferOutput<
   typeof EthernautaResponseSchema
 >
 
-const PopupReadySchema = object({
-  type: literal("ETHERNAUTA_POPUP_READY"),
+export const PopupReadyNotificationSchema = object({
+  type: literal("ETHERNAUTA_NOTIFICATION_POPUP_READY"),
 })
-export type PopupReady = InferOutput<
-  typeof PopupReadySchema
+export type PopupReadyNotification = InferOutput<
+  typeof PopupReadyNotificationSchema
+>
+
+export const ChainSelectedNotificationSchema = object({
+  type: literal("ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"),
+  chainId: string(),
+})
+export type ChainSelectedNotification = InferOutput<
+  typeof ChainSelectedNotificationSchema
+>
+
+export const EthernautaNotificationSchema = union([
+  PopupReadyNotificationSchema,
+  ChainSelectedNotificationSchema,
+])
+export type EthernautaNotification = InferOutput<
+  typeof EthernautaNotificationSchema
 >
 
 export const EthernautaEventSchema = union([
   EthernautaRequestSchema,
   EthernautaResponseSchema,
-  PopupReadySchema,
+  EthernautaNotificationSchema,
 ])
 export type EthernautaEvent = InferOutput<
   typeof EthernautaEventSchema

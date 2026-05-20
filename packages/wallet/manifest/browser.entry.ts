@@ -12,7 +12,10 @@ window.addEventListener("message", (event) => {
 })
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message?.type?.startsWith("ETHERNAUTA_RESPONSE")) {
+  if (
+    message?.type?.startsWith("ETHERNAUTA_RESPONSE") ||
+    message?.type?.startsWith("ETHERNAUTA_NOTIFICATION")
+  ) {
     window.postMessage(message, window.location.origin)
   }
 })
