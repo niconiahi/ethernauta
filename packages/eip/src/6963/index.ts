@@ -46,3 +46,54 @@ export function announce(
   dispatch()
   window.addEventListener(REQUEST_EVENT, dispatch)
 }
+
+export type DiscoverOptions = {
+  /** Window to listen on (defaults to `window`). */
+  target?: EventTarget
+  /** How long to wait for late-announcing wallets. */
+  ms?: number
+}
+
+/**
+ * Dapp-side discovery — fires `eip6963:requestProvider`,
+ * collects every wallet that responds with
+ * `eip6963:announceProvider`, dedupes by rdns. Resolves
+ * after `ms` (default 100) — wallets typically announce
+ * synchronously, but the spec allows them to be late.
+ */
+export function discover_providers(
+  options: DiscoverOptions = {},
+): Promise<EIP6963ProviderDetail[]> {
+  const target = options.target ?? window
+  const ms = options.ms ?? 100
+  return new Promise((resolve) => {
+    const seen = new Map<string, EIP6963ProviderDetail>()
+    function handler(event: Event) {
+      const detail = (event as EIP6963AnnounceProviderEvent)
+        .detail
+      if (!detail?.info?.rdns) return
+      if (seen.has(detail.info.rdns)) return
+      seen.set(detail.info.rdns, detail)
+    }
+    target.addEventListener(ANNOUNCE_EVENT, handler)
+    target.dispatchEvent(new Event(REQUEST_EVENT))
+    setTimeout(() => {
+      target.removeEventListener(ANNOUNCE_EVENT, handler)
+      resolve(Array.from(seen.values()))
+    }, ms)
+  })
+}
+
+/**
+ * Synchronous variant: pick the first announced provider
+ * matching the given rdns, or undefined. Useful when the
+ * caller has already done discovery and just wants to
+ * resolve a known wallet.
+ */
+export async function pick_provider(
+  rdns: string,
+  options: DiscoverOptions = {},
+): Promise<EIP6963ProviderDetail | undefined> {
+  const providers = await discover_providers(options)
+  return providers.find((p) => p.info.rdns === rdns)
+}
