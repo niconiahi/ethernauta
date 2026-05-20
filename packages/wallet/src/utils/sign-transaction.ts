@@ -14,14 +14,8 @@ import {
 } from "@ethernauta/core"
 import type { ChainId, Reader } from "@ethernauta/transport"
 import { invariant } from "@ethernauta/utils"
-import { hmac } from "@noble/hashes/hmac"
-import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
-import {
-  etc,
-  type RecoveredSignature,
-  sign,
-} from "@noble/secp256k1"
+import type { RecoveredSignature } from "@noble/secp256k1"
 import type { HDKey } from "@scure/bip32"
 import {
   hexadecimal,
@@ -33,6 +27,7 @@ import {
 } from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
 import { hex_to_bytes } from "@ethernauta/utils"
+import { sign_digest } from "./ecdsa"
 import { encode } from "./rlp"
 import type { Transaction } from "./transaction"
 
@@ -73,15 +68,6 @@ export function big_to_bytes(
     "0",
   )
   return hex_to_bytes(padded_hex)
-}
-
-export function sign_transaction_hash(
-  hash: Uint8Array<ArrayBufferLike>,
-  private_key: Uint8Array,
-): RecoveredSignature {
-  etc.hmacSha256Sync = (k, ...m) =>
-    hmac(sha256, k, etc.concatBytes(...m))
-  return sign(hash, private_key)
 }
 
 export function compose_y_parity(
@@ -253,7 +239,7 @@ export function encode_eip155_transaction_unsigned(
     encoded_unsigned_fields,
   )
   // step 4: sign with ECDSA (secp256k1)
-  const signature = sign_transaction_hash(
+  const signature = sign_digest(
     transaction_hash,
     private_key,
   )

@@ -35,8 +35,8 @@ import {
   make_transaction_hash,
   make_unsigned_fields,
   sign_transaction,
-  sign_transaction_hash,
 } from "./sign-transaction"
+import { sign_digest } from "./ecdsa"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -124,7 +124,7 @@ describe("transaction.ts", () => {
 
   it("should sign hash with private key", () => {
     const hash = new Uint8Array(32).fill(0x01)
-    const result = sign_transaction_hash(
+    const result = sign_digest(
       hash,
       TEST_PRIVATE_KEY,
     )
