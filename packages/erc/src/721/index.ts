@@ -1,1 +1,5 @@
 export * from "./methods"
+export * from "./extensions/burnable/methods"
+export * from "./extensions/pausable/methods"
+export * from "./extensions/permit/methods"
+export * from "./extensions/votes/methods"
