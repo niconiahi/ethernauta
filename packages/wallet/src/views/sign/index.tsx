@@ -3,7 +3,7 @@ import {
   to_selector,
 } from "@ethernauta/abi"
 import { REGISTRY } from "@ethernauta/erc/registry"
-import type { Address } from "@ethernauta/eth"
+import type { Address } from "@ethernauta/core"
 import type { ComponentChildren } from "preact"
 import { parametersSchema } from "@ethernauta/transport"
 import { parse } from "valibot"

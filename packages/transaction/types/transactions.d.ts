@@ -1,4 +1,4 @@
-import type { Hash32 } from "@ethernauta/eth"
+import type { Hash32 } from "@ethernauta/core"
 import type { Transaction } from "@ethernauta/transaction"
 
 declare global {

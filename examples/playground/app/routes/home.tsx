@@ -1,10 +1,7 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import { create_provider } from "@ethernauta/eip/1193"
-import {
-  eth_sendRawTransaction,
-  eth_signTransaction,
-} from "@ethernauta/eth"
+import { eth_sendRawTransaction, eth_signTransaction } from "@ethernauta/eth"
 import {
   register_transaction,
   type Transaction,

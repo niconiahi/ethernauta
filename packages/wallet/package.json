@@ -26,9 +26,10 @@
     "preact": "10.26.9",
     "valibot": "1.1.0",
     "@ethernauta/abi": "workspace:*",
-    "@ethernauta/utils": "workspace:*",
+    "@ethernauta/core": "workspace:*",
     "@ethernauta/eip": "workspace:*",
-    "@ethernauta/erc": "workspace:*"
+    "@ethernauta/erc": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
   },
   "devDependencies": {
     "@preact/preset-vite": "2.10.2",

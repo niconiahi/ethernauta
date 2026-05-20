@@ -1,4 +1,4 @@
-import { Hash32 } from "@ethernauta/eth"
+import { Hash32 } from "@ethernauta/core"
 
 export type Wallet = {
   sign: (

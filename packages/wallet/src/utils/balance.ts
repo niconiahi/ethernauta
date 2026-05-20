@@ -1,7 +1,5 @@
-import {
-  type Address,
-  eth_getBalance,
-} from "@ethernauta/eth"
+import { eth_getBalance } from "@ethernauta/eth"
+import { type Address } from "@ethernauta/core"
 import { signal } from "@preact/signals"
 import { get_reader, selected_chain } from "./chain"
 import { hex_to_big } from "./crypto"

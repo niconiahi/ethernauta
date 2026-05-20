@@ -1,4 +1,4 @@
-import type { Hash32 } from "@ethernauta/eth"
+import type { Hash32 } from "@ethernauta/core"
 import type {
   PendingTransaction,
   Transaction,

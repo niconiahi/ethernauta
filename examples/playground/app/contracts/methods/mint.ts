@@ -1,4 +1,4 @@
-import type { Bytes } from "@ethernauta/eth"
+import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
   ResolvedSigner,

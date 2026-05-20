@@ -1,4 +1,4 @@
-import type { Hash32 } from "@ethernauta/eth"
+import type { Hash32 } from "@ethernauta/core"
 import type { Transaction } from "./transaction"
 
 export function set_transaction(transaction: Transaction) {

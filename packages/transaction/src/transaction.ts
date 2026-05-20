@@ -1,4 +1,4 @@
-import { Hash32Schema } from "@ethernauta/eth"
+import { hash32Schema } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import {
   literal,
@@ -9,29 +9,29 @@ import {
 } from "valibot"
 
 export const PendingTransactionSchema = object({
-  hash: Hash32Schema,
+  hash: hash32Schema,
   status: literal("pending"),
 })
 export const MinedTransactionSchema = object({
-  hash: Hash32Schema,
+  hash: hash32Schema,
   status: literal("mined"),
   blockNumber: number(),
-  blockHash: Hash32Schema,
+  blockHash: hash32Schema,
   gasUsed: string(),
 })
 // export const ConfirmedTransactionSchema = object({
-//   hash: Hash32Schema,
+//   hash: hash32Schema,
 //   status: literal("confirmed"),
 //   blockNumber: number(),
-//   blockHash: Hash32Schema,
+//   blockHash: hash32Schema,
 //   gasUsed: string(),
 //   confirmations: number(),
 // })
 export const RevertedTransactionSchema = object({
-  hash: Hash32Schema,
+  hash: hash32Schema,
   status: literal("reverted"),
   blockNumber: number(),
-  blockHash: Hash32Schema,
+  blockHash: hash32Schema,
   gasUsed: string(),
 })
 export const TransactionSchema = union([

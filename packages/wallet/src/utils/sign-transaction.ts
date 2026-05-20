@@ -1,11 +1,17 @@
-import { encode_call } from "@ethernauta/abi"
+import {
+  address,
+  encode_function_call,
+  string_,
+} from "@ethernauta/abi"
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
-  type Address,
-  addressSchema,
   eth_getTransactionCount,
   genericTransactionSchema,
 } from "@ethernauta/eth"
+import {
+  type Address,
+  addressSchema,
+} from "@ethernauta/core"
 import type { ChainId, Reader } from "@ethernauta/transport"
 import { invariant } from "@ethernauta/utils"
 import { hmac } from "@noble/hashes/hmac"
@@ -169,10 +175,11 @@ function get_fields_from_transaction(
       return {
         to: contract,
         value: 0n,
-        data: encode_call("safeMint(address,string)", [
-          nft_recipient,
-          uri,
-        ]),
+        data: encode_function_call({
+          name: "safeMint",
+          args: [address(), string_()] as const,
+          values: [nft_recipient, uri],
+        }),
       }
     }
   }

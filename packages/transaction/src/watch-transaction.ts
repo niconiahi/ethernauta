@@ -1,8 +1,6 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  eth_getTransactionReceipt,
-  type Hash32,
-} from "@ethernauta/eth"
+import { eth_getTransactionReceipt } from "@ethernauta/eth"
+import { type Hash32 } from "@ethernauta/core"
 import {
   create_reader,
   encode_chain_id,
