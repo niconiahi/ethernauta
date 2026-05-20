@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_3073 = {
+export const eip155_3073: Chain = {
   name: "Movement EVM",
   shortName: "move",
   chain: "MOVE",
@@ -24,4 +24,4 @@ export const eip155_3073 = {
     },
   ],
   status: "incubating",
-} satisfies Chain
+}

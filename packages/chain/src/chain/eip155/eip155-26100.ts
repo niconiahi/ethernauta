@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_26100 = {
+export const eip155_26100: Chain = {
   name: "Ferrum Quantum Portal Network",
   shortName: "qpn",
   chain: "QPN",
@@ -23,4 +23,4 @@ export const eip155_26100 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_395 = {
+export const eip155_395: Chain = {
   name: "CamDL Testnet",
   shortName: "camdl-testnet",
   chain: "CADL",
@@ -29,4 +29,4 @@ export const eip155_395 = {
     },
   ],
   status: "active",
-} satisfies Chain
+}

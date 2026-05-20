@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_61803 = {
+export const eip155_61803: Chain = {
   name: "Etica Mainnet",
   shortName: "Etica",
   chain: "Etica Protocol (ETI/EGAZ)",
@@ -31,4 +31,4 @@ export const eip155_61803 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

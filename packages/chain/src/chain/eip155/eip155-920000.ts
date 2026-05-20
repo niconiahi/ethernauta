@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_920000 = {
+export const eip155_920000: Chain = {
   name: "Posichain Devnet Shard 0",
   shortName: "psc-d-s0",
   chain: "PSC",
@@ -22,4 +22,4 @@ export const eip155_920000 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

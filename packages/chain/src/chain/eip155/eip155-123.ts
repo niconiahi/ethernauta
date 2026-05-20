@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_123 = {
+export const eip155_123: Chain = {
   name: "Fuse Sparknet",
   shortName: "spark",
   chain: "fuse",
@@ -16,4 +16,4 @@ export const eip155_123 = {
     "https://docs.fuse.io/general/fuse-network-blockchain/fuse-testnet",
   chainId: 123,
   networkId: 123,
-} satisfies Chain
+}

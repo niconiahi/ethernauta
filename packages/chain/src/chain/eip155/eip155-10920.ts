@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_10920 = {
+export const eip155_10920: Chain = {
   name: "Fuse Flash Testnet",
   shortName: "fuseflash",
   chain: "Fuse Flash",
@@ -26,4 +26,4 @@ export const eip155_10920 = {
     chain: "eip155-11155111",
   },
   status: "incubating",
-} satisfies Chain
+}

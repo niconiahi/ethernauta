@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_300 = {
+export const eip155_300: Chain = {
   name: "zkSync Sepolia Testnet",
   shortName: "zksync-sepolia",
   chain: "ETH",
@@ -38,4 +38,4 @@ export const eip155_300 = {
     ],
   },
   redFlags: ["reusedChainId"],
-} satisfies Chain
+}

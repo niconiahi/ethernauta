@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_5104 = {
+export const eip155_5104: Chain = {
   name: "Charmverse Testnet",
   shortName: "charmverse-testnet",
   chain: "Charmverse Testnet",
@@ -17,4 +17,4 @@ export const eip155_5104 = {
   infoURL: "https://charmverse.io/",
   chainId: 5104,
   networkId: 5104,
-} satisfies Chain
+}

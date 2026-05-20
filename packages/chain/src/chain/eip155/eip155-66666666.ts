@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_66666666 = {
+export const eip155_66666666: Chain = {
   name: "Winr Protocol Testnet",
   shortName: "winrtestnet",
   chain: "WINR",
@@ -24,4 +24,4 @@ export const eip155_66666666 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

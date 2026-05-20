@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_107107114116 = {
+export const eip155_107107114116: Chain = {
   name: "Kakarot Sepolia Deprecated",
   shortName: "kkrt-sepolia-deprecated",
   chain: "ETH",
@@ -22,4 +22,4 @@ export const eip155_107107114116 = {
     chain: "eip155-11155111",
     bridges: [],
   },
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_43521 = {
+export const eip155_43521: Chain = {
   name: "Formicarium",
   shortName: "form",
   title: "MemeCore Testnet Formicarium",
@@ -46,4 +46,4 @@ export const eip155_43521 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

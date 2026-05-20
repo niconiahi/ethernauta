@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_5869 = {
+export const eip155_5869: Chain = {
   name: "Wegochain Rubidium Mainnet",
   shortName: "rbd",
   chain: "RBD",
@@ -25,4 +25,4 @@ export const eip155_5869 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

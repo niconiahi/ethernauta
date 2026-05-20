@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_191 = {
+export const eip155_191: Chain = {
   name: "FileFileGo",
   shortName: "ffg",
   chain: "FFG",
@@ -24,4 +24,4 @@ export const eip155_191 = {
   infoURL: "https://filefilego.com",
   chainId: 191,
   networkId: 191,
-} satisfies Chain
+}

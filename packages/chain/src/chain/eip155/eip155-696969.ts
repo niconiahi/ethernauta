@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_696969 = {
+export const eip155_696969: Chain = {
   name: "Galadriel Devnet",
   shortName: "galadriel-devnet",
   chain: "Galadriel",
@@ -22,4 +22,4 @@ export const eip155_696969 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

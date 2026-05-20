@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_646 = {
+export const eip155_646: Chain = {
   name: "Flow EVM Previewnet",
   shortName: "flow-previewnet",
   chain: "Flow",
@@ -18,4 +18,4 @@ export const eip155_646 = {
   networkId: 646,
   explorers: [],
   status: "deprecated",
-} satisfies Chain
+}

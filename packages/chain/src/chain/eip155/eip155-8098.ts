@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8098 = {
+export const eip155_8098: Chain = {
   name: "StreamuX Blockchain",
   shortName: "StreamuX",
   chain: "StreamuX",
@@ -17,4 +17,4 @@ export const eip155_8098 = {
   infoURL: "https://www.streamux.cloud",
   chainId: 8098,
   networkId: 8098,
-} satisfies Chain
+}

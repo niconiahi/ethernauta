@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_190 = {
+export const eip155_190: Chain = {
   name: "CMDAO BBQ Chain",
   shortName: "cmdao-bbq-chain",
   chain: "Underchain 1",
@@ -22,4 +22,4 @@ export const eip155_190 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

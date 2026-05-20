@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_15551 = {
+export const eip155_15551: Chain = {
   name: "LoopNetwork Mainnet",
   shortName: "loop",
   chain: "LoopNetwork",
@@ -22,4 +22,4 @@ export const eip155_15551 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

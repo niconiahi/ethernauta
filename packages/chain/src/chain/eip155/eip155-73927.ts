@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_73927 = {
+export const eip155_73927: Chain = {
   name: "Mixin Virtual Machine",
   shortName: "mvm",
   chain: "MVM",
@@ -23,4 +23,4 @@ export const eip155_73927 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

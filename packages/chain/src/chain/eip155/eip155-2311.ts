@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2311 = {
+export const eip155_2311: Chain = {
   name: "Chronicle Vesuvius - Lit Protocol Testnet",
   shortName: "lpv",
   chain: "LPV",
@@ -25,4 +25,4 @@ export const eip155_2311 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

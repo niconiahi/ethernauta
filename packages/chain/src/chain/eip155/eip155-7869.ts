@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_7869 = {
+export const eip155_7869: Chain = {
   name: "Powerloom Mainnet V2",
   shortName: "powerloom",
   chain: "Powerloom Mainnet V2",
@@ -24,4 +24,4 @@ export const eip155_7869 = {
     },
   ],
   status: "active",
-} satisfies Chain
+}

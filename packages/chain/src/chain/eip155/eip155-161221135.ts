@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_161221135 = {
+export const eip155_161221135: Chain = {
   name: "Plume Testnet (Legacy)",
   shortName: "plume-testnet-legacy",
   title: "Plume Sepolia L2 Rollup Testnet (Legacy)",
@@ -24,4 +24,4 @@ export const eip155_161221135 = {
     chain: "eip155-11155111",
   },
   status: "deprecated",
-} satisfies Chain
+}

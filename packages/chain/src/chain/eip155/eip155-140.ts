@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_140 = {
+export const eip155_140: Chain = {
   name: "Eteria Mainnet",
   shortName: "ERA",
   chain: "ERA",
@@ -24,4 +24,4 @@ export const eip155_140 = {
   infoURL: "https://eteria.io",
   chainId: 140,
   networkId: 140,
-} satisfies Chain
+}

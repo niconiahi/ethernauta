@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_75338 = {
+export const eip155_75338: Chain = {
   name: "AppLayer Testnet",
   shortName: "applayer-testnet",
   chain: "AppLayer",
@@ -33,4 +33,4 @@ export const eip155_75338 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

@@ -91,7 +91,7 @@ export function runIndexer(): void {
                       const content = `// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain`
+export const ${nameId}: Chain = ${JSON.stringify(chain, null, 2)}`
 
                       writeFile(
                         _filePath,

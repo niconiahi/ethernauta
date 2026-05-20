@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_7210 = {
+export const eip155_7210: Chain = {
   name: "Nibiru testnet-1",
   shortName: "nibiru-testnet-1",
   chain: "Nibiru",
@@ -18,4 +18,4 @@ export const eip155_7210 = {
   networkId: 7210,
   explorers: [],
   status: "deprecated",
-} satisfies Chain
+}

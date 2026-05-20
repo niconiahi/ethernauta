@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_28872323069 = {
+export const eip155_28872323069: Chain = {
   name: "GitSwarm Test Network",
   shortName: "GS-ETH",
   title: "GitSwarm Test Network",
@@ -20,4 +20,4 @@ export const eip155_28872323069 = {
   slip44: 1,
   explorers: [],
   status: "incubating",
-} satisfies Chain
+}

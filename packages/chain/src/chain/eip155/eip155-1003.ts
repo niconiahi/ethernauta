@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1003 = {
+export const eip155_1003: Chain = {
   name: "Tectum Emission Token",
   shortName: "tet",
   chain: "TET",
@@ -22,4 +22,4 @@ export const eip155_1003 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

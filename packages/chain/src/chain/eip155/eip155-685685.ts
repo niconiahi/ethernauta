@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_685685 = {
+export const eip155_685685: Chain = {
   name: "Gensyn Testnet",
   shortName: "gensyn-test",
   chain: "Gensyn",
@@ -16,4 +16,4 @@ export const eip155_685685 = {
   chainId: 685685,
   networkId: 685685,
   status: "incubating",
-} satisfies Chain
+}

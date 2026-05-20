@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2522 = {
+export const eip155_2522: Chain = {
   name: "Fraxtal Testnet",
   shortName: "fraxtal-testnet",
   chain: "FRAX",
@@ -29,4 +29,4 @@ export const eip155_2522 = {
     },
   ],
   status: "active",
-} satisfies Chain
+}

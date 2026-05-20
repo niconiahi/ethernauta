@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_4000003 = {
+export const eip155_4000003: Chain = {
   name: "AltLayer Zero Gas Network",
   shortName: "alt-zerogas",
   chain: "ETH",
@@ -31,4 +31,4 @@ export const eip155_4000003 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

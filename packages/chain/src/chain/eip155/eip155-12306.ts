@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_12306 = {
+export const eip155_12306: Chain = {
   name: "Fibonacci Mainnet",
   shortName: "fibo",
   chain: "FIBO",
@@ -38,4 +38,4 @@ export const eip155_12306 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

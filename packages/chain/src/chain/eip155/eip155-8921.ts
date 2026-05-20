@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8921 = {
+export const eip155_8921: Chain = {
   name: "Algen Layer2",
   shortName: "algl2",
   chain: "ALG L2",
@@ -27,4 +27,4 @@ export const eip155_8921 = {
     type: "shard",
     chain: "eip155-8911",
   },
-} satisfies Chain
+}

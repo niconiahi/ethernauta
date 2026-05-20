@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1286 = {
+export const eip155_1286: Chain = {
   name: "Moonrock old",
   shortName: "mrock-old",
   chain: "MOON",
@@ -16,4 +16,4 @@ export const eip155_1286 = {
   chainId: 1286,
   networkId: 1286,
   status: "deprecated",
-} satisfies Chain
+}

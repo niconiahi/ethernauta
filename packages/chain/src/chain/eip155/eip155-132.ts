@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_132 = {
+export const eip155_132: Chain = {
   name: "Namefi Chain Mainnet",
   shortName: "nfic",
   chain: "NFIC",
@@ -15,4 +15,4 @@ export const eip155_132 = {
   infoURL: "https://namefi.io/",
   chainId: 132,
   networkId: 132,
-} satisfies Chain
+}

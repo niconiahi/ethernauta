@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_9897 = {
+export const eip155_9897: Chain = {
   name: "arena-z-testnet-deprecated",
   shortName: "arena-z-testnet-deprecated",
   title: "Arena-Z-Testnet-deprecated",
@@ -26,4 +26,4 @@ export const eip155_9897 = {
     bridges: [],
   },
   status: "deprecated",
-} satisfies Chain
+}

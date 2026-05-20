@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1022 = {
+export const eip155_1022: Chain = {
   name: "Sakura",
   shortName: "sku",
   chain: "Sakura",
@@ -15,4 +15,4 @@ export const eip155_1022 = {
   infoURL: "https://clover.finance/sakura",
   chainId: 1022,
   networkId: 1022,
-} satisfies Chain
+}

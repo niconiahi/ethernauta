@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_52225 = {
+export const eip155_52225: Chain = {
   name: "Cytonic Settlement Layer Testnet",
   shortName: "CSL",
   chain: "CytonicSL",
@@ -23,4 +23,4 @@ export const eip155_52225 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

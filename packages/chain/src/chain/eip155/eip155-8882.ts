@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8882 = {
+export const eip155_8882: Chain = {
   name: "Opal testnet by Unique",
   shortName: "opl",
   chain: "UNQ",
@@ -29,4 +29,4 @@ export const eip155_8882 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

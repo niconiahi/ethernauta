@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_18231 = {
+export const eip155_18231: Chain = {
   name: "unreal-old",
   shortName: "unreal-old",
   title: "unreal testnet for re.al",
@@ -35,4 +35,4 @@ export const eip155_18231 = {
     bridges: [],
   },
   status: "deprecated",
-} satisfies Chain
+}

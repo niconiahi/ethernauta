@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_121212 = {
+export const eip155_121212: Chain = {
   name: "Rome Devnet Esquiline",
   shortName: "rome-devnet-esquiline",
   chain: "ROME",
@@ -24,4 +24,4 @@ export const eip155_121212 = {
     },
   ],
   status: "active",
-} satisfies Chain
+}

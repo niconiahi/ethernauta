@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_3336 = {
+export const eip155_3336: Chain = {
   name: "EthStorage L2 Testnet",
   shortName: "esl2-t",
   chain: "EthStorage",
@@ -21,4 +21,4 @@ export const eip155_3336 = {
     chain: "eip155-11155111",
   },
   status: "incubating",
-} satisfies Chain
+}

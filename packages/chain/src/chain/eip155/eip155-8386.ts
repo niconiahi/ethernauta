@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8386 = {
+export const eip155_8386: Chain = {
   name: "XProtocol",
   shortName: "xprotocol",
   chain: "XPROTOCOL",
@@ -20,4 +20,4 @@ export const eip155_8386 = {
     chain: "eip155-8453",
   },
   status: "incubating",
-} satisfies Chain
+}

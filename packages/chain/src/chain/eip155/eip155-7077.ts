@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_7077 = {
+export const eip155_7077: Chain = {
   name: "Planq Atlas Testnet",
   shortName: "planq-atlas-testnet",
   chain: "Planq",
@@ -17,4 +17,4 @@ export const eip155_7077 = {
   chainId: 7077,
   networkId: 7077,
   explorers: [],
-} satisfies Chain
+}

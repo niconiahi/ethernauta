@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_5433 = {
+export const eip155_5433: Chain = {
   name: "Inertia Scan",
   shortName: "IRTA",
   chain: "IRTA",
@@ -23,4 +23,4 @@ export const eip155_5433 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

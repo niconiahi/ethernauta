@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_71 = {
+export const eip155_71: Chain = {
   name: "Conflux eSpace (Testnet)",
   shortName: "cfxtest",
   chain: "Conflux",
@@ -23,4 +23,4 @@ export const eip155_71 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

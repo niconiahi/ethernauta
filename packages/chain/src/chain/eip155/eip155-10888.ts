@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_10888 = {
+export const eip155_10888: Chain = {
   name: "GameSwift Chain Testnet",
   shortName: "gameswift-chain-testnet",
   title: "GameSwift Chain Testnet",
@@ -37,4 +37,4 @@ export const eip155_10888 = {
       },
     ],
   },
-} satisfies Chain
+}

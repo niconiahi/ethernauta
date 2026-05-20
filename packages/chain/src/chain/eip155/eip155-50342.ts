@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_50342 = {
+export const eip155_50342: Chain = {
   name: "Reddio",
   shortName: "reddio",
   title: "Reddio mainnet L2 Rollup",
@@ -28,4 +28,4 @@ export const eip155_50342 = {
     type: "L2",
     chain: "eip155-1",
   },
-} satisfies Chain
+}

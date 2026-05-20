@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_80451 = {
+export const eip155_80451: Chain = {
   name: "Geo Genesis",
   shortName: "geo",
   chain: "Geo Genesis",
@@ -30,4 +30,4 @@ export const eip155_80451 = {
     type: "L2",
     chain: "eip155-42161",
   },
-} satisfies Chain
+}

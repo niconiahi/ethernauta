@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_41455 = {
+export const eip155_41455: Chain = {
   name: "Aleph Zero EVM",
   shortName: "aleph-zero",
   chain: "Aleph Zero EVM",
@@ -26,4 +26,4 @@ export const eip155_41455 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_151 = {
+export const eip155_151: Chain = {
   name: "Redbelly Network Mainnet",
   shortName: "rbn",
   chain: "RBN",
@@ -25,4 +25,4 @@ export const eip155_151 = {
     },
   ],
   status: "active",
-} satisfies Chain
+}

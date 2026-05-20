@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_115 = {
+export const eip155_115: Chain = {
   name: "DeBank Testnet(Deprecated)",
   shortName: "debank-testnet",
   chain: "DeBank",
@@ -19,4 +19,4 @@ export const eip155_115 = {
   slip44: 1,
   explorers: [],
   status: "deprecated",
-} satisfies Chain
+}

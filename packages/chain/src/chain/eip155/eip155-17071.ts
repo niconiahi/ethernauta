@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_17071 = {
+export const eip155_17071: Chain = {
   name: "Onchain Points",
   shortName: "pop",
   chain: "POP",
@@ -27,4 +27,4 @@ export const eip155_17071 = {
     },
   ],
   status: "incubating",
-} satisfies Chain
+}

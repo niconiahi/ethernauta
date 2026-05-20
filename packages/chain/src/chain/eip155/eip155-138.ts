@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_138 = {
+export const eip155_138: Chain = {
   name: "Defi Oracle Meta Mainnet",
   shortName: "dfio-meta-main",
   chain: "dfiometa",
@@ -43,4 +43,4 @@ export const eip155_138 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

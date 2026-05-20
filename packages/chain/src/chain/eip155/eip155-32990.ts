@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_32990 = {
+export const eip155_32990: Chain = {
   name: "Zilliqa EVM Isolated Server",
   shortName: "zil-isolated-server",
   chain: "ZIL",
@@ -25,4 +25,4 @@ export const eip155_32990 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1414 = {
+export const eip155_1414: Chain = {
   name: "Silicon zkEVM Sepolia Testnet(Deprecated)",
   shortName: "silicon-sepolia-testnet-deprecated",
   title: "Silicon zkEVM Sepolia Testnet(Deprecated)",
@@ -24,4 +24,4 @@ export const eip155_1414 = {
     bridges: [],
   },
   status: "deprecated",
-} satisfies Chain
+}

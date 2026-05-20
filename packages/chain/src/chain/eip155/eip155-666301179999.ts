@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_666301179999 = {
+export const eip155_666301179999: Chain = {
   name: "SmartPay Mobile Money",
   shortName: "SmartPay",
   chain: "Mobile Money",
@@ -21,4 +21,4 @@ export const eip155_666301179999 = {
   infoURL: "https://network.uat.smartmoneyewallet.com/",
   chainId: 666301179999,
   networkId: 666301179999,
-} satisfies Chain
+}

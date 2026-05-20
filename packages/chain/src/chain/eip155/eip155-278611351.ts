@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_278611351 = {
+export const eip155_278611351: Chain = {
   name: "Razor Skale Chain",
   shortName: "razor",
   chain: "Razor Schain",
@@ -25,4 +25,4 @@ export const eip155_278611351 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_142 = {
+export const eip155_142: Chain = {
   name: "DAX CHAIN",
   shortName: "dax",
   chain: "DAX",
@@ -15,4 +15,4 @@ export const eip155_142 = {
   infoURL: "https://prodax.io/",
   chainId: 142,
   networkId: 142,
-} satisfies Chain
+}

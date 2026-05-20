@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_6001 = {
+export const eip155_6001: Chain = {
   name: "BounceBit Mainnet",
   shortName: "bouncebit-mainnet",
   chain: "BounceBit",
@@ -23,4 +23,4 @@ export const eip155_6001 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

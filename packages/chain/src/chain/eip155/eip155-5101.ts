@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_5101 = {
+export const eip155_5101: Chain = {
   name: "Syndicate Frame Chain",
   shortName: "syndicate-chain-frame",
   title: "Syndicate Frame Chain",
@@ -18,4 +18,4 @@ export const eip155_5101 = {
   chainId: 5101,
   networkId: 5101,
   status: "incubating",
-} satisfies Chain
+}

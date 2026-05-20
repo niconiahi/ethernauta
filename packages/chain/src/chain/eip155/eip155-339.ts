@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_339 = {
+export const eip155_339: Chain = {
   name: "Pencils Protocol",
   shortName: "dapp",
   chain: "ETH",
@@ -16,4 +16,4 @@ export const eip155_339 = {
   chainId: 339,
   networkId: 339,
   status: "incubating",
-} satisfies Chain
+}

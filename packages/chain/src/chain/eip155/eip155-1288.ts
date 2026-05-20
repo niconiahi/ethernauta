@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1288 = {
+export const eip155_1288: Chain = {
   name: "Moonrock",
   shortName: "mrock",
   chain: "MOON",
@@ -19,4 +19,4 @@ export const eip155_1288 = {
     "https://docs.moonbeam.network/learn/platform/networks/overview/",
   chainId: 1288,
   networkId: 1288,
-} satisfies Chain
+}

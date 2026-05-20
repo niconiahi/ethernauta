@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_9070 = {
+export const eip155_9070: Chain = {
   name: "Apex Fusion - Nexus testnet",
   shortName: "tAP3X",
   chain: "Nexus testnet",
@@ -28,4 +28,4 @@ export const eip155_9070 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

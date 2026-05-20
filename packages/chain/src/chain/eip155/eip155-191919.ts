@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_191919 = {
+export const eip155_191919: Chain = {
   name: "Altblockscan Mainnet",
   shortName: "altb",
   chain: "ALTB",
@@ -23,4 +23,4 @@ export const eip155_191919 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_996 = {
+export const eip155_996: Chain = {
   name: "Bifrost Polkadot Mainnet",
   shortName: "bnc",
   chain: "Bifrost",
@@ -16,4 +16,4 @@ export const eip155_996 = {
   infoURL: "https://bifrost.io/",
   chainId: 996,
   networkId: 996,
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_4999 = {
+export const eip155_4999: Chain = {
   name: "BlackFort Exchange Network Deprecated",
   shortName: "BXNdpr",
   chain: "BXNdpr",
@@ -37,4 +37,4 @@ export const eip155_4999 = {
     },
   ],
   status: "deprecated",
-} satisfies Chain
+}

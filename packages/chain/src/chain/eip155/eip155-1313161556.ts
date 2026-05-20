@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1313161556 = {
+export const eip155_1313161556: Chain = {
   name: "Aurora Betanet",
   shortName: "aurora-betanet",
   chain: "NEAR",
@@ -15,4 +15,4 @@ export const eip155_1313161556 = {
   infoURL: "https://aurora.dev",
   chainId: 1313161556,
   networkId: 1313161556,
-} satisfies Chain
+}

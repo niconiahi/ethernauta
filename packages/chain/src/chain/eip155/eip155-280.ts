@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_280 = {
+export const eip155_280: Chain = {
   name: "zkSync Era Goerli Testnet (deprecated)",
   shortName: "zksync-goerli",
   chain: "ETH",
@@ -34,4 +34,4 @@ export const eip155_280 = {
     ],
   },
   status: "deprecated",
-} satisfies Chain
+}

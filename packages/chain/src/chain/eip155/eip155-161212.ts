@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_161212 = {
+export const eip155_161212: Chain = {
   name: "PlayFi Mainnet",
   shortName: "playfi",
   chain: "PLAY",
@@ -17,4 +17,4 @@ export const eip155_161212 = {
   networkId: 161212,
   explorers: [],
   status: "incubating",
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_206 = {
+export const eip155_206: Chain = {
   name: "VinuChain Testnet",
   shortName: "VCTEST",
   chain: "VinuChain Testnet",
@@ -24,4 +24,4 @@ export const eip155_206 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_388 = {
+export const eip155_388: Chain = {
   name: "Cronos zkEVM Mainnet",
   shortName: "zkCRO",
   chain: "CronosZkEVMMainnet",
@@ -22,4 +22,4 @@ export const eip155_388 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

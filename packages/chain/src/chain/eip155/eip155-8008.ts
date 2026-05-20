@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8008 = {
+export const eip155_8008: Chain = {
   name: "Polynomial",
   shortName: "polynomial",
   chain: "Polynomial",
@@ -23,4 +23,4 @@ export const eip155_8008 = {
       standard: "none",
     },
   ],
-} satisfies Chain
+}

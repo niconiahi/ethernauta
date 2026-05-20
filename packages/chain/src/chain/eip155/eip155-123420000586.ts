@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_123420000586 = {
+export const eip155_123420000586: Chain = {
   name: "sivo-defi-testnet",
   shortName: "sivo-defi-testnet",
   title: "Sivo Defi Testnet",
@@ -37,4 +37,4 @@ export const eip155_123420000586 = {
       },
     ],
   },
-} satisfies Chain
+}

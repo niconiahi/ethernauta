@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_98866 = {
+export const eip155_98866: Chain = {
   name: "Plume Mainnet",
   shortName: "plume-mainnet",
   title: "Plume Ethereum L2 Rollup Mainnet",
@@ -35,4 +35,4 @@ export const eip155_98866 = {
     ],
   },
   status: "active",
-} satisfies Chain
+}

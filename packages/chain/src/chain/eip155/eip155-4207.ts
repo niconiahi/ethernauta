@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_4207 = {
+export const eip155_4207: Chain = {
   name: "Layer Edge Mainnet",
   shortName: "LayerEdge",
   title: "EDGEN",
@@ -29,4 +29,4 @@ export const eip155_4207 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

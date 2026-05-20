@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2088 = {
+export const eip155_2088: Chain = {
   name: "Altair",
   shortName: "air",
   chain: "AIR",
@@ -27,4 +27,4 @@ export const eip155_2088 = {
   infoURL: "https://centrifuge.io",
   chainId: 2088,
   networkId: 2088,
-} satisfies Chain
+}

@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_63 = {
+export const eip155_63: Chain = {
   name: "Mordor Testnet",
   shortName: "metc",
   title: "Ethereum Classic Mordor Testnet",
@@ -43,4 +43,4 @@ export const eip155_63 = {
     },
   ],
   status: "active",
-} satisfies Chain
+}

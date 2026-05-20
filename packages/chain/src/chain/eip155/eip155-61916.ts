@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_61916 = {
+export const eip155_61916: Chain = {
   name: "DoKEN Super Chain Mainnet",
   shortName: "DoKEN",
   chain: "DoKEN Super Chain",
@@ -27,4 +27,4 @@ export const eip155_61916 = {
       standard: "EIP3091",
     },
   ],
-} satisfies Chain
+}

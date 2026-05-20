@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_31753 = {
+export const eip155_31753: Chain = {
   name: "Xchain Mainnet (Deprecated)",
   shortName: "INTD_deprecated",
   chain: "XchainDeprecated",
@@ -18,4 +18,4 @@ export const eip155_31753 = {
   networkId: 31753,
   explorers: [],
   status: "deprecated",
-} satisfies Chain
+}

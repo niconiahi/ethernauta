@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2013 = {
+export const eip155_2013: Chain = {
   name: "Panarchy",
   shortName: "panarchy",
   chain: "Panarchy",
@@ -15,4 +15,4 @@ export const eip155_2013 = {
   infoURL: "https://polytopia.org/",
   chainId: 2013,
   networkId: 1,
-} satisfies Chain
+}

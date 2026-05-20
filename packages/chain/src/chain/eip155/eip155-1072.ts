@@ -1,7 +1,7 @@
 // biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1072 = {
+export const eip155_1072: Chain = {
   name: "ShimmerEVM Testnet Deprecated 1072",
   shortName: "shimmerevm-testnet-deprecated-1072",
   title: "ShimmerEVM Testnet Deprecated 1072",
@@ -29,4 +29,4 @@ export const eip155_1072 = {
     },
   ],
   status: "deprecated",
-} satisfies Chain
+}
