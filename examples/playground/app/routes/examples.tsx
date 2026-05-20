@@ -15,6 +15,10 @@ const EXAMPLES = [
     to: "/examples/delegate-7702",
     title: "EIP-7702 batched calls",
   },
+  {
+    to: "/examples/send-calls",
+    title: "ERC-5792 send calls",
+  },
 ] as const
 
 export default function ExamplesLayout() {

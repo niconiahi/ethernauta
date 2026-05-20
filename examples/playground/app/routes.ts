@@ -21,5 +21,9 @@ export default [
       "delegate-7702",
       "./routes/examples/delegate-7702.mdx",
     ),
+    route(
+      "send-calls",
+      "./routes/examples/send-calls.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
