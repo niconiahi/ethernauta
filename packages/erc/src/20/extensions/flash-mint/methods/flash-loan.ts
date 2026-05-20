@@ -12,7 +12,7 @@ import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), address(), uint256(), bytes()] as const
 
-export const SIGNATURE: {
+export const FLASH_LOAN_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -52,7 +52,7 @@ export function flashLoan(_parameters: Parameters)
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: FLASH_LOAN_SIGNATURE },
     )([signer, _context])
   }
 }

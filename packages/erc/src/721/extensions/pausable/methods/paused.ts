@@ -11,7 +11,7 @@ import { boolean, parse } from "valibot"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [bool()] as const
 
-export const SIGNATURE: {
+export const PAUSED_SIGNATURE: {
   signature: string
   names: string[]
 } = {

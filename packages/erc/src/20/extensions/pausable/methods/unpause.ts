@@ -10,7 +10,7 @@ import { parse } from "valibot"
 
 const PARAM_CODECS = [] as const
 
-export const SIGNATURE: {
+export const UNPAUSE_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -43,7 +43,7 @@ export function unpause()
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: UNPAUSE_SIGNATURE },
     )([signer, _context])
   }
 }

@@ -12,7 +12,7 @@ import { addressSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address()] as const
 
-export const SIGNATURE: {
+export const DELEGATE_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -52,7 +52,7 @@ export function delegate(_parameters: Parameters)
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: DELEGATE_SIGNATURE },
     )([signer, _context])
   }
 }

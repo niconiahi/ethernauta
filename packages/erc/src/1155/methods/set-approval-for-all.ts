@@ -12,7 +12,7 @@ import { addressSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), bool()] as const
 
-export const SIGNATURE: {
+export const SET_APPROVAL_FOR_ALL_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -52,7 +52,7 @@ export function setApprovalForAll(_parameters: Parameters)
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: SET_APPROVAL_FOR_ALL_SIGNATURE },
     )([signer, _context])
   }
 }

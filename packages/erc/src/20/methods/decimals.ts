@@ -12,7 +12,7 @@ import { uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint8()] as const
 
-export const SIGNATURE: {
+export const DECIMALS_SIGNATURE: {
   signature: string
   names: string[]
 } = {

@@ -12,7 +12,7 @@ import { addressSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), uint256()] as const
 
-export const SIGNATURE: {
+export const DEPOSIT_FOR_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -52,7 +52,7 @@ export function depositFor(_parameters: Parameters)
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: DEPOSIT_FOR_SIGNATURE },
     )([signer, _context])
   }
 }

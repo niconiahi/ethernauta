@@ -12,7 +12,7 @@ import { addressSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256(), address(), address()] as const
 
-export const SIGNATURE: {
+export const REDEEM_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -52,7 +52,7 @@ export function redeem(_parameters: Parameters)
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: REDEEM_SIGNATURE },
     )([signer, _context])
   }
 }

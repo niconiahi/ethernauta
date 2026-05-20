@@ -12,7 +12,7 @@ import { addressSchema, bytes32Schema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), uint256(), uint256(), uint8(), bytes32(), bytes32()] as const
 
-export const SIGNATURE: {
+export const DELEGATE_BY_SIG_SIGNATURE: {
   signature: string
   names: string[]
 } = {
@@ -52,7 +52,7 @@ export function delegateBySig(_parameters: Parameters)
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: DELEGATE_BY_SIG_SIGNATURE },
     )([signer, _context])
   }
 }

@@ -13,7 +13,7 @@ import { addressSchema, uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [address(), uint256()] as const
 const OUTPUT_CODECS = [uint256()] as const
 
-export const SIGNATURE: {
+export const BALANCE_OF_SIGNATURE: {
   signature: string
   names: string[]
 } = {

@@ -13,7 +13,7 @@ import { uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [uint256()] as const
 
-export const SIGNATURE: {
+export const CONVERT_TO_ASSETS_SIGNATURE: {
   signature: string
   names: string[]
 } = {

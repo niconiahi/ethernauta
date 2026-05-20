@@ -12,7 +12,7 @@ import { bytes32Schema } from "@ethernauta/core"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [bytes32()] as const
 
-export const SIGNATURE: {
+export const DOMAIN_SEPARATOR_SIGNATURE: {
   signature: string
   names: string[]
 } = {

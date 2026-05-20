@@ -11,7 +11,7 @@ import { parse, string } from "valibot"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [string_()] as const
 
-export const SIGNATURE: {
+export const NAME_SIGNATURE: {
   signature: string
   names: string[]
 } = {

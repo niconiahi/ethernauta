@@ -12,7 +12,7 @@ import { bytes4Schema } from "@ethernauta/core"
 const PARAM_CODECS = [bytes4()] as const
 const OUTPUT_CODECS = [bool()] as const
 
-export const SIGNATURE: {
+export const SUPPORTS_INTERFACE_SIGNATURE: {
   signature: string
   names: string[]
 } = {

@@ -12,7 +12,7 @@ import { addressSchema } from "@ethernauta/core"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [address()] as const
 
-export const SIGNATURE: {
+export const UNDERLYING_SIGNATURE: {
   signature: string
   names: string[]
 } = {
