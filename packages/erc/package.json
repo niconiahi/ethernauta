@@ -32,8 +32,9 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@ethernauta/eth": "workspace:*",
     "@ethernauta/abi": "workspace:*",
+    "@ethernauta/core": "workspace:*",
+    "@ethernauta/eth": "workspace:*",
     "@ethernauta/transport": "workspace:*"
   },
   "peerDependencies": {

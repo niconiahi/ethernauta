@@ -81,7 +81,7 @@ describe("ERC20", () => {
       `import type { Signable, Signer } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { parse, tuple, object, union, boolean } from "valibot"
-import { addressSchema, uint256Schema } from "@ethernauta/eth"
+import { addressSchema, uint256Schema } from "@ethernauta/core"
 
 export const OutputSchema = union([boolean()])
 export type Output = InferOutput<typeof OutputSchema>
@@ -124,8 +124,8 @@ export function transferFrom(_parameters: Parameters): Signable<string> {
       `import type { Readable, ResolvedReader } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse, union } from "valibot"
-import { uint256Schema } from "@ethernauta/eth"
-import type { Uint256 } from "@ethernauta/eth"
+import { uint256Schema } from "@ethernauta/core"
+import type { Uint256 } from "@ethernauta/core"
 
 export function totalSupply(): Readable<Uint256> {
   return async ([transports, _context]: ResolvedReader): Promise<Uint256> => {

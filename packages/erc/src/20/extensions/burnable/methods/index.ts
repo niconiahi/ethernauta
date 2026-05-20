@@ -1,2 +1,2 @@
-export { burn } from "./burn"
-export { burnFrom } from "./burn-from"
+export * from "./burn"
+export * from "./burn-from"

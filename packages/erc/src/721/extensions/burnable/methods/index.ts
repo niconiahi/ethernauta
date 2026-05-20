@@ -1,1 +1,1 @@
-export { burn } from "./burn"
+export * from "./burn"

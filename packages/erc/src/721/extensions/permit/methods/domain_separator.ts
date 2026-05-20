@@ -1,20 +1,16 @@
+import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  build_signature,
+  bytes32,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Bytes32 } from "@ethernauta/eth"
-import { bytes32Schema } from "@ethernauta/eth"
-import type {
-  Callable,
-  ResolvedContract,
-} from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
+import type { Bytes32 } from "@ethernauta/core"
+import { bytes32Schema } from "@ethernauta/core"
 
-const PARAM_TYPES = [] as const
-const OUTPUT_TYPES = ["bytes32"] as const
+const PARAM_CODECS = [] as const
+const OUTPUT_CODECS = [bytes32()] as const
 
 export const SIGNATURE: {
   signature: string
@@ -24,37 +20,30 @@ export const SIGNATURE: {
   names: [],
 }
 
-export function DOMAIN_SEPARATOR(): Callable<Bytes32> {
-  return async ([
-    transports,
-    _context,
-  ]: ResolvedContract): Promise<Bytes32> => {
+
+
+export function DOMAIN_SEPARATOR()
+: (_context: ContractContext) => Callable<Bytes32> {
+  return (
+    _context: ContractContext,
+  ): Callable<Bytes32> => {
     const values: unknown[] = []
-    const signature = build_signature("DOMAIN_SEPARATOR", [
-      ...PARAM_TYPES,
-    ])
-    const calldata = encode_function_call(
-      signature,
-      [...PARAM_TYPES],
-      values,
-    )
-    const call = parse(callSchema, [
-      "eth_call",
-      [
-        { to: _context.to, input: bytes_to_hex(calldata) },
-        "latest",
-      ],
-    ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
+    const calldata = encode_function_call({
+      name: "DOMAIN_SEPARATOR",
+      args: PARAM_CODECS,
+      values: values as never,
+    })
+    return {
+      chain_id: _context.chain_id,
+      to: _context.to,
+      data: bytes_to_hex(calldata),
+      decode: (_result: Bytes): Bytes32 => {
+        const [decoded] = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return parse(bytes32Schema, decoded)
+      },
     }
-    const [decoded] = decode_function_result(
-      [...OUTPUT_TYPES],
-      response.result as `0x${string}`,
-    )
-    return parse(bytes32Schema, decoded)
   }
 }

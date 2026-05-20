@@ -1,21 +1,17 @@
+import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  build_signature,
+  address,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Address } from "@ethernauta/eth"
-import { addressSchema } from "@ethernauta/eth"
-import type {
-  Callable,
-  ResolvedContract,
-} from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
+import type { Address } from "@ethernauta/core"
+import { addressSchema } from "@ethernauta/core"
 
-const PARAM_TYPES = ["address"] as const
-const OUTPUT_TYPES = ["address"] as const
+const PARAM_CODECS = [address()] as const
+const OUTPUT_CODECS = [address()] as const
 
 export const SIGNATURE: {
   signature: string
@@ -31,42 +27,31 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function delegates(
-  _parameters: Parameters,
-): Callable<Address> {
-  return async ([
-    transports,
-    _context,
-  ]: ResolvedContract): Promise<Address> => {
+export function delegates(_parameters: Parameters)
+: (_context: ContractContext) => Callable<Address> {
+  return (
+    _context: ContractContext,
+  ): Callable<Address> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
       : [parameters.account]
-    const signature = build_signature("delegates", [
-      ...PARAM_TYPES,
-    ])
-    const calldata = encode_function_call(
-      signature,
-      [...PARAM_TYPES],
-      values,
-    )
-    const call = parse(callSchema, [
-      "eth_call",
-      [
-        { to: _context.to, input: bytes_to_hex(calldata) },
-        "latest",
-      ],
-    ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
+    const calldata = encode_function_call({
+      name: "delegates",
+      args: PARAM_CODECS,
+      values: values as never,
+    })
+    return {
+      chain_id: _context.chain_id,
+      to: _context.to,
+      data: bytes_to_hex(calldata),
+      decode: (_result: Bytes): Address => {
+        const [decoded] = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return parse(addressSchema, decoded)
+      },
     }
-    const [decoded] = decode_function_result(
-      [...OUTPUT_TYPES],
-      response.result as `0x${string}`,
-    )
-    return parse(addressSchema, decoded)
   }
 }

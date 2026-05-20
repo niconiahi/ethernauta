@@ -1,26 +1,16 @@
+import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  build_signature,
+  bool, bytes4,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import { bytes4Schema } from "@ethernauta/eth"
-import type {
-  Callable,
-  ResolvedContract,
-} from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
-import {
-  boolean,
-  object,
-  parse,
-  tuple,
-  union,
-} from "valibot"
+import { boolean, object, parse, tuple, union } from "valibot"
+import { bytes4Schema } from "@ethernauta/core"
 
-const PARAM_TYPES = ["bytes4"] as const
-const OUTPUT_TYPES = ["bool"] as const
+const PARAM_CODECS = [bytes4()] as const
+const OUTPUT_CODECS = [bool()] as const
 
 export const SIGNATURE: {
   signature: string
@@ -36,42 +26,31 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function supportsInterface(
-  _parameters: Parameters,
-): Callable<boolean> {
-  return async ([
-    transports,
-    _context,
-  ]: ResolvedContract): Promise<boolean> => {
+export function supportsInterface(_parameters: Parameters)
+: (_context: ContractContext) => Callable<boolean> {
+  return (
+    _context: ContractContext,
+  ): Callable<boolean> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
       : [parameters.interfaceId]
-    const signature = build_signature("supportsInterface", [
-      ...PARAM_TYPES,
-    ])
-    const calldata = encode_function_call(
-      signature,
-      [...PARAM_TYPES],
-      values,
-    )
-    const call = parse(callSchema, [
-      "eth_call",
-      [
-        { to: _context.to, input: bytes_to_hex(calldata) },
-        "latest",
-      ],
-    ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
+    const calldata = encode_function_call({
+      name: "supportsInterface",
+      args: PARAM_CODECS,
+      values: values as never,
+    })
+    return {
+      chain_id: _context.chain_id,
+      to: _context.to,
+      data: bytes_to_hex(calldata),
+      decode: (_result: Bytes): boolean => {
+        const [decoded] = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return parse(boolean(), decoded)
+      },
     }
-    const [decoded] = decode_function_result(
-      [...OUTPUT_TYPES],
-      response.result as `0x${string}`,
-    )
-    return parse(boolean(), decoded)
   }
 }

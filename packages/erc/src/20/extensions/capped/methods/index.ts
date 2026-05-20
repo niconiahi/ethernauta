@@ -1,1 +1,1 @@
-export { cap } from "./cap"
+export * from "./cap"

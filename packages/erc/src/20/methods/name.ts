@@ -1,50 +1,48 @@
+import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  build_signature,
+  string_,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type {
-  Callable,
-  ResolvedContract,
-} from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import { parse, string } from "valibot"
 
-const PARAM_TYPES = [] as const
-const OUTPUT_TYPES = ["string"] as const
 
-export function name(): Callable<string> {
-  return async ([
-    transports,
-    _context,
-  ]: ResolvedContract): Promise<string> => {
+const PARAM_CODECS = [] as const
+const OUTPUT_CODECS = [string_()] as const
+
+export const SIGNATURE: {
+  signature: string
+  names: string[]
+} = {
+  signature: "name()",
+  names: [],
+}
+
+
+
+export function name()
+: (_context: ContractContext) => Callable<string> {
+  return (
+    _context: ContractContext,
+  ): Callable<string> => {
     const values: unknown[] = []
-    const signature = build_signature("name", [
-      ...PARAM_TYPES,
-    ])
-    const calldata = encode_function_call(
-      signature,
-      [...PARAM_TYPES],
-      values,
-    )
-    const call = parse(callSchema, [
-      "eth_call",
-      [
-        { to: _context.to, input: bytes_to_hex(calldata) },
-        "latest",
-      ],
-    ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
+    const calldata = encode_function_call({
+      name: "name",
+      args: PARAM_CODECS,
+      values: values as never,
+    })
+    return {
+      chain_id: _context.chain_id,
+      to: _context.to,
+      data: bytes_to_hex(calldata),
+      decode: (_result: Bytes): string => {
+        const [decoded] = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return parse(string(), decoded)
+      },
     }
-    const [decoded] = decode_function_result(
-      [...OUTPUT_TYPES],
-      response.result as `0x${string}`,
-    )
-    return parse(string(), decoded)
   }
 }

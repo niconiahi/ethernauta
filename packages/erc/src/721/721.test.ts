@@ -84,7 +84,7 @@ describe("ERC721", () => {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { parse, tuple, object, union, boolean } from "valibot"
-import { addressSchema } from "@ethernauta/eth"
+import { addressSchema } from "@ethernauta/core"
 
 const parametersSchema = union([
   tuple([addressSchema]),

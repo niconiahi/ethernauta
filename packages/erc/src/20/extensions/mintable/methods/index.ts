@@ -1,1 +1,1 @@
-export { mint } from "./mint"
+export * from "./mint"

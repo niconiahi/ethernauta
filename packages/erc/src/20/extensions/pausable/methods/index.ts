@@ -1,3 +1,3 @@
-export { pause } from "./pause"
-export { paused } from "./paused"
-export { unpause } from "./unpause"
+export * from "./pause"
+export * from "./unpause"
+export * from "./paused"
