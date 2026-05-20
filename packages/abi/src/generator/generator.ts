@@ -79,6 +79,7 @@ type Type_info = {
   param_type: string
   decoded_schema: string
   decoded_type: string
+  builder: string
   valibot: boolean
   package: "eth" | null
 }
@@ -88,6 +89,7 @@ const VALIBOT_BOOL: Type_info = {
   param_type: "boolean",
   decoded_schema: "boolean()",
   decoded_type: "boolean",
+  builder: "bool()",
   valibot: true,
   package: null,
 }
@@ -97,6 +99,7 @@ const VALIBOT_STRING: Type_info = {
   param_type: "string",
   decoded_schema: "string()",
   decoded_type: "string",
+  builder: "string_()",
   valibot: true,
   package: null,
 }
@@ -113,6 +116,7 @@ function get_type_info(type: AbiType): Type_info {
         param_type: "Address",
         decoded_schema: "addressSchema",
         decoded_type: "Address",
+        builder: "address()",
         valibot: false,
         package: "eth",
       }
@@ -122,6 +126,7 @@ function get_type_info(type: AbiType): Type_info {
         param_type: "Bytes",
         decoded_schema: "bytesSchema",
         decoded_type: "Bytes",
+        builder: "bytes()",
         valibot: false,
         package: "eth",
       }
@@ -131,6 +136,7 @@ function get_type_info(type: AbiType): Type_info {
         param_type: "Bytes4",
         decoded_schema: "bytes4Schema",
         decoded_type: "Bytes4",
+        builder: "bytes4()",
         valibot: false,
         package: "eth",
       }
@@ -140,6 +146,7 @@ function get_type_info(type: AbiType): Type_info {
         param_type: "Bytes8",
         decoded_schema: "bytes8Schema",
         decoded_type: "Bytes8",
+        builder: "bytes8()",
         valibot: false,
         package: "eth",
       }
@@ -149,27 +156,57 @@ function get_type_info(type: AbiType): Type_info {
         param_type: "Bytes32",
         decoded_schema: "bytes32Schema",
         decoded_type: "Bytes32",
+        builder: "bytes32()",
         valibot: false,
         package: "eth",
       }
     case "uint":
+      return {
+        param_schema: "uint256Schema",
+        param_type: "Uint256",
+        decoded_schema: "uint256Schema",
+        decoded_type: "Uint256",
+        builder: "uint()",
+        valibot: false,
+        package: "eth",
+      }
     case "uint8":
+      return {
+        param_schema: "uint256Schema",
+        param_type: "Uint256",
+        decoded_schema: "uint256Schema",
+        decoded_type: "Uint256",
+        builder: "uint8()",
+        valibot: false,
+        package: "eth",
+      }
     case "uint64":
+      return {
+        param_schema: "uint256Schema",
+        param_type: "Uint256",
+        decoded_schema: "uint256Schema",
+        decoded_type: "Uint256",
+        builder: "uint64()",
+        valibot: false,
+        package: "eth",
+      }
     case "uint256":
       return {
         param_schema: "uint256Schema",
         param_type: "Uint256",
         decoded_schema: "uint256Schema",
         decoded_type: "Uint256",
+        builder: "uint256()",
         valibot: false,
         package: "eth",
       }
     case "hash32":
       return {
-        param_schema: "Hash32Schema",
+        param_schema: "hash32Schema",
         param_type: "Hash32",
-        decoded_schema: "Hash32Schema",
+        decoded_schema: "hash32Schema",
         decoded_type: "Hash32",
+        builder: "hash32()",
         valibot: false,
         package: "eth",
       }
@@ -203,18 +240,18 @@ function compose_valibot_imports(
   return `${type_import}import { ${items.join(", ")} } from "valibot"`
 }
 
-function compose_eth_imports(
+function compose_core_imports(
   schemas: string[],
   types: string[],
 ): string {
   if (schemas.length === 0 && types.length === 0) return ""
   const value_imports =
     schemas.length > 0
-      ? `import { ${unique(schemas).sort().join(", ")} } from "@ethernauta/eth"`
+      ? `import { ${unique(schemas).sort().join(", ")} } from "@ethernauta/core"`
       : ""
   const type_imports =
     types.length > 0
-      ? `import type { ${unique(types).sort().join(", ")} } from "@ethernauta/eth"`
+      ? `import type { ${unique(types).sort().join(", ")} } from "@ethernauta/core"`
       : ""
   return [type_imports, value_imports]
     .filter(Boolean)
@@ -255,18 +292,31 @@ function compose_values_extraction(
       : [${by_name.join(", ")}]`
 }
 
-function compose_param_types_const(
+function compose_param_codecs_const(
   inputs: FunctionInput[],
 ): string {
-  const types = inputs.map((i) => `"${i.type}"`).join(", ")
-  return `const PARAM_TYPES = [${types}] as const`
+  const builders = inputs
+    .map((i) => get_type_info(i.type).builder)
+    .join(", ")
+  return `const PARAM_CODECS = [${builders}] as const`
 }
 
-function compose_output_types_const(
+function compose_output_codecs_const(
   outputs: FunctionOutput[],
 ): string {
-  const types = outputs.map((i) => `"${i.type}"`).join(", ")
-  return `const OUTPUT_TYPES = [${types}] as const`
+  const builders = outputs
+    .map((i) => get_type_info(i.type).builder)
+    .join(", ")
+  return `const OUTPUT_CODECS = [${builders}] as const`
+}
+
+function collect_builders(types: string[]): string[] {
+  const set = new Set<string>()
+  for (const t of types) {
+    // e.g. "address()" -> "address"
+    set.add(t.replace("()", ""))
+  }
+  return Array.from(set).sort()
 }
 
 function compose_signature_const(
@@ -308,6 +358,7 @@ function build_readable(
   const eth_schemas: string[] = []
   const eth_types: string[] = []
   const valibot_names = new Set<string>()
+  const builders: string[] = []
 
   for (const info of input_infos) {
     if (info.valibot) {
@@ -315,6 +366,7 @@ function build_readable(
     } else if (info.package === "eth") {
       eth_schemas.push(info.param_schema)
     }
+    builders.push(info.builder)
   }
   if (output_info.valibot) {
     valibot_names.add(
@@ -324,52 +376,50 @@ function build_readable(
     eth_schemas.push(output_info.decoded_schema)
     eth_types.push(output_info.decoded_type)
   }
+  builders.push(output_info.builder)
 
-  return `import type { Callable, ResolvedContract } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+  const builder_names = collect_builders(builders).join(", ")
+
+  return `import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  build_signature,
+  ${builder_names},
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
 ${compose_valibot_imports(Array.from(valibot_names), true, inputs.length > 0)}
-${compose_eth_imports(eth_schemas, eth_types)}
+${compose_core_imports(eth_schemas, eth_types)}
 
-${compose_param_types_const(inputs)}
-${compose_output_types_const(outputs)}
+${compose_param_codecs_const(inputs)}
+${compose_output_codecs_const(outputs)}
 
 ${compose_signature_const(name, inputs)}
 
 ${compose_parameters_block(inputs)}
 
 export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
-: Callable<${output_info.decoded_type}> {
-  return async (
-    [transports, _context]: ResolvedContract,
-  ): Promise<${output_info.decoded_type}> => {
+: (_context: ContractContext) => Callable<${output_info.decoded_type}> {
+  return (
+    _context: ContractContext,
+  ): Callable<${output_info.decoded_type}> => {
     ${compose_values_extraction(inputs)}
-    const signature = build_signature("${name}", [...PARAM_TYPES])
-    const calldata = encode_function_call(
-      signature,
-      [...PARAM_TYPES],
-      values,
-    )
-    const call = parse(callSchema, [
-      "eth_call",
-      [{ to: _context.to, input: bytes_to_hex(calldata) }, "latest"],
-    ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
-    if ("error" in response) {
-      throw new Error(response.error.message)
+    const calldata = encode_function_call({
+      name: "${name}",
+      args: PARAM_CODECS,
+      values: values as never,
+    })
+    return {
+      chain_id: _context.chain_id,
+      to: _context.to,
+      data: bytes_to_hex(calldata),
+      decode: (_result: Bytes): ${output_info.decoded_type} => {
+        const [decoded] = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return parse(${output_info.decoded_schema}, decoded)
+      },
     }
-    const [decoded] = decode_function_result(
-      [...OUTPUT_TYPES],
-      response.result as \`0x\${string}\`,
-    )
-    return parse(${output_info.decoded_schema}, decoded)
   }
 }
 `
@@ -390,26 +440,31 @@ function build_signable(
 
   const eth_schemas: string[] = []
   const valibot_names = new Set<string>()
+  const builders: string[] = []
   for (const info of input_infos) {
     if (info.valibot) {
       valibot_names.add(info.param_schema.replace("()", ""))
     } else if (info.package === "eth") {
       eth_schemas.push(info.param_schema)
     }
+    builders.push(info.builder)
   }
 
-  return `import type { Bytes } from "@ethernauta/eth"
+  const builder_names = collect_builders(builders).join(", ")
+  const builder_import_line =
+    builders.length > 0 ? `${builder_names},\n  ` : ""
+
+  return `import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type { ResolvedSigner, Signable } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  build_signature,
-  encode_function_call,
+  ${builder_import_line}encode_function_call,
 } from "@ethernauta/abi"
 ${compose_valibot_imports(Array.from(valibot_names), false, inputs.length > 0)}
-${compose_eth_imports(eth_schemas, [])}
+${compose_core_imports(eth_schemas, [])}
 
-${compose_param_types_const(inputs)}
+${compose_param_codecs_const(inputs)}
 
 ${compose_signature_const(name, inputs)}
 
@@ -423,12 +478,11 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     if (!_context.to)
       throw new Error("contract Signable requires a 'to' on the signer resolver")
     ${compose_values_extraction(inputs)}
-    const signature = build_signature("${name}", [...PARAM_TYPES])
-    const calldata = encode_function_call(
-      signature,
-      [...PARAM_TYPES],
-      values,
-    )
+    const calldata = encode_function_call({
+      name: "${name}",
+      args: PARAM_CODECS,
+      values: values as never,
+    })
     // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
     //               maxPriorityFeePerGas by querying the network
     //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).

@@ -10,7 +10,7 @@ function make_tmp(): string {
 }
 
 describe("generator.ts", () => {
-  it("should emit a Callable that wraps eth_call for view methods", () => {
+  it("should emit a Callable descriptor for view methods", () => {
     const out_dir = make_tmp()
     try {
       generate(
@@ -30,9 +30,14 @@ describe("generator.ts", () => {
         "utf8",
       )
       expect(file).toContain("Callable<string>")
-      expect(file).toContain("ResolvedContract")
-      expect(file).toContain('build_signature("get_data"')
-      expect(file).toContain('"eth_call"')
+      expect(file).toContain("ContractContext")
+      expect(file).toContain("PARAM_CODECS = [uint256()]")
+      expect(file).toContain("OUTPUT_CODECS = [string_()]")
+      expect(file).toContain('name: "get_data"')
+      expect(file).toContain("args: PARAM_CODECS")
+      expect(file).toContain("chain_id: _context.chain_id")
+      expect(file).toContain("to: _context.to")
+      expect(file).toContain("data: bytes_to_hex(calldata)")
       expect(file).toContain("decode_function_result")
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
@@ -61,8 +66,9 @@ describe("generator.ts", () => {
       expect(file).toContain("Signable<Bytes>")
       expect(file).toContain("ResolvedSigner")
       expect(file).toContain("eth_signTransaction")
-      expect(file).toContain('build_signature("mint"')
+      expect(file).toContain('name: "mint"')
       expect(file).toContain("encode_function_call")
+      expect(file).toContain("PARAM_CODECS = [string_()]")
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
     }

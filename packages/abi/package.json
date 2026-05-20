@@ -37,8 +37,7 @@
     "test:cli": "bun src/compiler/cli.ts --abi src/erc/165/IERC165.abi.json --out src/erc/165"
   },
   "dependencies": {
-    "@ethernauta/eth": "workspace:*",
-    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/core": "workspace:*",
     "@ethernauta/utils": "workspace:*",
     "@noble/hashes": "^1.8.0"
   },
