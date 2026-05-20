@@ -1,0 +1,64 @@
+import { PortfolioDemo } from "../../examples/portfolio/demo"
+
+# Portfolio — vitalik.eth on mainnet
+
+Four ERC-20s × three reads each (`symbol`, `decimals`,
+`balanceOf`) for `vitalik.eth` on Ethereum mainnet, batched
+into a single `eth_call` via Multicall3. Twelve reads, one
+roundtrip.
+
+<PortfolioDemo />
+
+## The code for this example
+
+```ts
+import { eip155_1 } from "@ethernauta/chain"
+import {
+  balanceOf,
+  decimals,
+  symbol,
+} from "@ethernauta/erc/20"
+import {
+  contract,
+  create_multicall,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+
+const MAINNET_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+
+const OWNER = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+
+const TOKENS = [
+  { symbol: "USDC", address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" },
+  { symbol: "DAI",  address: "0x6B175474E89094C44Da98b954EedeAC495271d0F" },
+  { symbol: "WETH", address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" },
+  { symbol: "UNI",  address: "0x1f9840a85d5aF5bf1D1762F925BdAdDC4201F984" },
+] as const
+
+const multicall = create_multicall([
+  {
+    chainId: MAINNET_CHAIN_ID,
+    transports: [
+      http("https://ethereum-rpc.publicnode.com"),
+    ],
+  },
+])
+
+const calls = TOKENS.flatMap((t) => {
+  const ctx = contract({
+    chain_id: MAINNET_CHAIN_ID,
+    to: t.address,
+  })
+  return [
+    symbol()(ctx),
+    decimals()(ctx),
+    balanceOf({ owner: OWNER })(ctx),
+  ] as const
+})
+
+const results = await multicall(calls)
+```

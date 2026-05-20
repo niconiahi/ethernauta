@@ -4,6 +4,13 @@ import { MDX_COMPONENTS } from "../components/mdx"
 
 const EXAMPLES = [
   { to: "/examples/multicall", title: "Multicall" },
+  { to: "/examples/portfolio", title: "Portfolio" },
+  {
+    to: "/examples/nft-introspection",
+    title: "NFT introspection",
+  },
+  { to: "/examples/vaults", title: "ERC-4626 vaults" },
+  { to: "/examples/permit", title: "Permit signing" },
 ] as const
 
 export default function ExamplesLayout() {

@@ -1,0 +1,76 @@
+import { PermitDemo } from "../../examples/permit/demo"
+
+# Permit signing — USDC
+
+End-to-end EIP-2612 flow against USDC on mainnet. Reads
+`DOMAIN_SEPARATOR` + `nonces(owner)` via multicall, builds
+the typed `Permit` struct, and asks the wallet to sign it
+via `eth_signTypedData_v4`. The returned 65-byte signature
+is what a third party (a relayer, a router, a contract's
+`permitAndCall`) needs to spend tokens on your behalf — no
+prior `approve()` transaction.
+
+<PermitDemo />
+
+## The code for this example
+
+```ts
+import { eip155_1 } from "@ethernauta/chain"
+import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
+import {
+  DOMAIN_SEPARATOR,
+  nonces,
+} from "@ethernauta/erc/20"
+import {
+  contract,
+  create_multicall,
+  create_signer,
+} from "@ethernauta/transport"
+
+const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+const SPENDER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+const VALUE = 100n * 10n ** 6n
+
+const ctx = contract({
+  chain_id: MAINNET_CHAIN_ID,
+  to: USDC,
+})
+
+const [domain_separator, nonce_hex] = await multicall([
+  DOMAIN_SEPARATOR()(ctx),
+  nonces({ owner })(ctx),
+] as const)
+
+const nonce = BigInt(nonce_hex)
+const deadline =
+  BigInt(Math.floor(Date.now() / 1000)) + 3600n
+
+const signature = await eth_signTypedData_v4([
+  owner,
+  {
+    domain: {
+      name: "USD Coin",
+      version: "2",
+      chainId: 1n,
+      verifyingContract: USDC,
+    },
+    types: {
+      Permit: [
+        { name: "owner", type: "address" },
+        { name: "spender", type: "address" },
+        { name: "value", type: "uint256" },
+        { name: "nonce", type: "uint256" },
+        { name: "deadline", type: "uint256" },
+      ],
+    },
+    primaryType: "Permit",
+    message: {
+      owner,
+      spender: SPENDER,
+      value: VALUE,
+      nonce,
+      deadline,
+    },
+  },
+])(signer({ chain_id: MAINNET_CHAIN_ID }))
+```

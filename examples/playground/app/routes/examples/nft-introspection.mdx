@@ -1,0 +1,59 @@
+import { NftIntrospectionDemo } from "../../examples/nft-introspection/demo"
+
+# NFT introspection — BAYC
+
+Given an unknown contract address, *programmatically detect
+what it is*. Four `supportsInterface` calls (ERC-721,
+Metadata, Enumerable, Royalty) plus sample reads — `name`,
+`totalSupply`, `ownerOf(1)`, `tokenURI(1)` — all in a single
+multicall.
+
+<NftIntrospectionDemo />
+
+## The code for this example
+
+```ts
+import { eip155_1 } from "@ethernauta/chain"
+import { supportsInterface } from "@ethernauta/erc/165"
+import {
+  name,
+  ownerOf,
+  tokenURI,
+  totalSupply,
+} from "@ethernauta/erc/721"
+import {
+  contract,
+  create_multicall,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+
+const MAINNET_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+
+const BAYC = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
+
+const INTERFACES = [
+  { id: "0x80ac58cd", label: "ERC-721" },
+  { id: "0x5b5e139f", label: "ERC-721 Metadata" },
+  { id: "0x780e9d63", label: "ERC-721 Enumerable" },
+  { id: "0x2a55205a", label: "ERC-2981 Royalty" },
+] as const
+
+const ctx = contract({
+  chain_id: MAINNET_CHAIN_ID,
+  to: BAYC,
+})
+
+const results = await multicall([
+  ...INTERFACES.map((i) =>
+    supportsInterface({ interfaceId: i.id })(ctx),
+  ),
+  name()(ctx),
+  totalSupply()(ctx),
+  ownerOf({ tokenId: "0x1" })(ctx),
+  tokenURI({ tokenId: "0x1" })(ctx),
+] as const)
+```
