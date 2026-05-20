@@ -5,3 +5,6 @@ dist
 .tool-versions
 tmp
 .claude/settings.local.json
+
+# Foundry lib dependencies
+/lib/
