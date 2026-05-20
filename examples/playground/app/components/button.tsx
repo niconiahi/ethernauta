@@ -84,11 +84,13 @@ export function Button({
 
 export function ButtonLink({
   children,
+  variant = "primary",
   ...props
 }: {
   children: ReactNode
+  variant?: "primary" | "secondary" | "ghost"
 } & AnchorHTMLAttributes<HTMLAnchorElement>) {
-  const interaction = use_interaction("primary", false)
+  const interaction = use_interaction(variant, false)
   return (
     <a className="button-link" {...interaction} {...props}>
       {children}

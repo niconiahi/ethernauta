@@ -29,3 +29,14 @@ a:hover {
     background: linear-gradient(#feece7, #f9f7f1);
   }
 }
+
+code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+:not(pre) > code {
+  background: #f0eee9;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}

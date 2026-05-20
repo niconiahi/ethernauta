@@ -103,9 +103,21 @@ export default function () {
           and sign transactions — nothing ever leaves your
           browser.
         </p>
-        <ButtonLink href="https://chromewebstore.google.com/detail/ethernauta/lpjalkakmdgkepcogmaoipjjeahnpdjp">
-          Add to Chrome
-        </ButtonLink>
+        <div
+          style={{
+            display: "inline-flex",
+            gap: 12,
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          <ButtonLink href="https://chromewebstore.google.com/detail/ethernauta/lpjalkakmdgkepcogmaoipjjeahnpdjp">
+            Add to Chrome
+          </ButtonLink>
+          <ButtonLink href="/examples" variant="secondary">
+            Examples
+          </ButtonLink>
+        </div>
       </section>
 
       {/* Demo */}

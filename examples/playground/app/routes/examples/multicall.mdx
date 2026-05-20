@@ -1,0 +1,55 @@
+import { MulticallDemo } from "../../examples/multicall/demo"
+
+# Multicall — ERC-20 snapshot
+
+Four ERC-20 reads (`name`, `symbol`, `decimals`, `totalSupply`)
+against WETH on Sepolia, batched into a single `eth_call`
+via Multicall3.
+
+<MulticallDemo />
+
+## The code for this example
+
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  decimals,
+  name,
+  symbol,
+  totalSupply,
+} from "@ethernauta/erc/20"
+import {
+  contract,
+  create_multicall,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+
+const WETH_SEPOLIA = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+
+const multicall = create_multicall([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
+  },
+])
+
+const ctx = contract({
+  chain_id: SEPOLIA_CHAIN_ID,
+  to: WETH_SEPOLIA,
+})
+
+const [name_, symbol_, decimals_, supply_] = await multicall([
+  name()(ctx),
+  symbol()(ctx),
+  decimals()(ctx),
+  totalSupply()(ctx),
+] as const)
+```
