@@ -8,11 +8,13 @@ import { parse } from "valibot"
 import {
   type SendCallsParameters,
   sendCallsParametersSchema,
+  type SendCallsResult,
+  sendCallsResultSchema,
 } from "../capabilities"
 
 export function wallet_sendCalls(
   _parameters: SendCallsParameters,
-): Signable<string> {
+): Signable<SendCallsResult> {
   return async ([signer]: ResolvedSigner) => {
     const parameters = parse(
       sendCallsParametersSchema,
@@ -22,6 +24,6 @@ export function wallet_sendCalls(
       "wallet_sendCalls",
       parameters,
     )
-    return result
+    return parse(sendCallsResultSchema, JSON.parse(result))
   }
 }

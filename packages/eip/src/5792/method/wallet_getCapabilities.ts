@@ -4,7 +4,11 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import type { Capabilities } from "../capabilities"
+import { parse } from "valibot"
+import {
+  type Capabilities,
+  capabilitiesSchema,
+} from "../capabilities"
 
 export function wallet_getCapabilities(): Signable<
   Capabilities
@@ -14,6 +18,6 @@ export function wallet_getCapabilities(): Signable<
       "wallet_getCapabilities",
       undefined,
     )
-    return JSON.parse(result) as Capabilities
+    return parse(capabilitiesSchema, JSON.parse(result))
   }
 }

@@ -4,7 +4,11 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import type { CallsStatus } from "../capabilities"
+import { parse } from "valibot"
+import {
+  type CallsStatus,
+  callsStatusSchema,
+} from "../capabilities"
 
 export function wallet_getCallsStatus(
   _parameters: [string],
@@ -14,6 +18,6 @@ export function wallet_getCallsStatus(
       "wallet_getCallsStatus",
       _parameters,
     )
-    return JSON.parse(result) as CallsStatus
+    return parse(callsStatusSchema, JSON.parse(result))
   }
 }
