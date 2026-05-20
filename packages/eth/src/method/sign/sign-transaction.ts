@@ -1,7 +1,6 @@
 import type {
   ResolvedSigner,
   Signable,
-  SignerContext,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
@@ -19,7 +18,6 @@ type Parameters = InferOutput<typeof parametersSchema>
  */
 export function eth_signTransaction(
   _parameters: Parameters,
-  context?: SignerContext,
 ): Signable<Bytes> {
   return async ([
     signer,
@@ -29,7 +27,6 @@ export function eth_signTransaction(
     const result = await signer(
       "eth_signTransaction",
       parameters,
-      context,
     )
     return parse(bytesSchema, result)
   }

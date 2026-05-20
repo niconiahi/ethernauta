@@ -7,6 +7,7 @@ import {
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import { ethernautaContextSchema } from "@ethernauta/transport"
 import { accessListSchema } from "../transaction"
 
 /**
@@ -14,6 +15,10 @@ import { accessListSchema } from "../transaction"
  * Per execution-apis, every field is optional — callers
  * provide only what they want to pin, the endpoint
  * (wallet / managed-key node) fills the rest.
+ *
+ * `_ethernauta` is a namespaced sidecar field other 1193
+ * wallets silently strip. Ethernauta reads its `function`
+ * sub-field to render decoded calldata in the sign view.
  */
 export const genericTransactionSchema = object({
   type: optional(byteSchema),
@@ -31,4 +36,5 @@ export const genericTransactionSchema = object({
   blobVersionedHashes: optional(array(hash32Schema)),
   blobs: optional(array(bytesSchema)),
   chainId: optional(uintSchema),
+  _ethernauta: optional(ethernautaContextSchema),
 })
