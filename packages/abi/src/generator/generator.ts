@@ -493,8 +493,10 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
         to: _context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
+        _ethernauta: {
+          function: ${signature_const_name(name)},
+        },
       }],
-      { _function: ${signature_const_name(name)} },
     )([signer, _context])
   }
 }
