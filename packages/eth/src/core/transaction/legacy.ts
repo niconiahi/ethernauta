@@ -6,7 +6,7 @@ import {
   byteSchema,
   bytesSchema,
   uintSchema,
-} from "../base"
+} from "@ethernauta/core"
 
 // https://github.com/ethereum/execution-apis/blob/main/src/schemas/transaction.yaml#L283
 const transactionLegacyUnsignedSchema = object({

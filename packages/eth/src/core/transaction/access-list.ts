@@ -1,14 +1,14 @@
 import type { InferOutput } from "valibot"
 import { array, object } from "valibot"
 
-import { addressSchema, Hash32Schema } from "../base"
+import { addressSchema, hash32Schema } from "@ethernauta/core"
 
 /**
  * Access list entry object.
  */
 export const accessListEntrySchema = object({
   address: addressSchema,
-  storageKeys: array(Hash32Schema),
+  storageKeys: array(hash32Schema),
 })
 export type AccessListEntry = InferOutput<
   typeof accessListEntrySchema

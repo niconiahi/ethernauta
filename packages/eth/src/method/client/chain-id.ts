@@ -4,8 +4,8 @@ import type {
 } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
-import type { Uint } from "../../core/base"
-import { uintSchema } from "../../core/base"
+import type { Uint } from "@ethernauta/core"
+import { uintSchema } from "@ethernauta/core"
 
 export function eth_chainId(): Readable<Uint> {
   return async ([

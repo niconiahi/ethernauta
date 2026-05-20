@@ -12,7 +12,7 @@ import {
   union,
 } from "valibot"
 
-import { uintSchema } from "../../core/base"
+import { uintSchema } from "@ethernauta/core"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
 import {
   accessListSchema,

@@ -5,10 +5,10 @@ import {
   addressSchema,
   bytes32Schema,
   bytesSchema,
-  Hash32Schema,
+  hash32Schema,
   uint64Schema,
   uint256Schema,
-} from "./base"
+} from "@ethernauta/core"
 
 const storageProofSchema = object({
   key: bytes32Schema,
@@ -23,9 +23,9 @@ export const accountProofSchema = object({
   address: addressSchema,
   accountProof: array(bytesSchema),
   balance: uint256Schema,
-  codeHash: Hash32Schema,
+  codeHash: hash32Schema,
   nonce: uint64Schema,
-  storageHash: Hash32Schema,
+  storageHash: hash32Schema,
   storageProof: array(storageProofSchema),
 })
 export type AccountProof = InferOutput<

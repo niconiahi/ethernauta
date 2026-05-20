@@ -6,7 +6,7 @@ import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-import { uintSchema } from "../../core/base"
+import { uintSchema } from "@ethernauta/core"
 import type { FilterResults } from "../../core/filter"
 import { filterResultsSchema } from "../../core/filter"
 

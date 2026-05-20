@@ -4,9 +4,9 @@ import {
   addressSchema,
   byteSchema,
   bytesSchema,
-  Hash32Schema,
+  hash32Schema,
   uintSchema,
-} from "../base"
+} from "@ethernauta/core"
 import { accessListSchema } from "../transaction"
 
 /**
@@ -28,7 +28,7 @@ export const genericTransactionSchema = object({
   maxFeePerGas: optional(uintSchema),
   maxFeePerBlobGas: optional(uintSchema),
   accessList: optional(accessListSchema),
-  blobVersionedHashes: optional(array(Hash32Schema)),
+  blobVersionedHashes: optional(array(hash32Schema)),
   blobs: optional(array(bytesSchema)),
   chainId: optional(uintSchema),
 })

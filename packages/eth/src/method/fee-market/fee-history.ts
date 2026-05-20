@@ -16,7 +16,7 @@ import {
   union,
 } from "valibot"
 
-import { ratioSchema, uintSchema } from "../../core/base"
+import { ratioSchema, uintSchema } from "@ethernauta/core"
 import { blockNumberOrTagSchema } from "../../core/block"
 
 const percentileSchema = pipe(

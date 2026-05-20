@@ -12,7 +12,7 @@ import {
   union,
 } from "valibot"
 
-import { uintSchema } from "../../core/base"
+import { uintSchema } from "@ethernauta/core"
 
 const parametersSchema = union([
   tuple([uintSchema]),

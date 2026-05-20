@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@ethernauta/eth",
+  "name": "@ethernauta/core",
   "type": "module",
   "version": "0.0.43",
   "publishConfig": {
@@ -23,19 +23,12 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
-    "test:unit": "vitest",
-    "test:cli": "bun src/compiler/cli.ts --abi src/erc/165/IERC165.abi.json --out src/erc/165"
-  },
-  "dependencies": {
-    "@ethernauta/chain": "workspace:*",
-    "@ethernauta/core": "workspace:*",
-    "@ethernauta/transport": "workspace:*"
+    "test:unit": "vitest"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "bun": "^1.2.20",
     "tsdown": "^0.13.3"
   }
 }

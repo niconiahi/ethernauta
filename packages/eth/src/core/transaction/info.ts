@@ -2,9 +2,9 @@ import type { InferOutput } from "valibot"
 import { intersect, object } from "valibot"
 import {
   addressSchema,
-  Hash32Schema,
+  hash32Schema,
   uintSchema,
-} from "../base"
+} from "@ethernauta/core"
 import { TransactionSignedSchema } from "./signed"
 
 /**
@@ -12,10 +12,10 @@ import { TransactionSignedSchema } from "./signed"
  */
 
 const contextualInfoSchema = object({
-  blockHash: Hash32Schema,
+  blockHash: hash32Schema,
   blockNumber: uintSchema,
   from: addressSchema,
-  hash: Hash32Schema,
+  hash: hash32Schema,
   transactionIndex: uintSchema,
 })
 

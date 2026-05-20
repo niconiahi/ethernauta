@@ -6,7 +6,7 @@ import {
   byteSchema,
   bytesSchema,
   uintSchema,
-} from "../base"
+} from "@ethernauta/core"
 import { accessListSchema } from "./access-list"
 
 export const transaction1559UnsignedSchema = object({

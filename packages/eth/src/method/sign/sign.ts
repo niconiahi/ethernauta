@@ -4,12 +4,12 @@ import type {
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { Bytes65 } from "../../core/base"
+import type { Bytes65 } from "@ethernauta/core"
 import {
   addressSchema,
   bytes65Schema,
   bytesSchema,
-} from "../../core/base"
+} from "@ethernauta/core"
 
 const parametersSchema = union([
   tuple([addressSchema, bytesSchema]),

@@ -4,8 +4,8 @@ import type {
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { Hash32 } from "../../core/base"
-import { Hash32Schema } from "../../core/base"
+import type { Hash32 } from "@ethernauta/core"
+import { hash32Schema } from "@ethernauta/core"
 import { genericTransactionSchema } from "../../core/transaction"
 
 const parametersSchema = union([
@@ -28,6 +28,6 @@ export function eth_sendTransaction(
       "eth_sendTransaction",
       parameters,
     )
-    return parse(Hash32Schema, result)
+    return parse(hash32Schema, result)
   }
 }

@@ -5,7 +5,7 @@ import {
   addressSchema,
   uint64Schema,
   uint256Schema,
-} from "./base"
+} from "@ethernauta/core"
 
 export const withdrawalSchema = object({
   index: uint64Schema,

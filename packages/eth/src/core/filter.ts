@@ -5,9 +5,9 @@ import {
   addressesSchema,
   addressSchema,
   bytes32Schema,
-  Hash32Schema,
+  hash32Schema,
   uintSchema,
-} from "./base"
+} from "@ethernauta/core"
 import { logSchema } from "./receipt"
 
 export const filterTopicSchema = union([
@@ -33,7 +33,7 @@ export const filterSchema = object({
 export type Filter = InferOutput<typeof filterSchema>
 
 export const filterResultsSchema = union([
-  array(Hash32Schema),
+  array(hash32Schema),
   array(logSchema),
 ])
 export type FilterResults = InferOutput<

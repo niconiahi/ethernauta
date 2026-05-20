@@ -5,8 +5,8 @@ import type {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { Hash32 } from "../../core/base"
-import { bytesSchema, Hash32Schema } from "../../core/base"
+import type { Hash32 } from "@ethernauta/core"
+import { bytesSchema, hash32Schema } from "@ethernauta/core"
 
 const parametersSchema = union([
   tuple([bytesSchema]),
@@ -32,7 +32,7 @@ export function eth_sendRawTransaction(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(Hash32Schema, response.result)
+    const result = parse(hash32Schema, response.result)
     return result
   }
 }

@@ -1,5 +1,5 @@
 import { array, type InferOutput, object } from "valibot"
-import { addressSchema, uintSchema } from "../base"
+import { addressSchema, uintSchema } from "@ethernauta/core"
 
 export const authorizationSchema = object({
   chainId: uintSchema,

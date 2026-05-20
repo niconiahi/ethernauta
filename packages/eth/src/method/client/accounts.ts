@@ -4,8 +4,8 @@ import type {
 } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
-import type { Addresses } from "../../core/base"
-import { addressesSchema } from "../../core/base"
+import type { Addresses } from "@ethernauta/core"
+import { addressesSchema } from "@ethernauta/core"
 
 export function eth_acounts(): Readable<Addresses> {
   return async ([

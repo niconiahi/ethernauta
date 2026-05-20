@@ -5,9 +5,9 @@ import {
   addressSchema,
   byteSchema,
   bytesSchema,
-  Hash32Schema,
+  hash32Schema,
   uintSchema,
-} from "../base"
+} from "@ethernauta/core"
 import { accessListSchema } from "./access-list"
 
 export const transaction4844UnsignedSchema = object({
@@ -21,7 +21,7 @@ export const transaction4844UnsignedSchema = object({
   maxFeePerGas: uintSchema,
   maxFeePerBlobGas: uintSchema,
   accessList: accessListSchema,
-  blobVersionedHashes: array(Hash32Schema),
+  blobVersionedHashes: array(hash32Schema),
   chainId: uintSchema,
 })
 export type Transaction4844Unsigned = InferOutput<
@@ -39,7 +39,7 @@ export const transaction4844SignedSchema = object({
   maxFeePerGas: uintSchema,
   maxFeePerBlobGas: uintSchema,
   accessList: accessListSchema,
-  blobVersionedHashes: array(Hash32Schema),
+  blobVersionedHashes: array(hash32Schema),
   chainId: uintSchema,
   yParity: uintSchema,
   r: uintSchema,

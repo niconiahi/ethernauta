@@ -9,7 +9,7 @@ import { array, object, parse, tuple, union } from "valibot"
 import {
   addressSchema,
   bytesMax32Schema,
-} from "../../core/base"
+} from "@ethernauta/core"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
 import type { AccountProof } from "../../core/state"
 import { accountProofSchema } from "../../core/state"

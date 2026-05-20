@@ -5,8 +5,8 @@ import type {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { Uint } from "../../core/base"
-import { addressSchema, uintSchema } from "../../core/base"
+import type { Uint } from "@ethernauta/core"
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
 
 const parametersSchema = union([

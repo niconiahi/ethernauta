@@ -14,16 +14,16 @@ import {
   bytes32Schema,
   bytes256Schema,
   bytesSchema,
-  Hash32Schema,
+  hash32Schema,
   uintSchema,
-} from "./base"
+} from "@ethernauta/core"
 
 export const logSchema = object({
   removed: boolean(),
   logIndex: uintSchema,
   transactionIndex: uintSchema,
-  transactionHash: Hash32Schema,
-  blockHash: Hash32Schema,
+  transactionHash: hash32Schema,
+  blockHash: hash32Schema,
   blockNumber: uintSchema,
   address: addressSchema,
   data: bytesSchema,
@@ -32,20 +32,20 @@ export const logSchema = object({
 export type Log = InferOutput<typeof logSchema>
 
 export const receiptInfoSchema = object({
-  blockHash: Hash32Schema,
+  blockHash: hash32Schema,
   blockNumber: uintSchema,
   from: addressSchema,
   cumulativeGasUsed: uintSchema,
   gasUsed: uintSchema,
   logs: array(logSchema),
   logsBloom: bytes256Schema,
-  transactionHash: Hash32Schema,
+  transactionHash: hash32Schema,
   transactionIndex: uintSchema,
   effectiveGasPrice: uintSchema,
   type: optional(byteSchema), // might not be present in all receipts
   to: nullable(addressSchema),
   blobGasUsed: optional(uintSchema), // only for blob transactions
-  root: optional(Hash32Schema), // only for pre-Byzantium transactions
+  root: optional(hash32Schema), // only for pre-Byzantium transactions
   status: optional(uintSchema), // only for post-Byzantium transactions
   blobGasPrice: optional(uintSchema), // only for blob transactions
   contractAddress: nullable(addressSchema),

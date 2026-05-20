@@ -12,8 +12,8 @@ import {
   union,
 } from "valibot"
 
-import type { NotFound } from "../../core/base"
-import { notFoundSchema } from "../../core/base"
+import type { NotFound } from "@ethernauta/core"
+import { notFoundSchema } from "@ethernauta/core"
 import type { Block } from "../../core/block"
 import {
   blockNumberOrTagSchema,

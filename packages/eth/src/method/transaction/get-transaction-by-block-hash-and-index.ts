@@ -5,19 +5,19 @@ import type {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { NotFound } from "../../core/base"
+import type { NotFound } from "@ethernauta/core"
 import {
-  Hash32Schema,
+  hash32Schema,
   notFoundSchema,
   uintSchema,
-} from "../../core/base"
+} from "@ethernauta/core"
 import type { TransactionInfo } from "../../core/transaction"
 import { TransactionInfoSchema } from "../../core/transaction"
 
 const parametersSchema = union([
-  tuple([Hash32Schema, uintSchema]),
+  tuple([hash32Schema, uintSchema]),
   object({
-    blockHash: Hash32Schema,
+    blockHash: hash32Schema,
     transactionIndex: uintSchema,
   }),
 ])

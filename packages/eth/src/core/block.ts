@@ -12,9 +12,9 @@ import {
   bytes8Schema,
   bytes256Schema,
   bytesSchema,
-  Hash32Schema,
+  hash32Schema,
   uintSchema,
-} from "./base"
+} from "@ethernauta/core"
 import { TransactionInfoSchema } from "./transaction"
 import { withdrawalSchema } from "./withdrawal"
 
@@ -38,20 +38,20 @@ export type BlockNumberOrTag = InferOutput<
 export const blockNumberOrTagOrHashSchema = union([
   uintSchema,
   blockTagSchema,
-  Hash32Schema,
+  hash32Schema,
 ])
 export type BlockNumberOrTagOrHash = InferOutput<
   typeof blockNumberOrTagOrHashSchema
 >
 
 export const blockSchema = object({
-  hash: Hash32Schema,
-  parentHash: Hash32Schema,
-  sha3Uncles: Hash32Schema,
+  hash: hash32Schema,
+  parentHash: hash32Schema,
+  sha3Uncles: hash32Schema,
   miner: addressSchema,
-  stateRoot: Hash32Schema,
-  transactionsRoot: Hash32Schema,
-  receiptsRoot: Hash32Schema,
+  stateRoot: hash32Schema,
+  transactionsRoot: hash32Schema,
+  receiptsRoot: hash32Schema,
   logsBloom: bytes256Schema,
   difficulty: optional(uintSchema),
   number: uintSchema,
@@ -59,27 +59,27 @@ export const blockSchema = object({
   gasUsed: uintSchema,
   timestamp: uintSchema,
   extraData: bytesSchema,
-  mixHash: Hash32Schema,
+  mixHash: hash32Schema,
   nonce: bytes8Schema,
   totalDifficulty: optional(uintSchema),
   baseFeePerGas: optional(uintSchema),
-  withdrawalsRoot: optional(Hash32Schema),
+  withdrawalsRoot: optional(hash32Schema),
   blobGasUsed: optional(uintSchema),
   excessBlobGas: optional(uintSchema),
-  parentBeaconBlockRoot: optional(Hash32Schema),
+  parentBeaconBlockRoot: optional(hash32Schema),
   size: uintSchema,
   transactions: union([
-    array(Hash32Schema),
+    array(hash32Schema),
     array(TransactionInfoSchema),
   ]),
   withdrawals: optional(array(withdrawalSchema)),
-  uncles: array(Hash32Schema),
+  uncles: array(hash32Schema),
 })
 export type Block = InferOutput<typeof blockSchema>
 
 export const badBlockSchema = object({
   block: blockSchema,
-  hash: Hash32Schema,
+  hash: hash32Schema,
   rlp: bytesSchema,
 })
 export type BadBlock = InferOutput<typeof badBlockSchema>
