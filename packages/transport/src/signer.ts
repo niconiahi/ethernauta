@@ -18,29 +18,36 @@ export type SignContext = InferOutput<
 >
 
 /**
- * Sidecar metadata describing the ABI function being
- * invoked by a transaction's `input`. Travels on the
- * ethernauta transport envelope (NOT the JSON-RPC params),
- * so the standard transaction object stays spec-compliant.
- * Verified by the wallet via keccak(signature)[0:4] match
- * against input[0:4]. `names` are display-only.
+ * ABI function signature + parameter display names.
+ * `signature` is the canonical Solidity form
+ * (`"transfer(address,uint256)"`); `names` is the
+ * positional list of input parameter names from the ABI.
+ *
+ * Travels on the transaction object inside JSON-RPC
+ * params as `_ethernauta.function` — a namespaced key
+ * strict 1193 wallets (MetaMask, Rabby) silently drop
+ * while Ethernauta picks up. The wallet verifies
+ * `keccak(signature)[0:4]` matches `input[0:4]` before
+ * trusting the names.
  */
-export const functionSidecarSchema = object({
+export const functionSignatureSchema = object({
   signature: string(),
   names: array(string()),
 })
-export type FunctionSidecar = InferOutput<
-  typeof functionSidecarSchema
+export type FunctionSignature = InferOutput<
+  typeof functionSignatureSchema
 >
 
-export type SignerContext = {
-  _function?: FunctionSidecar
-}
+export const ethernautaContextSchema = object({
+  function: optional(functionSignatureSchema),
+})
+export type EthernautaContext = InferOutput<
+  typeof ethernautaContextSchema
+>
 
 export type Signer = (
   method: string,
   params: unknown,
-  context?: SignerContext,
 ) => Promise<string>
 
 export type ResolvedSigner = [Signer, SignContext]
@@ -59,7 +66,6 @@ type SignTransactionRequest = {
   method: string
   chainId: string
   params?: unknown[] | Record<string, unknown>
-  _function?: FunctionSidecar
 }
 
 type SignTransactionResponse = {
@@ -97,7 +103,7 @@ export function create_signer(
         `no chain configured for: ${sign_context.chain_id}`,
       )
     }
-    const signer: Signer = (method, params, context) =>
+    const signer: Signer = (method, params) =>
       new Promise((resolve, reject) => {
         const id = crypto.randomUUID()
         window.addEventListener(
@@ -157,7 +163,6 @@ export function create_signer(
           method,
           chainId: sign_context.chain_id,
           params: params as unknown[],
-          _function: context?._function,
         }
         window.postMessage(request, window.location.origin)
       })
