@@ -60,16 +60,13 @@ export function emit_file_basename_for(
   description: Description,
   descriptions: Description[],
 ): string {
-  const js_name = emit_name_for(description, descriptions)
-  // preserve snake_case if the source was already snake_case
-  // (e.g. `get_data` → `get_data.ts`); otherwise kebab-case.
-  if (
-    description.type === "function" &&
-    description.name.includes("_")
-  ) {
-    return js_name
-  }
-  return camel_to_kebab(js_name)
+  // camel_to_kebab lowercases case-boundary transitions
+  // (`balanceOf` → `balance-of`) and leaves existing
+  // underscores intact (`get_data` → `get_data`,
+  // `DOMAIN_SEPARATOR` → `domain_separator`).
+  return camel_to_kebab(
+    emit_name_for(description, descriptions),
+  )
 }
 
 type AbiType = string
@@ -319,6 +316,10 @@ function collect_builders(types: string[]): string[] {
   return Array.from(set).sort()
 }
 
+function signature_const_name(name: string): string {
+  return `${camel_to_kebab(name).replace(/-/g, "_").toUpperCase()}_SIGNATURE`
+}
+
 function compose_signature_const(
   name: string,
   inputs: FunctionInput[],
@@ -327,7 +328,7 @@ function compose_signature_const(
   const names = inputs
     .map((i) => JSON.stringify(i.name))
     .join(", ")
-  return `export const SIGNATURE: {
+  return `export const ${signature_const_name(name)}: {
   signature: string
   names: string[]
 } = {
@@ -493,7 +494,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
         value: "0x0",
         input: bytes_to_hex(calldata),
       }],
-      { _function: SIGNATURE },
+      { _function: ${signature_const_name(name)} },
     )([signer, _context])
   }
 }
