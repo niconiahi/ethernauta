@@ -6,8 +6,10 @@ import {
   watch_chain,
 } from "@ethernauta/eip/1193"
 import {
-  discover_providers,
+  ANNOUNCE_EVENT,
+  type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
+  REQUEST_EVENT,
 } from "@ethernauta/eip/6963"
 import { encode_chain_id } from "@ethernauta/transport"
 import { useEffect, useState } from "react"
@@ -27,14 +29,36 @@ export function Injected1193Demo() {
   const [busy, set_busy] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
-  async function rediscover() {
+  function rediscover() {
     set_error(null)
-    const found = await discover_providers()
-    set_providers(found)
+    window.dispatchEvent(new Event(REQUEST_EVENT))
   }
 
+  // Continuous listener — every wallet that ever announces
+  // (synchronously on load, or late, or in response to our
+  // `requestProvider` dispatch) lands in the list. Dedup by
+  // rdns so re-announces don't pile up duplicates.
   useEffect(() => {
-    rediscover()
+    function on_announce(event: Event) {
+      const detail = (event as EIP6963AnnounceProviderEvent)
+        .detail
+      if (!detail?.info?.rdns) return
+      set_providers((current) => {
+        if (
+          current.some(
+            (p) => p.info.rdns === detail.info.rdns,
+          )
+        ) {
+          return current
+        }
+        return [...current, detail]
+      })
+    }
+    window.addEventListener(ANNOUNCE_EVENT, on_announce)
+    window.dispatchEvent(new Event(REQUEST_EVENT))
+    return () => {
+      window.removeEventListener(ANNOUNCE_EVENT, on_announce)
+    }
   }, [])
 
   useEffect(() => {

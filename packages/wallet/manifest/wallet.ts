@@ -143,11 +143,3 @@ announce({
   },
   provider,
 })
-
-declare global {
-  interface Window {
-    ethereum: ProviderInternal
-  }
-}
-
-window.ethereum = provider
