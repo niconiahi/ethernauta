@@ -1,0 +1,116 @@
+import { UserOp4337Demo } from "../../examples/user-op-4337/demo"
+
+# ERC-4337 v0.7 — sign + submit a UserOperation
+
+End-to-end account-abstraction flow on Sepolia. The dapp
+builds a `UserOperation` for a SimpleAccount, computes the
+EntryPoint v0.7 userOpHash, asks the wallet to sign it via
+`personal_sign`, then submits the signed op to a public
+bundler (Pimlico / Alchemy / your own) and polls for the
+receipt.
+
+<UserOp4337Demo />
+
+## What's happening
+
+1. The dapp builds a `UserOperation` (RPC shape — discrete
+   gas + paymaster fields, unpacked).
+2. `eth_estimateUserOperationGas` lets the bundler refine
+   `callGasLimit`, `verificationGasLimit`, and
+   `preVerificationGas` against current chain state.
+3. `get_user_op_hash({ op, entryPoint, chainId })` packs
+   the op (16-byte gas pair packing for `accountGasLimits`
+   / `gasFees`, factory+factoryData → `initCode`, paymaster
+   triple → `paymasterAndData`) and runs the v0.7
+   double-keccak derivation.
+4. `sign_user_op` asks the wallet to `personal_sign` the
+   userOpHash. SimpleAccount + OpenZeppelin-ECDSA-recover
+   accounts accept this directly. Accounts that recover
+   from the raw hash without EIP-191 prefix need a custom
+   signer.
+5. `eth_sendUserOperation` posts the signed op to the
+   bundler mempool. The bundler returns the userOpHash.
+6. `eth_getUserOperationReceipt` rolls forward the include
+   status — once the bundler bundles into a block, the
+   receipt carries the on-chain tx hash.
+
+## The code for this example
+
+```ts
+import {
+  ENTRY_POINT_V07_ADDRESS,
+  eth_estimateUserOperationGas,
+  eth_getUserOperationReceipt,
+  eth_sendUserOperation,
+  get_user_op_hash,
+  sign_user_op,
+  type UserOperation,
+} from "@ethernauta/eip/4337"
+import {
+  create_reader,
+  create_signer,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+
+const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: 11155111 })
+const bundler_chains = [{ chainId: SEPOLIA, transports: [http(BUNDLER_URL)] }]
+const reader = create_reader(bundler_chains)
+const writer = create_writer(bundler_chains)
+const signer = create_signer(NODE_CHAINS)
+
+const draft: UserOperation = {
+  sender: SMART_ACCOUNT,
+  nonce: "0x0",
+  callData: ENCODED_EXECUTE_CALLDATA,
+  callGasLimit: "0x186a0",
+  verificationGasLimit: "0x186a0",
+  preVerificationGas: "0xc350",
+  maxFeePerGas: "0x6fc23ac00",
+  maxPriorityFeePerGas: "0x77359400",
+  signature: `0x${"00".repeat(65)}`, // dummy for estimation
+}
+
+const estimated = await eth_estimateUserOperationGas({
+  op: draft,
+  entryPoint: ENTRY_POINT_V07_ADDRESS,
+})(reader({ chain_id: SEPOLIA }))
+
+const op = { ...draft, ...estimated }
+
+const signature = await sign_user_op({
+  op,
+  owner: OWNER_EOA,
+  entryPoint: ENTRY_POINT_V07_ADDRESS,
+  chainId: "0xaa36a7",
+})(signer({ chain_id: SEPOLIA }))
+
+const userOpHash = await eth_sendUserOperation({
+  op: { ...op, signature },
+  entryPoint: ENTRY_POINT_V07_ADDRESS,
+})(writer({ chain_id: SEPOLIA }))
+
+const receipt = await eth_getUserOperationReceipt(userOpHash)(
+  reader({ chain_id: SEPOLIA }),
+)
+// receipt.receipt.transactionHash = on-chain tx
+```
+
+## Free Sepolia bundlers
+
+- **Pimlico** — `https://api.pimlico.io/v2/sepolia/rpc?apikey=<KEY>` (free tier)
+- **Alchemy AA Stack** — `https://api.g.alchemy.com/v2/<API_KEY>` (free tier)
+- Anything ERC-4337 v0.7 compliant.
+
+## v0.7 packing rules (encoded for you)
+
+| Field | Packing |
+|------|---------|
+| `accountGasLimits` | `verificationGasLimit (16) ‖ callGasLimit (16)` |
+| `gasFees` | `maxPriorityFeePerGas (16) ‖ maxFeePerGas (16)` |
+| `initCode` | `0x` if no factory, else `factory (20) ‖ factoryData` |
+| `paymasterAndData` | `0x` if no paymaster, else `paymaster (20) ‖ pmVerification (16) ‖ pmPostOp (16) ‖ paymasterData` |
+
+The library does the packing during `get_user_op_hash` so
+the dapp only ever sees the unpacked RPC shape.

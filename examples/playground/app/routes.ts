@@ -29,5 +29,9 @@ export default [
       "cross-chain-7683",
       "./routes/examples/cross-chain-7683.mdx",
     ),
+    route(
+      "user-op-4337",
+      "./routes/examples/user-op-4337.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
