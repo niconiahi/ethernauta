@@ -157,6 +157,12 @@ export const REGISTRY = {
     types: ["uint256"],
     param_names: ["value"],
   },
+  "0x445bb62d": {
+    name: "open",
+    signature: "open(tuple)",
+    types: ["tuple"],
+    param_names: ["order"],
+  },
   "0x4cdad506": {
     name: "previewRedeem",
     signature: "previewRedeem(uint256)",
@@ -245,6 +251,18 @@ export const REGISTRY = {
     signature: "nonces(address)",
     types: ["address"],
     param_names: ["owner"],
+  },
+  "0x7ffb7f9b": {
+    name: "openFor",
+    signature: "openFor(tuple,bytes,bytes)",
+    types: ["tuple", "bytes", "bytes"],
+    param_names: ["order", "signature", "originFillerData"],
+  },
+  "0x82e2c43f": {
+    name: "fill",
+    signature: "fill(bytes32,bytes,bytes)",
+    types: ["bytes32", "bytes", "bytes"],
+    param_names: ["orderId", "originData", "fillerData"],
   },
   "0x8456cb59": {
     name: "pause",
