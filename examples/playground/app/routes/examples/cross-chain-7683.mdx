@@ -1,0 +1,94 @@
+import { CrossChain7683Demo } from "../../examples/cross-chain-7683/demo"
+
+# ERC-7683 — cross-chain intents
+
+Sign a `GaslessCrossChainOrder` on Sepolia and ship the
+signed payload to a 7683 settler / relayer. The user only
+ever signs an EIP-712 message — fillers are responsible for
+opening the order on-chain via `openFor()` and filling on
+the destination.
+
+<CrossChain7683Demo />
+
+## What's happening
+
+1. The dapp assembles a `GaslessCrossChainOrder` —
+   originSettler, user, nonce, originChainId,
+   openDeadline, fillDeadline, orderDataType, orderData.
+2. The dapp computes the EIP-712 hash under the settler's
+   domain (`hash_gasless_order`) — most reference settlers
+   use this hash as the on-chain `orderId`.
+3. The dapp asks the wallet to sign that typed data via
+   `eth_signTypedData_v4`. The wallet pops a typed-data
+   confirmation and returns a 65-byte signature.
+4. A filler picks up `(order, signature, originFillerData)`
+   and calls `openFor` on the origin settler. The dapp
+   surfaces the payload here — pipe it into your relayer
+   of choice (Across testnet, in-house solver, …).
+5. The destination settler runs `fill(orderId, originData,
+   fillerData)` to release funds to the recipient.
+
+## The code for this example
+
+```ts
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import {
+  build_gasless_order,
+  hash_gasless_order,
+  sign_gasless_order,
+} from "@ethernauta/erc/7683"
+import { create_signer, encode_chain_id, http } from "@ethernauta/transport"
+
+const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: 11155111 })
+const signer = create_signer([{ chainId: SEPOLIA, transports: [http(rpc)] }])
+
+const [user] = await eth_requestAccounts()(signer({ chain_id: SEPOLIA }))
+
+const order = build_gasless_order({
+  originSettler: SETTLER,
+  user,
+  originChainId: "0xaa36a7",
+  orderDataType: ORDER_DATA_TYPE_KEY,
+  orderData: ENCODED_ORDER_DATA,
+  window: { open_window_s: 300, fill_window_s: 1800 },
+})
+
+const domain = {
+  name: "ERC-7683 settler",
+  version: "1",
+  chainId: 11155111,
+  verifyingContract: SETTLER,
+}
+
+const orderId = hash_gasless_order({ order, domain })
+const signature = await sign_gasless_order({ order, domain })(
+  signer({ chain_id: SEPOLIA }),
+)
+```
+
+## Submitting via `openFor` (filler side)
+
+```ts
+import { openFor } from "@ethernauta/erc/7683"
+import { resolve_contract } from "@ethernauta/transport"
+
+// Filler builds calldata for the origin settler — paying
+// gas to open the user-signed order on-chain.
+const tx = await openFor({
+  order,
+  signature,
+  originFillerData: "0x",
+})(resolve_contract({ chain_id: SEPOLIA, to: SETTLER }))
+```
+
+## What's intentionally left out
+
+- **`orderData` schema.** The 7683 envelope is settler-agnostic.
+  Each settler defines its own `orderData` layout, keyed by
+  the `orderDataType` bytes32 magic. Plug in your settler's
+  encoder before submitting.
+- **Status polling.** The standard exposes `resolve` /
+  `resolveFor` for simulation but doesn't define a status
+  RPC — fillers typically expose their own API. The package
+  ships the EIP-712 + struct bindings; the status surface is
+  best built per-settler.

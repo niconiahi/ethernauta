@@ -25,5 +25,9 @@ export default [
       "send-calls",
       "./routes/examples/send-calls.mdx",
     ),
+    route(
+      "cross-chain-7683",
+      "./routes/examples/cross-chain-7683.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

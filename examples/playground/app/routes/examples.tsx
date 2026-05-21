@@ -19,6 +19,10 @@ const EXAMPLES = [
     to: "/examples/send-calls",
     title: "ERC-5792 send calls",
   },
+  {
+    to: "/examples/cross-chain-7683",
+    title: "ERC-7683 cross-chain intents",
+  },
 ] as const
 
 export default function ExamplesLayout() {
