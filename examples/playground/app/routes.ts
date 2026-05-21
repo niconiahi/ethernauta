@@ -33,5 +33,9 @@ export default [
       "user-op-4337",
       "./routes/examples/user-op-4337.mdx",
     ),
+    route(
+      "stealth-5564",
+      "./routes/examples/stealth-5564.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

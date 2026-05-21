@@ -27,6 +27,10 @@ const EXAMPLES = [
     to: "/examples/user-op-4337",
     title: "ERC-4337 user operation",
   },
+  {
+    to: "/examples/stealth-5564",
+    title: "ERC-5564 stealth addresses",
+  },
 ] as const
 
 export default function ExamplesLayout() {

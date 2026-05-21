@@ -1,0 +1,112 @@
+import { Stealth5564Demo } from "../../examples/stealth-5564/demo"
+
+# ERC-5564 — stealth addresses (Scheme 1, SECP256k1)
+
+A privacy primitive: the recipient publishes a long-lived
+*meta-address* (`spending_pub ‖ viewing_pub`). The sender
+derives a one-shot stealth address from that meta-address +
+a fresh ephemeral key, transfers funds there, and posts a
+public announcement carrying the ephemeral pubkey + a view
+tag. The recipient scans the announcer log, view-tag filters
+out 255/256 of irrelevant entries, then rederives the
+stealth address with their viewing private key. Only the
+spending private key can move funds — viewing keys can
+detect deposits but never spend.
+
+<Stealth5564Demo />
+
+## What's happening
+
+1. **Recipient setup.** Two independent secp256k1 key
+   pairs: `(s, S)` spending and `(v, V)` viewing.
+   Meta-address = `S ‖ V` (66 bytes of compressed
+   pubkeys).
+2. **Sender derives.** Pick ephemeral `p` → `P = p·G`.
+   Compute `shared = p·V` (compressed serialization).
+   Hash: `s_h = keccak256(shared)`. View tag = `s_h[0]`.
+   Stealth pubkey = `S + s_h·G`. Stealth address =
+   `keccak256(stealth_pubkey_uncompressed[1:])[12:]`.
+3. **Announce.** Sender calls the canonical Announcer:
+   `announce(schemeId=1, stealthAddress, P,
+   metadata=concat(view_tag, ...))`. The Announcer emits an
+   `Announcement` event indexed by `schemeId`,
+   `stealthAddress`, `caller`.
+4. **Recipient scans.** `eth_getLogs` on the Announcer.
+   For each event:
+   - Decode `view_tag = metadata[0]`. Compute the recipient's
+     view tag for that ephemeral pubkey. Skip on mismatch
+     (~99.6% of irrelevant events skipped).
+   - On match, rederive `stealthAddress` and compare. If
+     equal, the deposit is yours.
+5. **Spend.** Recipient's stealth private key =
+   `(s + s_h) mod n`. Plug into an EIP-1559 signer like
+   any other EOA.
+
+## The code for this example
+
+```ts
+import {
+  check_stealth_address,
+  compute_stealth_private_key,
+  compute_view_tag,
+  derive_meta_address,
+  generate_stealth_address,
+} from "@ethernauta/erc/5564"
+
+// recipient
+const meta = derive_meta_address({
+  spending_private_key: s,
+  viewing_private_key: v,
+})
+
+// sender
+const { stealth_address, ephemeral_public_key, view_tag } =
+  generate_stealth_address({ meta })
+
+// recipient scans an announcement (ephemeralPubKey, viewTag)
+const candidate_tag = compute_view_tag({
+  viewing_private_key: v,
+  ephemeral_public_key,
+})
+if (candidate_tag !== announced_view_tag) return // skip
+
+const rederived = check_stealth_address({
+  viewing_private_key: v,
+  spending_public_key: meta.spending_public_key,
+  ephemeral_public_key,
+})
+if (rederived === announced_stealth_address) {
+  // deposit is ours — derive the spend key
+  const stealth_priv = compute_stealth_private_key({
+    spending_private_key: s,
+    viewing_private_key: v,
+    ephemeral_public_key,
+  })
+}
+```
+
+## Announcer contract
+
+ERC-5564 specifies a singleton Announcer with:
+
+```solidity
+event Announcement(
+  uint256 indexed schemeId,
+  address indexed stealthAddress,
+  address indexed caller,
+  bytes ephemeralPubKey,
+  bytes metadata
+);
+
+function announce(
+  uint256 schemeId,
+  address stealthAddress,
+  bytes calldata ephemeralPubKey,
+  bytes calldata metadata
+) external;
+```
+
+This package exports `announce(...)` (Signable) and the
+canonical event topic so dapps can build the
+`eth_getLogs` filter against the announcer of their
+choice.
