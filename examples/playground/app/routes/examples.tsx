@@ -31,6 +31,7 @@ const EXAMPLES = [
     to: "/examples/stealth-5564",
     title: "ERC-5564 stealth addresses",
   },
+  { to: "/examples/ens-137", title: "ERC-137 ENS" },
 ] as const
 
 export default function ExamplesLayout() {

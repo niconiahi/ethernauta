@@ -1,0 +1,79 @@
+import { Ens137Demo } from "../../examples/ens-137/demo"
+
+# ERC-137 — ENS resolution
+
+The Ethereum Name Service maps human-readable names like
+`vitalik.eth` to addresses, avatars, social handles, and
+arbitrary text records. Two directions:
+
+- **Forward**: name → address (plus avatar + text records)
+- **Reverse**: address → primary name (with forward
+  verification to prevent spoofing)
+
+Both flow through the same registry/resolver split: the
+registry (one global contract at
+`0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e`) holds the
+resolver address for each node, then the resolver
+implements `addr`, `name`, `text`, and so on.
+
+<Ens137Demo />
+
+## What's happening
+
+**Forward** (name → address):
+1. `normalize(name)` — ENSIP-15: lowercase, NFC, validate
+   script groups, reject confusables.
+2. `namehash(normalized)` — recursive keccak-256 down the
+   label tree. Output is a 32-byte node.
+3. `registry.resolver(node)` — eth_call to the registry,
+   returns the resolver contract for that node.
+4. `resolver.addr(node)` — eth_call to the resolver,
+   returns the registered address.
+
+**Reverse** (address → name):
+1. Build reverse node: `keccak256(<lowercase-addr-no-prefix>.addr.reverse)`.
+2. `registry.resolver(reverse_node)` → reverse resolver.
+3. `reverse_resolver.name(reverse_node)` → claimed name.
+4. **Forward-verify**: re-run forward resolution on the
+   claimed name. If it resolves back to the original
+   address, the name is verified; otherwise return null.
+   Skipping this step lets anyone spoof a reverse record.
+
+## The code for this example
+
+```ts
+import {
+  get_ens_address,
+  get_ens_avatar,
+  get_ens_name,
+  get_ens_text,
+} from "@ethernauta/erc/137"
+
+// forward
+const addr = await get_ens_address({
+  name: "vitalik.eth",
+})(reader_ctx)
+
+const avatar = await get_ens_avatar({
+  name: "vitalik.eth",
+})(reader_ctx)
+
+const twitter = await get_ens_text({
+  name: "vitalik.eth",
+  key: "com.twitter",
+})(reader_ctx)
+
+// reverse (forward-verified)
+const name = await get_ens_name({
+  address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+})(reader_ctx)
+```
+
+## Why normalization matters
+
+`VITALIK.ETH`, `vitalik.eth`, and `vıtalik.eth` (with a
+Turkish dotless ı) look identical to a human but produce
+three different namehashes on a naive implementation.
+ENSIP-15 normalises away case, applies NFC, and rejects
+confusable characters before hashing — which is why this
+package bundles `@ethernauta/ens` as its normaliser.

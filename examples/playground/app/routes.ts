@@ -37,5 +37,6 @@ export default [
       "stealth-5564",
       "./routes/examples/stealth-5564.mdx",
     ),
+    route("ens-137", "./routes/examples/ens-137.mdx"),
   ]),
 ] satisfies RouteConfig

@@ -252,6 +252,9 @@ importers:
       '@ethernauta/eip':
         specifier: workspace:*
         version: link:../eip
+      '@ethernauta/ens':
+        specifier: workspace:*
+        version: link:../ens
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../eth

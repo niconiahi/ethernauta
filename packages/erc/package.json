@@ -35,6 +35,7 @@
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eip": "workspace:*",
+    "@ethernauta/ens": "workspace:*",
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*",
