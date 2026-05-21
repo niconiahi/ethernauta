@@ -1,9 +1,12 @@
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 
 import type { AbiCodec } from "../abi-codec"
 import { decode_sequence } from "../sequence"
 
-type ValuesOf<Args extends readonly AbiCodec<unknown>[]> = {
+type ValuesOf<Args extends readonly AbiCodec<any>[]> = {
   [K in keyof Args]: Args[K] extends AbiCodec<infer T>
     ? T
     : never
@@ -12,7 +15,7 @@ type ValuesOf<Args extends readonly AbiCodec<unknown>[]> = {
 // Decode an ABI-encoded payload (e.g., an `eth_call` return) into a
 // typed tuple of values, one per codec in `_args`.
 export function decode_function_result<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(_args: Args, _hex: `0x${string}`): ValuesOf<Args> {
   const data = hex_to_bytes(_hex)
   return decode_sequence(_args, data, 0) as ValuesOf<Args>
@@ -20,7 +23,7 @@ export function decode_function_result<
 
 // Decode a complete calldata (selector + args).
 export function decode_function_call<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(
   _args: Args,
   _hex: `0x${string}`,

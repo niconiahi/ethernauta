@@ -1,9 +1,12 @@
 import { custom, parse } from "valibot"
 
 import type { AbiCodec, InferCodec } from "./abi-codec"
-import { decode_sequence, encode_sequence } from "./sequence"
+import {
+  decode_sequence,
+  encode_sequence,
+} from "./sequence"
 
-type Fields = Record<string, AbiCodec<unknown>>
+type Fields = Record<string, AbiCodec<any>>
 
 type TupleValue<F extends Fields> = {
   [K in keyof F]: InferCodec<F[K]>
@@ -78,8 +81,7 @@ export function tuple<F extends Fields>(
       try {
         normalize(_input)
         return true
-      }
-      catch {
+      } catch {
         return false
       }
     }),

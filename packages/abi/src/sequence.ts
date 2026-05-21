@@ -12,7 +12,7 @@ import type { AbiCodec } from "./abi-codec"
 //
 // Used both at the function-call top level and inside tuples.
 export function encode_sequence(
-  _codecs: readonly AbiCodec<unknown>[],
+  _codecs: readonly AbiCodec<any>[],
   _values: readonly unknown[],
 ): Uint8Array {
   if (_codecs.length !== _values.length) {
@@ -42,8 +42,7 @@ export function encode_sequence(
     }
   }
   const total =
-    head_size +
-    tails.reduce((sum, t) => sum + t.length, 0)
+    head_size + tails.reduce((sum, t) => sum + t.length, 0)
   const out = new Uint8Array(total)
   let pos = 0
   for (const head of heads) {
@@ -61,7 +60,7 @@ export function encode_sequence(
 // Decode the inverse of `encode_sequence`. `_base` is the byte index
 // where the head region begins.
 export function decode_sequence(
-  _codecs: readonly AbiCodec<unknown>[],
+  _codecs: readonly AbiCodec<any>[],
   _data: Uint8Array,
   _base: number,
 ): unknown[] {
@@ -85,7 +84,8 @@ function read_uint256(
 ): bigint {
   let value = 0n
   for (let i = 0; i < 32; i++) {
-    value = (value << 8n) | BigInt(_data[_pos + i] as number)
+    value =
+      (value << 8n) | BigInt(_data[_pos + i] as number)
   }
   return value
 }

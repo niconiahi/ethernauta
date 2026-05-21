@@ -15,5 +15,6 @@ export type AbiCodec<T> = {
   decode: (_data: Uint8Array, _pos: number) => T
 }
 
-export type InferCodec<C> =
-  C extends AbiCodec<infer T> ? T : never
+export type InferCodec<C> = C extends AbiCodec<infer T>
+  ? T
+  : never

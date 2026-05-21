@@ -78,11 +78,7 @@ describe("decode.ts", () => {
     it("should round-trip mixed static + dynamic", () => {
       const calldata = encode_function_call({
         name: "mixed",
-        args: [
-          address(),
-          string_(),
-          uint256(),
-        ] as const,
+        args: [address(), string_(), uint256()] as const,
         values: [
           "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           "hi",

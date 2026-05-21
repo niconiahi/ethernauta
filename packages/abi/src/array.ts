@@ -1,7 +1,10 @@
 import { array as v_array, parse } from "valibot"
 
 import type { AbiCodec, InferCodec } from "./abi-codec"
-import { decode_sequence, encode_sequence } from "./sequence"
+import {
+  decode_sequence,
+  encode_sequence,
+} from "./sequence"
 
 // Dynamic array of T. Always dynamic. Wire layout:
 //   - 32 bytes: array length
@@ -16,11 +19,16 @@ export function array<T>(
     is_dynamic: true,
     schema: v_array(_element.schema),
     encode: (_values) => {
-      const items = parse(v_array(_element.schema), _values) as T[]
+      const items = parse(
+        v_array(_element.schema),
+        _values,
+      ) as T[]
       const codecs = Array(items.length).fill(
         _element,
       ) as AbiCodec<T>[]
-      const length_prefix = write_uint256(BigInt(items.length))
+      const length_prefix = write_uint256(
+        BigInt(items.length),
+      )
       const body = encode_sequence(
         codecs as AbiCodec<unknown>[],
         items as unknown[],
@@ -35,14 +43,21 @@ export function array<T>(
       const codecs = Array(length).fill(
         _element,
       ) as AbiCodec<unknown>[]
-      const values = decode_sequence(codecs, _data, _pos + 32)
+      const values = decode_sequence(
+        codecs,
+        _data,
+        _pos + 32,
+      )
       return values as T[]
     },
   }
 }
 
-export type InferArrayElement<C> =
-  C extends AbiCodec<infer T> ? InferCodec<AbiCodec<T>> : never
+export type InferArrayElement<C> = C extends AbiCodec<
+  infer T
+>
+  ? InferCodec<AbiCodec<T>>
+  : never
 
 function read_uint256(
   _data: Uint8Array,
@@ -50,7 +65,8 @@ function read_uint256(
 ): bigint {
   let value = 0n
   for (let i = 0; i < 32; i++) {
-    value = (value << 8n) | BigInt(_data[_pos + i] as number)
+    value =
+      (value << 8n) | BigInt(_data[_pos + i] as number)
   }
   return value
 }

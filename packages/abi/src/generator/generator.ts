@@ -389,7 +389,8 @@ function build_readable(
   }
   builders.push(output_info.builder)
 
-  const builder_names = collect_builders(builders).join(", ")
+  const builder_names =
+    collect_builders(builders).join(", ")
 
   return `import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
@@ -461,7 +462,8 @@ function build_signable(
     builders.push(info.builder)
   }
 
-  const builder_names = collect_builders(builders).join(", ")
+  const builder_names =
+    collect_builders(builders).join(", ")
   const builder_import_line =
     builders.length > 0 ? `${builder_names},\n  ` : ""
 

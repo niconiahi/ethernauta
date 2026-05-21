@@ -36,7 +36,9 @@ export type EventLog = InferOutput<typeof eventLogSchema>
 
 // Topic list returned by encode_event_topics — suitable for
 // eth_getLogs `topics`. `null` is a wildcard slot.
-export const eventTopicsSchema = array(nullable(hash32Schema))
+export const eventTopicsSchema = array(
+  nullable(hash32Schema),
+)
 export type EventTopics = InferOutput<
   typeof eventTopicsSchema
 >
@@ -89,14 +91,12 @@ export type EncodeEventTopicsInput = InferOutput<
 // Unlike function selectors, event topic0 is NOT truncated.
 export function event_topic_hash(
   _name: string,
-  _args: readonly AbiCodec<unknown>[],
+  _args: readonly AbiCodec<any>[],
 ): Hash32 {
   const sig = `${_name}(${_args.map((a) => a.signature).join(",")})`
   return parse(
     hash32Schema,
-    bytes_to_hex(
-      keccak_256(new TextEncoder().encode(sig)),
-    ),
+    bytes_to_hex(keccak_256(new TextEncoder().encode(sig))),
   )
 }
 
@@ -134,13 +134,12 @@ function encode_indexed_topic(
 // declaration order. A `null` (or a trailing-unspecified
 // position) becomes a wildcard.
 export function encode_event_topics<
-  Args extends readonly AbiCodec<unknown>[],
->(_input: EncodeEventTopicsInput & { args: Args }): EventTopics {
+  Args extends readonly AbiCodec<any>[],
+>(
+  _input: EncodeEventTopicsInput & { args: Args },
+): EventTopics {
   const { args } = _input
-  const input = parse(
-    encodeEventTopicsInputSchema,
-    _input,
-  )
+  const input = parse(encodeEventTopicsInputSchema, _input)
   const { name, indexed, values, anonymous } = input
   if (args.length !== indexed.length) {
     throw new Error(
@@ -166,7 +165,9 @@ export function encode_event_topics<
     }
     const codec = indexed_codecs[i] as AbiCodec<unknown>
     const topic = encode_indexed_topic(codec, v)
-    indexed_part.push(parse(hash32Schema, bytes_to_hex(topic)))
+    indexed_part.push(
+      parse(hash32Schema, bytes_to_hex(topic)),
+    )
   }
   while (
     indexed_part.length > 0 &&
@@ -189,9 +190,11 @@ export function encode_event_topics<
 // event signature first (use `event_topic_hash`).
 export function decode_event_log<
   Args extends readonly AbiCodec<unknown>[],
->(_input: DecodeEventLogInput & {
-  args: Args
-}): DecodedEventLog {
+>(
+  _input: DecodeEventLogInput & {
+    args: Args
+  },
+): DecodedEventLog {
   const { args } = _input
   const input = parse(decodeEventLogInputSchema, _input)
   const { name, indexed, topics, data, anonymous } = input

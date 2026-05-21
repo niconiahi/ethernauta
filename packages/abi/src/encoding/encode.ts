@@ -4,7 +4,9 @@ import { bytes_to_hex } from "@ethernauta/utils"
 import type { AbiCodec } from "../abi-codec"
 import { encode_sequence } from "../sequence"
 
-export function to_selector(_signature: string): Uint8Array {
+export function to_selector(
+  _signature: string,
+): Uint8Array {
   return keccak_256(
     new TextEncoder().encode(_signature),
   ).slice(0, 4)
@@ -14,7 +16,7 @@ export function to_selector(_signature: string): Uint8Array {
 // tree. Never typed by hand.
 export function build_signature(
   _name: string,
-  _args: readonly AbiCodec<unknown>[],
+  _args: readonly AbiCodec<any>[],
 ): string {
   return `${_name}(${_args.map((a) => a.signature).join(",")})`
 }
@@ -22,12 +24,14 @@ export function build_signature(
 // 4-byte function selector derived from typed args.
 export function function_selector(
   _name: string,
-  _args: readonly AbiCodec<unknown>[],
+  _args: readonly AbiCodec<any>[],
 ): `0x${string}` {
-  return bytes_to_hex(to_selector(build_signature(_name, _args)))
+  return bytes_to_hex(
+    to_selector(build_signature(_name, _args)),
+  )
 }
 
-type ValuesOf<Args extends readonly AbiCodec<unknown>[]> = {
+type ValuesOf<Args extends readonly AbiCodec<any>[]> = {
   [K in keyof Args]: Args[K] extends AbiCodec<infer T>
     ? T
     : never
@@ -37,7 +41,7 @@ type ValuesOf<Args extends readonly AbiCodec<unknown>[]> = {
 // Args is a readonly tuple of typed codecs; `values` is positionally
 // inferred from each codec's T.
 export function encode_function_call<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(_input: {
   name: string
   args: Args
@@ -60,7 +64,7 @@ export function encode_function_call<
 // concatenated with ABI-encoded constructor arguments. Pass an empty
 // `args`/`values` tuple for constructors with no arguments.
 export function encode_constructor_call<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(_input: {
   bytecode: Uint8Array
   args: Args

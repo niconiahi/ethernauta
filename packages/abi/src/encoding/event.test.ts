@@ -96,7 +96,9 @@ describe("encode_event_topics", () => {
       name: "Anon",
       args: [address()],
       indexed: [true],
-      values: ["0x636c0fcd6da2207abfa80427b556695a4ad0af94"],
+      values: [
+        "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+      ],
       anonymous: true,
     })
     expect(topics).toEqual([

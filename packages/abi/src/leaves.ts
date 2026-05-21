@@ -20,7 +20,10 @@ import {
   type Uint256,
   uint256Schema,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { boolean, string } from "valibot"
 
 import type { AbiCodec } from "./abi-codec"
@@ -31,7 +34,8 @@ function read_uint256(
 ): bigint {
   let value = 0n
   for (let i = 0; i < 32; i++) {
-    value = (value << 8n) | BigInt(_data[_pos + i] as number)
+    value =
+      (value << 8n) | BigInt(_data[_pos + i] as number)
   }
   return value
 }
@@ -106,7 +110,8 @@ export function bool(): AbiCodec<boolean> {
     is_dynamic: false,
     schema: boolean(),
     encode: (_value) => write_uint256(_value ? 1n : 0n),
-    decode: (_data, _pos) => read_uint256(_data, _pos) === 1n,
+    decode: (_data, _pos) =>
+      read_uint256(_data, _pos) === 1n,
   }
 }
 
@@ -119,7 +124,9 @@ export function string_(): AbiCodec<string> {
     schema: string(),
     encode: (_value) => {
       const utf8 = new TextEncoder().encode(_value)
-      const out = new Uint8Array(32 + pad_right_32(utf8).length)
+      const out = new Uint8Array(
+        32 + pad_right_32(utf8).length,
+      )
       out.set(write_uint256(BigInt(utf8.length)), 0)
       out.set(utf8, 32)
       return out
