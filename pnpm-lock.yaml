@@ -245,6 +245,12 @@ importers:
       '@ethernauta/utils':
         specifier: workspace:*
         version: link:../utils
+      '@noble/hashes':
+        specifier: 1.8.0
+        version: 1.8.0
+      '@noble/secp256k1':
+        specifier: 2.3.0
+        version: 2.3.0
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)

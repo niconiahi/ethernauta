@@ -169,6 +169,17 @@ export const REGISTRY = {
     types: ["uint256"],
     param_names: ["shares"],
   },
+  "0x4d1f9583": {
+    name: "announce",
+    signature: "announce(uint256,address,bytes,bytes)",
+    types: ["uint256", "address", "bytes", "bytes"],
+    param_names: [
+      "schemeId",
+      "stealthAddress",
+      "ephemeralPubKey",
+      "metadata",
+    ],
+  },
   "0x4f6ccce7": {
     name: "tokenByIndex",
     signature: "tokenByIndex(uint256)",
