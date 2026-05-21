@@ -177,6 +177,16 @@ function get_type_info(type: AbiType): Type_info {
         valibot: false,
         package: "eth",
       }
+    case "uint32":
+      return {
+        param_schema: "uint256Schema",
+        param_type: "Uint256",
+        decoded_schema: "uint256Schema",
+        decoded_type: "Uint256",
+        builder: "uint32()",
+        valibot: false,
+        package: "eth",
+      }
     case "uint64":
       return {
         param_schema: "uint256Schema",

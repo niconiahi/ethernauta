@@ -246,6 +246,10 @@ export function uint8(): AbiCodec<Uint256> {
   return make_uint("uint8")
 }
 
+export function uint32(): AbiCodec<Uint256> {
+  return make_uint("uint32")
+}
+
 export function uint64(): AbiCodec<Uint256> {
   return make_uint("uint64")
 }

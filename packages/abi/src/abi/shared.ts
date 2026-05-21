@@ -32,6 +32,8 @@ export const typeSchema = union([
   literal("uint[]"),
   literal("uint8"),
   literal("uint8[]"),
+  literal("uint32"),
+  literal("uint32[]"),
   literal("uint64"),
   literal("uint64[]"),
   literal("uint256"),
