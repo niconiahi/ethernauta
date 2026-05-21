@@ -60,7 +60,7 @@ describe("normalize.ts — errors", () => {
 describe("normalize.ts — unicode", () => {
   it("should accept basic unicode names", () => {
     // Greek
-    expect(ens_normalize("αβγ.eth")).toBe("αβγ.eth")
+    expect(ens_normalize("αιθηρ.eth")).toBe("αιθηρ.eth")
     // Cyrillic
     expect(ens_normalize("привет.eth")).toBe("привет.eth")
   })

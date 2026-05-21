@@ -10,15 +10,6 @@
 // Data tables come from `./data/spec`, derived from the
 // ENSIP-15 reference data by `./derive/spec`.
 
-// TODO(WHOLES): whole-script confusable detection is not
-// yet implemented. The `WHOLES` table in ./data/spec
-// flags labels that use chars from a single script that
-// look like chars from another (e.g. "0х" — Cyrillic
-// ха with an ASCII digit). Until WHOLES is wired up, this
-// normaliser will accept some labels that ENSIP-15 would
-// reject as confusable. ≈562/38614 of the official test
-// suite (1.46%) exercises this path.
-
 import {
   ALL_CM,
   EMOJI,
@@ -29,6 +20,7 @@ import {
   MAPPED,
   NSM,
   NSM_MAX,
+  WHOLES,
 } from "./data/spec"
 import { from_cps, nfc, nfd, to_cps } from "./nfc"
 
@@ -59,6 +51,222 @@ const ALL_VALID: ReadonlySet<number> = (() => {
   }
   return s
 })()
+
+// Per-group membership lookups. The raw arrays in spec.ts
+// are huge (Han primary ≈ 90k cps) — O(n) `includes` calls
+// dominate validation, so we mirror them as Sets once at
+// module load.
+const GROUP_PRIMARY: ReadonlyMap<
+  Group,
+  ReadonlySet<number>
+> = new Map(
+  GROUPS.map((g) => [g, new Set(g.primary)] as const),
+)
+const GROUP_SECONDARY: ReadonlyMap<
+  Group,
+  ReadonlySet<number>
+> = new Map(
+  GROUPS.map((g) => [g, new Set(g.secondary)] as const),
+)
+
+function group_has_cp(_group: Group, _cp: number): boolean {
+  return (
+    (GROUP_PRIMARY.get(_group) as ReadonlySet<number>).has(
+      _cp,
+    ) ||
+    (
+      GROUP_SECONDARY.get(_group) as ReadonlySet<number>
+    ).has(_cp)
+  )
+}
+
+// Inverted index: cp → groups that contain it. Built once
+// to keep the WHOLES preprocessing below O(members ×
+// groups-per-cp) instead of O(members × all groups ×
+// primary/secondary sizes).
+const CP_TO_GROUPS: ReadonlyMap<number, readonly Group[]> =
+  (() => {
+    const m = new Map<number, Group[]>()
+    for (const g of GROUPS) {
+      for (const cp of g.primary) {
+        let list = m.get(cp)
+        if (list === undefined) {
+          list = []
+          m.set(cp, list)
+        }
+        list.push(g)
+      }
+      for (const cp of g.secondary) {
+        let list = m.get(cp)
+        if (list === undefined) {
+          list = []
+          m.set(cp, list)
+        }
+        list.push(g)
+      }
+    }
+    return m
+  })()
+
+// ---------------------------------------------- wholes
+//
+// ENSIP-15 §4 "Whole-Script Confusables". Each WHOLES
+// entry carries a `target` label, the `valid` cps that
+// belong to that target in its native group, and the
+// `confused` cps from OTHER groups that look like the
+// target. A label is rejected as a whole-script confusable
+// if every non-mark cp could equally belong to some other
+// single group than the label's own.
+//
+// We follow the @adraffy/ens-normalize.js precompute:
+//   1. Split each whole's (valid + confused) cps into
+//      "recs" keyed by which groups they live in.
+//   2. For each rec, compute the complement = the union of
+//      every OTHER rec's groups within the same whole.
+//   3. Register each confused-only cp in WHOLE_MAP →
+//      complement. cps that appear as `valid` in any whole
+//      are "shared" (WHOLE_VALID) and skipped — they don't
+//      narrow a confusable target on their own.
+
+type WholeProc = {
+  readonly complement_by_cp: ReadonlyMap<
+    number,
+    ReadonlySet<Group>
+  >
+}
+
+const WHOLE_VALID: ReadonlySet<number> = (() => {
+  const s = new Set<number>()
+  for (const w of WHOLES) {
+    for (const cp of w.valid) s.add(cp)
+  }
+  return s
+})()
+
+const ALL_WHOLE_MEMBERS: ReadonlySet<number> = (() => {
+  const s = new Set<number>()
+  for (const w of WHOLES) {
+    for (const cp of w.valid) s.add(cp)
+    for (const cp of w.confused) s.add(cp)
+  }
+  return s
+})()
+
+// "Unique anchors" — cps that appear in exactly one group
+// and are NOT part of any whole-confusable set. Seeing one
+// of these in a label proves the label can't be a whole
+// confusable with another script: it pins the script
+// unambiguously. @adraffy stores these in WHOLE_MAP under
+// a UNIQUE_PH sentinel; we keep it as a separate Set for
+// type clarity.
+const WHOLE_UNIQUE: ReadonlySet<number> = (() => {
+  const counts = new Map<number, number>()
+  for (const g of GROUPS) {
+    for (const cp of g.primary) {
+      counts.set(cp, (counts.get(cp) ?? 0) + 1)
+    }
+    for (const cp of g.secondary) {
+      counts.set(cp, (counts.get(cp) ?? 0) + 1)
+    }
+  }
+  const s = new Set<number>()
+  for (const [cp, n] of counts) {
+    if (n === 1 && !ALL_WHOLE_MEMBERS.has(cp)) s.add(cp)
+  }
+  return s
+})()
+
+const WHOLE_MAP: ReadonlyMap<number, WholeProc> = (() => {
+  const out = new Map<number, WholeProc>()
+  for (const w of WHOLES) {
+    const members: number[] = [...w.valid, ...w.confused]
+    type Rec = { groups: Set<Group>; cps: number[] }
+    const recs: Rec[] = []
+    for (const cp of members) {
+      const gs = CP_TO_GROUPS.get(cp) ?? []
+      let rec = recs.find((r) =>
+        gs.some((g) => r.groups.has(g)),
+      )
+      if (rec === undefined) {
+        rec = { groups: new Set(), cps: [] }
+        recs.push(rec)
+      }
+      rec.cps.push(cp)
+      for (const g of gs) rec.groups.add(g)
+    }
+    const union_groups = new Set<Group>()
+    for (const r of recs)
+      for (const g of r.groups) union_groups.add(g)
+    const complement_by_cp = new Map<number, Set<Group>>()
+    for (const r of recs) {
+      const complement = new Set<Group>()
+      for (const g of union_groups) {
+        if (!r.groups.has(g)) complement.add(g)
+      }
+      for (const cp of r.cps) {
+        complement_by_cp.set(cp, complement)
+      }
+    }
+    const proc: WholeProc = { complement_by_cp }
+    for (const cp of members) {
+      if (!WHOLE_VALID.has(cp)) out.set(cp, proc)
+    }
+  }
+  return out
+})()
+
+function check_whole(
+  _group: Group,
+  _text: readonly number[],
+  _label_repr: string,
+): void {
+  // Dedup at the call site keeps the maker-intersection
+  // logic order-independent (per the @adraffy comment, the
+  // unique-cp set suffices for single-char confusables).
+  const seen = new Set<number>()
+  const unique: number[] = []
+  for (const cp of _text) {
+    if (!seen.has(cp)) {
+      seen.add(cp)
+      unique.push(cp)
+    }
+  }
+  let maker: Set<Group> | null = null
+  const shared: number[] = []
+  for (const cp of unique) {
+    // Anchors: a cp that lives in exactly one group and in
+    // no whole pins the label to that group — no whole
+    // confusable can apply, return early.
+    if (WHOLE_UNIQUE.has(cp)) return
+    const whole = WHOLE_MAP.get(cp)
+    if (whole !== undefined) {
+      const candidates = whole.complement_by_cp.get(
+        cp,
+      ) as ReadonlySet<Group>
+      if (maker === null) {
+        maker = new Set(candidates)
+      } else {
+        const next = new Set<Group>()
+        for (const g of maker) {
+          if (candidates.has(g)) next.add(g)
+        }
+        maker = next
+      }
+      if (maker.size === 0) return
+    } else {
+      shared.push(cp)
+    }
+  }
+  if (maker === null) return
+  for (const g of maker) {
+    if (g === _group) continue
+    if (shared.every((cp) => group_has_cp(g, cp))) {
+      throw new Error(
+        `label "${_label_repr}" whole-script confusable: ${_group.name}/${g.name}`,
+      )
+    }
+  }
+}
 
 // ---------------------------------------------- emoji
 
@@ -401,19 +609,22 @@ function determine_group(
   _text: number[],
   _label_repr: string,
 ): Group {
-  const non_cm = _text.filter((cp) => !CM_SET.has(cp))
-  // First try non-restricted groups (Latin, Greek, …).
+  // Narrow by *every* text cp, CMs included. CMs that
+  // belong to a different script (e.g. Hebrew U+0307 in
+  // a Latin label, "i̇hsan") naturally eliminate the wrong
+  // group. CMs that genuinely belong to the script live in
+  // its `primary`, so the right group survives. This also
+  // disambiguates shared digits — "१𑠲" combines a digit
+  // in {Devanagari, Dogr, Kthi, Mahj} with a Dogra-only CM,
+  // and narrowing collapses to Dogr.
   let candidates = narrow_candidates(
     GROUPS.filter((g) => !g.restricted),
-    non_cm,
+    _text,
   )
   if (candidates.length === 0) {
-    // Fall back to restricted groups (Brahmi, Cuneiform,
-    // …). These are accepted but constrained to their
-    // own primary set.
     candidates = narrow_candidates(
       GROUPS.filter((g) => g.restricted),
-      non_cm,
+      _text,
     )
   }
   if (candidates.length === 0) {
@@ -421,10 +632,8 @@ function determine_group(
       `label "${_label_repr}" mixes scripts (no single group contains all cps)`,
     )
   }
-  // Prefer a group where every cp is in the primary set
-  // (the strongest match).
   const primary_first = candidates.find((g) =>
-    non_cm.every((cp) => g.primary.includes(cp)),
+    _text.every((cp) => g.primary.includes(cp)),
   )
   return primary_first ?? (candidates[0] as Group)
 }
@@ -434,8 +643,13 @@ function check_group_cm(
   _text: number[],
   _label_repr: string,
 ): void {
-  // If the group defines a CM whitelist, every CM in the
-  // label must be in it. Otherwise any CM in ALL_CM is OK.
+  // Redundant after the determine_group change above —
+  // narrow_candidates already constrains the chosen group
+  // to one whose primary/secondary contains every cp in
+  // the label, CMs included. Kept as a defensive check for
+  // any future drift in determine_group, plus the
+  // per-group `cm` whitelist remains the authoritative
+  // restriction if a group declares one.
   if (_group.cm.length === 0) return
   const allowed = new Set(_group.cm)
   for (const cp of _text) {
@@ -490,8 +704,10 @@ function validate_label(_label: Label): void {
   // first/last).
   check_combining_marks(_label, label_repr)
   check_fenced(flat, label_repr)
+  // Underscore is leading-only across the WHOLE label —
+  // emoji preceding it disqualifies (e.g. "👁_👁").
+  check_leading_underscore(flat, label_repr)
   if (text.length > 0) {
-    check_leading_underscore(text, label_repr)
     check_nsm_runs(text, label_repr)
   }
 
@@ -504,6 +720,7 @@ function validate_label(_label: Label): void {
 
   const group = determine_group(text, label_repr)
   check_group_cm(group, text, label_repr)
+  check_whole(group, text, label_repr)
 }
 
 // ---------------------------------------------- top-level

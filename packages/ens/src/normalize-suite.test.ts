@@ -4,7 +4,7 @@ import { ENS_TESTS } from "./data/ens-vectors"
 import { ens_normalize } from "./normalize"
 
 describe("normalize.ts — ENS official validation suite", () => {
-  it("should pass at least the published baseline", () => {
+  it("should pass the full published suite", () => {
     let passed = 0
     let failed = 0
     const failures: string[] = []
@@ -49,9 +49,7 @@ describe("normalize.ts — ENS official validation suite", () => {
       console.log("first failures:")
       console.log(failures.join("\n"))
     }
-    // Baseline: require ≥ 98% pass. The remaining gap is
-    // whole-script confusable detection (the `wholes`
-    // table) — see WHOLES TODO in normalize.ts.
-    expect(ratio).toBeGreaterThanOrEqual(0.98)
+    expect(failed).toBe(0)
+    expect(ratio).toBe(1)
   }, 60_000)
 })
