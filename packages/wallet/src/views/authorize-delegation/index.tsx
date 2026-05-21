@@ -23,7 +23,7 @@ import type {
 } from "../../utils/event"
 import { get_nonce } from "../../utils/sign-transaction"
 import { set_code_request } from "../../utils/transaction"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 
 // Conservative testnet defaults — unused gas is refunded
 // under EIP-1559. Wire eth_estimateGas + the fee-market RPCs
@@ -96,7 +96,7 @@ export function AuthorizeDelegation() {
         <Button
           onClick={async () => {
             const private_key = get_private_key(
-              wallet.value.key,
+              active_account.value.key,
             )
             const { chain_id, reader } = get_reader(
               selected_chain.value,
@@ -105,7 +105,7 @@ export function AuthorizeDelegation() {
               selected_chain.value,
             )
             const nonce = await get_nonce(
-              wallet.value.address,
+              active_account.value.address,
               reader,
               chain_id,
             )

@@ -6,10 +6,11 @@ import {
   selected_chain,
 } from "../../utils/chain"
 import { view } from "../../utils/view"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 
 export function Wallet() {
-  const address = wallet.value.address as `0x${string}`
+  const address = active_account.value
+    .address as `0x${string}`
   useEffect(() => {
     async function run() {
       const _balance = await fetch_balance(address)

@@ -24,7 +24,7 @@ import {
   sign_transaction,
 } from "../../utils/sign-transaction"
 import { transaction_request } from "../../utils/transaction"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 
 function format_primitive(value: unknown): string {
   if (value === null || value === undefined) return ""
@@ -454,8 +454,9 @@ export function Sign() {
       <div className="flex flex-col gap-2">
         <Button
           onClick={async () => {
-            const address = wallet.value.address as Address
-            const key = wallet.value.key
+            const address = active_account.value
+              .address as Address
+            const key = active_account.value.key
             const { chain_id, reader } = get_reader(
               selected_chain.value,
             )

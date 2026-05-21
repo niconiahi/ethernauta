@@ -33,7 +33,7 @@ import {
   type Eip1559TransactionUnsigned,
 } from "../../utils/sign-transaction"
 import { send_calls_request } from "../../utils/transaction"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 
 // testnet defaults — refunded under EIP-1559. revisit once
 // eth_estimateGas + fee-market RPCs are wired through.
@@ -135,11 +135,11 @@ export function SendCalls() {
             set_error(null)
             try {
               const private_key = get_private_key(
-                wallet.value.key,
+                active_account.value.key,
               )
               const { chain_id, reader } = get_reader(chain)
               const { writer } = get_writer(chain)
-              const address = wallet.value
+              const address = active_account.value
                 .address as Address
               const start_nonce = await get_nonce(
                 address,

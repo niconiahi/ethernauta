@@ -6,7 +6,7 @@ import type {
 } from "../../utils/event"
 import { sign_typed_data } from "../../utils/sign-typed-data"
 import { typed_data_request } from "../../utils/transaction"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 import { Button } from "../../components/button"
 
 function format_primitive(value: unknown): string {
@@ -129,7 +129,7 @@ export function SignTypedData() {
         <Button
           onClick={() => {
             const private_key = get_private_key(
-              wallet.value.key,
+              active_account.value.key,
             )
             const signature = sign_typed_data(
               typed_data,

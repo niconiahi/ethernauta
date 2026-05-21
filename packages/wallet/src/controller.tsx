@@ -19,7 +19,7 @@ import {
   typed_data_request,
 } from "./utils/transaction"
 import { view } from "./utils/view"
-import { restore_wallet } from "./utils/wallet"
+import { restore_accounts } from "./utils/wallet"
 import { AddChain } from "./views/add-chain/index"
 import { AuthorizeDelegation } from "./views/authorize-delegation/index"
 import { Connect } from "./views/connect/index"
@@ -51,7 +51,7 @@ export function Controller() {
           const authenticated = await is_authenticated()
           await validate_vault()
           if (!authenticated) return
-          await restore_wallet()
+          await restore_accounts()
           if (request.method === "eth_requestAccounts") {
             connection_request.value = { id: request.id }
             view.value = "connect"

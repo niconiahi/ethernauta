@@ -10,7 +10,7 @@ import type {
 } from "../../utils/event"
 import { personal_sign_message } from "../../utils/personal-sign"
 import { personal_sign_request } from "../../utils/transaction"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 
 function display_message(raw: string): string {
   if (raw.startsWith("0x")) {
@@ -113,7 +113,7 @@ export function PersonalSign() {
         <Button
           onClick={() => {
             const private_key = get_private_key(
-              wallet.value.key,
+              active_account.value.key,
             )
             const signature = personal_sign_message(
               req.message,

@@ -4,14 +4,15 @@ import type {
   TransactionRejectedResponse,
 } from "../../utils/event"
 import { connection_request } from "../../utils/transaction"
-import { wallet } from "../../utils/wallet"
+import { active_account } from "../../utils/wallet"
 
 function truncate(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`
 }
 
 export function Connect() {
-  const address = wallet.value.address as `0x${string}`
+  const address = active_account.value
+    .address as `0x${string}`
   return (
     <main className="flex flex-col gap-4 p-4 w-80 text-base">
       <header className="flex flex-col gap-1 text-center">
