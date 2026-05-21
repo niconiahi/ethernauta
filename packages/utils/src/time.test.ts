@@ -14,9 +14,7 @@ import {
 
 describe("seconds_to_big", () => {
   it("floors fractional seconds", () => {
-    expect(seconds_to_big(1716207600.999)).toBe(
-      1716207600n,
-    )
+    expect(seconds_to_big(1716207600.999)).toBe(1716207600n)
   })
 
   it("passes integer seconds through", () => {
@@ -27,9 +25,7 @@ describe("seconds_to_big", () => {
 
 describe("clock-based helpers", () => {
   const FAKE_NOW_MS = Date.UTC(2026, 4, 20, 0, 0, 0)
-  const FAKE_NOW_S = BigInt(
-    Math.floor(FAKE_NOW_MS / 1000),
-  )
+  const FAKE_NOW_S = BigInt(Math.floor(FAKE_NOW_MS / 1000))
 
   beforeEach(() => {
     vi.useFakeTimers()

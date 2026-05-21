@@ -58,9 +58,10 @@ export function SendCallsDemo() {
   )
   const [calls_status, set_calls_status] =
     useState<CallsStatus | null>(null)
-  const [capabilities, set_capabilities] = useState<
-    Record<string, unknown> | null
-  >(null)
+  const [capabilities, set_capabilities] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
   const [loading, set_loading] = useState(false)
   const [polling, set_polling] = useState(false)
   const [error, set_error] = useState<string | null>(null)

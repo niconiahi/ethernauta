@@ -38,9 +38,7 @@ export function encode_metadata({
   view_tag,
   body,
 }: Metadata): Bytes {
-  const body_bytes = hex_to_bytes(
-    body as `0x${string}`,
-  )
+  const body_bytes = hex_to_bytes(body as `0x${string}`)
   const out = new Uint8Array(1 + body_bytes.length)
   out[0] = view_tag & 0xff
   out.set(body_bytes, 1)

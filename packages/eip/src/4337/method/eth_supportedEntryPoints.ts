@@ -24,9 +24,6 @@ export function eth_supportedEntryPoints(): Readable<
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    return parse(
-      array(addressSchema),
-      response.result,
-    )
+    return parse(array(addressSchema), response.result)
   }
 }

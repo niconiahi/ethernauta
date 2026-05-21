@@ -19,9 +19,8 @@ export function Injected1193Demo() {
   const [providers, set_providers] = useState<
     EIP6963ProviderDetail[]
   >([])
-  const [picked, set_picked] = useState<
-    EIP6963ProviderDetail | null
-  >(null)
+  const [picked, set_picked] =
+    useState<EIP6963ProviderDetail | null>(null)
   const [accounts, set_accounts] = useState<string[]>([])
   const [chain_id, set_chain_id] = useState<string | null>(
     null,
@@ -57,7 +56,10 @@ export function Injected1193Demo() {
     window.addEventListener(ANNOUNCE_EVENT, on_announce)
     window.dispatchEvent(new Event(REQUEST_EVENT))
     return () => {
-      window.removeEventListener(ANNOUNCE_EVENT, on_announce)
+      window.removeEventListener(
+        ANNOUNCE_EVENT,
+        on_announce,
+      )
     }
   }, [])
 
@@ -97,9 +99,7 @@ export function Injected1193Demo() {
       )
       set_accounts(next)
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
@@ -228,7 +228,9 @@ export function Injected1193Demo() {
         </div>
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>{error}</p>
+        <p style={{ color: "crimson", margin: 0 }}>
+          {error}
+        </p>
       )}
     </div>
   )

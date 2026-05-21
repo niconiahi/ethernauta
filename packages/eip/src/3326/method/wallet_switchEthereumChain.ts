@@ -5,11 +5,7 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import {
-  type InferOutput,
-  object,
-  tuple,
-} from "valibot"
+import { type InferOutput, object, tuple } from "valibot"
 
 export const switchEthereumChainParameterSchema = object({
   chainId: uintSchema,
@@ -29,10 +25,7 @@ export function wallet_switchEthereumChain(
   _parameters: SwitchEthereumChainParameters,
 ): Signable<null> {
   return async ([signer]: ResolvedSigner) => {
-    await signer(
-      "wallet_switchEthereumChain",
-      _parameters,
-    )
+    await signer("wallet_switchEthereumChain", _parameters)
     return null
   }
 }

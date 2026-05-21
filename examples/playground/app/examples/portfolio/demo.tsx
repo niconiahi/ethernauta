@@ -12,6 +12,13 @@ import {
 } from "@ethernauta/transport"
 import { hex_to_number } from "@ethernauta/utils"
 import { useEffect, useState } from "react"
+import {
+  bigint,
+  type InferOutput,
+  number,
+  object,
+  string,
+} from "valibot"
 import { Button } from "../../components/button"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
@@ -52,21 +59,22 @@ const multicall = create_multicall([
   },
 ])
 
-type Holding = {
-  symbol: string
-  decimals: number
-  balance: bigint
-}
+const holdingSchema = object({
+  symbol: string(),
+  decimals: number(),
+  balance: bigint(),
+})
+type Holding = InferOutput<typeof holdingSchema>
 
 export function PortfolioDemo() {
-  const [holdings, set_holdings] = useState<Holding[] | null>(
-    null,
-  )
+  const [holdings, set_holdings] = useState<
+    Holding[] | null
+  >(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
-  const [elapsed_ms, set_elapsed_ms] = useState<number | null>(
-    null,
-  )
+  const [elapsed_ms, set_elapsed_ms] = useState<
+    number | null
+  >(null)
 
   async function run() {
     set_loading(true)
@@ -176,7 +184,9 @@ export function PortfolioDemo() {
               fontSize: 14,
             }}
           >
-            <span style={{ color: "#666" }}>{h.symbol}</span>
+            <span style={{ color: "#666" }}>
+              {h.symbol}
+            </span>
             <span
               style={{
                 fontFamily: "monospace",

@@ -4,7 +4,10 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import type { Permission, RequestedPermissions } from "../permission"
+import type {
+  Permission,
+  RequestedPermissions,
+} from "../permission"
 
 export function wallet_requestPermissions(
   _parameters: [RequestedPermissions],

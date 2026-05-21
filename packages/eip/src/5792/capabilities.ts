@@ -31,9 +31,7 @@ export const sendCallsCallSchema = object({
   to: optional(addressSchema),
   data: optional(string()),
   value: optional(uintSchema),
-  capabilities: optional(
-    record(string(), unknown()),
-  ),
+  capabilities: optional(record(string(), unknown())),
 })
 export type SendCallsCall = InferOutput<
   typeof sendCallsCallSchema
@@ -46,9 +44,7 @@ export const sendCallsParameterSchema = object({
   chainId: uintSchema,
   atomicRequired: optional(boolean()),
   calls: array(sendCallsCallSchema),
-  capabilities: optional(
-    record(string(), unknown()),
-  ),
+  capabilities: optional(record(string(), unknown())),
 })
 export type SendCallsParameter = InferOutput<
   typeof sendCallsParameterSchema
@@ -63,9 +59,7 @@ export type SendCallsParameters = InferOutput<
 
 export const sendCallsResultSchema = object({
   id: string(),
-  capabilities: optional(
-    record(string(), unknown()),
-  ),
+  capabilities: optional(record(string(), unknown())),
 })
 export type SendCallsResult = InferOutput<
   typeof sendCallsResultSchema
@@ -115,9 +109,7 @@ export const callsStatusSchema = object({
   status: callsStatusCodeSchema,
   atomic: boolean(),
   receipts: optional(array(callsReceiptSchema)),
-  capabilities: optional(
-    record(string(), unknown()),
-  ),
+  capabilities: optional(record(string(), unknown())),
 })
 export type CallsStatus = InferOutput<
   typeof callsStatusSchema

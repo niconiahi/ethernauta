@@ -31,11 +31,10 @@ export function parse_unit(
   const negative = value.startsWith("-")
   const unsigned = negative ? value.slice(1) : value
   if (!/^(\d+\.?\d*|\.\d+)$/.test(unsigned)) {
-    throw new Error(
-      `parse_unit: invalid number "${value}"`,
-    )
+    throw new Error(`parse_unit: invalid number "${value}"`)
   }
-  const [integer_str, fraction_str = ""] = unsigned.split(".")
+  const [integer_str, fraction_str = ""] =
+    unsigned.split(".")
   if (fraction_str.length > decimals) {
     throw new Error(
       `parse_unit: "${value}" has more than ${decimals} fractional digits`,

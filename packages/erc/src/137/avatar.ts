@@ -28,16 +28,16 @@ export function parse_avatar(
     return { kind: "uri", uri: _raw }
   }
   if (_raw.startsWith("ipfs://")) {
-    const path = _raw.slice("ipfs://".length).replace(
-      /^ipfs\//,
-      "",
-    )
+    const path = _raw
+      .slice("ipfs://".length)
+      .replace(/^ipfs\//, "")
     return { kind: "uri", uri: `${IPFS_GATEWAY}${path}` }
   }
   // CAIP-19: eip155:<chain>/erc721:<contract>/<tokenId>
-  const caip = /^eip155:(\d+)\/(erc721|erc1155):(0x[0-9a-fA-F]{40})\/(.+)$/.exec(
-    _raw,
-  )
+  const caip =
+    /^eip155:(\d+)\/(erc721|erc1155):(0x[0-9a-fA-F]{40})\/(.+)$/.exec(
+      _raw,
+    )
   if (caip) {
     const [, chain, namespace, contract, token_id] = caip
     return {

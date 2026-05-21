@@ -12,7 +12,10 @@ export type DeadlineWindow = {
 export function compute_deadlines(
   window: DeadlineWindow,
   now_s: number = Math.floor(Date.now() / 1000),
-): { openDeadline: `0x${string}`; fillDeadline: `0x${string}` } {
+): {
+  openDeadline: `0x${string}`
+  fillDeadline: `0x${string}`
+} {
   const open = now_s + window.open_window_s
   const fill = now_s + window.fill_window_s
   return {

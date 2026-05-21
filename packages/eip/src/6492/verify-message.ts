@@ -45,7 +45,9 @@ export function verify_message(
     const prefixed = build_personal_message(
       parameters.message,
     )
-    const hash = bytes_to_hex(keccak_256(prefixed)) as Hash32
+    const hash = bytes_to_hex(
+      keccak_256(prefixed),
+    ) as Hash32
     return verify_hash({
       address: parameters.address,
       hash,

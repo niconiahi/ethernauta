@@ -18,7 +18,8 @@ describe("get_contract_address", () => {
   })
 
   it("accepts a bigint nonce equivalently to a hex nonce", () => {
-    const from = "0x6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0"
+    const from =
+      "0x6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0"
     const hex_result = get_contract_address({
       from,
       nonce: "0x7",
@@ -31,7 +32,8 @@ describe("get_contract_address", () => {
   })
 
   it("derivation differs across nonces", () => {
-    const from = "0x6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0"
+    const from =
+      "0x6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0"
     expect(
       get_contract_address({ from, nonce: "0x0" }),
     ).not.toBe(get_contract_address({ from, nonce: "0x1" }))

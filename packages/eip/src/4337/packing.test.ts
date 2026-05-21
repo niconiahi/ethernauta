@@ -19,10 +19,7 @@ const PAYMASTER =
 
 describe("packing.ts — pack_account_gas_limits", () => {
   it("should produce 32 bytes with verification high, call low", () => {
-    const packed = pack_account_gas_limits(
-      "0x100",
-      "0x200",
-    )
+    const packed = pack_account_gas_limits("0x100", "0x200")
     expect(packed).toBe(
       "0x0000000000000000000000000000010000000000000000000000000000000200" as `0x${string}`,
     )
@@ -65,9 +62,7 @@ describe("packing.ts — pack_init_code", () => {
   })
 
   it("should concat factory + factoryData", () => {
-    expect(
-      pack_init_code(FACTORY, "0xdeadbeef"),
-    ).toBe(
+    expect(pack_init_code(FACTORY, "0xdeadbeef")).toBe(
       `${FACTORY}deadbeef`.toLowerCase(),
     )
   })
@@ -87,9 +82,7 @@ describe("packing.ts — pack_paymaster_and_data", () => {
       paymasterPostOpGasLimit: "0x20",
       paymasterData: "0xab",
     })
-    expect(packed.length).toBe(
-      2 + 40 + 32 + 32 + 2,
-    )
+    expect(packed.length).toBe(2 + 40 + 32 + 32 + 2)
     expect(packed.startsWith(PAYMASTER.toLowerCase())).toBe(
       true,
     )

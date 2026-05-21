@@ -48,5 +48,4 @@ describe("ERC721", () => {
       expect(generated_files).toContain(file_name)
     }
   })
-
 })

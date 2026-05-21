@@ -36,12 +36,10 @@ const CREATE2_SALT = parse(
 )
 
 export function DeployContractDemo() {
-  const [create_address, set_create_address] = useState<
-    Address | null
-  >(null)
-  const [create2_address, set_create2_address] = useState<
-    Address | null
-  >(null)
+  const [create_address, set_create_address] =
+    useState<Address | null>(null)
+  const [create2_address, set_create2_address] =
+    useState<Address | null>(null)
   const [error, set_error] = useState<string | null>(null)
 
   function derive() {
@@ -61,9 +59,7 @@ export function DeployContractDemo() {
         }),
       )
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     }
   }
 
@@ -80,7 +76,10 @@ export function DeployContractDemo() {
     >
       <Section title="CREATE">
         <Row label="from" value={CREATE_FROM} mono />
-        <Row label="nonce" value={CREATE_NONCE.toString()} />
+        <Row
+          label="nonce"
+          value={CREATE_NONCE.toString()}
+        />
         {create_address && (
           <Row
             label="contract address"
@@ -108,7 +107,9 @@ export function DeployContractDemo() {
         )}
       </Section>
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>{error}</p>
+        <p style={{ color: "crimson", margin: 0 }}>
+          {error}
+        </p>
       )}
       <div>
         <Button onClick={derive}>Derive addresses</Button>
@@ -181,4 +182,3 @@ function Row({
     </div>
   )
 }
-

@@ -10,7 +10,10 @@ import type {
 import { decode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 
-import { type TypedData, typedDataSchema } from "./typed-data"
+import {
+  type TypedData,
+  typedDataSchema,
+} from "./typed-data"
 
 // Bigints survive `window.postMessage` (structured clone) but
 // die at `chrome.runtime.sendMessage` and `chrome.storage`,
@@ -77,11 +80,13 @@ export function eth_signTypedData_v4(
     const [address, typed_data] = _parameters
     const validated = parse(typedDataSchema, typed_data)
     assert_domain_chain(validated, context.chain_id)
-    const wire_safe = normalize_bigints(validated) as TypedData
-    const signature = await signer(
-      "eth_signTypedData_v4",
-      [address, wire_safe],
-    )
+    const wire_safe = normalize_bigints(
+      validated,
+    ) as TypedData
+    const signature = await signer("eth_signTypedData_v4", [
+      address,
+      wire_safe,
+    ])
     return signature as Bytes
   }
 }

@@ -6,7 +6,10 @@ import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { NotFound } from "@ethernauta/core"
-import { notFoundSchema, uintSchema } from "@ethernauta/core"
+import {
+  notFoundSchema,
+  uintSchema,
+} from "@ethernauta/core"
 import { blockNumberOrTagSchema } from "../../core/block"
 import type { TransactionInfo } from "../../core/transaction"
 import { TransactionInfoSchema } from "../../core/transaction"

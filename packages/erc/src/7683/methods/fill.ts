@@ -13,11 +13,7 @@ import type {
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 
-const PARAM_CODECS = [
-  bytes32(),
-  bytes(),
-  bytes(),
-] as const
+const PARAM_CODECS = [bytes32(), bytes(), bytes()] as const
 
 export const FILL_SIGNATURE: {
   signature: string

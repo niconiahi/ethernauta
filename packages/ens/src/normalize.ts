@@ -597,8 +597,7 @@ function narrow_candidates(
   for (const cp of _non_cm) {
     candidates = candidates.filter(
       (g) =>
-        g.primary.includes(cp) ||
-        g.secondary.includes(cp),
+        g.primary.includes(cp) || g.secondary.includes(cp),
     )
     if (candidates.length === 0) break
   }

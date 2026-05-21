@@ -14,7 +14,9 @@ const base_typed_data = {
   message: { name: "alice" },
 } as const
 
-function with_domain(chainId: TypedData["domain"]["chainId"]): TypedData {
+function with_domain(
+  chainId: TypedData["domain"]["chainId"],
+): TypedData {
   return {
     ...base_typed_data,
     domain: { name: "test", chainId },
@@ -24,10 +26,7 @@ function with_domain(chainId: TypedData["domain"]["chainId"]): TypedData {
 describe("sign-typed-data.ts — assert_domain_chain", () => {
   it("should pass when domain chainId matches active chain", () => {
     expect(() =>
-      assert_domain_chain(
-        with_domain(1n),
-        "eip155:1",
-      ),
+      assert_domain_chain(with_domain(1n), "eip155:1"),
     ).not.toThrow()
   })
 

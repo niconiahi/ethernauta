@@ -24,7 +24,10 @@ import {
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { type InferOutput, object, parse } from "valibot"
 
 import { MAGIC_VALUE } from "./magic-value"
@@ -48,7 +51,9 @@ function encode_is_valid_signature_calldata(
   const padded_len = Math.ceil(sig_bytes.length / 32) * 32
   // selector(4) || hash(32) || offset(32) || length(32) ||
   //   data(padded to 32-byte multiple)
-  const calldata = new Uint8Array(4 + 32 + 32 + 32 + padded_len)
+  const calldata = new Uint8Array(
+    4 + 32 + 32 + 32 + padded_len,
+  )
   calldata[0] = 0x16
   calldata[1] = 0x26
   calldata[2] = 0xba

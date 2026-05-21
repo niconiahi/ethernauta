@@ -96,9 +96,7 @@ describe("provider.ts", () => {
   })
 
   it("should route signable methods to the handler", async () => {
-    const handler = vi
-      .fn()
-      .mockResolvedValue(["0xabc"])
+    const handler = vi.fn().mockResolvedValue(["0xabc"])
     const provider = create_provider({
       chains: ["0x1"],
       on_signable_request: handler,
@@ -113,9 +111,7 @@ describe("provider.ts", () => {
   })
 
   it("should cache accounts from eth_requestAccounts and emit", async () => {
-    const handler = vi
-      .fn()
-      .mockResolvedValue(["0xabc"])
+    const handler = vi.fn().mockResolvedValue(["0xabc"])
     const provider = create_provider({
       chains: ["0x1"],
       on_signable_request: handler,
@@ -156,10 +152,7 @@ describe("provider.ts", () => {
 
   it("should switch active chain for a known id and emit", async () => {
     const provider = create_provider({
-      chains: [
-        "0x1",
-        "0xaa36a7",
-      ],
+      chains: ["0x1", "0xaa36a7"],
     })
     const listener = vi.fn()
     provider.on("chainChanged", listener)
@@ -237,9 +230,7 @@ describe("provider.ts", () => {
   })
 
   it("should return eth_accounts permission after connect", async () => {
-    const handler = vi
-      .fn()
-      .mockResolvedValue(["0xabc"])
+    const handler = vi.fn().mockResolvedValue(["0xabc"])
     const provider = create_provider({
       chains: ["0x1"],
       on_signable_request: handler,
@@ -264,9 +255,7 @@ describe("provider.ts", () => {
   })
 
   it("should map wallet_requestPermissions to a connect flow", async () => {
-    const handler = vi
-      .fn()
-      .mockResolvedValue(["0xdef"])
+    const handler = vi.fn().mockResolvedValue(["0xdef"])
     const provider = create_provider({
       chains: ["0x1"],
       on_signable_request: handler,
@@ -301,9 +290,7 @@ describe("provider.ts", () => {
   })
 
   it("should not emit accountsChanged for an identical list", async () => {
-    const handler = vi
-      .fn()
-      .mockResolvedValue(["0xabc"])
+    const handler = vi.fn().mockResolvedValue(["0xabc"])
     const provider = create_provider({
       chains: ["0x1"],
       on_signable_request: handler,

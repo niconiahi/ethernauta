@@ -29,8 +29,7 @@ export const ANNOUNCE_SIGNATURE: {
   signature: string
   names: string[]
 } = {
-  signature:
-    "announce(uint256,address,bytes,bytes)",
+  signature: "announce(uint256,address,bytes,bytes)",
   names: [
     "schemeId",
     "stealthAddress",

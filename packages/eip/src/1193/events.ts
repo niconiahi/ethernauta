@@ -72,7 +72,9 @@ export function create_emitter(): Emitter {
       if (!set) return
       for (const listener of set) {
         ;(
-          listener as (payload: EventMap[typeof event]) => void
+          listener as (
+            payload: EventMap[typeof event],
+          ) => void
         )(payload)
       }
     },

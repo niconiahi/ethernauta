@@ -27,9 +27,7 @@ function fake_provider(): {
     removeListener(event, listener) {
       const set = listeners.get(event as EventName)
       if (!set) return
-      set.delete(
-        listener as (payload: unknown) => void,
-      )
+      set.delete(listener as (payload: unknown) => void)
     },
   }
   function emit(event: EventName, payload: unknown) {
@@ -61,13 +59,9 @@ describe("watch_accounts", () => {
     const off = watch_accounts(provider, (accounts) => {
       received.push(accounts)
     })
-    expect(
-      listeners.get("accountsChanged")?.size,
-    ).toBe(1)
+    expect(listeners.get("accountsChanged")?.size).toBe(1)
     off()
-    expect(
-      listeners.get("accountsChanged")?.size,
-    ).toBe(0)
+    expect(listeners.get("accountsChanged")?.size).toBe(0)
     emit("accountsChanged", [
       "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
     ])

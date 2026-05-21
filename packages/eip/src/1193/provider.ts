@@ -1,11 +1,7 @@
 // https://eips.ethereum.org/EIPS/eip-1193
 
-import {
-  addEthereumChainParametersSchema,
-} from "../3085/method/wallet_addEthereumChain"
-import {
-  switchEthereumChainParametersSchema,
-} from "../3326/method/wallet_switchEthereumChain"
+import { addEthereumChainParametersSchema } from "../3085/method/wallet_addEthereumChain"
+import { switchEthereumChainParametersSchema } from "../3326/method/wallet_switchEthereumChain"
 import {
   type Emitter,
   create_emitter,

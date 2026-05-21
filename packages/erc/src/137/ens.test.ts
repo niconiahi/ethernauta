@@ -43,80 +43,56 @@ const ctx = reader({
 
 // TODO: connect integration test
 describe.skip("ens resolution against mainnet", () => {
-  it(
-    "should resolve the resolver address for vitalik.eth",
-    async () => {
-      const resolver = await get_ens_resolver({
-        name: "vitalik.eth",
-      })(ctx)
-      expect(resolver).not.toBeNull()
-      expect(resolver).toMatch(/^0x[0-9a-fA-F]{40}$/)
-    },
-    20_000,
-  )
+  it("should resolve the resolver address for vitalik.eth", async () => {
+    const resolver = await get_ens_resolver({
+      name: "vitalik.eth",
+    })(ctx)
+    expect(resolver).not.toBeNull()
+    expect(resolver).toMatch(/^0x[0-9a-fA-F]{40}$/)
+  }, 20_000)
 
-  it(
-    "should forward-resolve vitalik.eth to its address",
-    async () => {
-      const addr = await get_ens_address({
-        name: "vitalik.eth",
-      })(ctx)
-      expect(addr?.toLowerCase()).toBe(
-        VITALIK_ADDRESS.toLowerCase(),
-      )
-    },
-    20_000,
-  )
+  it("should forward-resolve vitalik.eth to its address", async () => {
+    const addr = await get_ens_address({
+      name: "vitalik.eth",
+    })(ctx)
+    expect(addr?.toLowerCase()).toBe(
+      VITALIK_ADDRESS.toLowerCase(),
+    )
+  }, 20_000)
 
-  it(
-    "should reverse-resolve vitalik's address to vitalik.eth",
-    async () => {
-      const name = await get_ens_name({
-        address: VITALIK_ADDRESS,
-      })(ctx)
-      expect(name).toBe("vitalik.eth")
-    },
-    20_000,
-  )
+  it("should reverse-resolve vitalik's address to vitalik.eth", async () => {
+    const name = await get_ens_name({
+      address: VITALIK_ADDRESS,
+    })(ctx)
+    expect(name).toBe("vitalik.eth")
+  }, 20_000)
 
-  it(
-    "should read a text record",
-    async () => {
-      const url = await get_ens_text({
-        name: "vitalik.eth",
-        key: "url",
-      })(ctx)
-      // Vitalik's url record may or may not be set; just
-      // assert the call succeeds and returns a string or
-      // null, both shapes being valid surface.
-      expect(url === null || typeof url === "string").toBe(
-        true,
-      )
-    },
-    20_000,
-  )
+  it("should read a text record", async () => {
+    const url = await get_ens_text({
+      name: "vitalik.eth",
+      key: "url",
+    })(ctx)
+    // Vitalik's url record may or may not be set; just
+    // assert the call succeeds and returns a string or
+    // null, both shapes being valid surface.
+    expect(url === null || typeof url === "string").toBe(
+      true,
+    )
+  }, 20_000)
 
-  it(
-    "should read the avatar text record",
-    async () => {
-      const avatar = await get_ens_avatar({
-        name: "vitalik.eth",
-      })(ctx)
-      // vitalik's avatar is typically an NFT CAIP-19
-      // reference or an http/ipfs URI; either is fine.
-      expect(avatar).not.toBeNull()
-    },
-    20_000,
-  )
+  it("should read the avatar text record", async () => {
+    const avatar = await get_ens_avatar({
+      name: "vitalik.eth",
+    })(ctx)
+    // vitalik's avatar is typically an NFT CAIP-19
+    // reference or an http/ipfs URI; either is fine.
+    expect(avatar).not.toBeNull()
+  }, 20_000)
 
-  it(
-    "should return null for an unregistered name",
-    async () => {
-      const addr = await get_ens_address({
-        name: "this-name-definitely-does-not-exist-12345.eth",
-      })(ctx)
-      expect(addr).toBeNull()
-    },
-    20_000,
-  )
+  it("should return null for an unregistered name", async () => {
+    const addr = await get_ens_address({
+      name: "this-name-definitely-does-not-exist-12345.eth",
+    })(ctx)
+    expect(addr).toBeNull()
+  }, 20_000)
 })

@@ -1,6 +1,12 @@
 import type { Address, Bytes } from "@ethernauta/core"
-import type { Http, ResolvedReader } from "@ethernauta/transport"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import type {
+  Http,
+  ResolvedReader,
+} from "@ethernauta/transport"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -69,7 +75,10 @@ describe("verify-message.ts", () => {
     const transport = vi.fn().mockResolvedValue({
       jsonrpc: "2.0" as const,
       id: 1,
-      error: { code: -32000 as const, message: "no contract" },
+      error: {
+        code: -32000 as const,
+        message: "no contract",
+      },
     })
     const result = await verify_message({
       address: EOA_ADDRESS,
@@ -81,7 +90,10 @@ describe("verify-message.ts", () => {
 
   it("should accept a Uint8Array message that matches a viem-style signature", async () => {
     const message = new TextEncoder().encode("bytes msg")
-    const signature = personal_sign("bytes msg", PRIVATE_KEY)
+    const signature = personal_sign(
+      "bytes msg",
+      PRIVATE_KEY,
+    )
     const transport = vi.fn()
     const result = await verify_message({
       address: EOA_ADDRESS,

@@ -8,6 +8,12 @@ import {
   type StealthMetaAddress,
 } from "@ethernauta/erc/5564"
 import { useMemo, useState } from "react"
+import {
+  type InferOutput,
+  number,
+  object,
+  string,
+} from "valibot"
 import { Button } from "../../components/button"
 
 function hex_to_bytes_local(
@@ -34,23 +40,23 @@ function random_32_bytes_hex(): `0x${string}` {
   return hex as `0x${string}`
 }
 
-type Generated = {
-  stealth_address: string
-  ephemeral_public_key: string
-  view_tag: number
-}
+const generatedSchema = object({
+  stealth_address: string(),
+  ephemeral_public_key: string(),
+  view_tag: number(),
+})
+type Generated = InferOutput<typeof generatedSchema>
 
 export function Stealth5564Demo() {
-  const [spending_priv, set_spending_priv] = useState(
-    () => random_32_bytes_hex(),
+  const [spending_priv, set_spending_priv] = useState(() =>
+    random_32_bytes_hex(),
   )
   const [viewing_priv, set_viewing_priv] = useState(() =>
     random_32_bytes_hex(),
   )
   const [meta_input, set_meta_input] = useState<string>("")
-  const [generated, set_generated] = useState<
-    Generated | null
-  >(null)
+  const [generated, set_generated] =
+    useState<Generated | null>(null)
   const [scan_input, set_scan_input] = useState<string>("")
   const [match_result, set_match_result] = useState<
     string | null
@@ -110,8 +116,7 @@ export function Stealth5564Demo() {
       return
     }
     try {
-      const ephemeral_hex =
-        scan_input as `0x${string}`
+      const ephemeral_hex = scan_input as `0x${string}`
       const viewing_bytes = hex_to_bytes_local(
         viewing_priv as `0x${string}`,
       )
@@ -124,9 +129,7 @@ export function Stealth5564Demo() {
         spending_public_key: meta.spending_public_key,
         ephemeral_public_key: ephemeral_hex,
       })
-      set_match_result(
-        `view_tag=${tag} → ${addr}`,
-      )
+      set_match_result(`view_tag=${tag} → ${addr}`)
     } catch (e) {
       set_error(
         e instanceof Error ? e.message : "Unknown error",

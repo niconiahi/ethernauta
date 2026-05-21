@@ -45,9 +45,7 @@ describe("permission.ts", () => {
 
   it("should reject when parentCapability is missing", () => {
     const perm = { caveats: [] }
-    expect(() =>
-      parse(permissionSchema, perm),
-    ).toThrow()
+    expect(() => parse(permissionSchema, perm)).toThrow()
   })
 
   it("should accept a wallet_requestPermissions input", () => {

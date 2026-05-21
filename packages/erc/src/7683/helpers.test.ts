@@ -24,10 +24,11 @@ describe("helpers.ts — address_to_bytes32", () => {
 
 describe("helpers.ts — compute_deadlines", () => {
   it("should compute deadlines from a fixed now", () => {
-    const { openDeadline, fillDeadline } = compute_deadlines(
-      { open_window_s: 60, fill_window_s: 600 },
-      1_700_000_000,
-    )
+    const { openDeadline, fillDeadline } =
+      compute_deadlines(
+        { open_window_s: 60, fill_window_s: 600 },
+        1_700_000_000,
+      )
     expect(BigInt(openDeadline)).toBe(1_700_000_060n)
     expect(BigInt(fillDeadline)).toBe(1_700_000_600n)
   })

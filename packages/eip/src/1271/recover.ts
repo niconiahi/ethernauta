@@ -8,9 +8,20 @@
 // form (r || yParityAndS). The recovered address is
 // emitted lowercase and 0x-prefixed.
 
-import type { Address, Bytes, Hash32 } from "@ethernauta/core"
-import { addressSchema, bytesSchema, hash32Schema } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import type {
+  Address,
+  Bytes,
+  Hash32,
+} from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+  hash32Schema,
+} from "@ethernauta/core"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { Signature } from "@noble/secp256k1"
 import { parse } from "valibot"

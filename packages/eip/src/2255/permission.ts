@@ -24,7 +24,9 @@ export const permissionSchema = object({
   date: optional(number()),
   id: optional(string()),
 })
-export type Permission = InferOutput<typeof permissionSchema>
+export type Permission = InferOutput<
+  typeof permissionSchema
+>
 
 export const requestedPermissionSchema = record(
   string(),

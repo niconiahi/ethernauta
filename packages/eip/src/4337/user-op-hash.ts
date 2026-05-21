@@ -19,7 +19,10 @@ import type {
   Hash32,
   Uint,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 
 import { pack_user_operation } from "./packing"
@@ -53,7 +56,8 @@ function pad32(input: Uint8Array): Uint8Array {
 }
 
 function uint_to_32(value: Uint | bigint): Uint8Array {
-  const v = typeof value === "bigint" ? value : BigInt(value)
+  const v =
+    typeof value === "bigint" ? value : BigInt(value)
   const out = new Uint8Array(32)
   let n = v
   for (let i = 31; i >= 0; i--) {

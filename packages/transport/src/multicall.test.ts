@@ -147,10 +147,9 @@ describe("multicall", () => {
       "0x",
       99,
     )
-    const [a, b] = await multicall(
-      [ok, fail] as const,
-      { allow_failure: true },
-    )
+    const [a, b] = await multicall([ok, fail] as const, {
+      allow_failure: true,
+    })
     expect(a).toEqual({ success: true, value: 42 })
     expect(b).toEqual({ success: false, value: undefined })
   })
@@ -178,8 +177,8 @@ describe("multicall", () => {
       "0x",
       "x",
     )
-    await expect(multicall([call] as const)).rejects.toThrow(
-      /call #0 reverted/,
-    )
+    await expect(
+      multicall([call] as const),
+    ).rejects.toThrow(/call #0 reverted/)
   })
 })

@@ -1,7 +1,10 @@
 import type { InferOutput } from "valibot"
 import { array, object } from "valibot"
 
-import { addressSchema, hash32Schema } from "@ethernauta/core"
+import {
+  addressSchema,
+  hash32Schema,
+} from "@ethernauta/core"
 
 /**
  * Access list entry object.

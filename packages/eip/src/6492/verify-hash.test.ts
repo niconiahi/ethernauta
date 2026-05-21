@@ -1,5 +1,12 @@
-import type { Address, Bytes, Hash32 } from "@ethernauta/core"
-import type { Http, ResolvedReader } from "@ethernauta/transport"
+import type {
+  Address,
+  Bytes,
+  Hash32,
+} from "@ethernauta/core"
+import type {
+  Http,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { describe, expect, it, vi } from "vitest"
 
 import { verify_hash } from "./verify-hash"
@@ -98,9 +105,9 @@ describe("verify-hash.ts (6492)", () => {
       string,
     ]
     expect(tx.to).toBeUndefined()
-    expect(tx.input.startsWith("0x608060405234801561001057")).toBe(
-      true,
-    )
+    expect(
+      tx.input.startsWith("0x608060405234801561001057"),
+    ).toBe(true)
     expect(block).toBe("latest")
   })
 })

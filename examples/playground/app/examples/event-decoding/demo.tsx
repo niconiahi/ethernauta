@@ -1,6 +1,13 @@
-import { type AbiCodec, address, uint256 } from "@ethernauta/abi"
+import {
+  type AbiCodec,
+  address,
+  uint256,
+} from "@ethernauta/abi"
 import { eip155_1 } from "@ethernauta/chain"
-import { addressSchema, type Uint256 } from "@ethernauta/core"
+import {
+  addressSchema,
+  type Uint256,
+} from "@ethernauta/core"
 import {
   eth_blockNumber,
   get_contract_events,
@@ -85,9 +92,7 @@ export function EventDecodingDemo() {
         ),
       )
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
@@ -115,12 +120,16 @@ export function EventDecodingDemo() {
         </Button>
       </div>
       {range && (
-        <p style={{ margin: 0, fontSize: 13, color: "#666" }}>
+        <p
+          style={{ margin: 0, fontSize: 13, color: "#666" }}
+        >
           Blocks {range} — {rows.length} shown
         </p>
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>{error}</p>
+        <p style={{ color: "crimson", margin: 0 }}>
+          {error}
+        </p>
       )}
       {rows.length > 0 && (
         <table
@@ -132,11 +141,16 @@ export function EventDecodingDemo() {
           }}
         >
           <thead>
-            <tr style={{ textAlign: "left", color: "#666" }}>
+            <tr
+              style={{ textAlign: "left", color: "#666" }}
+            >
               <th style={{ padding: "4px 8px" }}>from</th>
               <th style={{ padding: "4px 8px" }}>to</th>
               <th
-                style={{ padding: "4px 8px", textAlign: "right" }}
+                style={{
+                  padding: "4px 8px",
+                  textAlign: "right",
+                }}
               >
                 value (USDC)
               </th>

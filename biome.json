@@ -5,6 +5,9 @@
     "clientKind": "git",
     "useIgnoreFile": false
   },
+  "files": {
+    "maxSize": 1073741824
+  },
   "assist": {
     "actions": {
       "source": {

@@ -37,6 +37,8 @@ describe.skip("eth_blockNumber", () => {
     const blockNumber_ = await readable(
       reader({ chain_id: chainId }),
     )
-    expect(() => parse(uintSchema, blockNumber_)).not.toThrow()
+    expect(() =>
+      parse(uintSchema, blockNumber_),
+    ).not.toThrow()
   })
 })

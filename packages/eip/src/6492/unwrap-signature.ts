@@ -5,7 +5,10 @@ import {
   addressSchema,
   bytesSchema,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { parse } from "valibot"
 
 import { decode_address_bytes_bytes } from "./abi"

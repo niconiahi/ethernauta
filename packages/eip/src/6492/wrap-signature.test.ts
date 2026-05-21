@@ -20,7 +20,9 @@ describe("wrap-signature.ts", () => {
       factoryData: FACTORY_DATA,
       signature: SIGNATURE_INNER,
     })
-    expect(wrapped.endsWith(MAGIC_BYTES.slice(2))).toBe(true)
+    expect(wrapped.endsWith(MAGIC_BYTES.slice(2))).toBe(
+      true,
+    )
   })
 
   it("should round-trip via unwrap_signature", () => {
@@ -87,8 +89,7 @@ describe("unwrap-signature.ts", () => {
   it("should return null when the inner shape is bogus", () => {
     // Magic suffix is present but the body is too short to
     // hold a 96-byte (address, bytes, bytes) head.
-    const bogus =
-      `0x1234${MAGIC_BYTES.slice(2)}` as Bytes
+    const bogus = `0x1234${MAGIC_BYTES.slice(2)}` as Bytes
     expect(unwrap_signature(bogus)).toBeNull()
   })
 })

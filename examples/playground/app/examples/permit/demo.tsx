@@ -13,11 +13,16 @@ import {
   http,
 } from "@ethernauta/transport"
 import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
+import {
   deadline_in,
   format_unit,
   parse_unit,
 } from "@ethernauta/utils"
 import { useState } from "react"
+import { bigint, type InferOutput, object } from "valibot"
 import { Button } from "../../components/button"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
@@ -46,21 +51,21 @@ const CHAINS = [
 const multicall = create_multicall(CHAINS)
 const signer = create_signer(CHAINS)
 
-type SignedPermit = {
-  owner: `0x${string}`
-  spender: `0x${string}`
-  value: bigint
-  nonce: bigint
-  deadline: bigint
-  domain_separator: `0x${string}`
-  signature: `0x${string}`
-}
+const signedPermitSchema = object({
+  owner: addressSchema,
+  spender: addressSchema,
+  value: bigint(),
+  nonce: bigint(),
+  deadline: bigint(),
+  domain_separator: bytesSchema,
+  signature: bytesSchema,
+})
+type SignedPermit = InferOutput<typeof signedPermitSchema>
 
 export function PermitDemo() {
   const [owner, set_owner] = useState<string | null>(null)
-  const [signed, set_signed] = useState<SignedPermit | null>(
-    null,
-  )
+  const [signed, set_signed] =
+    useState<SignedPermit | null>(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
@@ -157,9 +162,7 @@ export function PermitDemo() {
           label="Value"
           value={`${format_unit(VALUE, 6)} USDC`}
         />
-        {owner && (
-          <Row label="Owner" value={owner} mono />
-        )}
+        {owner && <Row label="Owner" value={owner} mono />}
         {signed && (
           <>
             <Row
@@ -204,15 +207,10 @@ export function PermitDemo() {
         }}
       >
         {!owner && (
-          <Button onClick={connect}>
-            Connect wallet
-          </Button>
+          <Button onClick={connect}>Connect wallet</Button>
         )}
         {owner && (
-          <Button
-            onClick={sign_permit}
-            disabled={loading}
-          >
+          <Button onClick={sign_permit} disabled={loading}>
             {loading
               ? "Signing…"
               : signed

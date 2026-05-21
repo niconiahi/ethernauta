@@ -50,7 +50,9 @@ describe("error.ts", () => {
   it("should format unsupported_method", () => {
     const err = unsupported_method("eth_foo")
     expect(err.code).toBe(4200)
-    expect(err.message).toBe("method not supported: eth_foo")
+    expect(err.message).toBe(
+      "method not supported: eth_foo",
+    )
   })
 
   it("should build disconnected", () => {

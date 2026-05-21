@@ -33,7 +33,9 @@ const INNER_SIGNATURE: Bytes = parse(
 )
 
 export function Verify6492Demo() {
-  const [wrapped, set_wrapped] = useState<Bytes | null>(null)
+  const [wrapped, set_wrapped] = useState<Bytes | null>(
+    null,
+  )
   const [unwrapped, set_unwrapped] = useState<{
     factory: Address
     factoryData: Bytes
@@ -66,9 +68,7 @@ export function Verify6492Demo() {
         signature: back.signature,
       })
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     }
   }
 
@@ -97,16 +97,28 @@ export function Verify6492Demo() {
       />
       {wrapped && (
         <>
-          <Row label="wrap_signature → " value={wrapped} mono />
+          <Row
+            label="wrap_signature → "
+            value={wrapped}
+            mono
+          />
           <Row
             label="is_wrapped_signature(wrapped)"
-            value={is_wrapped_signature(wrapped) ? "true" : "false"}
+            value={
+              is_wrapped_signature(wrapped)
+                ? "true"
+                : "false"
+            }
           />
         </>
       )}
       {unwrapped && (
         <>
-          <Row label="unwrap → factory" value={unwrapped.factory} mono />
+          <Row
+            label="unwrap → factory"
+            value={unwrapped.factory}
+            mono
+          />
           <Row
             label="unwrap → factoryData"
             value={unwrapped.factoryData}
@@ -120,7 +132,9 @@ export function Verify6492Demo() {
         </>
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>{error}</p>
+        <p style={{ color: "crimson", margin: 0 }}>
+          {error}
+        </p>
       )}
       <div>
         <Button onClick={do_wrap}>Wrap + unwrap</Button>

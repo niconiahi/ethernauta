@@ -11,6 +11,12 @@ import {
   http,
 } from "@ethernauta/transport"
 import { useState } from "react"
+import {
+  type InferOutput,
+  nullable,
+  object,
+  string,
+} from "valibot"
 import { Button } from "../../components/button"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
@@ -29,17 +35,19 @@ const reader = create_reader([
 
 const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
 
-type Forward = {
-  address: string | null
-  avatar: string | null
-  twitter: string | null
-  url: string | null
-  description: string | null
-}
+const forwardSchema = object({
+  address: nullable(string()),
+  avatar: nullable(string()),
+  twitter: nullable(string()),
+  url: nullable(string()),
+  description: nullable(string()),
+})
+type Forward = InferOutput<typeof forwardSchema>
 
-type Reverse = {
-  name: string | null
-}
+const reverseSchema = object({
+  name: nullable(string()),
+})
+type Reverse = InferOutput<typeof reverseSchema>
 
 export function Ens137Demo() {
   const [name, set_name] = useState("vitalik.eth")
@@ -84,9 +92,7 @@ export function Ens137Demo() {
         description,
       })
     } catch (e: unknown) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
@@ -102,9 +108,7 @@ export function Ens137Demo() {
       })(ctx)
       set_reverse({ name: resolved })
     } catch (e: unknown) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
@@ -121,12 +125,16 @@ export function Ens137Demo() {
       }}
     >
       <section style={{ display: "grid", gap: 8 }}>
-        <h4 style={{ margin: 0 }}>Forward: name → address</h4>
+        <h4 style={{ margin: 0 }}>
+          Forward: name → address
+        </h4>
         <div style={{ display: "flex", gap: 8 }}>
           <input
             type="text"
             value={name}
-            onChange={(e) => set_name(e.currentTarget.value)}
+            onChange={(e) =>
+              set_name(e.currentTarget.value)
+            }
             style={{ flex: 1, padding: 6 }}
           />
           <Button
@@ -163,7 +171,9 @@ export function Ens137Demo() {
       </section>
 
       <section style={{ display: "grid", gap: 8 }}>
-        <h4 style={{ margin: 0 }}>Reverse: address → name</h4>
+        <h4 style={{ margin: 0 }}>
+          Reverse: address → name
+        </h4>
         <div style={{ display: "flex", gap: 8 }}>
           <input
             type="text"
@@ -186,7 +196,9 @@ export function Ens137Demo() {
         </div>
         {reverse && (
           <p style={{ margin: 0 }}>
-            <code>{reverse.name ?? "(no reverse record)"}</code>
+            <code>
+              {reverse.name ?? "(no reverse record)"}
+            </code>
           </p>
         )}
       </section>

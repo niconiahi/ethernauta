@@ -56,4 +56,3 @@ describe("hash_type", () => {
     )
   })
 })
-

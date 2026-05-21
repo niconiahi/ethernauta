@@ -58,10 +58,7 @@ describe("calls-status.ts — finalize_status", () => {
     const status = finalize_status(BATCH, [
       {
         tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[0]!,
-          "0x1",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x1"),
       },
       { tx_hash: BATCH.tx_hashes[1]!, receipt: null },
     ])
@@ -73,17 +70,11 @@ describe("calls-status.ts — finalize_status", () => {
     const status = finalize_status(BATCH, [
       {
         tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[0]!,
-          "0x1",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x1"),
       },
       {
         tx_hash: BATCH.tx_hashes[1]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[1]!,
-          "0x1",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[1]!, "0x1"),
       },
     ])
     expect(status.status).toBe(CALLS_STATUS.CONFIRMED)
@@ -95,17 +86,11 @@ describe("calls-status.ts — finalize_status", () => {
     const status = finalize_status(BATCH, [
       {
         tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[0]!,
-          "0x0",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x0"),
       },
       {
         tx_hash: BATCH.tx_hashes[1]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[1]!,
-          "0x0",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[1]!, "0x0"),
       },
     ])
     expect(status.status).toBe(CALLS_STATUS.REVERTED)
@@ -115,17 +100,11 @@ describe("calls-status.ts — finalize_status", () => {
     const status = finalize_status(BATCH, [
       {
         tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[0]!,
-          "0x1",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x1"),
       },
       {
         tx_hash: BATCH.tx_hashes[1]!,
-        receipt: make_receipt(
-          BATCH.tx_hashes[1]!,
-          "0x0",
-        ),
+        receipt: make_receipt(BATCH.tx_hashes[1]!, "0x0"),
       },
     ])
     expect(status.status).toBe(

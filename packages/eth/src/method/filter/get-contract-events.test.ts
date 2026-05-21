@@ -31,7 +31,8 @@ function fake_transport(_result: unknown): {
   return { http, captured }
 }
 
-const CONTRACT = "0xcccccccccccccccccccccccccccccccccccccccc" as const
+const CONTRACT =
+  "0xcccccccccccccccccccccccccccccccccccccccc" as const
 const FROM = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 const TO = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 const TRANSFER_TOPIC0 =
@@ -47,8 +48,7 @@ const LOG_FIXTURE = {
   removed: false,
   logIndex: "0x0",
   transactionIndex: "0x0",
-  transactionHash:
-    "0x" + "a".repeat(64),
+  transactionHash: "0x" + "a".repeat(64),
   blockHash: "0x" + "b".repeat(64),
   blockNumber: "0x1",
   address: CONTRACT,

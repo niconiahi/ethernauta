@@ -117,8 +117,6 @@ describe("capabilities.ts", () => {
       status: 1.5,
       atomic: false,
     }
-    expect(() =>
-      parse(callsStatusSchema, status),
-    ).toThrow()
+    expect(() => parse(callsStatusSchema, status)).toThrow()
   })
 })

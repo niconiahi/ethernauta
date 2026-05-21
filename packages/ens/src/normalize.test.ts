@@ -85,9 +85,7 @@ describe("normalize.ts — emoji", () => {
   })
 
   it("should split labels on stop between emoji", () => {
-    expect(ens_normalize("🚀.🌕.eth")).toBe(
-      "🚀.🌕.eth",
-    )
+    expect(ens_normalize("🚀.🌕.eth")).toBe("🚀.🌕.eth")
   })
 
   it("should strip incoming FE0F", () => {

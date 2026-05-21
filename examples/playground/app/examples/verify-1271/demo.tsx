@@ -54,9 +54,7 @@ export function Verify1271Demo() {
       const first = accounts[0]
       if (first) set_owner(parse(addressSchema, first))
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     }
   }
 
@@ -79,9 +77,7 @@ export function Verify1271Demo() {
       })(reader({ chain_id: SEPOLIA_CHAIN_ID }))
       set_valid(ok)
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
@@ -101,9 +97,7 @@ export function Verify1271Demo() {
       set_valid(ok)
       set_signature(flipped)
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : String(e),
-      )
+      set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
@@ -133,7 +127,9 @@ export function Verify1271Demo() {
         />
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>{error}</p>
+        <p style={{ color: "crimson", margin: 0 }}>
+          {error}
+        </p>
       )}
       <div style={{ display: "flex", gap: 8 }}>
         {!owner && (
@@ -145,7 +141,10 @@ export function Verify1271Demo() {
           </Button>
         )}
         {signature && (
-          <Button onClick={tamper_and_reverify} disabled={busy}>
+          <Button
+            onClick={tamper_and_reverify}
+            disabled={busy}
+          >
             Tamper one byte
           </Button>
         )}
@@ -160,10 +159,7 @@ function flip_last_byte(hex: Bytes): Bytes {
   const byte = (parseInt(last, 16) ^ 0x01)
     .toString(16)
     .padStart(2, "0")
-  return parse(
-    bytesSchema,
-    `0x${body.slice(0, -2)}${byte}`,
-  )
+  return parse(bytesSchema, `0x${body.slice(0, -2)}${byte}`)
 }
 
 function Row({

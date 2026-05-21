@@ -26,9 +26,7 @@ export const addEthereumChainParameterSchema = object({
     decimals: number(),
   }),
   rpcUrls: array(pipe(string(), url())),
-  blockExplorerUrls: optional(
-    array(pipe(string(), url())),
-  ),
+  blockExplorerUrls: optional(array(pipe(string(), url()))),
   iconUrls: optional(array(pipe(string(), url()))),
 })
 export type AddEthereumChainParameter = InferOutput<
@@ -46,10 +44,7 @@ export function wallet_addEthereumChain(
   _parameters: AddEthereumChainParameters,
 ): Signable<null> {
   return async ([signer]: ResolvedSigner) => {
-    await signer(
-      "wallet_addEthereumChain",
-      _parameters,
-    )
+    await signer("wallet_addEthereumChain", _parameters)
     return null
   }
 }

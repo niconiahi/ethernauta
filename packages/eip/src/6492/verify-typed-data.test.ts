@@ -1,5 +1,8 @@
 import type { Address, Bytes } from "@ethernauta/core"
-import type { Http, ResolvedReader } from "@ethernauta/transport"
+import type {
+  Http,
+  ResolvedReader,
+} from "@ethernauta/transport"
 import { describe, expect, it, vi } from "vitest"
 
 import type { TypedData } from "../712/typed-data"

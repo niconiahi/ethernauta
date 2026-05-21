@@ -73,8 +73,7 @@ export function create_injected_transport(
         id,
         result,
       }
-    }
-    catch (error) {
+    } catch (error) {
       if (is_provider_rpc_error(error)) {
         // EIP-1193 RPC error codes are negative 32-bit
         // ints (-32700 family) per JSON-RPC 2.0; the wallet
@@ -118,15 +117,15 @@ export function create_injected_signer(
         })
         if (typeof result === "string") return result
         return JSON.stringify(result)
-      }
-      catch (error) {
+      } catch (error) {
         if (
           is_provider_rpc_error(error) &&
           error.code === USER_REJECTED_REQUEST
         ) {
           throw {
             code: USER_REJECTED_REQUEST,
-            message: error.message || "User rejected request",
+            message:
+              error.message || "User rejected request",
           }
         }
         throw error

@@ -92,20 +92,17 @@ describe("discover.ts", () => {
           "io.walletc",
         ]) {
           target.dispatchEvent(
-            new CustomEvent(
-              "eip6963:announceProvider",
-              {
-                detail: {
-                  info: {
-                    uuid: rdns,
-                    name: rdns,
-                    icon: "data:,",
-                    rdns,
-                  },
-                  provider: STUB_PROVIDER,
+            new CustomEvent("eip6963:announceProvider", {
+              detail: {
+                info: {
+                  uuid: rdns,
+                  name: rdns,
+                  icon: "data:,",
+                  rdns,
                 },
+                provider: STUB_PROVIDER,
               },
-            ),
+            }),
           )
         }
       },
@@ -141,20 +138,17 @@ describe("discover.ts", () => {
           "com.ethernauta.wallet",
         ]) {
           target.dispatchEvent(
-            new CustomEvent(
-              "eip6963:announceProvider",
-              {
-                detail: {
-                  info: {
-                    uuid: rdns,
-                    name: rdns,
-                    icon: "data:,",
-                    rdns,
-                  },
-                  provider: STUB_PROVIDER,
+            new CustomEvent("eip6963:announceProvider", {
+              detail: {
+                info: {
+                  uuid: rdns,
+                  name: rdns,
+                  icon: "data:,",
+                  rdns,
                 },
+                provider: STUB_PROVIDER,
               },
-            ),
+            }),
           )
         }
       },

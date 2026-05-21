@@ -3,10 +3,7 @@ import {
   type AbiCodec,
   encode_constructor_call,
 } from "@ethernauta/abi"
-import {
-  type Bytes,
-  bytesSchema,
-} from "@ethernauta/core"
+import { type Bytes, bytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,

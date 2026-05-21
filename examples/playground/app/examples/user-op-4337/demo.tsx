@@ -69,7 +69,11 @@ function encode_execute(
   )
 }
 
-function shorten(hex: string, head = 12, tail = 10): string {
+function shorten(
+  hex: string,
+  head = 12,
+  tail = 10,
+): string {
   if (hex.length <= head + tail + 1) return hex
   return `${hex.slice(0, head)}…${hex.slice(-tail)}`
 }
@@ -80,9 +84,8 @@ const ZERO_BYTES = "0x" as const
 export function UserOp4337Demo() {
   const [owner, set_owner] = useState<string | null>(null)
   const [sender, set_sender] = useState<string>("")
-  const [bundler_url, set_bundler_url] = useState<string>(
-    "",
-  )
+  const [bundler_url, set_bundler_url] =
+    useState<string>("")
   const [target, set_target] = useState<string>(
     "0x1111111111111111111111111111111111111111",
   )
@@ -374,15 +377,17 @@ export function UserOp4337Demo() {
             </Button>
           </>
         )}
-        {user_op_hash && tx_hash === null && bundler_url && (
-          <Button
-            variant="secondary"
-            onClick={poll_receipt}
-            disabled={loading}
-          >
-            Poll receipt
-          </Button>
-        )}
+        {user_op_hash &&
+          tx_hash === null &&
+          bundler_url && (
+            <Button
+              variant="secondary"
+              onClick={poll_receipt}
+              disabled={loading}
+            >
+              Poll receipt
+            </Button>
+          )}
       </div>
       {op && signed_op && (
         <details

@@ -6,11 +6,7 @@ import {
   bytesSchema,
   uint256Schema,
 } from "@ethernauta/core"
-import {
-  array,
-  type InferOutput,
-  object,
-} from "valibot"
+import { array, type InferOutput, object } from "valibot"
 
 export const outputSchema = object({
   token: bytes32Schema,

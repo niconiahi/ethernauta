@@ -63,17 +63,16 @@ function shorten(hex: string, head = 10, tail = 8): string {
 
 export function CrossChain7683Demo() {
   const [user, set_user] = useState<string | null>(null)
-  const [settler, set_settler] = useState<string>(
-    DEFAULT_SETTLER,
-  )
+  const [settler, set_settler] =
+    useState<string>(DEFAULT_SETTLER)
   const [order, set_order] =
     useState<GaslessCrossChainOrder | null>(null)
   const [order_id, set_order_id] = useState<string | null>(
     null,
   )
-  const [signature, set_signature] = useState<string | null>(
-    null,
-  )
+  const [signature, set_signature] = useState<
+    string | null
+  >(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
@@ -120,7 +119,10 @@ export function CrossChain7683Demo() {
         chainId: eip155_11155111.chainId,
         verifyingContract: settler as `0x${string}`,
       }
-      const id = hash_gasless_order({ order: built, domain })
+      const id = hash_gasless_order({
+        order: built,
+        domain,
+      })
       const sig = await sign_gasless_order({
         order: built,
         domain,
@@ -150,7 +152,11 @@ export function CrossChain7683Demo() {
         />
         <Row
           label="Recipient (bytes32)"
-          value={user ? address_to_bytes32(user as `0x${string}`) : "(connect)"}
+          value={
+            user
+              ? address_to_bytes32(user as `0x${string}`)
+              : "(connect)"
+          }
           mono
         />
         {user && <Row label="User" value={user} mono />}
@@ -178,7 +184,9 @@ export function CrossChain7683Demo() {
         </span>
         <input
           value={settler}
-          onChange={(e) => set_settler(e.currentTarget.value)}
+          onChange={(e) =>
+            set_settler(e.currentTarget.value)
+          }
           style={{
             fontFamily: "monospace",
             fontSize: 13,

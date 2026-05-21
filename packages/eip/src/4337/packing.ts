@@ -7,7 +7,10 @@ import type {
   Bytes32,
   Uint,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 
 import type {
   PackedUserOperation,
@@ -149,9 +152,10 @@ export function pack_user_operation(
   }
 }
 
-export function unpack_uint128_pair(
-  packed: Bytes32,
-): { hi: Uint; lo: Uint } {
+export function unpack_uint128_pair(packed: Bytes32): {
+  hi: Uint
+  lo: Uint
+} {
   if (packed === ZERO_BYTES32) {
     return { hi: "0x0" as Uint, lo: "0x0" as Uint }
   }

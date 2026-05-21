@@ -1,6 +1,16 @@
-import type { Address, Bytes, Hash32 } from "@ethernauta/core"
-import type { Http, ResolvedReader } from "@ethernauta/transport"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import type {
+  Address,
+  Bytes,
+  Hash32,
+} from "@ethernauta/core"
+import type {
+  Http,
+  ResolvedReader,
+} from "@ethernauta/transport"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -112,9 +122,11 @@ describe("verify-hash.ts — contract path", () => {
   })
 
   it("should return false when the contract returns a non-magic selector", async () => {
-    const transport = vi.fn().mockResolvedValue(
-      ok_response(`0xffffffff${"0".repeat(56)}`),
-    )
+    const transport = vi
+      .fn()
+      .mockResolvedValue(
+        ok_response(`0xffffffff${"0".repeat(56)}`),
+      )
     const result = await verify_hash({
       address: CONTRACT_ADDRESS,
       hash: HASH,

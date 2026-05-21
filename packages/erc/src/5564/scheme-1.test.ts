@@ -100,8 +100,7 @@ describe("scheme-1.ts — view tag", () => {
     })
     const recipient_tag = compute_view_tag({
       viewing_private_key: VIEWING_PRIV,
-      ephemeral_public_key:
-        generated.ephemeral_public_key,
+      ephemeral_public_key: generated.ephemeral_public_key,
     })
     expect(recipient_tag).toBe(generated.view_tag)
   })

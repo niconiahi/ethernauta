@@ -43,9 +43,7 @@ type Parameters = InferOutput<typeof parametersSchema>
 export function resolver(
   _parameters: Parameters,
 ): (_context: ContractContext) => Callable<Address> {
-  return (
-    _context: ContractContext,
-  ): Callable<Address> => {
+  return (_context: ContractContext): Callable<Address> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters

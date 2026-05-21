@@ -1,5 +1,8 @@
 import type { Bytes, Hash32 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -21,7 +24,8 @@ function address_from_pubkey(pubkey: Uint8Array): string {
   const hashed = keccak_256(pubkey.slice(1))
   const tail = hashed.slice(12)
   let out = "0x"
-  for (const b of tail) out += b.toString(16).padStart(2, "0")
+  for (const b of tail)
+    out += b.toString(16).padStart(2, "0")
   return out
 }
 
@@ -34,7 +38,10 @@ function build_signature_hex(
   const r_hex = sig.r.toString(16).padStart(64, "0")
   const s_hex = sig.s.toString(16).padStart(64, "0")
   for (let i = 0; i < 32; i++) {
-    out[i] = Number.parseInt(r_hex.slice(i * 2, i * 2 + 2), 16)
+    out[i] = Number.parseInt(
+      r_hex.slice(i * 2, i * 2 + 2),
+      16,
+    )
     out[32 + i] = Number.parseInt(
       s_hex.slice(i * 2, i * 2 + 2),
       16,
@@ -77,7 +84,10 @@ describe("recover.ts", () => {
       .padStart(2, "0")
     const sig_01 = (sig_27.slice(0, -2) + v_raw) as Bytes
     expect(
-      recover_address(bytes_to_hex(digest) as Hash32, sig_01),
+      recover_address(
+        bytes_to_hex(digest) as Hash32,
+        sig_01,
+      ),
     ).toBe(EXPECTED_ADDRESS)
   })
 
@@ -95,7 +105,10 @@ describe("recover.ts", () => {
     }
     const sig_64 = bytes_to_hex(compact) as Bytes
     expect(
-      recover_address(bytes_to_hex(digest) as Hash32, sig_64),
+      recover_address(
+        bytes_to_hex(digest) as Hash32,
+        sig_64,
+      ),
     ).toBe(EXPECTED_ADDRESS)
   })
 

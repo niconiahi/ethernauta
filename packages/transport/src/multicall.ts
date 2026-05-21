@@ -12,7 +12,10 @@ import {
   type Bytes,
   bytesSchema,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { parse } from "valibot"
 import { callSchema as rpcCallSchema } from "./call"
 import type { Callable } from "./contract"
@@ -58,9 +61,7 @@ type ResultsOf<T extends readonly Callable<unknown>[]> = {
     : never
 }
 
-export function create_multicall(
-  _chains: ChainEntry[],
-): {
+export function create_multicall(_chains: ChainEntry[]): {
   <T extends readonly Callable<unknown>[]>(
     _calls: T,
   ): Promise<ValuesOf<T>>
@@ -78,9 +79,12 @@ export function create_multicall(
     _options: MulticallOptions = {},
   ): Promise<unknown[]> {
     if (_calls.length === 0) {
-      throw new Error("multicall: requires at least one call")
+      throw new Error(
+        "multicall: requires at least one call",
+      )
     }
-    const chain_id = (_calls[0] as Callable<unknown>).chain_id
+    const chain_id = (_calls[0] as Callable<unknown>)
+      .chain_id
     for (let i = 1; i < _calls.length; i++) {
       const c = _calls[i] as Callable<unknown>
       if (c.chain_id !== chain_id) {

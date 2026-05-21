@@ -46,5 +46,4 @@ describe("ERC20", () => {
       expect(generated_files).toContain(file_name)
     }
   })
-
 })

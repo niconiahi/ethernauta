@@ -18,13 +18,16 @@ describe("personal-message.ts", () => {
   it("should use the byte length of the utf8 encoding for emoji", () => {
     const out = build_personal_message("a😀")
     const decoded = new TextDecoder().decode(out)
-    expect(decoded.startsWith("\x19Ethereum Signed Message:\n5")).toBe(true)
+    expect(
+      decoded.startsWith("\x19Ethereum Signed Message:\n5"),
+    ).toBe(true)
   })
 
   it("should decode a 0x-prefixed hex string as raw bytes", () => {
     const out = build_personal_message("0xdeadbeef")
-    const expected = new TextEncoder()
-      .encode("\x19Ethereum Signed Message:\n4")
+    const expected = new TextEncoder().encode(
+      "\x19Ethereum Signed Message:\n4",
+    )
     const merged = new Uint8Array(expected.length + 4)
     merged.set(expected, 0)
     merged.set(

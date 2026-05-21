@@ -35,7 +35,9 @@ describe("deploy_contract", () => {
 
     expect(captured.method).toBe("eth_signTransaction")
     expect(Array.isArray(captured.params)).toBe(true)
-    const tx = (captured.params as Array<Record<string, unknown>>)[0]
+    const tx = (
+      captured.params as Array<Record<string, unknown>>
+    )[0]
     expect(tx).toBeDefined()
     if (!tx) return
     expect("to" in tx).toBe(false)

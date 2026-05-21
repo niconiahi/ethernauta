@@ -3,7 +3,10 @@
 // "Ethereum Signed Message:\n", and the message length
 // (decimal ASCII) before hashing with keccak256.
 
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 
 const PREFIX = "\x19Ethereum Signed Message:\n"
 
@@ -32,9 +35,7 @@ export function build_personal_message(
   message: string | Uint8Array,
 ): Uint8Array {
   const body = to_message_bytes(message)
-  const header = utf8_to_bytes(
-    `${PREFIX}${body.length}`,
-  )
+  const header = utf8_to_bytes(`${PREFIX}${body.length}`)
   const out = new Uint8Array(header.length + body.length)
   out.set(header, 0)
   out.set(body, header.length)

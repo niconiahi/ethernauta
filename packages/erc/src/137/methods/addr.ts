@@ -6,10 +6,7 @@ import {
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type {
-  Address,
-  Bytes,
-} from "@ethernauta/core"
+import type { Address, Bytes } from "@ethernauta/core"
 import {
   addressSchema,
   bytes32Schema,
@@ -42,9 +39,7 @@ type Parameters = InferOutput<typeof parametersSchema>
 export function addr(
   _parameters: Parameters,
 ): (_context: ContractContext) => Callable<Address> {
-  return (
-    _context: ContractContext,
-  ): Callable<Address> => {
+  return (_context: ContractContext): Callable<Address> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters

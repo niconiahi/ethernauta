@@ -7,12 +7,7 @@ import type {
   ResolvedReader,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import {
-  object,
-  optional,
-  parse,
-  string,
-} from "valibot"
+import { object, optional, parse, string } from "valibot"
 
 import { eth_call } from "./eth-call"
 import { resolver } from "./methods/resolver"

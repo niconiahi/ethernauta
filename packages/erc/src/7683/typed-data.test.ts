@@ -17,9 +17,9 @@ describe("typed-data.ts — encode_type", () => {
         ...GASLESS_CROSS_CHAIN_ORDER_FIELDS,
       ],
     }
-    expect(
-      encode_type(GASLESS_PRIMARY_TYPE, types),
-    ).toBe(EXPECTED_TYPE_STRING)
+    expect(encode_type(GASLESS_PRIMARY_TYPE, types)).toBe(
+      EXPECTED_TYPE_STRING,
+    )
   })
 })
 
@@ -47,8 +47,8 @@ describe("typed-data.ts — make_gasless_order_typed_data", () => {
     })
     expect(td.primaryType).toBe(GASLESS_PRIMARY_TYPE)
     expect(td.domain.chainId).toBe(11155111)
-    expect(
-      td.types[GASLESS_PRIMARY_TYPE]?.[0]?.name,
-    ).toBe("originSettler")
+    expect(td.types[GASLESS_PRIMARY_TYPE]?.[0]?.name).toBe(
+      "originSettler",
+    )
   })
 })

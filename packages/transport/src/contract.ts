@@ -6,7 +6,10 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
-import { type ChainId, chainIdSchema } from "./chain/chain-id"
+import {
+  type ChainId,
+  chainIdSchema,
+} from "./chain/chain-id"
 
 export const ContractContextSchema = object({
   chain_id: chainIdSchema,

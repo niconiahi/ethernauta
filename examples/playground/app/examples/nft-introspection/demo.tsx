@@ -13,6 +13,15 @@ import {
   http,
 } from "@ethernauta/transport"
 import { useEffect, useState } from "react"
+import {
+  array,
+  bigint,
+  boolean,
+  type InferOutput,
+  number,
+  object,
+  string,
+} from "valibot"
 import { Button } from "../../components/button"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
@@ -43,19 +52,24 @@ const multicall = create_multicall([
   },
 ])
 
-type Snapshot = {
-  interfaces: { label: string; supported: boolean }[]
-  name: string
-  total_supply: bigint
-  owner_of_1: string
-  token_uri_1: string
-  elapsed_ms: number
-}
+const snapshotSchema = object({
+  interfaces: array(
+    object({
+      label: string(),
+      supported: boolean(),
+    }),
+  ),
+  name: string(),
+  total_supply: bigint(),
+  owner_of_1: string(),
+  token_uri_1: string(),
+  elapsed_ms: number(),
+})
+type Snapshot = InferOutput<typeof snapshotSchema>
 
 export function NftIntrospectionDemo() {
-  const [snapshot, set_snapshot] = useState<Snapshot | null>(
-    null,
-  )
+  const [snapshot, set_snapshot] =
+    useState<Snapshot | null>(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
@@ -77,7 +91,9 @@ export function NftIntrospectionDemo() {
         ownerOf({ tokenId: "0x1" })(ctx),
         tokenURI({ tokenId: "0x1" })(ctx),
       ] as never)
-      const elapsed_ms = Math.round(performance.now() - start)
+      const elapsed_ms = Math.round(
+        performance.now() - start,
+      )
       const r = results as unknown as readonly unknown[]
       set_snapshot({
         interfaces: INTERFACES.map((i, idx) => ({
@@ -214,9 +230,7 @@ function Row({
       </span>
       <span
         style={{
-          fontFamily: mono
-            ? "monospace"
-            : "inherit",
+          fontFamily: mono ? "monospace" : "inherit",
           color:
             ok === false
               ? "#999"

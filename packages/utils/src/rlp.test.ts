@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest"
 import { bytes_to_hex } from "./bytes-to-hex"
 import { rlp_encode } from "./rlp"
 
-function hex(input: Parameters<typeof rlp_encode>[0]): string {
+function hex(
+  input: Parameters<typeof rlp_encode>[0],
+): string {
   return bytes_to_hex(rlp_encode(input))
 }
 
@@ -26,9 +28,7 @@ describe("rlp.ts", () => {
   })
 
   it("should encode the list ['cat', 'dog']", () => {
-    expect(hex(["cat", "dog"])).toBe(
-      "0xc88363617483646f67",
-    )
+    expect(hex(["cat", "dog"])).toBe("0xc88363617483646f67")
   })
 
   it("should encode the integer 0 as the empty byte string", () => {

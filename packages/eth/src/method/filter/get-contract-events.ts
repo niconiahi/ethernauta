@@ -4,10 +4,7 @@ import {
   decode_event_log,
   encode_event_topics,
 } from "@ethernauta/abi"
-import {
-  addressSchema,
-  uintSchema,
-} from "@ethernauta/core"
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -50,9 +47,11 @@ export type GetContractEventsInput = InferOutput<
 // supported via `null` in `values`.
 export function get_contract_events<
   Args extends readonly AbiCodec<unknown>[],
->(_parameters: GetContractEventsInput & {
-  args: Args
-}): Readable<DecodedEventLog[]> {
+>(
+  _parameters: GetContractEventsInput & {
+    args: Args
+  },
+): Readable<DecodedEventLog[]> {
   return async ([
     transports,
     _context,

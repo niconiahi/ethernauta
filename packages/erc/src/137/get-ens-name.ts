@@ -10,11 +10,7 @@ import type {
   ResolvedReader,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import {
-  object,
-  optional,
-  parse,
-} from "valibot"
+import { object, optional, parse } from "valibot"
 
 import { eth_call } from "./eth-call"
 import { addr } from "./methods/addr"
@@ -44,7 +40,9 @@ export function get_ens_name(
       _context.chain_id,
       parameters.registry,
     )
-    const reverse_node = reverse_namehash(parameters.address)
+    const reverse_node = reverse_namehash(
+      parameters.address,
+    )
     const resolver_call = resolver({ node: reverse_node })({
       chain_id: _context.chain_id,
       to: registry,

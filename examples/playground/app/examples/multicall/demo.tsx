@@ -1,5 +1,10 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { decimals, name, symbol, totalSupply } from "@ethernauta/erc/20"
+import {
+  decimals,
+  name,
+  symbol,
+  totalSupply,
+} from "@ethernauta/erc/20"
 import {
   contract,
   create_multicall,
@@ -8,6 +13,13 @@ import {
 } from "@ethernauta/transport"
 import { hex_to_number } from "@ethernauta/utils"
 import { useEffect, useState } from "react"
+import {
+  bigint,
+  type InferOutput,
+  number,
+  object,
+  string,
+} from "valibot"
 import { Button } from "../../components/button"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
@@ -16,7 +28,8 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 })
 
 // WETH on Sepolia — canonical wrapped-ether deployment.
-const WETH_SEPOLIA = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+const WETH_SEPOLIA =
+  "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
 
 const multicall = create_multicall([
   {
@@ -27,18 +40,18 @@ const multicall = create_multicall([
   },
 ])
 
-type Snapshot = {
-  name: string
-  symbol: string
-  decimals: number
-  totalSupply: bigint
-  elapsed_ms: number
-}
+const snapshotSchema = object({
+  name: string(),
+  symbol: string(),
+  decimals: number(),
+  totalSupply: bigint(),
+  elapsed_ms: number(),
+})
+type Snapshot = InferOutput<typeof snapshotSchema>
 
 export function MulticallDemo() {
-  const [snapshot, set_snapshot] = useState<Snapshot | null>(
-    null,
-  )
+  const [snapshot, set_snapshot] =
+    useState<Snapshot | null>(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
@@ -58,7 +71,9 @@ export function MulticallDemo() {
           decimals()(ctx),
           totalSupply()(ctx),
         ] as const)
-      const elapsed_ms = Math.round(performance.now() - start)
+      const elapsed_ms = Math.round(
+        performance.now() - start,
+      )
       set_snapshot({
         name: name_,
         symbol: symbol_,
@@ -156,7 +171,10 @@ function Row({
   )
 }
 
-function format_supply(raw: bigint, decimals: number): string {
+function format_supply(
+  raw: bigint,
+  decimals: number,
+): string {
   const base = 10n ** BigInt(decimals)
   const whole = raw / base
   const fraction = raw % base

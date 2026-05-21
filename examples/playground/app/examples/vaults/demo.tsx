@@ -16,6 +16,13 @@ import {
   http,
 } from "@ethernauta/transport"
 import { useEffect, useState } from "react"
+import {
+  bigint,
+  type InferOutput,
+  number,
+  object,
+  string,
+} from "valibot"
 import { Button } from "../../components/button"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
@@ -53,17 +60,18 @@ const multicall = create_multicall([
 // decimals on the client.
 const ONE_SHARE = `0x${(10n ** 18n).toString(16)}` as const
 
-type VaultSnapshot = {
-  label: string
-  symbol: string
-  decimals: number
-  total_supply: bigint
-  total_assets: bigint
-  assets_per_share: bigint
-  asset_address: string
-  underlying: string
-  underlying_decimals: number
-}
+const vaultSnapshotSchema = object({
+  label: string(),
+  symbol: string(),
+  decimals: number(),
+  total_supply: bigint(),
+  total_assets: bigint(),
+  assets_per_share: bigint(),
+  asset_address: string(),
+  underlying: string(),
+  underlying_decimals: number(),
+})
+type VaultSnapshot = InferOutput<typeof vaultSnapshotSchema>
 
 export function VaultsDemo() {
   const [snapshots, set_snapshots] = useState<
@@ -71,9 +79,9 @@ export function VaultsDemo() {
   >(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
-  const [elapsed_ms, set_elapsed_ms] = useState<number | null>(
-    null,
-  )
+  const [elapsed_ms, set_elapsed_ms] = useState<
+    number | null
+  >(null)
 
   async function run() {
     set_loading(true)
@@ -180,10 +188,7 @@ export function VaultsDemo() {
               )}
               {s && (
                 <>
-                  <Row
-                    label="Symbol"
-                    value={s.symbol}
-                  />
+                  <Row label="Symbol" value={s.symbol} />
                   <Row
                     label="Decimals"
                     value={String(s.decimals)}
@@ -231,8 +236,8 @@ export function VaultsDemo() {
             fontFamily: "monospace",
           }}
         >
-          {elapsed_ms} ms · {VAULTS.length * 6} reads ·
-          1 RPC call
+          {elapsed_ms} ms · {VAULTS.length * 6} reads · 1
+          RPC call
         </p>
       )}
       <Button onClick={run} disabled={loading}>
@@ -262,9 +267,7 @@ function Row({
         fontSize: 13,
       }}
     >
-      <span
-        style={{ color: "#666", whiteSpace: "nowrap" }}
-      >
+      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
         {label}
       </span>
       <span
