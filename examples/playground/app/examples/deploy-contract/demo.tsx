@@ -1,31 +1,46 @@
 import {
+  type Address,
+  addressSchema,
+  bytes32Schema,
+} from "@ethernauta/core"
+import {
   get_contract_address,
   get_create2_address,
 } from "@ethernauta/eip/1014"
 import { useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 
 // Stand-in `keccak256(init_code)` — any 32-byte hex works for
 // the derivation; the caller is responsible for hashing their
 // real init code (creation bytecode + constructor calldata)
 // before passing it as `bytecodeHash`.
-const BYTECODE_HASH =
-  "0xd6fb717f7e270a360f5093ce6a7a3752183e89c9a9afe5c0cb54b204a3902895"
+const BYTECODE_HASH = parse(
+  bytes32Schema,
+  "0xd6fb717f7e270a360f5093ce6a7a3752183e89c9a9afe5c0cb54b204a3902895",
+)
 
-const CREATE_FROM = "0x0000000000000000000000000000000000000042"
+const CREATE_FROM = parse(
+  addressSchema,
+  "0x0000000000000000000000000000000000000042",
+)
 const CREATE_NONCE = 7n
 
-const CREATE2_FROM =
-  "0x00000000000000000000000000000000deadbeef"
-const CREATE2_SALT =
-  "0x00000000000000000000000000000000000000000000000000000000cafebabe"
+const CREATE2_FROM = parse(
+  addressSchema,
+  "0x00000000000000000000000000000000deadbeef",
+)
+const CREATE2_SALT = parse(
+  bytes32Schema,
+  "0x00000000000000000000000000000000000000000000000000000000cafebabe",
+)
 
 export function DeployContractDemo() {
   const [create_address, set_create_address] = useState<
-    string | null
+    Address | null
   >(null)
   const [create2_address, set_create2_address] = useState<
-    string | null
+    Address | null
   >(null)
   const [error, set_error] = useState<string | null>(null)
 

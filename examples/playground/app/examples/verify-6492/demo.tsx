@@ -1,10 +1,17 @@
 import {
+  type Address,
+  addressSchema,
+  type Bytes,
+  bytesSchema,
+} from "@ethernauta/core"
+import {
   is_wrapped_signature,
   MAGIC_BYTES,
   unwrap_signature,
   wrap_signature,
 } from "@ethernauta/eip/6492"
 import { useMemo, useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 
 // Sample inputs — values are illustrative; in practice
@@ -12,18 +19,25 @@ import { Button } from "../../components/button"
 // counterfactual deploy plan and `signature` is whatever
 // the 1271 verifier of that account would accept once
 // deployed.
-const FACTORY = "0x000000000000000000000000000000000000FA01"
-const FACTORY_DATA = "0xdeadbeefcafebabe"
-const INNER_SIGNATURE = `0x${"42".repeat(65)}` as const
+const FACTORY: Address = parse(
+  addressSchema,
+  "0x000000000000000000000000000000000000FA01",
+)
+const FACTORY_DATA: Bytes = parse(
+  bytesSchema,
+  "0xdeadbeefcafebabe",
+)
+const INNER_SIGNATURE: Bytes = parse(
+  bytesSchema,
+  `0x${"42".repeat(65)}`,
+)
 
 export function Verify6492Demo() {
-  const [wrapped, set_wrapped] = useState<
-    `0x${string}` | null
-  >(null)
+  const [wrapped, set_wrapped] = useState<Bytes | null>(null)
   const [unwrapped, set_unwrapped] = useState<{
-    factory: string
-    factoryData: string
-    signature: string
+    factory: Address
+    factoryData: Bytes
+    signature: Bytes
   } | null>(null)
   const [error, set_error] = useState<string | null>(null)
 

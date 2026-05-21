@@ -1,5 +1,6 @@
 import { type AbiCodec, address, uint256 } from "@ethernauta/abi"
 import { eip155_1 } from "@ethernauta/chain"
+import { addressSchema, type Uint256 } from "@ethernauta/core"
 import {
   eth_blockNumber,
   get_contract_events,
@@ -10,6 +11,12 @@ import {
   http,
 } from "@ethernauta/transport"
 import { useState } from "react"
+import {
+  bigint,
+  type InferOutput,
+  object,
+  parse,
+} from "valibot"
 import { Button } from "../../components/button"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
@@ -31,11 +38,12 @@ const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
 // USDC — high-volume Transfer events, every block.
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 
-type Row = {
-  from: string
-  to: string
-  value: bigint
-}
+const rowSchema = object({
+  from: addressSchema,
+  to: addressSchema,
+  value: bigint(),
+})
+type Row = InferOutput<typeof rowSchema>
 
 export function EventDecodingDemo() {
   const [rows, set_rows] = useState<Row[]>([])
@@ -68,11 +76,13 @@ export function EventDecodingDemo() {
       })(ctx)
       set_range(`${from} → ${to}`)
       set_rows(
-        decoded.slice(0, 12).map((d) => ({
-          from: d.args[0] as string,
-          to: d.args[1] as string,
-          value: d.args[2] as bigint,
-        })),
+        decoded.slice(0, 12).map((d) =>
+          parse(rowSchema, {
+            from: d.args[0],
+            to: d.args[1],
+            value: BigInt(d.args[2] as Uint256),
+          }),
+        ),
       )
     } catch (e) {
       set_error(

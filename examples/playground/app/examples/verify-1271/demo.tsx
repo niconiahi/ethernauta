@@ -1,4 +1,10 @@
 import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  type Address,
+  addressSchema,
+  type Bytes,
+  bytesSchema,
+} from "@ethernauta/core"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import { verify_message } from "@ethernauta/eip/1271"
 import { personal_sign } from "@ethernauta/eip/191"
@@ -9,6 +15,7 @@ import {
   http,
 } from "@ethernauta/transport"
 import { useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
@@ -30,12 +37,10 @@ const signer = create_signer(CHAINS)
 const MESSAGE = "Verify me with EIP-1271"
 
 export function Verify1271Demo() {
-  const [owner, set_owner] = useState<`0x${string}` | null>(
+  const [owner, set_owner] = useState<Address | null>(null)
+  const [signature, set_signature] = useState<Bytes | null>(
     null,
   )
-  const [signature, set_signature] = useState<
-    `0x${string}` | null
-  >(null)
   const [valid, set_valid] = useState<boolean | null>(null)
   const [busy, set_busy] = useState(false)
   const [error, set_error] = useState<string | null>(null)
@@ -47,7 +52,7 @@ export function Verify1271Demo() {
         signer({ chain_id: SEPOLIA_CHAIN_ID }),
       )
       const first = accounts[0]
-      if (first) set_owner(first as `0x${string}`)
+      if (first) set_owner(parse(addressSchema, first))
     } catch (e) {
       set_error(
         e instanceof Error ? e.message : String(e),
@@ -62,14 +67,15 @@ export function Verify1271Demo() {
     set_valid(null)
     set_signature(null)
     try {
-      const sig = await personal_sign([MESSAGE, owner])(
+      const raw_sig = await personal_sign([MESSAGE, owner])(
         signer({ chain_id: SEPOLIA_CHAIN_ID }),
       )
-      set_signature(sig as `0x${string}`)
+      const sig = parse(bytesSchema, raw_sig)
+      set_signature(sig)
       const ok = await verify_message({
         address: owner,
         message: MESSAGE,
-        signature: sig as `0x${string}`,
+        signature: sig,
       })(reader({ chain_id: SEPOLIA_CHAIN_ID }))
       set_valid(ok)
     } catch (e) {
@@ -148,13 +154,16 @@ export function Verify1271Demo() {
   )
 }
 
-function flip_last_byte(hex: `0x${string}`): `0x${string}` {
+function flip_last_byte(hex: Bytes): Bytes {
   const body = hex.slice(2)
   const last = body.slice(-2)
   const byte = (parseInt(last, 16) ^ 0x01)
     .toString(16)
     .padStart(2, "0")
-  return `0x${body.slice(0, -2)}${byte}` as `0x${string}`
+  return parse(
+    bytesSchema,
+    `0x${body.slice(0, -2)}${byte}`,
+  )
 }
 
 function Row({
