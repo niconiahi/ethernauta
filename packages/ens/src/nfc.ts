@@ -85,9 +85,7 @@ export function to_cps(_s: string): number[] {
   return out
 }
 
-export function from_cps(
-  _cps: readonly number[],
-): string {
+export function from_cps(_cps: readonly number[]): string {
   let out = ""
   for (const cp of _cps) {
     out += String.fromCodePoint(cp)
@@ -135,9 +133,7 @@ function canonical_reorder(_cps: number[]): void {
       ccc: get_ccc(cp),
       idx,
     }))
-    slice.sort(
-      (a, b) => a.ccc - b.ccc || a.idx - b.idx,
-    )
+    slice.sort((a, b) => a.ccc - b.ccc || a.idx - b.idx)
     for (let k = 0; k < slice.length; k++) {
       _cps[i + k] = (slice[k] as { cp: number }).cp
     }
@@ -164,10 +160,7 @@ function compose_pair(_a: number, _b: number): number {
   ) {
     const l_index = _a - L_BASE
     const v_index = _b - V_BASE
-    return (
-      S_BASE +
-      (l_index * V_COUNT + v_index) * T_COUNT
-    )
+    return S_BASE + (l_index * V_COUNT + v_index) * T_COUNT
   }
   // Hangul LV + T → LVT syllable
   if (

@@ -24,7 +24,7 @@
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "test:unit": "vitest",
-    "derive": "bun src/derive/nfc.ts && pnpm run format"
+    "derive": "bun src/derive/nfc.ts && bun src/derive/spec.ts && pnpm run format"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"

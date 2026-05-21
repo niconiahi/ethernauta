@@ -12,7 +12,11 @@ describe("nfc.ts", () => {
       actual: readonly number[]
     }[] = []
 
-    for (const [source, expected_nfc, expected_nfd] of NFC_VECTORS) {
+    for (const [
+      source,
+      expected_nfc,
+      expected_nfd,
+    ] of NFC_VECTORS) {
       // NormalizationTest invariants:
       //   NFC(source) === expected_nfc
       //   NFD(source) === expected_nfd
@@ -21,9 +25,7 @@ describe("nfc.ts", () => {
       const actual_nfc = nfc(source)
       if (
         actual_nfc.length !== expected_nfc.length ||
-        actual_nfc.some(
-          (cp, i) => cp !== expected_nfc[i],
-        )
+        actual_nfc.some((cp, i) => cp !== expected_nfc[i])
       ) {
         failures.push({
           kind: "nfc",
@@ -36,9 +38,7 @@ describe("nfc.ts", () => {
       const actual_nfd = nfd(source)
       if (
         actual_nfd.length !== expected_nfd.length ||
-        actual_nfd.some(
-          (cp, i) => cp !== expected_nfd[i],
-        )
+        actual_nfd.some((cp, i) => cp !== expected_nfd[i])
       ) {
         failures.push({
           kind: "nfd",
