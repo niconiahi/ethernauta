@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@ethernauta/ens",
+  "type": "module",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niconiahi/ethernauta"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown && biome format --write dist",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "format": "biome format --write .",
+    "test:unit": "vitest",
+    "derive": "bun src/derive/nfc.ts && pnpm run format"
+  },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "bun": "^1.2.20",
+    "tsdown": "^0.13.3"
+  }
+}
