@@ -1,5 +1,11 @@
 import "fake-indexeddb/auto"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
 import { delete_vault, set_vault } from "./vault"
 import {
@@ -36,8 +42,14 @@ function reset_accounts_signal() {
   }
 }
 
-function stub_chrome_storage() {
+type ChromeStub = {
+  store: Record<string, unknown>
+  send_message: ReturnType<typeof vi.fn>
+}
+
+function stub_chrome(): ChromeStub {
   const store: Record<string, unknown> = {}
+  const send_message = vi.fn(async () => undefined)
   vi.stubGlobal("chrome", {
     storage: {
       local: {
@@ -45,16 +57,25 @@ function stub_chrome_storage() {
           if (key in store) return { [key]: store[key] }
           return {}
         }),
-        set: vi.fn(async (entries: Record<string, unknown>) => {
-          Object.assign(store, entries)
-        }),
+        set: vi.fn(
+          async (entries: Record<string, unknown>) => {
+            Object.assign(store, entries)
+          },
+        ),
         remove: vi.fn(async (key: string) => {
           delete store[key]
         }),
       },
     },
+    runtime: {
+      sendMessage: send_message,
+    },
   })
-  return store
+  return { store, send_message }
+}
+
+function stub_chrome_storage(): Record<string, unknown> {
+  return stub_chrome().store
 }
 
 beforeEach(async () => {
@@ -148,7 +169,9 @@ describe("add_account", () => {
     await add_account() // index 2
     accounts.value = {
       ...accounts.value,
-      list: accounts.value.list.filter((a) => a.index !== 1),
+      list: accounts.value.list.filter(
+        (a) => a.index !== 1,
+      ),
     }
     const filled = await add_account()
     expect(filled.index).toBe(1)
@@ -200,6 +223,36 @@ describe("active_account (computed)", () => {
     stub_chrome_storage()
     expect(active_account.value.address).toBe("")
     expect(active_account.value.index).toBe(0)
+  })
+})
+
+describe("set_active_index broadcast", () => {
+  it("sends an accounts-changed notification with the new active address", async () => {
+    const { send_message } = stub_chrome()
+    await set_vault(TEST_MNEMONIC, TEST_PASSWORD)
+    await init_accounts(TEST_PASSWORD)
+    await add_account()
+    send_message.mockClear()
+
+    await set_active_index(1)
+
+    expect(send_message).toHaveBeenCalledTimes(1)
+    const [payload] = send_message.mock.calls[0] ?? []
+    expect(payload).toEqual({
+      type: "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED",
+      accounts: [EXPECTED_ADDRESSES[1]],
+    })
+  })
+
+  it("does not broadcast when add_account runs (no active change)", async () => {
+    const { send_message } = stub_chrome()
+    await set_vault(TEST_MNEMONIC, TEST_PASSWORD)
+    await init_accounts(TEST_PASSWORD)
+    send_message.mockClear()
+
+    await add_account()
+
+    expect(send_message).not.toHaveBeenCalled()
   })
 })
 

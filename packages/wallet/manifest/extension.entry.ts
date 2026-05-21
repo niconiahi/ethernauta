@@ -123,7 +123,9 @@ chrome.runtime.onMessage.addListener(
     }
     if (
       event.type ===
-      "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"
+        "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED" ||
+      event.type ===
+        "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"
     ) {
       const tabs = await chrome.tabs.query({})
       for (const tab of tabs) {

@@ -178,9 +178,9 @@ export async function set_active_index(
   index: number,
 ): Promise<void> {
   const state = accounts.value
-  const exists = state.list.some((a) => a.index === index)
+  const account = state.list.find((a) => a.index === index)
   invariant(
-    exists,
+    account,
     `cannot activate index ${index}: not in account list`,
   )
   const next: AccountsState = {
@@ -189,6 +189,25 @@ export async function set_active_index(
   }
   accounts.value = next
   await persist_accounts(next)
+  broadcast_accounts_changed([account.address])
+}
+
+function broadcast_accounts_changed(
+  addresses: string[],
+): void {
+  // Best-effort fire-and-forget — chrome.runtime is absent in
+  // test environments, so guard it. The background script
+  // relays the notification to all tabs via
+  // chrome.tabs.sendMessage; the content script and provider
+  // adapter pick it up from there.
+  if (typeof chrome === "undefined") return
+  if (!chrome.runtime?.sendMessage) return
+  chrome.runtime
+    .sendMessage({
+      type: "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED",
+      accounts: addresses,
+    })
+    .catch(() => {})
 }
 
 function next_free_index(list: Account[]): number {

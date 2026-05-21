@@ -115,9 +115,18 @@ export type ChainSelectedNotification = InferOutput<
   typeof ChainSelectedNotificationSchema
 >
 
+export const AccountsChangedNotificationSchema = object({
+  type: literal("ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"),
+  accounts: array(string()),
+})
+export type AccountsChangedNotification = InferOutput<
+  typeof AccountsChangedNotificationSchema
+>
+
 export const EthernautaNotificationSchema = union([
   PopupReadyNotificationSchema,
   ChainSelectedNotificationSchema,
+  AccountsChangedNotificationSchema,
 ])
 export type EthernautaNotification = InferOutput<
   typeof EthernautaNotificationSchema

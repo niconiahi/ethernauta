@@ -116,13 +116,22 @@ const provider: ProviderInternal = create_provider({
 window.addEventListener("message", (event) => {
   if (event.source !== window) return
   if (
-    event.data?.type !==
+    event.data?.type ===
     "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"
-  )
+  ) {
+    const chain_id = event.data.chainId as string
+    if (!provider.has_chain(chain_id)) return
+    provider.set_active_chain(chain_id)
     return
-  const chain_id = event.data.chainId as string
-  if (!provider.has_chain(chain_id)) return
-  provider.set_active_chain(chain_id)
+  }
+  if (
+    event.data?.type ===
+    "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"
+  ) {
+    const accounts = event.data.accounts as string[]
+    provider.set_accounts(accounts)
+    return
+  }
 })
 
 announce({
