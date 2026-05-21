@@ -47,6 +47,9 @@ importers:
       '@ethernauta/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@ethernauta/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@ethernauta/eip':
         specifier: workspace:*
         version: link:../../packages/eip
@@ -111,6 +114,9 @@ importers:
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
       '@types/react':
         specifier: ^19.1.2
         version: 19.2.14

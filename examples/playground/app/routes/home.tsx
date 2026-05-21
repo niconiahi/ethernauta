@@ -1,7 +1,9 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
-import { create_provider } from "@ethernauta/eip/1193"
-import { eth_sendRawTransaction, eth_signTransaction } from "@ethernauta/eth"
+import {
+  eth_sendRawTransaction,
+  eth_signTransaction,
+} from "@ethernauta/eth"
 import {
   register_transaction,
   type Transaction,
@@ -34,7 +36,6 @@ const CHAINS = [
 ]
 const writer = create_writer(CHAINS)
 const signer = create_signer(CHAINS)
-const _provider = create_provider({ chains: CHAINS })
 
 export default function () {
   const [transactions, setTransactions] = useState<
@@ -576,7 +577,11 @@ function TestWalletButton({
   )
 }
 
-function ConnectedAddress({ address }: { address: string }) {
+function ConnectedAddress({
+  address,
+}: {
+  address: string
+}) {
   const short = `${address.slice(0, 6)}…${address.slice(-4)}`
   return (
     <div
@@ -606,7 +611,9 @@ function ConnectedAddress({ address }: { address: string }) {
           background: "#0FA05C",
         }}
       />
-      <span style={{ fontFamily: "monospace" }}>{short}</span>
+      <span style={{ fontFamily: "monospace" }}>
+        {short}
+      </span>
     </div>
   )
 }

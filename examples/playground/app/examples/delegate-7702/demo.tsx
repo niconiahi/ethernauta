@@ -62,7 +62,7 @@ const execute_args = [array(call_tuple)] as const
 function encode_execute(
   calls: Array<{
     to: `0x${string}`
-    value: bigint
+    value: `0x${string}`
     data: `0x${string}`
   }>,
 ): `0x${string}` {
@@ -104,7 +104,7 @@ export function Delegate7702Demo() {
     try {
       const calls = TARGETS.map((to) => ({
         to,
-        value: 0n,
+        value: "0x0" as const,
         data: "0x" as const,
       }))
       const calldata = encode_execute(calls)
@@ -128,10 +128,6 @@ export function Delegate7702Demo() {
     }
   }
 
-  const executor_unset =
-    BATCH_EXECUTOR ===
-    "0x0000000000000000000000000000000000000000"
-
   return (
     <div style={{ marginTop: 24 }}>
       <div style={{ marginBottom: 24 }}>
@@ -152,19 +148,6 @@ export function Delegate7702Demo() {
           <Row label="Tx hash" value={tx_hash} mono />
         )}
       </div>
-      {executor_unset && (
-        <p
-          style={{
-            color: "#996800",
-            fontSize: 13,
-            marginBottom: 12,
-          }}
-        >
-          Deploy `BatchExecutor.sol` to Sepolia and paste
-          its address into `BATCH_EXECUTOR` to enable this
-          demo.
-        </p>
-      )}
       {error && (
         <p
           style={{
@@ -187,10 +170,7 @@ export function Delegate7702Demo() {
           <Button onClick={connect}>Connect wallet</Button>
         )}
         {owner && (
-          <Button
-            onClick={run_batch}
-            disabled={loading || executor_unset}
-          >
+          <Button onClick={run_batch} disabled={loading}>
             {loading
               ? "Signing & broadcasting…"
               : tx_hash
