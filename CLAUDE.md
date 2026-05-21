@@ -1,306 +1,113 @@
 # CLAUDE.md
 
-This file provides comprehensive guidance to Claude Code when working with the Ethernauta codebase.
+Guidance for Claude Code working on the Ethernauta monorepo. This file is a **router**, not a manual — the substantive guidance lives in the skills under `skills/<name>/SKILL.md`. Read the relevant skill before planning or writing code.
 
-## Project Overview
+## What Ethernauta is
 
-**Ethernauta** is a secure cryptocurrency wallet Chrome extension built with modern web technologies. The project focuses on:
-- Secure wallet creation from mnemonic phrases with password protection
-- Encrypted mnemonic storage using IndexedDB with AES-GCM encryption
-- EIP-1559 transaction signing for Ethereum-compatible networks
-- Clean, minimal UI built with Preact
-- Extensible monorepo architecture supporting multiple blockchain networks
+A pnpm workspace that ships:
 
-## Architecture & Structure
+1. A Chrome MV3 wallet extension (`packages/wallet/`, private) that holds an encrypted mnemonic in IndexedDB and signs requests from dapps via a `window.postMessage` ↔ `chrome.runtime` bridge.
+2. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps consume to talk to the wallet and the chain.
 
-### Monorepo Organization
-Ethernauta is organized as a pnpm workspace monorepo with the following packages:
+## Routing — which skill to read
+
+Match the task at hand against this table **before** you start planning. If a skill applies, read it first; the skill is the source of truth, this file is not.
+
+| Task | Skill | When |
+|---|---|---|
+| Declare any value-bearing type (function params, return values, messages, storage, signals) | `skills/conventions/SKILL.md` | **Always.** Non-negotiable rule: Valibot schemas first, types via `v.InferOutput`. Never `interface`, never hand-rolled `type X = { ... }` |
+| Need a primitive schema (address, bytes-N, hash32, uintN, …) | `skills/core/SKILL.md` | Before declaring any new schema. Most likely it already exists in `@ethernauta/core` |
+| Add or modify an EIP | `skills/eip/SKILL.md` | Adding a new `packages/eip/src/<n>/` folder, or changing one of `191`, `712`, `1102`, `1193`, `1271`, `2255`, `3085`, `3326`, `4337`, `4361`, `5792`, `6492`, `6963`, `7702` |
+| Add or modify an ERC | `skills/erc/SKILL.md` | Adding a new `packages/erc/src/<n>/` folder, generating method bindings, wiring an extension, regenerating the selector registry |
+| Touch the wallet extension | `skills/wallet/SKILL.md` | Anything under `packages/wallet/` — message envelope, view routing, vault, new RPC method handler, popup view |
+| Write a helper function anywhere | `skills/utils/SKILL.md` | Decide "utils vs colocated" using the rubric. Default to colocation |
+| Build a dapp consuming `@ethernauta/*` | `skills/ethernauta/SKILL.md` | Factories / resolvers / methods, chain wiring, reads, contract calls, sign + broadcast, transaction tracking, EIP-6963 discovery, error shapes |
+
+## Planning protocol
+
+When asked to implement or change anything in this repo:
+
+1. **Map the task to skills.** Use the table above. A task may match several — e.g. "add EIP-7702 to the wallet" matches `eip`, `wallet`, and `conventions`. Read all matched skills.
+2. **Identify the boundaries.** What values cross? Parameters, return values, messages, storage, signals. Each one needs a Valibot schema (`conventions` skill).
+3. **Identify the primitives.** Each boundary value decomposes into core primitives (`core` skill). Reuse `addressSchema`, `bytesSchema`, etc. — do not redeclare regexes.
+4. **Pick the method shape.** If the operation needs a transport, choose `Readable<T>` / `Writable<T>` / `Signable<T>` / `Callable<T>` (`ethernauta` skill, section 1). Pure operations are plain functions.
+5. **Match the folder shape.** Use the existing structure of the package you are extending — do not invent a new layout. The `eip` and `erc` skills document the canonical folder shapes.
+6. **Decide where helpers go.** Apply the flowchart in `skills/utils/SKILL.md`. Default to colocation; promote to `@ethernauta/utils` only when truly universal.
+
+## Hard rules (the project-wide invariants)
+
+These bind regardless of task. They are surfaced here so they cannot be missed even if a skill is skipped.
+
+1. **No `interface`, no hand-rolled `type X = { ... }` for value-bearing data.** Valibot schema first, `type X = InferOutput<typeof xSchema>` second. The schema is the type. (`conventions`)
+2. **Validate at the boundary with `parse`, never `safeParse`.** Throws are the contract. The idiom is `_param` (loose, prefixed) → `parse` → `param` (validated). (`conventions`)
+3. **Primitive schemas live in `@ethernauta/core`** and nowhere else. Compose them; do not redeclare regexes inside feature packages. (`core`)
+4. **Curried method invocation never collapses.** `method(args)(resolver({ chain_id, ...ctx }))` — two calls, in order. (`ethernauta` skill, section 1)
+5. **The wallet does the gas/nonce work.** When emitting an `eth_signTransaction` payload, set only `to`, `value`, `input`, and `_ethernauta.function` sidecar. Never set `nonce`, `gas`, `maxFeePerGas`, `maxPriorityFeePerGas`. (`erc`, `wallet`)
+6. **Every wire envelope is `parse`d before use.** `EthernautaEventSchema` / `EthernautaRequestSchema` / `EthernautaResponseSchema` at the message-passing layer; method-specific schemas after dispatch. (`wallet`)
+7. **Filenames kebab-case, functions snake_case, schemas lowerCamelCase+Schema, types PascalCase.** ABI-bound identifiers (`balanceOf`, `transferFrom`) preserve their ABI casing for `keccak(signature)` matching. (`erc`)
+8. **Spec link at the top of every standards file.** `// https://eips.ethereum.org/EIPS/eip-<n>` for EIPs, `// https://eips.ethereum.org/EIPS/eip-<n>` or the ENS doc link for ERCs. (`eip`, `erc`)
+9. **No new dependencies in `@ethernauta/utils`.** It must stay pure, dependency-free, side-effect-free. (`utils`)
+10. **The mnemonic and private key never leave the popup process.** Not over `postMessage`, not over `chrome.runtime`, not into a log. (`wallet`)
+
+## Workspace shape
 
 ```
 packages/
-├── wallet/          # Main Chrome extension (private)
-├── transport/       # Blockchain communication layer (published)
-├── chain/          # Chain definitions and utilities (published)
-├── eth/            # Ethereum-specific functionality (published)
-└── transaction/    # Transaction management utilities (published)
+  core/         primitive Valibot schemas (skills/core)
+  utils/        pure dependency-free helpers (skills/utils)
+  abi/          ABI encode/decode codecs
+  chain/        500+ EIP-155 chain definitions
+  eth/          eth_* JSON-RPC methods (Readable / Writable / Signable)
+  transport/    Readable/Writable/Signable/Callable, resolvers, http
+  transaction/  register_transaction, watch_transaction
+  eip/          EIPs as importable subpaths (skills/eip)
+  erc/          ERC method bindings as importable subpaths (skills/erc)
+  ens/          ENS-specific primitives (ENSIP normalize, etc.)
+  wallet/       Chrome MV3 extension, PRIVATE (skills/wallet)
+  cli/          codegen + registry tooling
 
 examples/
-└── playground/     # React Router development environment
+  playground/   React Router dapp used for live testing
+
+skills/
+  conventions/  Valibot-first typing — read first, always
+  core/         catalog of @ethernauta/core primitives
+  utils/        catalog of @ethernauta/utils + utils-vs-colocated rubric
+  eip/          guidelines for adding/modifying EIPs
+  erc/          guidelines for adding/modifying ERCs
+  wallet/       wallet architecture and how to extend it
+  ethernauta/   dapp-consumer guide (factories, resolvers, methods)
 ```
 
-### Core Packages
+## Common commands
 
-#### @ethernauta/wallet (`packages/wallet/`)
-The main Chrome extension package containing:
-
-**Architecture Files:**
-- `src/controller.tsx:16-76` - Main controller with message handling and view routing
-- `src/utils/view.ts:1-5` - Simple signal-based view state management
-- `manifest/extension.entry.ts:13-67` - Background script for Chrome extension messaging
-- `public/manifest.json:1-28` - Chrome extension manifest v3 configuration
-
-**Security & Crypto Files:**
-- `src/utils/vault.ts:1-242` - Secure mnemonic storage with IndexedDB + AES-GCM encryption
-- `src/utils/crypto.ts:1-70` - Cryptographic operations (mnemonic → seed → keys → addresses)
-- `src/utils/authentication.ts:1-42` - Authentication flow with 5-minute session timeout
-- `src/utils/sign-transaction.ts:1-310` - EIP-1559 transaction signing with ECDSA
-
-**Views:**
-- `src/views/mnemonics/` - Initial wallet setup with mnemonic generation
-- `src/views/password/` - Password entry for vault unlock
-- `src/views/wallet/` - Main wallet interface
-- `src/views/sign/` - Transaction signing interface
-
-#### @ethernauta/transport (`packages/transport/`)
-Blockchain communication layer providing:
-- JSON-RPC client implementation with HTTP transport
-- Transaction management and monitoring utilities
-- Chain ID encoding/decoding (CAIP-2, CAIP-10, CAIP-19 standards)
-- Reader/Writer pattern for blockchain operations
-
-#### @ethernauta/chain (`packages/chain/`)
-Comprehensive chain definitions including:
-- 500+ EIP-155 chain configurations (located in `src/chain/eip155/`)
-- Ethereum mainnet, Polygon, BSC, L2s, testnets support
-- Chain indexer for automatic updates via `scripts/indexer.ts:26`
-- CAIP standard implementations
-
-#### @ethernauta/eth (`packages/eth/`)
-Ethereum-specific functionality:
-- ABI encoding/decoding for functions, events, and errors
-- Block, transaction, and receipt utilities
-- Method implementations for common operations
-- Fee market (EIP-1559) support
-
-#### @ethernauta/transaction (`packages/transaction/`)
-Transaction management utilities:
-- Transaction state management
-- Transaction watching and monitoring
-- Type definitions for transaction operations
-
-#### @ethernauta/playground (`examples/playground/`)
-Development testing environment:
-- React Router 7.7.1 application
-- Cloudflare Pages deployment configuration
-- Integration examples and testing utilities
-
-## Technology Stack
-
-### Frontend & State Management
-- **Preact 10.26.9** - Lightweight React alternative for extension UI
-- **@preact/signals 2.2.1** - Reactive state management (simple signal-based approach)
-- **Valibot 1.1.0** - Schema validation for forms and API data across all packages
-
-### Cryptography & Security
-- **@noble/hashes 1.8.0** - Cryptographic hash functions (Keccak-256, SHA-256)
-- **@noble/secp256k1 2.3.0** - Elliptic curve cryptography for key operations
-- **@scure/bip39 1.6.0** - BIP39 mnemonic phrase generation and validation
-- **@scure/bip32 1.7.0** - HD key derivation (BIP32/BIP44)
-- **PBKDF2** (100,000 iterations) for password-based key derivation
-- **AES-GCM** for authenticated encryption in IndexedDB storage
-
-### Build & Development Tools
-- **Vite 7.0.5** - Build tool with HMR for development
-- **Biome 2.1.1** - Fast linter and formatter
-- **Vitest 3.2.4** - Unit testing framework with edge-runtime environment
-- **TypeScript 5.8.3** - Type safety across all packages
-- **tsdown 0.13.3** - TypeScript bundler for published packages
-- **pnpm** - Package manager with workspace support
-
-## Development Workflow
-
-### State Management Pattern
-The extension uses a simple, signal-based architecture:
-
-```typescript
-// packages/wallet/src/utils/view.ts:3-4
-export const INITIAL_VIEW = "password"
-export const view = signal(INITIAL_VIEW)
-```
-
-### View Navigation Flow
-1. **"password"** - Initial view for vault unlock
-2. **"mnemonics"** - New wallet setup (if no vault exists)
-3. **"wallet"** - Main wallet interface (after authentication)
-4. **"sign"** - Transaction signing interface
-
-### Extension Communication Flow
-```
-Content Script → Background Script → Popup
-```
-
-**Message Types:**
-- `ETHERNAUTA_REQUEST_CONNECT` - Wallet connection request
-- `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` - Transaction signing request
-- `ETHERNAUTA_RESPONSE_*` - Response messages back to content script
-
-### Authentication System
-Authentication is managed via `packages/wallet/src/utils/authentication.ts:20-32`:
-- 5-minute session timeout
-- Timestamp-based authentication checks
-- Automatic vault validation and view routing
-
-## Security Implementation
-
-### Secure Storage (packages/wallet/src/utils/vault.ts)
-The vault system provides encrypted mnemonic storage:
-
-**Encryption Process:**
-1. User password + random salt → PBKDF2 (100,000 iterations) → encryption key
-2. Mnemonic + random IV → AES-GCM encryption → encrypted cipher
-3. Store: `{salt, iv, cipher}` in IndexedDB (`ethernauta/signer` database)
-
-**Security Features:**
-- Password-based key derivation (PBKDF2 with SHA-256)
-- Authenticated encryption (AES-GCM)
-- Secure random number generation for salts and IVs
-- Base64 encoding for storage serialization
-
-### Cryptographic Operations (packages/wallet/src/utils/crypto.ts)
-- **Mnemonic Validation:** BIP39 wordlist validation with English wordlist
-- **Seed Generation:** `mnemonicToSeedSync` for deterministic seed creation
-- **Key Derivation:** HD key derivation using path `m/44'/60'/0'/0/0`
-- **Address Generation:** Keccak-256 hash of public key for Ethereum addresses
-
-### Transaction Signing (packages/wallet/src/utils/sign-transaction.ts)
-- **EIP-1559 Support:** Type 2 transactions with dynamic fees
-- **ECDSA Signing:** secp256k1 signatures with recovery
-- **Chain ID:** Sepolia testnet (chain ID 11155111) by default
-- **RLP Encoding:** Custom implementation for transaction serialization
-
-## Build Configuration
-
-### TypeScript Configuration
-- **Root tsconfig:** Extends `@total-typescript/tsconfig/tsc/dom/library`
-- **Path Aliases:** Configured for `@ethernauta/*` packages
-- **JSX:** Configured for Preact with `react-jsx` transform
-- **Types:** Includes Vitest globals and Chrome extension APIs
-
-### Vite Build Configuration
-**Extension Build** (`packages/wallet/vite.extension.config.ts`):
-- Preact preset with tsconfig paths
-- ES modules output format
-- Manual chunking for vendor libraries
-- Watch mode support for development
-
-**Manifest Build** (`packages/wallet/vite.manifest.config.ts`):
-- Separate build for extension components
-- Library format for background script and content script
-
-### Biome Configuration
-**Code Style Standards:**
-- **Line Width:** 60 characters for compact, readable code
-- **Naming Convention:** snake_case for variables and functions
-- **Semicolons:** As needed (asNeeded)
-- **Indentation:** 2 spaces
-- **Rules:** Enhanced style rules for consistent code quality
-
-## Testing Strategy
-
-### Test Configuration
-- **Framework:** Vitest with edge-runtime environment
-- **Root Config:** `vitest.config.mjs:8-15` includes all `packages/**/*.test.ts`
-- **Mocking:** `fake-indexeddb` for vault storage testing
-- **Coverage:** Unit tests for cryptographic functions and utilities
-
-### Test Examples
-Key test files demonstrate security-critical functionality:
-- `packages/wallet/src/utils/vault.test.ts:1-180` - Comprehensive vault encryption tests
-- `packages/wallet/src/utils/crypto.test.ts` - Cryptographic operation tests
-- `packages/wallet/src/utils/sign-transaction.test.ts` - Transaction signing tests
-
-## Commands & Scripts
-
-### Development Commands
 ```bash
-pnpm dev                 # Start wallet extension + playground development
-pnpm test               # Run unit tests (excludes connector package)
-pnpm build              # Build all packages in dependency order
+pnpm dev                            # wallet extension + playground watch builds
+pnpm test                           # vitest across packages
+pnpm build                          # build all packages in dependency order
+biome check                         # lint
+biome format --write .              # format
+
+pnpm --filter @ethernauta/erc generate   # regenerate the ERC selector registry
+pnpm --filter @ethernauta/wallet zip     # produce extension.zip
 ```
 
-### Code Quality Commands
-```bash
-biome check             # Run linter and formatter checks
-biome format --write    # Format code according to project standards
-```
+Per-package: `pnpm --filter @ethernauta/<pkg> {dev|build|test:unit|lint}`.
 
-### Extension-Specific Commands (from packages/wallet/)
-```bash
-pnpm build              # Production build (manifest + extension)
-pnpm zip                # Create extension.zip for Chrome Web Store
-pnpm dev                # Watch mode builds for development
-```
+## Tooling notes
 
-### Package-Specific Commands
-```bash
-# Transport, eth, transaction packages
-pnpm dev                # Watch mode builds with tsdown
-pnpm build              # Production builds
+- **TypeScript 5.8.3**, JSX transform `react-jsx` for Preact, path aliases for `@ethernauta/*`.
+- **Vite 7** for the wallet extension; **tsdown 0.13** for published packages.
+- **Biome 2.1** is the linter and formatter. Style: 60-col, snake_case functions, semicolons as needed, 2-space indent.
+- **Vitest 3** with the edge-runtime environment. `fake-indexeddb` for vault tests.
+- **pnpm** workspace. Internal packages reference each other via `workspace:*`.
 
-# Chain package
-pnpm run indexer        # Update chain definitions from repositories
+## Where to start, by task type
 
-# Playground
-pnpm dev                # React Router development server
-pnpm deploy             # Build and deploy to Cloudflare Pages
-```
-
-## Package Dependencies
-
-### Workspace Dependencies
-- All packages use `valibot@1.1.0` for consistent schema validation
-- Crypto packages share `@noble/*` and `@scure/*` libraries
-- Internal packages reference each other via `workspace:*`
-
-### Development Dependencies
-- `tsdown` for efficient package builds (transport, eth, transaction)
-- `fake-indexeddb` for IndexedDB testing without browser environment
-- `@types/chrome` for Chrome extension API types
-
-## Development Guidelines
-
-### Code Organization
-- **Test files:** Co-located with source files (`.test.ts` suffix)
-- **Utils:** Shared utilities in each package's `utils/` directory
-- **Types:** TypeScript interfaces and schemas alongside implementation
-- **Index files:** Clean re-exports for package APIs
-
-### Security Best Practices
-- **Never log sensitive data:** Mnemonics, private keys, passwords
-- **Validate all inputs:** Use Valibot schemas for runtime validation
-- **Secure random generation:** Use `crypto.getRandomValues()` for salts/IVs
-- **Constant-time operations:** Use timing-safe equality checks where needed
-
-### Chrome Extension Development
-- **Manifest V3:** Uses service workers instead of background pages
-- **Permissions:** Minimal permissions (`storage`, `activeTab`)
-- **Content Security Policy:** Strict CSP for security
-- **Message Passing:** Structured communication between extension contexts
-
-### Performance Considerations
-- **Code Splitting:** Manual chunks for vendor libraries
-- **Tree Shaking:** ES modules for optimal bundling
-- **Lazy Loading:** Views loaded only when needed
-- **Memory Management:** Signals for efficient reactivity
-
-## Key File References
-
-### Core Architecture
-- Controller: `packages/wallet/src/controller.tsx:16-76`
-- View State: `packages/wallet/src/utils/view.ts:1-5`
-- Extension Entry: `packages/wallet/manifest/extension.entry.ts:13-67`
-
-### Security Implementation
-- Vault Storage: `packages/wallet/src/utils/vault.ts:83-128` (set_vault)
-- Vault Retrieval: `packages/wallet/src/utils/vault.ts:130-185` (get_vault)
-- Authentication: `packages/wallet/src/utils/authentication.ts:20-32`
-- Transaction Signing: `packages/wallet/src/utils/sign-transaction.ts:138-171`
-
-### Testing
-- Vault Tests: `packages/wallet/src/utils/vault.test.ts:57-65`
-- Test Config: `vitest.config.mjs:8-15`
-
-### Build Configuration
-- Extension Build: `packages/wallet/vite.extension.config.ts:9-42`
-- TypeScript: `tsconfig.json:15-20` (path aliases)
-- Biome: `biome.json:15-27` (formatter settings)
+- **Bug in the wallet UI** → `skills/wallet/SKILL.md`, then the relevant view under `packages/wallet/src/views/`.
+- **A dapp can't sign something** → `skills/wallet/SKILL.md` (envelope + lifecycle) and `skills/ethernauta/SKILL.md` (consumer side).
+- **Adding a new ERC token method** → `skills/erc/SKILL.md`, then mimic `packages/erc/src/20/methods/transfer.ts` or `balance-of.ts`.
+- **Adding an EIP** → `skills/eip/SKILL.md`, then mimic `packages/eip/src/1271/` (full standard) or `packages/eip/src/1102/` (single-method).
+- **A schema seems to be missing** → `skills/core/SKILL.md` to check the catalog; if truly missing and reused, add to `@ethernauta/core` following the canonical shape.
+- **About to write a helper** → `skills/utils/SKILL.md` decision flowchart. Default to colocation.
+- **About to write `interface` or `type X = { ... }`** → stop, read `skills/conventions/SKILL.md`, write a Valibot schema instead.
