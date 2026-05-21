@@ -38,5 +38,25 @@ export default [
       "./routes/examples/stealth-5564.mdx",
     ),
     route("ens-137", "./routes/examples/ens-137.mdx"),
+    route(
+      "verify-1271",
+      "./routes/examples/verify-1271.mdx",
+    ),
+    route(
+      "verify-6492",
+      "./routes/examples/verify-6492.mdx",
+    ),
+    route(
+      "event-decoding",
+      "./routes/examples/event-decoding.mdx",
+    ),
+    route(
+      "deploy-contract",
+      "./routes/examples/deploy-contract.mdx",
+    ),
+    route(
+      "injected-1193",
+      "./routes/examples/injected-1193.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

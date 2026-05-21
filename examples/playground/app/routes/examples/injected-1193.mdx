@@ -1,0 +1,59 @@
+import { Injected1193Demo } from "../../examples/injected-1193/demo"
+
+# EIP-1193 + EIP-6963 — injected wallets
+
+Three primitives close the loop on browser integration:
+
+- **`discover_providers()`** (EIP-6963) — fires
+  `eip6963:requestProvider`, listens for
+  `eip6963:announceProvider`, dedupes by `rdns`.
+- **`create_injected_signer(provider)`** — adapts any
+  EIP-1193 provider into the codebase's `ResolvedSigner`,
+  so every `Signable<T>` method works against MetaMask,
+  Brave, Ethernauta, etc. with no other changes.
+- **`watch_accounts` / `watch_chain`** — typed wrappers
+  over `provider.on("accountsChanged" | "chainChanged",
+  …)` that validate the payload before invoking the
+  handler.
+
+<Injected1193Demo />
+
+## The code
+
+```ts
+import {
+  create_injected_signer,
+  watch_accounts,
+  watch_chain,
+} from "@ethernauta/eip/1193"
+import { discover_providers } from "@ethernauta/eip/6963"
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+
+const wallets = await discover_providers()
+const picked = wallets[0] // or render a picker
+
+const signer = create_injected_signer(picked.provider)
+const accounts = await eth_requestAccounts()(
+  signer({ chain_id }),
+)
+
+const stop_a = watch_accounts(picked.provider, (next) =>
+  set_accounts(next),
+)
+const stop_c = watch_chain(picked.provider, (next) =>
+  set_chain_id(next),
+)
+```
+
+## Reads stay on quality transports
+
+`create_injected_transport(provider)` is also exported —
+it adapts the provider into the `Http` shape that
+`create_reader` accepts. Use it if you want reads to flow
+through the wallet's selected RPC.
+
+Most dapps should *not* do this. Reads work without a
+wallet connection if you provide your own HTTP RPC, which
+means anonymous visitors can browse without a popup. Reserve
+the injected transport for cases where matching the wallet's
+selected RPC is the actual requirement.

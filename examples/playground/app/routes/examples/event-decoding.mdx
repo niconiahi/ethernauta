@@ -1,0 +1,44 @@
+import { EventDecodingDemo } from "../../examples/event-decoding/demo"
+
+# Decoding contract event logs
+
+`get_contract_events` composes three primitives:
+
+1. `encode_event_topics({ name, args, indexed, values })`
+   — builds the filter's `topics` slot, including
+   `topic0 = keccak(canonical_signature)`.
+2. `eth_getLogs` — the standard JSON-RPC read.
+3. `decode_event_log({ name, args, indexed, topics, data })`
+   — pairs each declared input with its value, reading
+   indexed args from `topics[1..]` and non-indexed args
+   from `data` via the ABI codec.
+
+The result is `Readable<DecodedEventLog[]>` — same shape
+as every other read in the library, with the dapp-side
+HTTP transport.
+
+<EventDecodingDemo />
+
+## The code
+
+```ts
+import { address, uint256 } from "@ethernauta/abi"
+import { get_contract_events } from "@ethernauta/eth"
+
+const transfers = await get_contract_events({
+  address: USDC,
+  name: "Transfer",
+  args: [address(), address(), uint256()],
+  indexed: [true, true, false],
+  fromBlock: "0x...",
+  toBlock: "0x...",
+})(reader({ chain_id }))
+```
+
+## Indexed reference types
+
+For `string` / `bytes` / arrays / tuples declared
+`indexed`, the topic holds `keccak256(value)` — the
+original value cannot be recovered from the log. The
+codec surfaces this by returning the topic hash directly
+for such positions.

@@ -1,0 +1,51 @@
+import { Verify6492Demo } from "../../examples/verify-6492/demo"
+
+# EIP-6492 — pre-deploy signature wrapping
+
+A counterfactual smart account can sign messages before
+its contract exists on-chain. EIP-6492 wraps such
+signatures with the CREATE2-factory deploy plan so an
+on-chain verifier can simulate the deploy first, then
+hand the inner signature to the deployed account's
+`isValidSignature`.
+
+The wrap is:
+
+```
+abi.encode(factory, factoryData, signature) || MAGIC_BYTES
+```
+
+`MAGIC_BYTES` is a unique 32-byte tail (`0x649264...`)
+that distinguishes a 6492-wrapped signature from any
+ordinary 1271 / EOA blob.
+
+<Verify6492Demo />
+
+## The code
+
+```ts
+import {
+  is_wrapped_signature,
+  unwrap_signature,
+  wrap_signature,
+} from "@ethernauta/eip/6492"
+
+const wrapped = wrap_signature({
+  factory,
+  factoryData,
+  signature,
+})
+
+is_wrapped_signature(wrapped) // true
+is_wrapped_signature(signature) // false
+
+const { factory, factoryData, signature: inner } =
+  unwrap_signature(wrapped)
+```
+
+## When to wrap
+
+You only need this when the signer account is
+counterfactual — i.e. deterministic via CREATE2 but not
+deployed yet. After deployment the wrapper becomes
+unnecessary; plain 1271 verification suffices.

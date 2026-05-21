@@ -1,0 +1,47 @@
+import { DeployContractDemo } from "../../examples/deploy-contract/demo"
+
+# EIP-1014 — CREATE / CREATE2 address derivation
+
+The pair `CREATE` (since Frontier) and `CREATE2` (EIP-1014)
+define where a deployed contract lands:
+
+- **CREATE**: `address = keccak256(rlp([sender, nonce]))[12:]`
+- **CREATE2**: `address = keccak256(0xff ‖ sender ‖ salt ‖
+  keccak256(init_code))[12:]`
+
+CREATE2 is the basis for counterfactual deployments —
+account abstraction factories (ERC-4337), Safe modules,
+and EIP-6492 signatures all assume the deployed address
+is knowable in advance. The demo shows both derivations
+against EIP-1014 fixture vectors.
+
+<DeployContractDemo />
+
+## Deploying through the wallet
+
+`deploy_contract` ships in `@ethernauta/eip/1014` for the
+signing half — it encodes constructor calldata and calls
+`eth_signTransaction` with no `to` (the EVM rule for
+creation transactions). The wallet fills `nonce` / `gas`
+/ fees per the project invariant.
+
+```ts
+import { deploy_contract } from "@ethernauta/eip/1014"
+import { uint256 } from "@ethernauta/abi"
+
+const signed_raw = await deploy_contract({
+  bytecode,
+  args: [uint256()],
+  values: [42n],
+})(signer({ chain_id }))
+
+// then broadcast separately:
+const hash = await eth_sendRawTransaction([signed_raw])(
+  writer({ chain_id }),
+)
+```
+
+`Signable<Bytes>` returns the signed raw transaction —
+broadcast it with `eth_sendRawTransaction` to get the
+hash, then derive the deployed address with
+`get_contract_address({ from, nonce })`.

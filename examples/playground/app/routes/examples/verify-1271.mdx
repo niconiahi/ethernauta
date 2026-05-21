@@ -1,0 +1,45 @@
+import { Verify1271Demo } from "../../examples/verify-1271/demo"
+
+# EIP-1271 — verify a signature
+
+`verify_message` decides whether a signature is valid for a
+given address. Two paths, tried in order:
+
+1. **EOA** — `ecrecover(hash, sig) === address`. Pure
+   crypto, no RPC round-trip.
+2. **Contract** — `eth_call address.isValidSignature(hash,
+   sig)` and check the first 4 bytes against
+   `MAGIC_VALUE` (`0x1626ba7e`). A revert is treated as
+   `false`, not thrown.
+
+This demo signs an arbitrary message with `personal_sign`
+and verifies it through the EOA path. Tampering with one
+byte flips the result.
+
+<Verify1271Demo />
+
+## The code
+
+```ts
+import { verify_message } from "@ethernauta/eip/1271"
+import { personal_sign } from "@ethernauta/eip/191"
+
+const signature = await personal_sign([message, owner])(
+  signer({ chain_id }),
+)
+
+const ok = await verify_message({
+  address: owner,
+  message,
+  signature,
+})(reader({ chain_id }))
+```
+
+## Why both paths matter
+
+ERC-4337, ERC-5792, and EIP-7702 all assume smart accounts.
+Their signatures cannot be verified by anything downstream
+without an `isValidSignature` shim. EIP-1271 is the
+contract that closes that loop: dapps verify once,
+indifferent to whether the signer is an EOA or a smart
+account.

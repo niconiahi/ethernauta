@@ -32,6 +32,26 @@ const EXAMPLES = [
     title: "ERC-5564 stealth addresses",
   },
   { to: "/examples/ens-137", title: "ERC-137 ENS" },
+  {
+    to: "/examples/verify-1271",
+    title: "EIP-1271 verify",
+  },
+  {
+    to: "/examples/verify-6492",
+    title: "EIP-6492 wrap",
+  },
+  {
+    to: "/examples/event-decoding",
+    title: "Event decoding",
+  },
+  {
+    to: "/examples/deploy-contract",
+    title: "EIP-1014 deploy",
+  },
+  {
+    to: "/examples/injected-1193",
+    title: "EIP-1193 + 6963",
+  },
 ] as const
 
 export default function ExamplesLayout() {
