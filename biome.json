@@ -17,7 +17,8 @@
       "**",
       "!**/.wrangler/**",
       "!**/.react-router/**",
-      "!**/worker-configuration.d.ts"
+      "!**/worker-configuration.d.ts",
+      "!**/packages/ens/src/data/**"
     ],
     "enabled": true,
     "lineWidth": 60,
@@ -38,6 +39,7 @@
       "!**/.react-router/**",
       "!**/worker-configuration.d.ts",
       "!**/src/chain/eip155",
+      "!**/packages/ens/src/data/**",
       "!**/dist/**"
     ],
     "rules": {

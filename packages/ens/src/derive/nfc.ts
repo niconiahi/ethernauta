@@ -11,7 +11,13 @@
 //
 // Rerun via `pnpm derive` when bumping UCD_VERSION below.
 
-import { mkdirSync, writeFileSync } from "node:fs"
+import { execSync } from "node:child_process"
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -20,6 +26,13 @@ const UCD_BASE = `https://www.unicode.org/Public/${UCD_VERSION}/ucd`
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT_PATH = join(HERE, "..", "data", "nfc.ts")
+const VECTORS_PATH = join(
+  HERE,
+  "..",
+  "data",
+  "nfc-vectors.ts",
+)
+const CACHE_DIR = join(HERE, ".cache")
 
 type Row = {
   cp: number
@@ -85,17 +98,22 @@ function build_comp_data(
   _rows: Row[],
   _exclusions: Set<number>,
 ): number[] {
+  const ccc_of = new Map<number, number>()
+  for (const row of _rows) {
+    if (row.ccc !== 0) ccc_of.set(row.cp, row.ccc)
+  }
   const out: number[] = []
   for (const row of _rows) {
     if (row.decomp === null) continue
     // NFC composition only inverts decompositions that:
-    //   1. are a length-2 sequence
+    //   1. are a length-2 sequence (excludes singletons)
     //   2. are not in the composition exclusions list
-    //   3. do not start with a non-zero combining class
-    //      (these are "non-starter decompositions")
+    //   3. do not start with a non-starter (those are
+    //      "non-starter decompositions", also excluded)
     if (row.decomp.length !== 2) continue
     if (_exclusions.has(row.cp)) continue
     const [a, b] = row.decomp as [number, number]
+    if ((ccc_of.get(a) ?? 0) !== 0) continue
     out.push(a, b, row.cp)
   }
   return out
@@ -116,26 +134,96 @@ function format_array(
   return `export const ${_name}: readonly number[] = [\n${chunks.join("\n")}\n]`
 }
 
-async function fetch_text(_url: string): Promise<string> {
-  console.log(`fetching ${_url}`)
-  const response = await fetch(_url)
-  if (!response.ok) {
-    throw new Error(
-      `failed to fetch ${_url}: ${response.status}`,
-    )
+function fetch_text(_url: string, _name: string): string {
+  mkdirSync(CACHE_DIR, { recursive: true })
+  const cache_path = join(CACHE_DIR, _name)
+  if (!existsSync(cache_path)) {
+    console.log(`fetching ${_url}`)
+    execSync(`curl -sSL ${_url} -o ${cache_path}`, {
+      stdio: "inherit",
+    })
+  } else {
+    console.log(`cached  ${cache_path}`)
   }
-  return await response.text()
+  return readFileSync(cache_path, "utf8")
 }
 
-async function main(): Promise<void> {
-  const [unicode_data_text, exclusions_text] =
-    await Promise.all([
-      fetch_text(`${UCD_BASE}/UnicodeData.txt`),
-      fetch_text(`${UCD_BASE}/CompositionExclusions.txt`),
-    ])
+type Vector = {
+  source: number[]
+  nfc: number[]
+  nfd: number[]
+}
+
+function parse_cps(_field: string): number[] {
+  const trimmed = _field.trim()
+  if (trimmed.length === 0) return []
+  return trimmed
+    .split(/\s+/)
+    .map((cp) => Number.parseInt(cp, 16))
+}
+
+function parse_normalization_test(_text: string): Vector[] {
+  const out: Vector[] = []
+  for (const raw_line of _text.split("\n")) {
+    const without_comment = raw_line.split("#")[0] ?? ""
+    const line = without_comment.trim()
+    if (line.length === 0) continue
+    if (line.startsWith("@")) continue
+    const fields = line.split(";")
+    if (fields.length < 5) continue
+    out.push({
+      source: parse_cps(fields[0] as string),
+      nfc: parse_cps(fields[1] as string),
+      nfd: parse_cps(fields[2] as string),
+    })
+  }
+  return out
+}
+
+function format_vectors(_vectors: Vector[]): string {
+  const lines: string[] = []
+  for (const v of _vectors) {
+    const src = v.source
+      .map((cp) => `0x${cp.toString(16)}`)
+      .join(",")
+    const nfc = v.nfc
+      .map((cp) => `0x${cp.toString(16)}`)
+      .join(",")
+    const nfd = v.nfd
+      .map((cp) => `0x${cp.toString(16)}`)
+      .join(",")
+    lines.push(`  [[${src}],[${nfc}],[${nfd}]],`)
+  }
+  return [
+    `export const NFC_VECTORS: readonly (readonly [`,
+    `  readonly number[],`,
+    `  readonly number[],`,
+    `  readonly number[],`,
+    `])[] = [`,
+    ...lines,
+    `]`,
+  ].join("\n")
+}
+
+function main(): void {
+  const unicode_data_text = fetch_text(
+    `${UCD_BASE}/UnicodeData.txt`,
+    "UnicodeData.txt",
+  )
+  const exclusions_text = fetch_text(
+    `${UCD_BASE}/CompositionExclusions.txt`,
+    "CompositionExclusions.txt",
+  )
+  const normalization_test_text = fetch_text(
+    `${UCD_BASE}/NormalizationTest.txt`,
+    "NormalizationTest.txt",
+  )
 
   const rows = parse_unicode_data(unicode_data_text)
   const exclusions = parse_exclusions(exclusions_text)
+  const vectors = parse_normalization_test(
+    normalization_test_text,
+  )
 
   const ccc_data = build_ccc_data(rows)
   const decomp_data = build_decomp_data(rows)
@@ -174,6 +262,21 @@ async function main(): Promise<void> {
   mkdirSync(dirname(OUT_PATH), { recursive: true })
   writeFileSync(OUT_PATH, body)
 
+  const vectors_header = [
+    "// Auto-generated by src/derive/nfc.ts. DO NOT EDIT.",
+    `// Source: Unicode UCD ${UCD_VERSION}`,
+    "//   https://www.unicode.org/Public/" +
+      UCD_VERSION +
+      "/ucd/NormalizationTest.txt",
+    "//",
+    "// Each row: [source, NFC(source), NFD(source)]",
+    "",
+  ].join("\n")
+  writeFileSync(
+    VECTORS_PATH,
+    `${vectors_header}\n${format_vectors(vectors)}\n`,
+  )
+
   const decomp_count = rows.filter(
     (r) => r.decomp !== null,
   ).length
@@ -182,9 +285,13 @@ async function main(): Promise<void> {
   console.log(`  CCC entries:    ${ccc_data.length / 2}`)
   console.log(`  DECOMP entries: ${decomp_count}`)
   console.log(`  COMP entries:   ${comp_data.length / 3}`)
+  console.log(`wrote ${VECTORS_PATH}`)
+  console.log(`  vectors:        ${vectors.length}`)
 }
 
-main().catch((error: unknown) => {
+try {
+  main()
+} catch (error: unknown) {
   console.error(error)
   process.exit(1)
-})
+}
