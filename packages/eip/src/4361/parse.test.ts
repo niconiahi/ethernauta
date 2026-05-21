@@ -44,9 +44,7 @@ describe("parse.ts — parse_siwe_message", () => {
     expect(parsed.version).toBe("1")
     expect(parsed.chainId).toBe("1")
     expect(parsed.nonce).toBe("32891756")
-    expect(parsed.issuedAt).toBe(
-      "2021-09-30T16:25:24Z",
-    )
+    expect(parsed.issuedAt).toBe("2021-09-30T16:25:24Z")
     expect(parsed.expirationTime).toBe(
       "2021-09-30T17:25:24Z",
     )

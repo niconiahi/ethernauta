@@ -29,9 +29,7 @@ export const siweMessageSchema = object({
   chainId: string(),
   nonce: string(),
   issuedAt: pipe(string(), isoTimestamp()),
-  expirationTime: optional(
-    pipe(string(), isoTimestamp()),
-  ),
+  expirationTime: optional(pipe(string(), isoTimestamp())),
   notBefore: optional(pipe(string(), isoTimestamp())),
   requestId: optional(string()),
   resources: optional(array(string())),
@@ -41,7 +39,7 @@ export type SiweMessage = InferOutput<
 >
 
 const HEADER_REGEX =
-  /^(?<domain>[^\s]+) wants you to sign in with your Ethereum account:\n(?<address>0x[0-9a-fA-F]{40})\n/
+  /^(?<domain>[^\s]+) wants you to sign in with your Ethereum account:\n(?<address>0x[0-9a-fA-F]{40})\n\n/
 
 const FIELDS = [
   ["URI", "uri"],
@@ -99,7 +97,9 @@ export function parse_siwe_message(
       ? first
       : undefined
   const body =
-    sections.length > 1 ? sections.slice(1).join("\n\n") : after_header
+    sections.length > 1
+      ? sections.slice(1).join("\n\n")
+      : after_header
   const fields = parse_fields(body)
   const candidate = {
     domain: header.groups.domain,
