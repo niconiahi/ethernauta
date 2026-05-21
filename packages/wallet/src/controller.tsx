@@ -26,6 +26,7 @@ import { Connect } from "./views/connect/index"
 import { Mnemonics } from "./views/mnemonics/index"
 import { Password } from "./views/password/index"
 import { PersonalSign } from "./views/personal-sign/index"
+import { SelectAccount } from "./views/select-account/index"
 import { SelectChain } from "./views/select-chain/index"
 import { SendCalls } from "./views/send-calls/index"
 import { Sign } from "./views/sign/index"
@@ -178,6 +179,9 @@ function render_view(view: string) {
     }
     case "select-chain": {
       return <SelectChain />
+    }
+    case "select-account": {
+      return <SelectAccount />
     }
     default: {
       return <div>there is no view for: {view}</div>

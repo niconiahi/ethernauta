@@ -30,12 +30,18 @@ export function Wallet() {
         {get_chain_id(selected_chain.value)} —{" "}
         {selected_chain.value.name}
       </button>
-      <p className="flex gap-1 text-base">
+      <button
+        type="button"
+        onClick={() => {
+          view.value = "select-account"
+        }}
+        className="self-start bg-white p-2 border-2 rounded-md cursor-pointer text-base flex gap-1"
+      >
         <span>Address:</span>
         <span className="underline underline-offset-2 decoration-[#FF5005]">
           {address}
         </span>
-      </p>
+      </button>
       <p className="flex gap-1 text-base">
         <span>Balance:</span>
         <span className="underline underline-offset-2 decoration-[#FF5005]">
