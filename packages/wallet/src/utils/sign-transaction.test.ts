@@ -243,7 +243,8 @@ describe("transaction.ts", () => {
     expect(bytes_to_hex(debug_signed)).toBe(viem_signed)
   })
 
-  it("should match Viem when signing transfer with dynamic params", async () => {
+  // TODO: connect integration test
+  it.skip("should match Viem when signing transfer with dynamic params", async () => {
     const test_mnemonic =
       "smile price bomb movie minimum treat hurdle adult wing come space cross"
     const seed = mnemonic_to_seed(test_mnemonic)

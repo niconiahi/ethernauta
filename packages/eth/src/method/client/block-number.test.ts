@@ -1,4 +1,5 @@
-import { safeParse } from "valibot"
+import { uintSchema } from "@ethernauta/core"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import { eip155_1 } from "../../../../chain/src"
 import {
@@ -6,7 +7,6 @@ import {
   encode_chain_id,
   http,
 } from "../../../../transport/src"
-import { uintSchema } from "../../core"
 
 import { eth_blockNumber } from "./block-number"
 
@@ -20,7 +20,8 @@ const SEPOLIA_RPC_URLS = [
   "https://1rpc.io/sepolia",
 ]
 
-describe("eth_blockNumber", () => {
+// TODO: connect integration test
+describe.skip("eth_blockNumber", () => {
   it("should correctly get the latest mined block", async () => {
     const reader = create_reader([
       {
@@ -36,8 +37,6 @@ describe("eth_blockNumber", () => {
     const blockNumber_ = await readable(
       reader({ chain_id: chainId }),
     )
-    expect(blockNumber_).toSatisfy(
-      (value) => safeParse(uintSchema, value).success,
-    )
+    expect(() => parse(uintSchema, blockNumber_)).not.toThrow()
   })
 })

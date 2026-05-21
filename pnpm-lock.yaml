@@ -283,6 +283,9 @@ importers:
 
   packages/eth:
     dependencies:
+      '@ethernauta/abi':
+        specifier: workspace:*
+        version: link:../abi
       '@ethernauta/chain':
         specifier: workspace:*
         version: link:../chain

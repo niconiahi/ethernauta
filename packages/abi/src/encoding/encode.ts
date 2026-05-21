@@ -55,3 +55,24 @@ export function encode_function_call<
   out.set(body, 4)
   return out
 }
+
+// Build creation calldata for a deploy transaction: contract bytecode
+// concatenated with ABI-encoded constructor arguments. Pass an empty
+// `args`/`values` tuple for constructors with no arguments.
+export function encode_constructor_call<
+  Args extends readonly AbiCodec<unknown>[],
+>(_input: {
+  bytecode: Uint8Array
+  args: Args
+  values: ValuesOf<Args>
+}): Uint8Array {
+  const { bytecode, args, values } = _input
+  const body = encode_sequence(
+    args,
+    values as readonly unknown[],
+  )
+  const out = new Uint8Array(bytecode.length + body.length)
+  out.set(bytecode, 0)
+  out.set(body, bytecode.length)
+  return out
+}

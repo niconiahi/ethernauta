@@ -6,6 +6,7 @@ import { string_ } from "../leaves"
 import { uint256 } from "../leaves"
 import {
   build_signature,
+  encode_constructor_call,
   encode_function_call,
   function_selector,
   to_selector,
@@ -83,6 +84,35 @@ describe("encode.ts", () => {
       })
       expect(result).toHaveLength(4)
       expect(bytes_to_hex(result)).toBe("0x18160ddd")
+    })
+
+    it("should encode an argless constructor as just the bytecode", () => {
+      const bytecode = from_hex("6080604052")
+      const result = encode_constructor_call({
+        bytecode,
+        args: [] as const,
+        values: [],
+      })
+      expect(result).toHaveLength(bytecode.length)
+      expect(bytes_to_hex(result)).toBe("0x6080604052")
+    })
+
+    it("should append ABI-encoded args to bytecode", () => {
+      const bytecode = from_hex("6080604052")
+      const result = encode_constructor_call({
+        bytecode,
+        args: [address(), uint256()] as const,
+        values: [
+          "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          "0xde0b6b3a7640000",
+        ],
+      })
+      expect(result).toHaveLength(bytecode.length + 64)
+      expect(bytes_to_hex(result)).toBe(
+        "0x6080604052" +
+          "000000000000000000000000636c0fcd6da2207abfa80427b556695a4ad0af94" +
+          "0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+      )
     })
 
     it("should encode transfer(address,uint256)", () => {

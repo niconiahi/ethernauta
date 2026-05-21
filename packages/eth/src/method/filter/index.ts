@@ -1,3 +1,4 @@
+export * from "./get-contract-events"
 export * from "./get-filter-changes"
 export * from "./get-filter-logs"
 export * from "./get-logs"

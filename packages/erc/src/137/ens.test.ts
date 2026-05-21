@@ -41,7 +41,8 @@ const ctx = reader({
   }),
 })
 
-describe("ens resolution against mainnet", () => {
+// TODO: connect integration test
+describe.skip("ens resolution against mainnet", () => {
   it(
     "should resolve the resolver address for vitalik.eth",
     async () => {

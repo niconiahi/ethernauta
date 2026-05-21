@@ -24,6 +24,12 @@ export {
   type ProviderMessage,
 } from "./events"
 export {
+  create_injected_signer,
+  create_injected_transport,
+  type ProviderRpcErrorShape,
+  providerRpcErrorSchema,
+} from "./inject"
+export {
   create_provider,
   type CreateProviderOptions,
   type Provider,
@@ -31,3 +37,4 @@ export {
   type RequestArguments,
   type SignableHandler,
 } from "./provider"
+export { watch_accounts, watch_chain } from "./watch"
