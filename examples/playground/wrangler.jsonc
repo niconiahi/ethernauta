@@ -11,6 +11,11 @@
   // in the file "utils.js", used by "sha256.js"
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare"
+    "VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare",
+    // SIWE session-cookie HMAC key. Override in production
+    // with `wrangler secret put SESSION_SECRET`. The dev
+    // value below is intentionally non-secret — rotating
+    // it just signs everyone out.
+    "SESSION_SECRET": "dev-only-siwe-session-secret-change-me-in-prod"
   }
 }

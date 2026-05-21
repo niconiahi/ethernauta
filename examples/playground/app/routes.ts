@@ -7,6 +7,18 @@ import {
 export default [
   index("./routes/home.tsx"),
   route("privacy-policy", "./routes/privacy-policy.tsx"),
+  route(
+    "api/auth/siwe/nonce",
+    "./routes/api/auth/siwe/nonce.ts",
+  ),
+  route(
+    "api/auth/siwe/verify",
+    "./routes/api/auth/siwe/verify.ts",
+  ),
+  route(
+    "api/auth/siwe/logout",
+    "./routes/api/auth/siwe/logout.ts",
+  ),
   route("examples", "./routes/examples.tsx", [
     index("./routes/examples/index.tsx"),
     route("multicall", "./routes/examples/multicall.mdx"),
@@ -21,10 +33,7 @@ export default [
       "delegate-7702",
       "./routes/examples/delegate-7702.mdx",
     ),
-    route(
-      "send-calls",
-      "./routes/examples/send-calls.mdx",
-    ),
+    route("send-calls", "./routes/examples/send-calls.mdx"),
     route(
       "cross-chain-7683",
       "./routes/examples/cross-chain-7683.mdx",
