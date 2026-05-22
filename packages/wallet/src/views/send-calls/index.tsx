@@ -14,6 +14,7 @@ import {
   get_chain,
   get_reader,
   get_writer,
+  selected_chain,
 } from "../../utils/chain"
 import {
   generate_batch_id,
@@ -57,6 +58,9 @@ export function SendCalls() {
   const param = req.parameter
   const chain_ref = Number(hex_to_big(param.chainId))
   const chain = get_chain(chain_ref)
+  const active_chain_id = selected_chain.value.id
+  const wrong_chain =
+    chain !== undefined && chain_ref !== active_chain_id
   const atomic_required = param.atomicRequired === true
   return (
     <main className="flex flex-col gap-3 p-4 w-80 text-base">
@@ -111,6 +115,14 @@ export function SendCalls() {
           ))}
         </ol>
       </section>
+      {wrong_chain && (
+        <p className="text-xs text-amber-700">
+          This batch is for {chain?.name} ({chain_ref}). Your
+          wallet is on {selected_chain.value.name} (
+          {active_chain_id}). Switch chains in the wallet,
+          then retry.
+        </p>
+      )}
       {atomic_required && (
         <p className="text-xs text-amber-700">
           Dapp requested atomic execution. This wallet runs
@@ -127,6 +139,7 @@ export function SendCalls() {
           disabled={
             status === "broadcasting" ||
             !chain ||
+            wrong_chain ||
             atomic_required
           }
           onClick={async () => {
