@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { SendCallsDemo } from "../../examples/send-calls/demo"
 
 # ERC-5792 — batched calls via `wallet_sendCalls`
@@ -9,6 +10,8 @@ batch id immediately, then the dapp polls
 on-chain.
 
 <SendCallsDemo />
+
+<GithubLink path="examples/playground/app/examples/send-calls/demo.tsx" />
 
 ## What's happening
 
@@ -32,38 +35,63 @@ on-chain.
 The dapp never has to track individual transactions — the
 wallet is the source of truth for "did this batch succeed".
 
-## The code for this example
+## The code
 
 ```ts
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { eip155_11155111 } from "@ethernauta/chain"
 import {
   CALLS_STATUS,
   wallet_getCallsStatus,
   wallet_getCapabilities,
   wallet_sendCalls,
 } from "@ethernauta/eip/5792"
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport"
+import {
+  create_signer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 
-const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: 11155111 })
-const signer = create_signer([{ chainId: SEPOLIA, transports: [http(rpc)] }])
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+const SEPOLIA_CHAIN_REF_HEX = "0xaa36a7" as const
 
-const [owner] = await eth_requestAccounts()(signer({ chain_id: SEPOLIA }))
+const signer = create_signer([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
+  },
+])
 
-const capabilities = await wallet_getCapabilities()(signer({ chain_id: SEPOLIA }))
+// 1. (Optional) introspect what the connected wallet supports.
+const capabilities = await wallet_getCapabilities()(
+  signer({ chain_id: SEPOLIA_CHAIN_ID }),
+)
 
-const { id } = await wallet_sendCalls([{
-  version: "2.0.0",
-  chainId: "0xaa36a7",
-  from: owner,
-  atomicRequired: false,
-  calls: [
-    { to: "0x1111...", value: "0x0", data: "0x" },
-    { to: "0x2222...", value: "0x0", data: "0x" },
-  ],
-}])(signer({ chain_id: SEPOLIA }))
+// 2. Ask the wallet to send a batch. Returns immediately
+//    with a batch id once the user approves; the wallet
+//    sequences the calls behind the scenes.
+const { id } = await wallet_sendCalls([
+  {
+    version: "2.0.0",
+    chainId: SEPOLIA_CHAIN_REF_HEX,
+    from: owner,
+    atomicRequired: false,
+    calls: [
+      { to: "0x1111111111111111111111111111111111111111", value: "0x0", data: "0x" },
+      { to: "0x2222222222222222222222222222222222222222", value: "0x0", data: "0x" },
+    ],
+  },
+])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
 
-const status = await wallet_getCallsStatus([id])(signer({ chain_id: SEPOLIA }))
-
+// 3. Poll for status. The wallet keeps the (id → tx_hashes)
+//    map; this round-trip doesn't re-prompt the user.
+const status = await wallet_getCallsStatus([id])(
+  signer({ chain_id: SEPOLIA_CHAIN_ID }),
+)
 if (status.status === CALLS_STATUS.CONFIRMED) {
   // every receipt in status.receipts succeeded
 }

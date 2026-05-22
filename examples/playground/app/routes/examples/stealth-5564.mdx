@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { Stealth5564Demo } from "../../examples/stealth-5564/demo"
 
 # ERC-5564 — stealth addresses (Scheme 1, SECP256k1)
@@ -14,6 +15,8 @@ spending private key can move funds — viewing keys can
 detect deposits but never spend.
 
 <Stealth5564Demo />
+
+<GithubLink path="examples/playground/app/examples/stealth-5564/demo.tsx" />
 
 ## What's happening
 
@@ -42,7 +45,7 @@ detect deposits but never spend.
    `(s + s_h) mod n`. Plug into an EIP-1559 signer like
    any other EOA.
 
-## The code for this example
+## The code
 
 ```ts
 import {
@@ -50,38 +53,59 @@ import {
   compute_stealth_private_key,
   compute_view_tag,
   derive_meta_address,
+  format_stealth_meta_address,
   generate_stealth_address,
+  parse_stealth_meta_address,
 } from "@ethernauta/erc/5564"
 
-// recipient
+function hex_to_bytes(_hex: `0x${string}`): Uint8Array {
+  const stripped = _hex.toLowerCase().replace(/^0x/, "")
+  const out = new Uint8Array(stripped.length / 2)
+  for (let i = 0; i < out.length; i++) {
+    out[i] = Number.parseInt(stripped.slice(i * 2, i * 2 + 2), 16)
+  }
+  return out
+}
+
+// 1. Recipient — derive the long-lived meta-address from
+//    spending + viewing private keys.
+const s = hex_to_bytes(spending_priv) // 32-byte secret
+const v = hex_to_bytes(viewing_priv)  // 32-byte secret
 const meta = derive_meta_address({
   spending_private_key: s,
   viewing_private_key: v,
 })
+const meta_hex = format_stealth_meta_address(meta)
+// share `meta_hex` publicly (66 bytes: spending_pub ‖ viewing_pub)
 
-// sender
+// 2. Sender — pick an ephemeral key, derive a stealth address.
+const recipient = parse_stealth_meta_address(meta_hex)
 const { stealth_address, ephemeral_public_key, view_tag } =
-  generate_stealth_address({ meta })
+  generate_stealth_address({ meta: recipient })
+// → transfer funds to `stealth_address`
+// → call announce(schemeId=1, stealth_address, ephemeral_public_key,
+//                 metadata=concat(view_tag, ...))
 
-// recipient scans an announcement (ephemeralPubKey, viewTag)
+// 3. Recipient — scan announcements, view-tag filter first.
 const candidate_tag = compute_view_tag({
   viewing_private_key: v,
   ephemeral_public_key,
 })
-if (candidate_tag !== announced_view_tag) return // skip
+if (candidate_tag !== view_tag) return // 99.6% skipped here
 
 const rederived = check_stealth_address({
   viewing_private_key: v,
   spending_public_key: meta.spending_public_key,
   ephemeral_public_key,
 })
-if (rederived === announced_stealth_address) {
+if (rederived === stealth_address) {
   // deposit is ours — derive the spend key
   const stealth_priv = compute_stealth_private_key({
     spending_private_key: s,
     viewing_private_key: v,
     ephemeral_public_key,
   })
+  // plug `stealth_priv` into an EIP-1559 signer
 }
 ```
 

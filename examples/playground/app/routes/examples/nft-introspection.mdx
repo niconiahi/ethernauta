@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { NftIntrospectionDemo } from "../../examples/nft-introspection/demo"
 
 # NFT introspection — BAYC
@@ -10,7 +11,9 @@ multicall.
 
 <NftIntrospectionDemo />
 
-## The code for this example
+<GithubLink path="examples/playground/app/examples/nft-introspection/demo.tsx" />
+
+## The code
 
 ```ts
 import { eip155_1 } from "@ethernauta/chain"
@@ -42,11 +45,22 @@ const INTERFACES = [
   { id: "0x2a55205a", label: "ERC-2981 Royalty" },
 ] as const
 
+const multicall = create_multicall([
+  {
+    chainId: MAINNET_CHAIN_ID,
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+])
+
 const ctx = contract({
   chain_id: MAINNET_CHAIN_ID,
   to: BAYC,
 })
 
+// 4 supportsInterface probes + 4 sample reads, batched into
+// one aggregate3 call. Result preserves call order: first 4
+// are booleans for the interface probes, then name / supply
+// / ownerOf / tokenURI.
 const results = await multicall([
   ...INTERFACES.map((i) =>
     supportsInterface({ interfaceId: i.id })(ctx),

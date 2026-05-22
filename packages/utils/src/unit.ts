@@ -21,6 +21,22 @@ export function format_unit(
   return `${sign}${integer_part.toString()}.${fraction}`
 }
 
+export function format_ether(value: bigint): string {
+  return format_unit(value, 18)
+}
+
+export function format_gwei(value: bigint): string {
+  return format_unit(value, 9)
+}
+
+export function parse_ether(value: string): bigint {
+  return parse_unit(value, 18)
+}
+
+export function parse_gwei(value: string): bigint {
+  return parse_unit(value, 9)
+}
+
 export function parse_unit(
   value: string,
   decimals = 18,

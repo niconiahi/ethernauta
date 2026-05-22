@@ -1,32 +1,7 @@
 import { MDXProvider } from "@mdx-js/react"
-import {
-  NavLink,
-  Outlet,
-  useLoaderData,
-} from "react-router"
+import { NavLink, Outlet } from "react-router"
 
-import type { Route } from "./+types/examples"
-import { ConnectWalletButton } from "../components/connect-wallet-button"
 import { MDX_COMPONENTS } from "../components/mdx"
-import { read_session_cookie } from "../lib/auth/session.server"
-
-export async function loader({
-  request,
-  context,
-}: Route.LoaderArgs) {
-  const session = await read_session_cookie(
-    request,
-    context.cloudflare.env,
-  )
-  return {
-    session: session
-      ? {
-          address: session.address,
-          chainId: session.chainId,
-        }
-      : null,
-  }
-}
 
 const EXAMPLES = [
   { to: "/examples/multicall", title: "Multicall" },
@@ -81,105 +56,64 @@ const EXAMPLES = [
 ] as const
 
 export default function ExamplesLayout() {
-  const { session } = useLoaderData<typeof loader>()
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateRows: "56px 1fr",
-        minHeight: "100vh",
+        gridTemplateColumns: "240px 1fr",
         background: "#faf5f0",
-        color: "#1a1a1a",
-        fontFamily: "sans-serif",
       }}
     >
-      <header
+      <aside
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 24px",
-          borderBottom: "1px solid #ddd",
+          borderRight: "1px solid #ddd",
+          padding: "32px 16px",
           background: "#fff",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: 14 }}>
-          Ethernauta examples
-        </span>
-        <ConnectWalletButton session={session} />
-      </header>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "240px 1fr",
-        }}
-      >
-        <aside
+        <h2
           style={{
-            borderRight: "1px solid #ddd",
-            padding: "32px 16px",
-            background: "#fff",
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#1a1a1a",
+            margin: "0 0 12px",
           }}
         >
-          <NavLink
-            to="/"
-            style={{
-              display: "block",
-              fontSize: 12,
-              fontWeight: 600,
-              color: "#999",
-              textTransform: "uppercase",
-              letterSpacing: 0.5,
-              marginBottom: 24,
-              textDecoration: "none",
-            }}
-          >
-            ← Back home
-          </NavLink>
-          <h2
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#1a1a1a",
-              margin: "0 0 12px",
-            }}
-          >
-            Examples
-          </h2>
-          <nav
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
-          >
-            {EXAMPLES.map((e) => (
-              <NavLink
-                key={e.to}
-                to={e.to}
-                style={({ isActive }) => ({
-                  padding: "8px 12px",
-                  borderRadius: 6,
-                  fontSize: 14,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  color: isActive ? "#fff" : "#1a1a1a",
-                  background: isActive
-                    ? "#FF5005"
-                    : "transparent",
-                })}
-              >
-                {e.title}
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
-        <main style={{ padding: "48px 64px" }}>
-          <MDXProvider components={MDX_COMPONENTS}>
-            <Outlet />
-          </MDXProvider>
-        </main>
-      </div>
+          Examples
+        </h2>
+        <nav
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          {EXAMPLES.map((e) => (
+            <NavLink
+              key={e.to}
+              to={e.to}
+              style={({ isActive }) => ({
+                padding: "8px 12px",
+                borderRadius: 6,
+                fontSize: 14,
+                fontWeight: 500,
+                textDecoration: "none",
+                color: isActive ? "#fff" : "#1a1a1a",
+                background: isActive
+                  ? "#FF5005"
+                  : "transparent",
+              })}
+            >
+              {e.title}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+      <main style={{ padding: "48px 64px" }}>
+        <MDXProvider components={MDX_COMPONENTS}>
+          <Outlet />
+        </MDXProvider>
+      </main>
     </div>
   )
 }

@@ -1,11 +1,9 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
-  type Address,
   addressSchema,
   type Bytes,
   bytesSchema,
 } from "@ethernauta/core"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import { verify_message } from "@ethernauta/eip/1271"
 import { personal_sign } from "@ethernauta/eip/191"
 import {
@@ -17,6 +15,8 @@ import {
 import { useState } from "react"
 import { parse } from "valibot"
 import { Button } from "../../components/button"
+import { SignInHint } from "../../components/sign-in-hint"
+import { use_session } from "../../lib/auth/use-session"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -37,26 +37,16 @@ const signer = create_signer(CHAINS)
 const MESSAGE = "Verify me with EIP-1271"
 
 export function Verify1271Demo() {
-  const [owner, set_owner] = useState<Address | null>(null)
+  const session = use_session()
+  const owner = session
+    ? parse(addressSchema, session.address)
+    : null
   const [signature, set_signature] = useState<Bytes | null>(
     null,
   )
   const [valid, set_valid] = useState<boolean | null>(null)
   const [busy, set_busy] = useState(false)
   const [error, set_error] = useState<string | null>(null)
-
-  async function connect() {
-    set_error(null)
-    try {
-      const accounts = await eth_requestAccounts()(
-        signer({ chain_id: SEPOLIA_CHAIN_ID }),
-      )
-      const first = accounts[0]
-      if (first) set_owner(parse(addressSchema, first))
-    } catch (e) {
-      set_error(e instanceof Error ? e.message : String(e))
-    }
-  }
 
   async function sign_and_verify() {
     if (!owner) return
@@ -132,9 +122,7 @@ export function Verify1271Demo() {
         </p>
       )}
       <div style={{ display: "flex", gap: 8 }}>
-        {!owner && (
-          <Button onClick={connect}>Connect wallet</Button>
-        )}
+        {!owner && <SignInHint />}
         {owner && (
           <Button onClick={sign_and_verify} disabled={busy}>
             {busy ? "…" : "Sign + verify"}

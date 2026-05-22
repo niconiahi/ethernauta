@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { Delegate7702Demo } from "../../examples/delegate-7702/demo"
 
 # EIP-7702 — atomic batched calls from an EOA
@@ -10,6 +11,8 @@ The wallet signs the authorization tuple + outer type-4 tx
 and broadcasts in one click.
 
 <Delegate7702Demo />
+
+<GithubLink path="examples/playground/app/examples/delegate-7702/demo.tsx" />
 
 ## What's happening
 
@@ -30,44 +33,80 @@ Because the delegation lives for exactly one transaction,
 the EOA's code reverts to empty as soon as the tx is mined
 — no persistent smart-account state, no upgrade dance.
 
-## The code for this example
+## The code
 
 ```ts
 import {
-  address, array, bytes, encode_function_call, tuple, uint256,
+  address,
+  array,
+  bytes,
+  encode_function_call,
+  tuple,
+  uint256,
 } from "@ethernauta/abi"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { eip155_11155111 } from "@ethernauta/chain"
 import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport"
+import {
+  create_signer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 
-const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: 11155111 })
-const BATCH_EXECUTOR = "0x..." // your deployment
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+const SEPOLIA_CHAIN_REF_HEX = "0xaa36a7" as const
 
+// `contracts/src/BatchExecutor.sol` deployed to Sepolia.
+const BATCH_EXECUTOR =
+  "0x5AAC53e7b782CCD32A083F938AEbA843731323Ee"
+
+const signer = create_signer([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
+  },
+])
+
+// Encode `execute((address,uint256,bytes)[])` calldata for
+// the batch. Same ABI codec the contract uses to decode.
 const call_tuple = tuple({
-  to: address(), value: uint256(), data: bytes(),
+  to: address(),
+  value: uint256(),
+  data: bytes(),
 })
 
 const calldata = bytes_to_hex(
   encode_function_call({
     name: "execute",
     args: [array(call_tuple)] as const,
-    values: [[
-      { to: "0x1111...", value: 0n, data: "0x" },
-      { to: "0x2222...", value: 0n, data: "0x" },
-    ]],
+    values: [
+      [
+        { to: "0x1111111111111111111111111111111111111111", value: "0x0", data: "0x" },
+        { to: "0x2222222222222222222222222222222222222222", value: "0x0", data: "0x" },
+      ],
+    ],
   }),
 )
 
-const signer = create_signer([{ chainId: SEPOLIA, transports: [http(rpc)] }])
-
-const [owner] = await eth_requestAccounts()(signer({ chain_id: SEPOLIA }))
-
+// One call sends both the delegation tuple AND the
+// execute() invocation. The wallet handles the nonce and
+// gas; we only specify `to`, `data`, and the delegation
+// targets.
 const tx_hash = await wallet_sendSetCodeTransaction({
-  to: owner,
+  to: owner,                  // call BatchExecutor against ourselves
   data: calldata,
-  delegations: [{ chainId: "0xaa36a7", address: BATCH_EXECUTOR }],
-})(signer({ chain_id: SEPOLIA }))
+  delegations: [
+    {
+      chainId: SEPOLIA_CHAIN_REF_HEX,
+      address: BATCH_EXECUTOR,
+    },
+  ],
+})(signer({ chain_id: SEPOLIA_CHAIN_ID }))
 ```
 
 ## The BatchExecutor contract

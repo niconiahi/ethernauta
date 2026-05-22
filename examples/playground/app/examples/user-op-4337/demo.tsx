@@ -5,7 +5,6 @@ import {
   uint256,
 } from "@ethernauta/abi"
 import { eip155_11155111 } from "@ethernauta/chain"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   ENTRY_POINT_V07_ADDRESS,
   eth_estimateUserOperationGas,
@@ -26,6 +25,8 @@ import {
 import { bytes_to_hex } from "@ethernauta/utils"
 import { useState } from "react"
 import { Button } from "../../components/button"
+import { SignInHint } from "../../components/sign-in-hint"
+import { use_session } from "../../lib/auth/use-session"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -82,7 +83,8 @@ const ZERO_NONCE = "0x0" as const
 const ZERO_BYTES = "0x" as const
 
 export function UserOp4337Demo() {
-  const [owner, set_owner] = useState<string | null>(null)
+  const session = use_session()
+  const owner = session?.address ?? null
   const [sender, set_sender] = useState<string>("")
   const [bundler_url, set_bundler_url] =
     useState<string>("")
@@ -111,20 +113,6 @@ export function UserOp4337Demo() {
         transports: [http(bundler_url)],
       },
     ]
-  }
-
-  async function connect() {
-    set_error(null)
-    try {
-      const accounts = await eth_requestAccounts()(
-        signer({ chain_id: SEPOLIA_CHAIN_ID }),
-      )
-      if (accounts[0]) set_owner(accounts[0])
-    } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : "Unknown error",
-      )
-    }
   }
 
   async function check_bundler() {
@@ -339,9 +327,7 @@ export function UserOp4337Demo() {
           marginBottom: 16,
         }}
       >
-        {!owner && (
-          <Button onClick={connect}>Connect wallet</Button>
-        )}
+        {!owner && <SignInHint />}
         {bundler_url && (
           <Button
             variant="secondary"

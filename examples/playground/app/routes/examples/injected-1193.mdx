@@ -1,12 +1,15 @@
+import { GithubLink } from "../../components/github-link"
 import { Injected1193Demo } from "../../examples/injected-1193/demo"
 
 # EIP-1193 + EIP-6963 — injected wallets
 
 Three primitives close the loop on browser integration:
 
-- **`discover_providers()`** (EIP-6963) — fires
-  `eip6963:requestProvider`, listens for
-  `eip6963:announceProvider`, dedupes by `rdns`.
+- **EIP-6963 announce/request events** — wallets dispatch
+  `eip6963:announceProvider` on load; dapps dispatch
+  `eip6963:requestProvider` to nudge late announcers. Each
+  announce carries `{ info: { name, rdns, uuid, icon },
+  provider }`.
 - **`create_injected_signer(provider)`** — adapts any
   EIP-1193 provider into the codebase's `ResolvedSigner`,
   so every `Signable<T>` method works against MetaMask,
@@ -18,31 +21,64 @@ Three primitives close the loop on browser integration:
 
 <Injected1193Demo />
 
+<GithubLink path="examples/playground/app/examples/injected-1193/demo.tsx" />
+
 ## The code
 
 ```ts
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   create_injected_signer,
+  type Provider,
   watch_accounts,
   watch_chain,
 } from "@ethernauta/eip/1193"
-import { discover_providers } from "@ethernauta/eip/6963"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import {
+  ANNOUNCE_EVENT,
+  type EIP6963AnnounceProviderEvent,
+  type EIP6963ProviderDetail,
+  REQUEST_EVENT,
+} from "@ethernauta/eip/6963"
+import { encode_chain_id } from "@ethernauta/transport"
 
-const wallets = await discover_providers()
-const picked = wallets[0] // or render a picker
+// 1. Listen for announces, then trigger requestProvider so
+//    wallets that announce on-demand surface as well.
+const providers: EIP6963ProviderDetail[] = []
+function on_announce(event: Event) {
+  const detail =
+    (event as EIP6963AnnounceProviderEvent).detail
+  if (providers.some((p) => p.info.rdns === detail.info.rdns)) {
+    return
+  }
+  providers.push(detail)
+}
+window.addEventListener(ANNOUNCE_EVENT, on_announce)
+window.dispatchEvent(new Event(REQUEST_EVENT))
 
-const signer = create_injected_signer(picked.provider)
+// 2. Pick one (here: the first) and connect through it.
+const picked = providers[0]
+const provider = picked.provider as Provider
+
+const current_hex = (await provider.request({
+  method: "eth_chainId",
+})) as string
+const chain_id = encode_chain_id({
+  namespace: "eip155",
+  reference: Number.parseInt(current_hex, 16),
+})
+
+const signer = create_injected_signer(provider)
 const accounts = await eth_requestAccounts()(
   signer({ chain_id }),
 )
 
-const stop_a = watch_accounts(picked.provider, (next) =>
-  set_accounts(next),
-)
-const stop_c = watch_chain(picked.provider, (next) =>
-  set_chain_id(next),
-)
+// 3. Reactively watch updates from the injected provider.
+const stop_a = watch_accounts(provider, (next) => {
+  // re-render with `next`
+})
+const stop_c = watch_chain(provider, (next) => {
+  // re-render with `next` (hex chain id)
+})
 ```
 
 ## Reads stay on quality transports

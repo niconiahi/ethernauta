@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { CrossChain7683Demo } from "../../examples/cross-chain-7683/demo"
 
 # ERC-7683 — cross-chain intents
@@ -9,6 +10,8 @@ opening the order on-chain via `openFor()` and filling on
 the destination.
 
 <CrossChain7683Demo />
+
+<GithubLink path="examples/playground/app/examples/cross-chain-7683/demo.tsx" />
 
 ## What's happening
 
@@ -28,57 +31,75 @@ the destination.
 5. The destination settler runs `fill(orderId, originData,
    fillerData)` to release funds to the recipient.
 
-## The code for this example
+## The code
 
 ```ts
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import { eip155_11155111 } from "@ethernauta/chain"
 import {
   build_gasless_order,
   hash_gasless_order,
   sign_gasless_order,
 } from "@ethernauta/erc/7683"
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport"
+import {
+  create_signer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 
-const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: 11155111 })
-const signer = create_signer([{ chainId: SEPOLIA, transports: [http(rpc)] }])
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
 
-const [user] = await eth_requestAccounts()(signer({ chain_id: SEPOLIA }))
+const SEPOLIA_REF_HEX = "0xaa36a7" as const
+const OP_SEPOLIA_REF_HEX = "0xaa37dc" as const
+const USDC_SEPOLIA = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+const USDC_OP_SEPOLIA = "0x5fd84259d66Cd46123540766Be93DFE6D43130D7"
 
+// Settlers tag their order-data shape with a 32-byte magic
+// so they can multiplex layouts. Replace with the type your
+// settler expects (often keccak("YOUR_ORDER_TYPE")).
+const ORDER_DATA_TYPE = `0x${"00".repeat(32)}` as const
+
+const signer = create_signer([
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
+  },
+])
+
+// 1. Build the gasless order envelope. `window` controls
+//    openDeadline (how long fillers have to open it on the
+//    origin chain) and fillDeadline (how long they then
+//    have to fill on the destination).
 const order = build_gasless_order({
   originSettler: SETTLER,
   user,
-  originChainId: "0xaa36a7",
-  orderDataType: ORDER_DATA_TYPE_KEY,
-  orderData: ENCODED_ORDER_DATA,
+  originChainId: SEPOLIA_REF_HEX,
+  orderDataType: ORDER_DATA_TYPE,
+  orderData:
+    `0x${USDC_SEPOLIA.slice(2).padStart(64, "0")}${USDC_OP_SEPOLIA.slice(2).padStart(64, "0")}${OP_SEPOLIA_REF_HEX.slice(2).padStart(64, "0")}`,
   window: { open_window_s: 300, fill_window_s: 1800 },
 })
 
 const domain = {
   name: "ERC-7683 settler",
   version: "1",
-  chainId: 11155111,
+  chainId: 11155111n,
   verifyingContract: SETTLER,
 }
 
-const orderId = hash_gasless_order({ order, domain })
-const signature = await sign_gasless_order({ order, domain })(
-  signer({ chain_id: SEPOLIA }),
-)
-```
+// 2. The settler's canonical orderId IS the EIP-712 hash.
+const order_id = hash_gasless_order({ order, domain })
 
-## Submitting via `openFor` (filler side)
-
-```ts
-import { openFor } from "@ethernauta/erc/7683"
-import { resolve_contract } from "@ethernauta/transport"
-
-// Filler builds calldata for the origin settler — paying
-// gas to open the user-signed order on-chain.
-const tx = await openFor({
+// 3. Ask the wallet to sign. The relayer picks up
+//    (order, signature) and calls openFor() on the settler.
+const signature = await sign_gasless_order({
   order,
-  signature,
-  originFillerData: "0x",
-})(resolve_contract({ chain_id: SEPOLIA, to: SETTLER }))
+  domain,
+})(signer({ chain_id: SEPOLIA_CHAIN_ID }))
 ```
 
 ## What's intentionally left out

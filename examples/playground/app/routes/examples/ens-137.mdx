@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { Ens137Demo } from "../../examples/ens-137/demo"
 
 # ERC-137 — ENS resolution
@@ -17,6 +18,8 @@ resolver address for each node, then the resolver
 implements `addr`, `name`, `text`, and so on.
 
 <Ens137Demo />
+
+<GithubLink path="examples/playground/app/examples/ens-137/demo.tsx" />
 
 ## What's happening
 
@@ -39,34 +42,60 @@ implements `addr`, `name`, `text`, and so on.
    address, the name is verified; otherwise return null.
    Skipping this step lets anyone spoof a reverse record.
 
-## The code for this example
+## The code
 
 ```ts
+import { eip155_1 } from "@ethernauta/chain"
 import {
   get_ens_address,
   get_ens_avatar,
   get_ens_name,
   get_ens_text,
 } from "@ethernauta/erc/137"
+import {
+  create_reader,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 
-// forward
-const addr = await get_ens_address({
-  name: "vitalik.eth",
-})(reader_ctx)
+const MAINNET_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
 
-const avatar = await get_ens_avatar({
-  name: "vitalik.eth",
-})(reader_ctx)
+const reader = create_reader([
+  {
+    chainId: MAINNET_CHAIN_ID,
+    transports: [
+      http("https://eth-mainnet.public.blastapi.io"),
+    ],
+  },
+])
+const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
 
-const twitter = await get_ens_text({
-  name: "vitalik.eth",
-  key: "com.twitter",
-})(reader_ctx)
+// Forward — name → address + avatar + text records.
+// Each call is independent; fan them out in parallel.
+const [addr, avatar, twitter, url, description] =
+  await Promise.all([
+    get_ens_address({ name: "vitalik.eth" })(ctx),
+    get_ens_avatar({ name: "vitalik.eth" })(ctx),
+    get_ens_text({
+      name: "vitalik.eth",
+      key: "com.twitter",
+    })(ctx),
+    get_ens_text({ name: "vitalik.eth", key: "url" })(ctx),
+    get_ens_text({
+      name: "vitalik.eth",
+      key: "description",
+    })(ctx),
+  ])
 
-// reverse (forward-verified)
+// Reverse — address → primary name. Internally does the
+// reverse-node lookup AND the forward-verify step, so a
+// non-null result is guaranteed authentic.
 const name = await get_ens_name({
   address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-})(reader_ctx)
+})(ctx)
 ```
 
 ## Why normalization matters

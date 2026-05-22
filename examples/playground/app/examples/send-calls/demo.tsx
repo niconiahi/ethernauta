@@ -1,5 +1,4 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   CALLS_STATUS,
   type CallsStatus,
@@ -12,8 +11,10 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "../../components/button"
+import { SignInHint } from "../../components/sign-in-hint"
+import { use_session } from "../../lib/auth/use-session"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -52,7 +53,8 @@ function describe_status(code: number): string {
 }
 
 export function SendCallsDemo() {
-  const [owner, set_owner] = useState<string | null>(null)
+  const session = use_session()
+  const owner = session?.address ?? null
   const [batch_id, set_batch_id] = useState<string | null>(
     null,
   )
@@ -66,23 +68,23 @@ export function SendCallsDemo() {
   const [polling, set_polling] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
-  async function connect() {
-    set_error(null)
-    try {
-      const accounts = await eth_requestAccounts()(
-        signer({ chain_id: SEPOLIA_CHAIN_ID }),
-      )
-      if (accounts[0]) set_owner(accounts[0])
-      const caps = await wallet_getCapabilities()(
-        signer({ chain_id: SEPOLIA_CHAIN_ID }),
-      )
-      set_capabilities(caps)
-    } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : "Unknown error",
-      )
+  // Probe capabilities once the user is signed in so the
+  // UI can show what the active wallet advertises before
+  // they hit "Send batch".
+  useEffect(() => {
+    if (!owner) return
+    let cancelled = false
+    wallet_getCapabilities()(
+      signer({ chain_id: SEPOLIA_CHAIN_ID }),
+    )
+      .then((caps) => {
+        if (!cancelled) set_capabilities(caps)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
     }
-  }
+  }, [owner])
 
   async function send_batch() {
     if (!owner) return
@@ -193,9 +195,7 @@ export function SendCallsDemo() {
           flexWrap: "wrap",
         }}
       >
-        {!owner && (
-          <Button onClick={connect}>Connect wallet</Button>
-        )}
+        {!owner && <SignInHint />}
         {owner && (
           <Button onClick={send_batch} disabled={loading}>
             {loading

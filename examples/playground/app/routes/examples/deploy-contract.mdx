@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { DeployContractDemo } from "../../examples/deploy-contract/demo"
 
 # EIP-1014 — CREATE / CREATE2 address derivation
@@ -17,6 +18,51 @@ against EIP-1014 fixture vectors.
 
 <DeployContractDemo />
 
+<GithubLink path="examples/playground/app/examples/deploy-contract/demo.tsx" />
+
+## The code (deriving addresses)
+
+```ts
+import {
+  type Address,
+  addressSchema,
+  bytes32Schema,
+} from "@ethernauta/core"
+import {
+  get_contract_address,
+  get_create2_address,
+} from "@ethernauta/eip/1014"
+import { parse } from "valibot"
+
+// CREATE — deterministic from (sender, nonce).
+const create_address = get_contract_address({
+  from: parse(
+    addressSchema,
+    "0x0000000000000000000000000000000000000042",
+  ),
+  nonce: 7n,
+})
+
+// CREATE2 — deterministic from (sender, salt,
+// keccak256(init_code)). `bytecodeHash` is YOUR hash of
+// the creation bytecode + constructor calldata; pre-hash
+// before calling this.
+const create2_address = get_create2_address({
+  from: parse(
+    addressSchema,
+    "0x00000000000000000000000000000000deadbeef",
+  ),
+  salt: parse(
+    bytes32Schema,
+    "0x00000000000000000000000000000000000000000000000000000000cafebabe",
+  ),
+  bytecodeHash: parse(
+    bytes32Schema,
+    "0xd6fb717f7e270a360f5093ce6a7a3752183e89c9a9afe5c0cb54b204a3902895",
+  ),
+})
+```
+
 ## Deploying through the wallet
 
 `deploy_contract` ships in `@ethernauta/eip/1014` for the
@@ -26,8 +72,9 @@ creation transactions). The wallet fills `nonce` / `gas`
 / fees per the project invariant.
 
 ```ts
-import { deploy_contract } from "@ethernauta/eip/1014"
 import { uint256 } from "@ethernauta/abi"
+import { deploy_contract } from "@ethernauta/eip/1014"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 
 const signed_raw = await deploy_contract({
   bytecode,

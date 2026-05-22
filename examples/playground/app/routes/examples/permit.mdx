@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { PermitDemo } from "../../examples/permit/demo"
 
 # Permit signing — USDC
@@ -12,7 +13,9 @@ prior `approve()` transaction.
 
 <PermitDemo />
 
-## The code for this example
+<GithubLink path="examples/playground/app/examples/permit/demo.tsx" />
+
+## The code
 
 ```ts
 import { eip155_1 } from "@ethernauta/chain"
@@ -25,26 +28,45 @@ import {
   contract,
   create_multicall,
   create_signer,
+  encode_chain_id,
+  http,
 } from "@ethernauta/transport"
 import { deadline_in, parse_unit } from "@ethernauta/utils"
 
+const MAINNET_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 const SPENDER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
-const VALUE = parse_unit("100", 6)
+const VALUE = parse_unit("100", 6) // 100 USDC, 6 decimals
+
+const CHAINS = [
+  {
+    chainId: MAINNET_CHAIN_ID,
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+]
+const multicall = create_multicall(CHAINS)
+const signer = create_signer(CHAINS)
 
 const ctx = contract({
   chain_id: MAINNET_CHAIN_ID,
   to: USDC,
 })
 
+// 1. Read the two values the typed message depends on in
+//    a single round-trip.
 const [domain_separator, nonce_hex] = await multicall([
   DOMAIN_SEPARATOR()(ctx),
   nonces({ owner })(ctx),
 ] as const)
 
 const nonce = BigInt(nonce_hex)
-const deadline = deadline_in(3600)
+const deadline = deadline_in(3600) // 1 hour from now
 
+// 2. Sign the typed Permit struct.
 const signature = await eth_signTypedData_v4([
   owner,
   {

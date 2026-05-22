@@ -1,5 +1,4 @@
 import { eip155_1 } from "@ethernauta/chain"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
 import {
   DOMAIN_SEPARATOR,
@@ -24,6 +23,8 @@ import {
 import { useState } from "react"
 import { bigint, type InferOutput, object } from "valibot"
 import { Button } from "../../components/button"
+import { SignInHint } from "../../components/sign-in-hint"
+import { use_session } from "../../lib/auth/use-session"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -63,25 +64,12 @@ const signedPermitSchema = object({
 type SignedPermit = InferOutput<typeof signedPermitSchema>
 
 export function PermitDemo() {
-  const [owner, set_owner] = useState<string | null>(null)
+  const session = use_session()
+  const owner = session?.address ?? null
   const [signed, set_signed] =
     useState<SignedPermit | null>(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
-
-  async function connect() {
-    set_error(null)
-    try {
-      const accounts = await eth_requestAccounts()(
-        signer({ chain_id: MAINNET_CHAIN_ID }),
-      )
-      if (accounts[0]) set_owner(accounts[0])
-    } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : "Unknown error",
-      )
-    }
-  }
 
   async function sign_permit() {
     if (!owner) return
@@ -206,9 +194,7 @@ export function PermitDemo() {
           flexWrap: "wrap",
         }}
       >
-        {!owner && (
-          <Button onClick={connect}>Connect wallet</Button>
-        )}
+        {!owner && <SignInHint />}
         {owner && (
           <Button onClick={sign_permit} disabled={loading}>
             {loading

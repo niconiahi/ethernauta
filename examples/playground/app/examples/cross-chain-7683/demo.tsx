@@ -1,5 +1,4 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   address_to_bytes32,
   build_gasless_order,
@@ -14,6 +13,8 @@ import {
 } from "@ethernauta/transport"
 import { useState } from "react"
 import { Button } from "../../components/button"
+import { SignInHint } from "../../components/sign-in-hint"
+import { use_session } from "../../lib/auth/use-session"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -62,7 +63,8 @@ function shorten(hex: string, head = 10, tail = 8): string {
 }
 
 export function CrossChain7683Demo() {
-  const [user, set_user] = useState<string | null>(null)
+  const session = use_session()
+  const user = session?.address ?? null
   const [settler, set_settler] =
     useState<string>(DEFAULT_SETTLER)
   const [order, set_order] =
@@ -75,20 +77,6 @@ export function CrossChain7683Demo() {
   >(null)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
-
-  async function connect() {
-    set_error(null)
-    try {
-      const accounts = await eth_requestAccounts()(
-        signer({ chain_id: SEPOLIA_CHAIN_ID }),
-      )
-      if (accounts[0]) set_user(accounts[0])
-    } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : "Unknown error",
-      )
-    }
-  }
 
   async function sign_order() {
     if (!user) return
@@ -214,9 +202,7 @@ export function CrossChain7683Demo() {
           flexWrap: "wrap",
         }}
       >
-        {!user && (
-          <Button onClick={connect}>Connect wallet</Button>
-        )}
+        {!user && <SignInHint />}
         {user && (
           <Button onClick={sign_order} disabled={loading}>
             {loading

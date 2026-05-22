@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { PortfolioDemo } from "../../examples/portfolio/demo"
 
 # Portfolio — vitalik.eth on mainnet
@@ -9,7 +10,9 @@ roundtrip.
 
 <PortfolioDemo />
 
-## The code for this example
+<GithubLink path="examples/playground/app/examples/portfolio/demo.tsx" />
+
+## The code
 
 ```ts
 import { eip155_1 } from "@ethernauta/chain"
@@ -42,12 +45,12 @@ const TOKENS = [
 const multicall = create_multicall([
   {
     chainId: MAINNET_CHAIN_ID,
-    transports: [
-      http("https://ethereum-rpc.publicnode.com"),
-    ],
+    transports: [http("https://ethereum-rpc.publicnode.com")],
   },
 ])
 
+// Build a flat call list — 3 reads per token, in a fixed
+// order so we can index the result tuple positionally.
 const calls = TOKENS.flatMap((t) => {
   const ctx = contract({
     chain_id: MAINNET_CHAIN_ID,
@@ -60,5 +63,7 @@ const calls = TOKENS.flatMap((t) => {
   ] as const
 })
 
-const results = await multicall(calls)
+// One eth_call. results[i*3] = symbol, [i*3+1] = decimals,
+// [i*3+2] = balance for TOKENS[i].
+const results = await multicall(calls as never)
 ```

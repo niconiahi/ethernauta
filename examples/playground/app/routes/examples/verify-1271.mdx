@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { Verify1271Demo } from "../../examples/verify-1271/demo"
 
 # EIP-1271 — verify a signature
@@ -18,21 +19,56 @@ byte flips the result.
 
 <Verify1271Demo />
 
+<GithubLink path="examples/playground/app/examples/verify-1271/demo.tsx" />
+
 ## The code
 
 ```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import { type Bytes, bytesSchema } from "@ethernauta/core"
 import { verify_message } from "@ethernauta/eip/1271"
 import { personal_sign } from "@ethernauta/eip/191"
+import {
+  create_reader,
+  create_signer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
+import { parse } from "valibot"
 
-const signature = await personal_sign([message, owner])(
-  signer({ chain_id }),
+const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
+
+const CHAINS = [
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
+  },
+]
+const reader = create_reader(CHAINS)
+const signer = create_signer(CHAINS)
+
+const MESSAGE = "Verify me with EIP-1271"
+
+// 1. sign with the wallet (the signer talks to the
+//    extension via window.postMessage; the wallet does
+//    the actual ecdsa work)
+const raw_sig = await personal_sign([MESSAGE, owner])(
+  signer({ chain_id: SEPOLIA_CHAIN_ID }),
 )
+const signature: Bytes = parse(bytesSchema, raw_sig)
 
+// 2. verify — EOA path runs locally; contract path would
+//    hit eth_call isValidSignature(hash, sig)
 const ok = await verify_message({
   address: owner,
-  message,
+  message: MESSAGE,
   signature,
-})(reader({ chain_id }))
+})(reader({ chain_id: SEPOLIA_CHAIN_ID }))
 ```
 
 ## Why both paths matter

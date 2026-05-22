@@ -1,3 +1,4 @@
+import { GithubLink } from "../../components/github-link"
 import { VaultsDemo } from "../../examples/vaults/demo"
 
 # ERC-4626 vault dashboards
@@ -11,7 +12,9 @@ two contracts, one roundtrip.
 
 <VaultsDemo />
 
-## The code for this example
+<GithubLink path="examples/playground/app/examples/vaults/demo.tsx" />
+
+## The code
 
 ```ts
 import { eip155_1 } from "@ethernauta/chain"
@@ -32,6 +35,11 @@ import {
   http,
 } from "@ethernauta/transport"
 
+const MAINNET_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+
 const VAULTS = [
   {
     label: "Morpho · Steakhouse USDC",
@@ -43,8 +51,21 @@ const VAULTS = [
   },
 ] as const
 
-const ONE_SHARE = "0x" + (10n ** 18n).toString(16)
+const multicall = create_multicall([
+  {
+    chainId: MAINNET_CHAIN_ID,
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+])
 
+// `convertToAssets(1 share)` returns the underlying amount
+// for one share — the standard "price per share". We pass
+// 1e18 because most vaults use 18 share decimals; if not,
+// normalise on the client using the read `decimals()` value.
+const ONE_SHARE = `0x${(10n ** 18n).toString(16)}` as const
+
+// 6 reads per vault × 2 vaults = 12 reads, one aggregate3
+// eth_call. Tuple order matches the array order below.
 const calls = VAULTS.flatMap((v) => {
   const ctx = contract({
     chain_id: MAINNET_CHAIN_ID,
@@ -60,5 +81,5 @@ const calls = VAULTS.flatMap((v) => {
   ] as const
 })
 
-const results = await multicall(calls)
+const results = await multicall(calls as never)
 ```
