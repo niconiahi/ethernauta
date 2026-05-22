@@ -23,7 +23,6 @@ This package is also the canonical home of the Ethereum schemas — `addressSche
 - [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
 - [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
 - [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
-- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
 - [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
@@ -68,15 +67,22 @@ const hash = await eth_sendRawTransaction([signed_transaction])(
 ### Reacting to transaction states
 
 ```ts
-import {
-  register_transaction,
-  watch_transaction,
-} from "@ethernauta/transaction"
+import { eth_getTransactionReceipt } from "@ethernauta/eth"
+import { hex_to_number } from "@ethernauta/utils"
+import { reader, SEPOLIA_CHAIN_ID } from "./reader"
 
-const transaction = register_transaction(hash)
-watch_transaction(hash, (transaction) => {
-  // subsequent states that the transaction goes through
-})
+// Single-hash UI tracking — inline ~10-line poll. The wallet
+// owns batched-call tracking via EIP-5792 (wallet_getCallsStatus);
+// for a single tx, just poll the receipt directly.
+const interval_id = setInterval(async () => {
+  const receipt = await eth_getTransactionReceipt([hash])(
+    reader({ chain_id: SEPOLIA_CHAIN_ID }),
+  )
+  if (!receipt || !receipt.status) return
+  const status = hex_to_number(receipt.status) === 1 ? "mined" : "reverted"
+  // update your UI with `status` and `hash`
+  clearInterval(interval_id)
+}, 2000)
 ```
 
 ## Files to pay attention
@@ -119,6 +125,7 @@ watch_transaction(hash, (transaction) => {
 - [transaction/info.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/info.ts)
 - [transaction/legacy.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/legacy.ts)
 - [transaction/signed.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/signed.ts)
+- [transaction/submitted.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/submitted.ts)
 - [transaction/unsigned.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/unsigned.ts)
 
 ### method

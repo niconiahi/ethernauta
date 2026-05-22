@@ -6,7 +6,7 @@ Drop [`skills/ethernauta/SKILL.md`](https://github.com/niconiahi/ethernauta/blob
 
 ## Full working example: Animatronik
 
-[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, `create_signer` + `create_writer` for state changes, and `@ethernauta/transaction` for transaction tracking. The source is the most complete public reference for consuming the library.
+[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, and `create_signer` + `create_writer` for state changes. The source is the most complete public reference for consuming the library.
 
 ## Philosophy
 
@@ -28,7 +28,6 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
 - [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
 - [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
-- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
 - [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
@@ -55,7 +54,7 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - [x] Non-Fungible Token Standard ([ERC-721](https://eips.ethereum.org/EIPS/eip-721))
 - [x] Multi Token Standard ([ERC-1155](https://eips.ethereum.org/EIPS/eip-1155))
 - [x] Tokenized Vault Standard ([ERC-4626](https://eips.ethereum.org/EIPS/eip-4626))
-- [x] Transaction tracking system
+- [x] Batched calls ([EIP-5792](https://eips.ethereum.org/EIPS/eip-5792) — `wallet_sendCalls` / `wallet_getCallsStatus`)
 - [x] Chrome extension wallet
 - [ ] Metamask's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 - [ ] WalletConnect's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
@@ -193,16 +192,22 @@ const hash = await eth_sendRawTransaction([signed_transaction])(
 ### Reacting to transaction states
 
 ```ts
-import {
-  register_transaction,
-  watch_transaction,
-} from "@ethernauta/transaction"
+import { eth_getTransactionReceipt } from "@ethernauta/eth"
+import { hex_to_number } from "@ethernauta/utils"
+import { reader, SEPOLIA_CHAIN_ID } from "./reader"
 
-// initial transaction state with "type" key equal "pending"
-const transaction = register_transaction(hash)
-watch_transaction(hash, (transaction) => {
-  // subsequent states that the transaction goes through
-})
+// Single-hash UI tracking — inline ~10-line poll. The wallet
+// owns batched-call tracking via EIP-5792 (wallet_getCallsStatus);
+// for a single tx, just poll the receipt directly.
+const interval_id = setInterval(async () => {
+  const receipt = await eth_getTransactionReceipt([hash])(
+    reader({ chain_id: SEPOLIA_CHAIN_ID }),
+  )
+  if (!receipt || !receipt.status) return
+  const status = hex_to_number(receipt.status) === 1 ? "mined" : "reverted"
+  // update your UI with `status` and `hash`
+  clearInterval(interval_id)
+}, 2000)
 ```
 
 ### Executing an ERC-20 method

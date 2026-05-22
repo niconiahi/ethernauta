@@ -1,21 +1,21 @@
 import { eip155_11155111 } from "@ethernauta/chain"
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
+  eth_getTransactionReceipt,
   eth_sendRawTransaction,
   eth_signTransaction,
+  type SubmittedTransaction,
 } from "@ethernauta/eth"
 import {
-  register_transaction,
-  type Transaction,
-  watch_transaction,
-} from "@ethernauta/transaction"
-import {
+  create_reader,
   create_signer,
   create_writer,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import { number_to_hex } from "@ethernauta/utils"
+import {
+  hex_to_number,
+  number_to_hex,
+} from "@ethernauta/utils"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
 
@@ -36,15 +36,13 @@ const CHAINS = [
 ]
 const writer = create_writer(CHAINS)
 const signer = create_signer(CHAINS)
+const reader = create_reader(CHAINS)
 
 export default function () {
   const [transactions, setTransactions] = useState<
-    Transaction[]
+    SubmittedTransaction[]
   >([])
   const [error, set_error] = useState<string | null>(null)
-  const [account, set_account] = useState<string | null>(
-    null,
-  )
   const last_transaction =
     transactions[transactions.length - 1]
   const dialog_ref = useRef<HTMLDialogElement>(null)
@@ -62,15 +60,10 @@ export default function () {
   return (
     <div
       style={{
-        fontFamily: "sans-serif",
         color: "#1a1a1a",
         background: "#faf5f0",
-        minHeight: "100vh",
       }}
     >
-      {account ? (
-        <ConnectedAddress address={account} />
-      ) : null}
       {/* Hero */}
       <section
         style={{
@@ -157,18 +150,7 @@ export default function () {
             gap: 12,
           }}
         >
-          <TestWalletButton on_connected={set_account} />
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              const accounts = await eth_requestAccounts()(
-                signer({ chain_id: SEPOLIA_CHAIN_ID }),
-              )
-              if (accounts[0]) set_account(accounts[0])
-            }}
-          >
-            Connect wallet
-          </Button>
+          <TestWalletButton />
           <Button
             variant="secondary"
             onClick={async () => {
@@ -187,18 +169,25 @@ export default function () {
                 const hash = await writable(
                   writer({ chain_id: SEPOLIA_CHAIN_ID }),
                 )
-                const transaction =
-                  register_transaction(hash)
-                setTransactions([transaction])
-                watch_transaction(
-                  transaction.hash,
-                  (transaction) => {
-                    setTransactions((prev) => [
-                      ...prev,
-                      transaction,
-                    ])
-                  },
-                )
+                setTransactions([
+                  { hash, status: "pending" },
+                ])
+                const interval_id = setInterval(async () => {
+                  const receipt =
+                    await eth_getTransactionReceipt([hash])(
+                      reader({
+                        chain_id: SEPOLIA_CHAIN_ID,
+                      }),
+                    )
+                  if (!receipt) return
+                  if (!receipt.status) return
+                  const next: SubmittedTransaction =
+                    hex_to_number(receipt.status) === 1
+                      ? { hash, status: "mined" }
+                      : { hash, status: "reverted" }
+                  setTransactions((prev) => [...prev, next])
+                  clearInterval(interval_id)
+                }, 2000)
               } catch (e) {
                 set_error(
                   e instanceof Error
@@ -552,11 +541,7 @@ export default function () {
 const TEST_MNEMONIC =
   "smile price bomb movie minimum treat hurdle adult wing come space cross"
 
-function TestWalletButton({
-  on_connected,
-}: {
-  on_connected: (address: string) => void
-}) {
+function TestWalletButton() {
   const [copied, setCopied] = useState(false)
   return (
     <Button
@@ -564,57 +549,12 @@ function TestWalletButton({
       onClick={async () => {
         await navigator.clipboard.writeText(TEST_MNEMONIC)
         setCopied(true)
-        const accounts = await eth_requestAccounts()(
-          signer({ chain_id: SEPOLIA_CHAIN_ID }),
-        )
-        if (accounts[0]) on_connected(accounts[0])
       }}
     >
       {copied
         ? "Test mnemonics copied — paste in the extension"
-        : "Connect with test wallet"}
+        : "Copy test mnemonics"}
     </Button>
-  )
-}
-
-function ConnectedAddress({
-  address,
-}: {
-  address: string
-}) {
-  const short = `${address.slice(0, 6)}…${address.slice(-4)}`
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: 16,
-        right: 16,
-        zIndex: 10,
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "8px 14px",
-        borderRadius: 999,
-        background: "#fff",
-        border: "1px solid #ddd",
-        color: "#1a1a1a",
-        fontSize: 13,
-        fontWeight: 600,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-      }}
-    >
-      <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          background: "#0FA05C",
-        }}
-      />
-      <span style={{ fontFamily: "monospace" }}>
-        {short}
-      </span>
-    </div>
   )
 }
 
@@ -753,7 +693,7 @@ function render_error(message: string) {
   )
 }
 
-function render_transaction(transaction: Transaction) {
+function render_transaction(transaction: SubmittedTransaction) {
   const key = `transaction-${transaction.hash}-${transaction.status}`
   switch (transaction.status) {
     case "pending": {

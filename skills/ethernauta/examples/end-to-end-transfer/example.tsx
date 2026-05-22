@@ -8,11 +8,6 @@ import {
   eth_signTransaction,
 } from "@ethernauta/eth"
 import {
-  register_transaction,
-  type Transaction,
-  watch_transaction,
-} from "@ethernauta/transaction"
-import {
   create_signer,
   create_writer,
   encode_chain_id,
@@ -20,6 +15,13 @@ import {
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/utils"
 import { useState } from "react"
+
+// Single-hash tracking hook from the transaction-tracking example.
+// See skills/ethernauta/examples/transaction-tracking/example.tsx.
+import {
+  TxBadge,
+  useTransaction,
+} from "../transaction-tracking/example"
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -38,7 +40,7 @@ const writer = create_writer(CHAINS)
 
 export default function Demo() {
   const [account, set_account] = useState<string | null>(null)
-  const [tx, set_tx] = useState<Transaction | null>(null)
+  const { tx, track } = useTransaction()
   const [error, set_error] = useState<string | null>(null)
 
   async function handle_connect() {
@@ -62,11 +64,8 @@ export default function Demo() {
         writer({ chain_id: CHAIN_ID }),
       )
 
-      const initial = register_transaction(hash)
-      set_tx(initial)
-
-      // The callback fires on every status transition.
-      watch_transaction(hash, (updated) => set_tx(updated))
+      // Start the pending → mined / reverted poll.
+      track(hash)
     } catch (err) {
       set_error(
         err instanceof Error ? err.message : "Unknown error",
@@ -84,7 +83,7 @@ export default function Demo() {
       <button onClick={handle_transfer} disabled={!account}>
         Send 1 wei
       </button>
-      {tx ? <p>Status: {tx.status} ({tx.hash})</p> : null}
+      <TxBadge tx={tx} />
       {error ? <p>{error}</p> : null}
     </div>
   )

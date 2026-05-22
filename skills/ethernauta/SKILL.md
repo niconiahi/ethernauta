@@ -127,15 +127,33 @@ The four method shapes:
 
 ## 8. Tracking Transactions
 
-**What it is.** `@ethernauta/transaction` provides `register_transaction(hash)` to seed an in-memory record and `watch_transaction(hash, callback)` to poll the receipt and fire the callback on each state transition (`pending` → `mined` / `reverted`).
+**Two paths depending on the shape of what you are tracking.**
 
-**When to reach for it.** Right after `eth_sendRawTransaction` resolves with a hash. Wire the callback to component state so the UI reflects pending/mined/reverted automatically. This is exactly how `animatronik`'s mint flow updates the dialog.
+### 8.1 Single-hash UI tracking (the common case)
+
+**What it is.** After `eth_sendRawTransaction` returns a hash, poll `eth_getTransactionReceipt` directly through a reader until the receipt arrives, then flip your UI state from `pending` to `mined` / `reverted`. There is no dedicated tracking package — it is ~10 lines of `setInterval` next to the broadcast call.
+
+**When to reach for it.** Any single transaction your UI needs to surface (a transfer, a mint, an approval) where you want to render `pending` → `mined` / `reverted` in-line. The canonical `useTransaction()` hook below is what `examples/playground/app/routes/home.tsx` uses and what `animatronik`'s mint flow uses.
 
 **Notes.**
-- `Transaction` is a typed object with `{ hash, status }`. Status is `"pending" | "mined" | "reverted"`.
-- The watcher uses the same RPC the writer used. No extra wiring.
+- `SubmittedTransaction` is the canonical Valibot-backed discriminated union for this lifecycle, exported from `@ethernauta/eth`: `{ hash, status: "pending" | "mined" | "reverted" }`. Import it; do not redefine.
+- The poll uses the same reader you would use for any other read — `create_reader` against the chain you broadcast to.
+- Clear the interval as soon as the receipt resolves. Do not leak timers across component unmounts.
 
 → **See** `examples/transaction-tracking/example.tsx`.
+
+### 8.2 Batched calls (EIP-5792)
+
+**What it is.** For multi-call flows that should look like one user action (`approve` + `swap`, `permit` + `transfer`, etc.), use `wallet_sendCalls` from `@ethernauta/eip/5792`. The wallet mints a bundle ID, signs each call, broadcasts sequentially, and exposes status via `wallet_getCallsStatus`. **Dapps do not track the underlying tx hashes themselves** — the wallet owns batch lifecycle.
+
+**When to reach for it.** Any flow that today consists of "send tx A, wait for it, then send tx B." Switch the *whole* flow to one `wallet_sendCalls` invocation; render UI off `wallet_getCallsStatus(bundle_id)` polling.
+
+**Notes.**
+- `wallet_sendCalls` is a `Signable<SendCallsResult>` — same curried shape as every other Ethernauta method.
+- `wallet_getCallsStatus` returns receipts grouped by bundle once all calls have mined; before that, status is `PENDING`.
+- Today the wallet executes calls sequentially. Atomic execution (EIP-7702) is a future capability. Dapps that branch on `wallet_getCapabilities` will degrade gracefully.
+
+→ **See** `examples/playground/app/examples/send-calls/demo.tsx` for the live consumer pattern.
 
 ---
 
@@ -189,11 +207,11 @@ The four method shapes:
 |---|---|
 | `@ethernauta/chain` | `eip155_1`, `eip155_11155111`, … (500+ chain definitions) |
 | `@ethernauta/transport` | `create_reader`, `create_writer`, `create_signer`, `create_contract`, `http`, `encode_chain_id`, type `Readable`, `Writable`, `Signable`, `Callable`, `ResolvedSigner`, `ResolvedContract` |
-| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `addressSchema`, `uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
+| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `submittedTransactionSchema` + type `SubmittedTransaction` (single-hash lifecycle — see section 8.1), `addressSchema`, `uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
 | `@ethernauta/eip/1102` | `eth_requestAccounts` |
 | `@ethernauta/eip/1193` | `create_provider`, `Provider` interface |
 | `@ethernauta/eip/6963` | `announce`, `EIP6963ProviderDetail`, `ANNOUNCE_EVENT`, `REQUEST_EVENT` |
-| `@ethernauta/transaction` | `register_transaction`, `watch_transaction`, type `Transaction` |
+| `@ethernauta/eip/5792` | `wallet_sendCalls`, `wallet_getCallsStatus`, `wallet_getCapabilities` (batched-call protocol — see section 8.2) |
 | `@ethernauta/abi` | `build_signature`, `encode_function_call`, `decode_function_result` (only needed when writing your own contract methods — usually codegen handles this) |
 | `@ethernauta/utils` | `number_to_hex`, `hex_to_number`, `bytes_to_hex` |
 

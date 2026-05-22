@@ -7,7 +7,7 @@ Guidance for Claude Code working on the Ethernauta monorepo. This file is a **ro
 A pnpm workspace that ships:
 
 1. A Chrome MV3 wallet extension (`packages/wallet/`, private) that holds an encrypted mnemonic in IndexedDB and signs requests from dapps via a `window.postMessage` ↔ `chrome.runtime` bridge.
-2. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps consume to talk to the wallet and the chain.
+2. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps consume to talk to the wallet and the chain.
 
 ## Routing — which skill to read
 
@@ -48,6 +48,7 @@ These bind regardless of task. They are surfaced here so they cannot be missed e
 8. **Spec link at the top of every standards file.** `// https://eips.ethereum.org/EIPS/eip-<n>` for EIPs, `// https://eips.ethereum.org/EIPS/eip-<n>` or the ENS doc link for ERCs. (`eip`, `erc`)
 9. **No new dependencies in `@ethernauta/utils`.** It must stay pure, dependency-free, side-effect-free. (`utils`)
 10. **The mnemonic and private key never leave the popup process.** Not over `postMessage`, not over `chrome.runtime`, not into a log. (`wallet`)
+11. **Anything implementing a named standard (EIP-N or ERC-N) lives in `packages/eip/src/<n>/` or `packages/erc/src/<n>/`.** No exceptions. Even small helpers — if their behavior is defined by a numbered standard, they belong in the matching standard folder, not scattered into `@ethernauta/abi`, `@ethernauta/utils`, or anywhere else. The folder name is the standard number; the `index.ts` carries the spec link comment and re-exports the public surface. (`eip`, `erc`)
 
 ## Workspace shape
 
@@ -59,7 +60,6 @@ packages/
   chain/        500+ EIP-155 chain definitions
   eth/          eth_* JSON-RPC methods (Readable / Writable / Signable)
   transport/    Readable/Writable/Signable/Callable, resolvers, http
-  transaction/  register_transaction, watch_transaction
   eip/          EIPs as importable subpaths (skills/eip)
   erc/          ERC method bindings as importable subpaths (skills/erc)
   ens/          ENS-specific primitives (ENSIP normalize, etc.)

@@ -5,11 +5,6 @@ import { eip155_11155111 } from "@ethernauta/chain"
 import { addressSchema } from "@ethernauta/eth"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
-  register_transaction,
-  type Transaction,
-  watch_transaction,
-} from "@ethernauta/transaction"
-import {
   create_signer,
   create_writer,
   encode_chain_id,
@@ -22,6 +17,13 @@ import { parse } from "valibot"
 // sidecar { signature: "mint(string)", names: ["data"] } so the
 // wallet can render a human-readable confirmation.
 import { mint } from "~/generated/animatronik/methods/mint"
+
+// Single-hash tracking hook from the transaction-tracking example.
+// See skills/ethernauta/examples/transaction-tracking/example.tsx.
+import {
+  TxBadge,
+  useTransaction,
+} from "../transaction-tracking/example"
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -45,7 +47,7 @@ export function MintButton({
   contract_address: string
   data: string
 }) {
-  const [tx, set_tx] = useState<Transaction | null>(null)
+  const { tx, track } = useTransaction()
   const [error, set_error] = useState<string | null>(null)
 
   async function handle_mint() {
@@ -65,8 +67,8 @@ export function MintButton({
         writer({ chain_id: CHAIN_ID }),
       )
 
-      set_tx(register_transaction(hash))
-      watch_transaction(hash, (updated) => set_tx(updated))
+      // Start the pending → mined / reverted poll.
+      track(hash)
     } catch (err) {
       set_error(
         err instanceof Error ? err.message : "Mint failed",
@@ -77,7 +79,7 @@ export function MintButton({
   return (
     <>
       <button onClick={handle_mint}>Mint</button>
-      {tx ? <p>{tx.status}</p> : null}
+      <TxBadge tx={tx} />
       {error ? <p>{error}</p> : null}
     </>
   )
