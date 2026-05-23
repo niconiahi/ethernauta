@@ -30,10 +30,12 @@ export {
   providerRpcErrorSchema,
 } from "./inject"
 export {
+  create_envelope,
   create_provider,
   type CreateProviderOptions,
   type Provider,
   type ProviderInternal,
+  type ProviderResolver,
   type RequestArguments,
   type SignableHandler,
 } from "./provider"

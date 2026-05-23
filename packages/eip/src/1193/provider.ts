@@ -1,7 +1,20 @@
 // https://eips.ethereum.org/EIPS/eip-1193
 
+import type {
+  ReadContext,
+  ResolvedReader,
+  ResolvedSigner,
+  SignContext,
+} from "@ethernauta/transport"
+import { ReadContextSchema } from "@ethernauta/transport"
+import { parse, safeParse } from "valibot"
 import { addEthereumChainParametersSchema } from "../3085/method/wallet_addEthereumChain"
 import { switchEthereumChainParametersSchema } from "../3326/method/wallet_switchEthereumChain"
+import {
+  invalid_params,
+  unrecognized_chain,
+  unsupported_method,
+} from "./error"
 import {
   type Emitter,
   create_emitter,
@@ -9,11 +22,9 @@ import {
   type EventName,
 } from "./events"
 import {
-  invalid_params,
-  unrecognized_chain,
-  unsupported_method,
-} from "./error"
-import { safeParse } from "valibot"
+  create_injected_signer,
+  create_injected_transport,
+} from "./inject"
 
 export interface RequestArguments {
   readonly method: string
@@ -104,7 +115,7 @@ function chain_id_to_decimal(hex: string): string {
   return BigInt(hex).toString(10)
 }
 
-export function create_provider(
+export function create_envelope(
   options: CreateProviderOptions,
 ): ProviderInternal {
   const { on_signable_request } = options
@@ -247,5 +258,34 @@ export function create_provider(
     has_chain(chain_id) {
       return known_chains.has(chain_id)
     },
+  }
+}
+
+// Wrap an EIP-1193 provider (an EIP-6963 announce result,
+// window.ethereum, a test mock) into a single Ethernauta
+// factory exposing both reader and signer resolvers. The
+// wallet picks the RPC for the active chain, so no CHAINS
+// list is needed; if the wallet fails to serve a method,
+// that surfaces as the wallet's error.
+//
+//   const provider = create_provider(eip1193)
+//   eth_getBalance(addr)(provider.reader({ chain_id }))
+//   eth_sendTransaction(tx)(provider.signer({ chain_id }))
+export type ProviderResolver = {
+  reader: (_input: ReadContext) => ResolvedReader
+  signer: (_input: SignContext) => ResolvedSigner
+}
+
+export function create_provider(
+  _provider: Provider,
+): ProviderResolver {
+  const http = create_injected_transport(_provider)
+  const signer_factory = create_injected_signer(_provider)
+  return {
+    reader: (_input: ReadContext): ResolvedReader => {
+      const context = parse(ReadContextSchema, _input)
+      return [[http], context]
+    },
+    signer: signer_factory,
   }
 }

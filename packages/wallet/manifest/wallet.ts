@@ -1,5 +1,5 @@
 import {
-  create_provider,
+  create_envelope,
   ERROR_CODE,
   type ProviderInternal,
   type RequestArguments,
@@ -108,7 +108,7 @@ function on_signable_request(
   })
 }
 
-const provider: ProviderInternal = create_provider({
+const provider: ProviderInternal = create_envelope({
   chains: CHAINS,
   on_signable_request,
 })
