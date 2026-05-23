@@ -34,13 +34,14 @@ import {
   string,
 } from "valibot"
 
-import { verify_message as verify_message_1271 } from "../1271/verify-message"
-import { is_wrapped_signature } from "../6492/is-wrapped-signature"
-import { verify_message as verify_message_6492 } from "../6492/verify-message"
+import { is_wrapped_signature } from "@ethernauta/eip/6492"
 import {
   parse_siwe_message,
   type SiweMessage,
-} from "./parse"
+} from "@ethernauta/eip/4361"
+
+import { verify_message_1271 } from "./verify-message-1271"
+import { verify_message_6492 } from "./verify-message-6492"
 
 export const verifySiweMessageParametersSchema = object({
   message: string(),

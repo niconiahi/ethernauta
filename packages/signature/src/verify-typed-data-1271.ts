@@ -1,10 +1,17 @@
-// https://eips.ethereum.org/EIPS/eip-6492
+// EIP-712 typed-data verify with EIP-1271 contract-signature fallback.
+// Computes the digest via the existing EIP-712 hasher and delegates to
+// EIP-1271 `isValidSignature(bytes32, bytes)`.
 
 import type { Hash32 } from "@ethernauta/core"
 import {
   addressSchema,
   bytesSchema,
 } from "@ethernauta/core"
+import {
+  hash_typed_data,
+  typedDataSchema,
+} from "@ethernauta/eip/712"
+import { verify_hash } from "@ethernauta/eip/1271"
 import type {
   Readable,
   ResolvedReader,
@@ -12,27 +19,23 @@ import type {
 import { bytes_to_hex } from "@ethernauta/utils"
 import { type InferOutput, object, parse } from "valibot"
 
-import { hash_typed_data } from "../712/hash"
-import { typedDataSchema } from "../712/typed-data"
-import { verify_hash } from "./verify-hash"
-
-export const verifyTypedDataParametersSchema = object({
+export const verifyTypedData1271ParametersSchema = object({
   address: addressSchema,
   typedData: typedDataSchema,
   signature: bytesSchema,
 })
-export type VerifyTypedDataParameters = InferOutput<
-  typeof verifyTypedDataParametersSchema
+export type VerifyTypedData1271Parameters = InferOutput<
+  typeof verifyTypedData1271ParametersSchema
 >
 
-export function verify_typed_data(
-  _parameters: VerifyTypedDataParameters,
+export function verify_typed_data_1271(
+  _parameters: VerifyTypedData1271Parameters,
 ): Readable<boolean> {
   return async (
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyTypedDataParametersSchema,
+      verifyTypedData1271ParametersSchema,
       _parameters,
     )
     const hash = bytes_to_hex(

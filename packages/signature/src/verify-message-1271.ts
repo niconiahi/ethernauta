@@ -1,13 +1,14 @@
-// https://eips.ethereum.org/EIPS/eip-1271
-//
-// EIP-191 personal-message variant: hash the prefixed
-// message with keccak256 and delegate to verify_hash.
+// EIP-191 message verify with EIP-1271 contract-signature fallback.
+// Builds the personal-message prefix from EIP-191 and delegates to the
+// EIP-1271 `isValidSignature(bytes32, bytes)` call.
 
 import type { Hash32 } from "@ethernauta/core"
 import {
   addressSchema,
   bytesSchema,
 } from "@ethernauta/core"
+import { build_personal_message } from "@ethernauta/eip/191"
+import { verify_hash } from "@ethernauta/eip/1271"
 import type {
   Readable,
   ResolvedReader,
@@ -23,26 +24,23 @@ import {
   union,
 } from "valibot"
 
-import { build_personal_message } from "../191/personal-message"
-import { verify_hash } from "./verify-hash"
-
-export const verifyMessageParametersSchema = object({
+export const verifyMessage1271ParametersSchema = object({
   address: addressSchema,
   message: union([string(), instance(Uint8Array)]),
   signature: bytesSchema,
 })
-export type VerifyMessageParameters = InferOutput<
-  typeof verifyMessageParametersSchema
+export type VerifyMessage1271Parameters = InferOutput<
+  typeof verifyMessage1271ParametersSchema
 >
 
-export function verify_message(
-  _parameters: VerifyMessageParameters,
+export function verify_message_1271(
+  _parameters: VerifyMessage1271Parameters,
 ): Readable<boolean> {
   return async (
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyMessageParametersSchema,
+      verifyMessage1271ParametersSchema,
       _parameters,
     )
     const prefixed = build_personal_message(

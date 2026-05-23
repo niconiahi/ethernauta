@@ -13,9 +13,9 @@ import { keccak_256 } from "@noble/hashes/sha3"
 import { etc, sign } from "@noble/secp256k1"
 import { describe, expect, it, vi } from "vitest"
 
-import { build_personal_message } from "../191/personal-message"
-import { build_siwe_message } from "./build"
-import { verify_siwe_message } from "./verify"
+import { build_personal_message } from "@ethernauta/eip/191"
+import { build_siwe_message } from "@ethernauta/eip/4361"
+import { verify_siwe_message } from "./verify-siwe"
 
 etc.hmacSha256Sync = (k, ...m) =>
   hmac(sha256, k, etc.concatBytes(...m))

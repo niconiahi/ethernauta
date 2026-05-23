@@ -1,12 +1,11 @@
-// https://eips.ethereum.org/EIPS/eip-1271 (EOA fallback)
+// https://eips.ethereum.org/EIPS/eip-1271 (EOA fallback path)
 // https://eips.ethereum.org/EIPS/eip-2098 (compact 64-byte form)
 //
-// `recover_address` does the pure ecrecover step shared by
-// EIP-191, EIP-712, and the EOA branch of EIP-1271
-// verification. It accepts either the canonical 65-byte
-// signature (r || s || v) or the EIP-2098 compact 64-byte
-// form (r || yParityAndS). The recovered address is
-// emitted lowercase and 0x-prefixed.
+// Pure ECDSA recovery. Lives here (rather than in @ethernauta/signature)
+// because eip/1271's `verify_hash` uses it for the EOA fallback path —
+// hoisting it into the signature package would create a circular dep
+// (signature -> eip/1271 -> signature). The signature package re-exports
+// this symbol so consumers can import it from either home.
 
 import type {
   Address,

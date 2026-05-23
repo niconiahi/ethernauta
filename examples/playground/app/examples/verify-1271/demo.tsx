@@ -5,7 +5,7 @@ import {
   bytesSchema,
 } from "@ethernauta/core"
 import { personal_sign } from "@ethernauta/eip/191"
-import { verify_message } from "@ethernauta/eip/1271"
+import { verify_message_1271 as verify_message } from "@ethernauta/signature"
 import {
   create_reader,
   create_signer,
