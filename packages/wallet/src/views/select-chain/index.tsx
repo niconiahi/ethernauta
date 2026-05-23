@@ -52,7 +52,6 @@ export function SelectChain() {
             set_input(event.currentTarget.value)
             set_error(null)
           }}
-          autoFocus
         />
         {error && (
           <p className="text-xs text-red-700">{error}</p>

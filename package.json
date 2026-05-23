@@ -9,6 +9,7 @@
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "format": "pnpm --recursive run format",
+    "typecheck": "pnpm --recursive --parallel run typecheck",
     "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' publish",
     "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' publish --dry-run"
   },

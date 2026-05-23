@@ -2,7 +2,10 @@ import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
 import { chainIdSchema } from "./chain/chain-id"
-import type { Unsubscribe, WebsocketTransport } from "./websocket"
+import type {
+  Unsubscribe,
+  WebsocketTransport,
+} from "./websocket"
 
 export const SubscribeContextSchema = object({
   chain_id: chainIdSchema,
@@ -43,4 +46,6 @@ export function create_subscriber(
   }
 }
 
-export type Subscriber = ReturnType<typeof create_subscriber>
+export type Subscriber = ReturnType<
+  typeof create_subscriber
+>

@@ -1,7 +1,11 @@
 import { parse } from "valibot"
 
 import type { Call } from "./call"
-import type { Parameters, Request, Response } from "./json-rpc"
+import type {
+  Parameters,
+  Request,
+  Response,
+} from "./json-rpc"
 import { requestSchema, responseSchema } from "./json-rpc"
 
 export type HttpRetryOptions = {
@@ -79,7 +83,10 @@ function create_batching_http(
     }
     if (current.length === 0) return
     const body = current.map((s) => s.request)
-    with_retry(() => post_batch(url, body, options), options.retry)
+    with_retry(
+      () => post_batch(url, body, options),
+      options.retry,
+    )
       .then((responses) => {
         const by_id = new Map<unknown, Response>()
         for (const raw of responses) {
@@ -179,7 +186,11 @@ async function with_retry<T>(
   const base = retry.base_delay_ms ?? 250
   const max = retry.max_delay_ms ?? 30_000
   let last_error: unknown
-  for (let attempt = 0; attempt < retry.attempts; attempt += 1) {
+  for (
+    let attempt = 0;
+    attempt < retry.attempts;
+    attempt += 1
+  ) {
     try {
       return await fn()
     } catch (error) {

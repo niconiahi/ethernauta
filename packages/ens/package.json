@@ -23,6 +23,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
     "test:unit": "vitest",
     "derive": "bun src/derive/nfc.ts && bun src/derive/spec.ts && pnpm run format"
   },

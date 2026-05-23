@@ -1,9 +1,6 @@
 import { bytes_to_hex } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
-
-import { address } from "../leaves"
-import { string_ } from "../leaves"
-import { uint256 } from "../leaves"
+import { address, string_, uint256 } from "../leaves"
 import {
   build_signature,
   encode_constructor_call,

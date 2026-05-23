@@ -1,6 +1,3 @@
-import type { InferOutput } from "valibot"
-import { array, object } from "valibot"
-
 import {
   addressSchema,
   byteSchema,
@@ -8,6 +5,8 @@ import {
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { array, object } from "valibot"
 import { accessListSchema } from "./access-list"
 
 export const transaction4844UnsignedSchema = object({

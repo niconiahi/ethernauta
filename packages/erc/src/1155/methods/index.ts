@@ -1,5 +1,5 @@
 export * from "./balance-of"
-export * from "./set-approval-for-all"
 export * from "./is-approved-for-all"
 export * from "./safe-transfer-from"
+export * from "./set-approval-for-all"
 export * from "./uri"

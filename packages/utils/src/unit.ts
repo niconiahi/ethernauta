@@ -56,7 +56,8 @@ export function parse_unit(
       `parse_unit: "${value}" has more than ${decimals} fractional digits`,
     )
   }
-  const integer = integer_str === "" ? "0" : integer_str
+  const integer =
+    !integer_str || integer_str === "" ? "0" : integer_str
   const padded = fraction_str.padEnd(decimals, "0")
   const base = 10n ** BigInt(decimals)
   const fraction_bigint =

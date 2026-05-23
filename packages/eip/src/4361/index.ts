@@ -9,8 +9,8 @@ export {
   siweMessageSchema,
 } from "./parse"
 export {
-  verify_siwe_message,
   type VerifySiweMessageParameters,
   type VerifySiweMessageResult,
+  verify_siwe_message,
   verifySiweMessageParametersSchema,
 } from "./verify"

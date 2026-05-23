@@ -11,7 +11,10 @@ import {
 } from "@ethernauta/utils"
 import { parse } from "valibot"
 
-import { decode_address_bytes_bytes } from "./abi"
+import {
+  type DecodedAddressBytesBytes,
+  decode_address_bytes_bytes,
+} from "./abi"
 import { is_wrapped_signature } from "./is-wrapped-signature"
 
 export type UnwrappedSignature = {
@@ -32,7 +35,7 @@ export function unwrap_signature(
   if (!is_wrapped_signature(signature)) return null
   const bytes = hex_to_bytes(signature)
   const body = bytes.subarray(0, bytes.length - 32)
-  let decoded
+  let decoded: DecodedAddressBytesBytes
   try {
     decoded = decode_address_bytes_bytes(body)
   } catch {

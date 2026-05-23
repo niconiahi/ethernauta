@@ -1,7 +1,6 @@
+import { uintSchema } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { literal, object, union } from "valibot"
-
-import { uintSchema } from "@ethernauta/core"
 
 export const syncingProgressSchema = object({
   startingBlock: uintSchema,

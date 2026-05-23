@@ -27,11 +27,11 @@ export {
   type PackedUserOperation,
   packedUserOperationSchema,
   type UserOperation,
-  userOperationSchema,
   type UserOperationByHash,
-  userOperationByHashSchema,
   type UserOperationReceipt,
+  userOperationByHashSchema,
   userOperationReceiptSchema,
+  userOperationSchema,
 } from "./types"
 export {
   get_user_op_hash,

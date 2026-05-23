@@ -80,9 +80,9 @@ describe("transaction.ts", () => {
     const three = encode_set_code_unsigned({
       ...BASE,
       authorizationList: [
-        BASE.authorizationList[0],
-        BASE.authorizationList[0],
-        BASE.authorizationList[0],
+        BASE.authorizationList[0]!,
+        BASE.authorizationList[0]!,
+        BASE.authorizationList[0]!,
       ],
     }).length
     expect(three).toBeGreaterThan(one)

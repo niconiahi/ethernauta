@@ -63,29 +63,31 @@ export function websocket(url: string): WebsocketTransport {
       return Promise.resolve(socket)
     }
     if (connecting) return connecting
-    connecting = new Promise<WebSocket>((resolve, reject) => {
-      const ws = new WebSocket(url)
-      socket = ws
-      const on_open = () => {
-        reconnect_attempt = 0
-        connecting = null
-        ws.removeEventListener("error", on_error_initial)
-        resubscribe_all(ws)
-          .then(() => resolve(ws))
-          .catch(reject)
-      }
-      const on_error_initial = () => {
-        connecting = null
-        ws.removeEventListener("open", on_open)
-        reject(new Error(`websocket error: ${url}`))
-      }
-      ws.addEventListener("open", on_open, { once: true })
-      ws.addEventListener("error", on_error_initial, {
-        once: true,
-      })
-      ws.addEventListener("close", on_close)
-      ws.addEventListener("message", on_message)
-    })
+    connecting = new Promise<WebSocket>(
+      (resolve, reject) => {
+        const ws = new WebSocket(url)
+        socket = ws
+        const on_open = () => {
+          reconnect_attempt = 0
+          connecting = null
+          ws.removeEventListener("error", on_error_initial)
+          resubscribe_all(ws)
+            .then(() => resolve(ws))
+            .catch(reject)
+        }
+        const on_error_initial = () => {
+          connecting = null
+          ws.removeEventListener("open", on_open)
+          reject(new Error(`websocket error: ${url}`))
+        }
+        ws.addEventListener("open", on_open, { once: true })
+        ws.addEventListener("error", on_error_initial, {
+          once: true,
+        })
+        ws.addEventListener("close", on_close)
+        ws.addEventListener("message", on_message)
+      },
+    )
     return connecting
   }
 
@@ -154,7 +156,10 @@ export function websocket(url: string): WebsocketTransport {
     }
   }
 
-  function send(ws: WebSocket, call: Call): Promise<Response> {
+  function send(
+    ws: WebSocket,
+    call: Call,
+  ): Promise<Response> {
     const [method, params] = call
     const id = next_id()
     const request = parse(requestSchema, {

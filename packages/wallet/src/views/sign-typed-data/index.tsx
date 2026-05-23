@@ -1,4 +1,5 @@
 import type { ComponentChildren } from "preact"
+import { Button } from "../../components/button"
 import { get_private_key } from "../../utils/crypto"
 import type {
   SignTypedDataResponse,
@@ -7,7 +8,6 @@ import type {
 import { sign_typed_data } from "../../utils/sign-typed-data"
 import { typed_data_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
-import { Button } from "../../components/button"
 
 function format_primitive(value: unknown): string {
   if (value === null || value === undefined) return ""
@@ -52,6 +52,7 @@ function Field({
         <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
           {value.map((v, i) => (
             <Field
+              // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
               key={`${label}-${i}`}
               label={String(i)}
               value={v}

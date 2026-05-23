@@ -62,7 +62,9 @@ export function roots_of_unity_brp(): bigint[] {
 
 // In-place bit-reversal permutation of an array of length N. Used to
 // move between "natural ordering" and "consensus-specs ordering".
-export function bit_reversal_permutation<T>(_arr: T[]): T[] {
+export function bit_reversal_permutation<T>(
+  _arr: T[],
+): T[] {
   const n = _arr.length
   const bits = Math.log2(n)
   if (!Number.isInteger(bits)) {

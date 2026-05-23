@@ -4,9 +4,9 @@
 import type { Address, Hash32 } from "@ethernauta/core"
 import { hash32Schema } from "@ethernauta/core"
 import {
+  callSchema,
   type ResolvedWriter,
   type Writable,
-  callSchema,
 } from "@ethernauta/transport"
 import { parse } from "valibot"
 

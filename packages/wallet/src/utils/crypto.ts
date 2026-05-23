@@ -1,4 +1,4 @@
-import { invariant } from "@ethernauta/utils"
+import { bytes_to_hex, invariant } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { getPublicKey } from "@noble/secp256k1"
 import { HDKey } from "@scure/bip32"
@@ -7,7 +7,6 @@ import {
   validateMnemonic,
 } from "@scure/bip39"
 import { wordlist } from "@scure/bip39/wordlists/english"
-import { bytes_to_hex } from "@ethernauta/utils"
 
 export function mnemonic_to_seed(mnemonic: string) {
   if (!validateMnemonic(mnemonic, wordlist)) {

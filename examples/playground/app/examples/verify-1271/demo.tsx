@@ -4,8 +4,8 @@ import {
   type Bytes,
   bytesSchema,
 } from "@ethernauta/core"
-import { verify_message } from "@ethernauta/eip/1271"
 import { personal_sign } from "@ethernauta/eip/191"
+import { verify_message } from "@ethernauta/eip/1271"
 import {
   create_reader,
   create_signer,
@@ -144,7 +144,7 @@ export function Verify1271Demo() {
 function flip_last_byte(hex: Bytes): Bytes {
   const body = hex.slice(2)
   const last = body.slice(-2)
-  const byte = (parseInt(last, 16) ^ 0x01)
+  const byte = (Number.parseInt(last, 16) ^ 0x01)
     .toString(16)
     .padStart(2, "0")
   return parse(bytesSchema, `0x${body.slice(0, -2)}${byte}`)

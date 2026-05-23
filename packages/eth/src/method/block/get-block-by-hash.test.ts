@@ -24,7 +24,9 @@ describe.skip("eth_getBlockByHash", () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: SEPOLIA_RPC_URLS.map(http),
+        transports: SEPOLIA_RPC_URLS.map((url) =>
+          http(url),
+        ),
       },
     ])
     const VALID_BLOCK_HASH =
@@ -47,7 +49,9 @@ describe.skip("eth_getBlockByHash", () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: SEPOLIA_RPC_URLS.map(http),
+        transports: SEPOLIA_RPC_URLS.map((url) =>
+          http(url),
+        ),
       },
     ])
     const INVALID_BLOCK_HASH =
@@ -70,7 +74,9 @@ describe.skip("eth_getBlockByHash", () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: SEPOLIA_RPC_URLS.map(http),
+        transports: SEPOLIA_RPC_URLS.map((url) =>
+          http(url),
+        ),
       },
     ])
     const VALID_BLOCK_HASH =

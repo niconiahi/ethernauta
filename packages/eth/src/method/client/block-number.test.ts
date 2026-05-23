@@ -26,7 +26,9 @@ describe.skip("eth_blockNumber", () => {
     const reader = create_reader([
       {
         chainId: "eip155:1",
-        transports: SEPOLIA_RPC_URLS.map(http),
+        transports: SEPOLIA_RPC_URLS.map((url) =>
+          http(url),
+        ),
       },
     ])
     const readable = eth_blockNumber()

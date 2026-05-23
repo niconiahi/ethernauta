@@ -14,7 +14,7 @@ import {
 } from "@ethernauta/utils"
 import { parse } from "valibot"
 
-type ValuesOf<Args extends readonly AbiCodec<unknown>[]> = {
+type ValuesOf<Args extends readonly AbiCodec<any>[]> = {
   [K in keyof Args]: Args[K] extends AbiCodec<infer T>
     ? T
     : never
@@ -31,7 +31,7 @@ type ValuesOf<Args extends readonly AbiCodec<unknown>[]> = {
 // resolve the deployed address with `get_contract_address` /
 // `get_create2_address`).
 export function deploy_contract<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(_parameters: {
   bytecode: Bytes
   args: Args

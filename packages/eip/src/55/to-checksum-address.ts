@@ -1,5 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-55
-import { type Address, addressSchema } from "@ethernauta/core"
+import {
+  type Address,
+  addressSchema,
+} from "@ethernauta/core"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { parse } from "valibot"
 

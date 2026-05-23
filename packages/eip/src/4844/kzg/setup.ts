@@ -55,7 +55,9 @@ export type Kzg = {
 
 export function init_kzg(_setup: TrustedSetup): Kzg {
   const setup = parse(trustedSetupSchema, _setup)
-  if (setup.g1_lagrange.length !== FIELD_ELEMENTS_PER_BLOB) {
+  if (
+    setup.g1_lagrange.length !== FIELD_ELEMENTS_PER_BLOB
+  ) {
     throw new Error(
       `init_kzg: expected ${FIELD_ELEMENTS_PER_BLOB} G1 Lagrange points, got ${setup.g1_lagrange.length}`,
     )
@@ -69,8 +71,8 @@ export function init_kzg(_setup: TrustedSetup): Kzg {
   // basis; the spec calls the BRP-permuted form via
   // `bit_reversal_permutation(KZG_SETUP_G1_LAGRANGE)`. We do that here
   // once at init so every commit/prove can MSM directly.
-  const g1_lagrange_natural = setup.g1_lagrange.map(
-    (hex) => parse_g1(hex),
+  const g1_lagrange_natural = setup.g1_lagrange.map((hex) =>
+    parse_g1(hex),
   )
   const g1_lagrange = bit_reversal_permutation(
     g1_lagrange_natural,
@@ -103,7 +105,9 @@ function parse_g2(_hex: Bytes): G2Point {
 
 // Tiny helper used by the commit / verify code to parse a 48-byte
 // commitment or proof off the wire.
-export function parse_commitment_or_proof(_hex: Bytes): G1Point {
+export function parse_commitment_or_proof(
+  _hex: Bytes,
+): G1Point {
   return parse_g1(_hex)
 }
 

@@ -1,8 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-5792
 
 import type { Address } from "@ethernauta/core"
-import { eth_sendRawTransaction } from "@ethernauta/eth"
 import type { SendCallsResult } from "@ethernauta/eip/5792"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -10,16 +10,16 @@ import {
 import { useState } from "preact/hooks"
 import { Button } from "../../components/button"
 import {
+  generate_batch_id,
+  set_batch,
+} from "../../utils/calls-registry"
+import {
   CHAINS,
   get_chain,
   get_reader,
   get_writer,
   selected_chain,
 } from "../../utils/chain"
-import {
-  generate_batch_id,
-  set_batch,
-} from "../../utils/calls-registry"
 import {
   get_private_key,
   hex_to_big,
@@ -29,9 +29,9 @@ import type {
   TransactionRejectedResponse,
 } from "../../utils/event"
 import {
+  type Eip1559TransactionUnsigned,
   encode_eip155_transaction_unsigned,
   get_nonce,
-  type Eip1559TransactionUnsigned,
 } from "../../utils/sign-transaction"
 import { send_calls_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
@@ -117,8 +117,8 @@ export function SendCalls() {
       </section>
       {wrong_chain && (
         <p className="text-xs text-amber-700">
-          This batch is for {chain?.name} ({chain_ref}). Your
-          wallet is on {selected_chain.value.name} (
+          This batch is for {chain?.name} ({chain_ref}).
+          Your wallet is on {selected_chain.value.name} (
           {active_chain_id}). Switch chains in the wallet,
           then retry.
         </p>
@@ -159,9 +159,11 @@ export function SendCalls() {
                 reader,
                 chain_id,
               )
-              const tx_hashes: `0x${string}`[] = []
-              for (let i = 0; i < param.calls.length; i++) {
-                const call = param.calls[i]!
+              const transaction_hashes: `0x${string}`[] = []
+              for (const [
+                i,
+                call,
+              ] of param.calls.entries()) {
                 const tx: Eip1559TransactionUnsigned = {
                   chain_id: BigInt(chain.id),
                   nonce: start_nonce + BigInt(i),
@@ -185,18 +187,20 @@ export function SendCalls() {
                     tx,
                     private_key,
                   )
-                const tx_hash =
+                const transaction_hash =
                   await eth_sendRawTransaction([
                     bytes_to_hex(raw),
                   ])(writer({ chain_id }))
-                tx_hashes.push(tx_hash as `0x${string}`)
+                transaction_hashes.push(
+                  transaction_hash as `0x${string}`,
+                )
               }
               const batch_id = generate_batch_id()
               await set_batch({
                 id: batch_id,
                 chainId: param.chainId,
                 atomic: false,
-                tx_hashes,
+                transaction_hashes,
               })
               const result: SendCallsResult = {
                 id: batch_id,

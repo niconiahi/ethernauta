@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
 import { safeParse } from "valibot"
+import { describe, expect, it } from "vitest"
 import { uint256Schema } from "./uint-256"
 
 describe("uint256Schema", () => {

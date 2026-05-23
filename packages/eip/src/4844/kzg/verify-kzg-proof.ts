@@ -7,15 +7,18 @@
 //
 // Equivalent: e(C - [y]·G1, G2) == e(proof, s·G2 - [z]·G2). Both sides
 // are Fp12; we compute them via `bls12_381.pairing(...)` and compare.
-import { type Bytes32, bytes32Schema } from "@ethernauta/core"
+import {
+  type Bytes32,
+  bytes32Schema,
+} from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { bls12_381 } from "@noble/curves/bls12-381"
 import { parse } from "valibot"
 
 import {
   type KzgCommitment,
-  kzgCommitmentSchema,
   type KzgProof,
+  kzgCommitmentSchema,
   kzgProofSchema,
 } from "../schemas"
 import { fr_from_bytes_be } from "./field"
@@ -36,7 +39,8 @@ function pairing_or_one(
   p: ReturnType<typeof bls12_381.G1.Point.fromBytes>,
   q: ReturnType<typeof bls12_381.G2.Point.fromBytes>,
 ) {
-  if (p.equals(G1_ZERO) || q.equals(G2_ZERO)) return Fp12.ONE
+  if (p.equals(G1_ZERO) || q.equals(G2_ZERO))
+    return Fp12.ONE
   return bls12_381.pairing(p, q)
 }
 

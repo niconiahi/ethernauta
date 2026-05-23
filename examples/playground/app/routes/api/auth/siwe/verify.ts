@@ -28,14 +28,13 @@ import {
 } from "@ethernauta/eip/4361"
 import { encode_chain_id } from "@ethernauta/transport"
 import { object, parse, string } from "valibot"
-
-import type { Route } from "./+types/verify"
 import { reader } from "../../../../lib/auth/reader.server"
 import {
   clear_nonce_cookie,
   read_nonce_cookie,
   set_session_cookie,
 } from "../../../../lib/auth/session.server"
+import type { Route } from "./+types/verify"
 
 const verifyBodySchema = object({
   message: string(),
@@ -59,7 +58,7 @@ export async function action({
   if (!Number.isInteger(reference)) {
     return json_error(400, "malformed_message")
   }
-  let resolved
+  let resolved: ReturnType<typeof reader>
   try {
     resolved = reader({
       chain_id: encode_chain_id({

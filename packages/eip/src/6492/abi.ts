@@ -138,7 +138,7 @@ export function decode_address_bytes_bytes(
 ): DecodedAddressBytesBytes {
   if (_bytes.length < 3 * WORD) {
     throw new Error(
-      `abi: input too short for (address, bytes, bytes) head`,
+      "abi: input too short for (address, bytes, bytes) head",
     )
   }
   const address = _bytes.subarray(12, WORD)

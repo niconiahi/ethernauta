@@ -33,7 +33,9 @@ function inverse_roots(): bigint[] {
 // Inverse NTT: input is BRP-ordered evaluations of length N, output is
 // natural-ordered coefficients of length N. (Cooley-Tukey DIT consumes
 // BRP-ordered input, so we do not pre-permute.)
-export function inverse_ntt(_values_brp: bigint[]): bigint[] {
+export function inverse_ntt(
+  _values_brp: bigint[],
+): bigint[] {
   if (_values_brp.length !== N) {
     throw new Error(
       `inverse_ntt: expected ${N} values, got ${_values_brp.length}`,

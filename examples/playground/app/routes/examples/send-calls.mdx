@@ -3,17 +3,28 @@ import { SendCallsDemo } from "../../examples/send-calls/demo"
 
 # ERC-5792 — batched calls via `wallet_sendCalls`
 
-End-to-end ERC-5792 flow on Sepolia. The dapp asks the
-wallet to send a batch of calls; the wallet returns a
-batch id immediately, then the dapp polls
-`wallet_getCallsStatus(id)` to learn how the batch landed
-on-chain.
+End-to-end ERC-5792 flow on Sepolia, shown both ways:
+
+- **Left (the standard way).** The dapp asks the
+  user-picked EIP-1193 wallet to send a batch via
+  `wallet_sendCalls`, then polls
+  `wallet_getCallsStatus(id)`. Works against any
+  standards-compliant wallet — Ethernauta, MetaMask, Rabby,
+  anyone announcing EIP-6963.
+- **Right (the primitive way).** The dapp asks the wallet
+  to sign each call individually with
+  `eth_signTransaction`, broadcasts each signed payload
+  through a writer pointed at a public RPC, and polls the
+  receipts itself via a reader. No `wallet_sendCalls`
+  involved — the dapp owns the lifecycle, and no
+  third-party service is involved either side of the
+  signature.
 
 <SendCallsDemo />
 
 <GithubLink path="examples/playground/app/examples/send-calls/demo.tsx" />
 
-## What's happening
+## What's happening on the left (standard)
 
 1. The dapp calls `wallet_getCapabilities()`. The wallet
    declares per-chain capabilities — here it reports
@@ -23,7 +34,7 @@ on-chain.
    calls }])`. The wallet popup shows the N calls. On
    approval, the wallet signs each call as a separate
    EIP-1559 transaction, broadcasts them in order, stores
-   `(batch_id → tx_hashes)` in extension session storage,
+   `(batch_id → transaction_hashes)` in extension session storage,
    and returns `{ id: batch_id }`.
 3. The dapp polls `wallet_getCallsStatus([batch_id])`. The
    background script answers without re-opening the popup:
@@ -35,69 +46,26 @@ on-chain.
 The dapp never has to track individual transactions — the
 wallet is the source of truth for "did this batch succeed".
 
-## The code
+## What's happening on the right (primitives)
 
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  CALLS_STATUS,
-  wallet_getCallsStatus,
-  wallet_getCapabilities,
-  wallet_sendCalls,
-} from "@ethernauta/eip/5792"
-import {
-  create_signer,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
+1. For each call, the dapp calls `eth_signTransaction`
+   against the picked wallet. The wallet computes nonce /
+   gas, signs, and returns the RLP-encoded bytes — it does
+   **not** broadcast.
+2. The dapp calls `eth_sendRawTransaction` through a
+   `create_writer(CHAINS)` writer that points at a public
+   Sepolia RPC. The wallet is not involved at this step.
+3. The dapp polls `eth_getTransactionReceipt` through a
+   `create_reader(CHAINS)` reader, also against the public
+   RPC. When the receipt is non-null, the dapp updates UI.
+4. Repeat for the next call.
 
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-const SEPOLIA_CHAIN_REF_HEX = "0xaa36a7" as const
+This path is what M3 calls path 2 — the wallet signs, the
+dapp drives. It works the same against any wallet that
+implements `eth_signTransaction` (and against a local
+managed-key signer that exposes the same JSON-RPC method).
 
-const signer = create_signer([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-])
-
-// 1. (Optional) introspect what the connected wallet supports.
-const capabilities = await wallet_getCapabilities()(
-  signer({ chain_id: SEPOLIA_CHAIN_ID }),
-)
-
-// 2. Ask the wallet to send a batch. Returns immediately
-//    with a batch id once the user approves; the wallet
-//    sequences the calls behind the scenes.
-const { id } = await wallet_sendCalls([
-  {
-    version: "2.0.0",
-    chainId: SEPOLIA_CHAIN_REF_HEX,
-    from: owner,
-    atomicRequired: false,
-    calls: [
-      { to: "0x1111111111111111111111111111111111111111", value: "0x0", data: "0x" },
-      { to: "0x2222222222222222222222222222222222222222", value: "0x0", data: "0x" },
-    ],
-  },
-])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
-
-// 3. Poll for status. The wallet keeps the (id → tx_hashes)
-//    map; this round-trip doesn't re-prompt the user.
-const status = await wallet_getCallsStatus([id])(
-  signer({ chain_id: SEPOLIA_CHAIN_ID }),
-)
-if (status.status === CALLS_STATUS.CONFIRMED) {
-  // every receipt in status.receipts succeeded
-}
-```
-
-## Status codes
+## Status codes (left only)
 
 | Code | Meaning |
 |------|---------|
@@ -110,8 +78,8 @@ if (status.status === CALLS_STATUS.CONFIRMED) {
 ## What's next
 
 The wallet currently broadcasts sequentially — each call is
-its own type-2 tx. A follow-up will swap the strategy for
-an atomic-via-7702 path (one type-4 tx delegating to the
+its own type-2 transaction. A follow-up will swap the strategy for
+an atomic-via-7702 path (one type-4 transaction delegating to the
 `BatchExecutor` deployed in the EIP-7702 demo), and later
 an atomic-via-4337 path (one UserOp). The dapp surface
 stays identical — only the `atomic` flag in the status

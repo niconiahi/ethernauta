@@ -45,8 +45,7 @@ suite("EF KZG vectors — verify_kzg_proof", () => {
         ).toThrow()
         return
       }
-      const expected =
-        (output as string) === "true" ? true : false
+      const expected = (output as string) === "true"
       expect(
         verify_kzg_proof(kzg, commitment, z, y, proof),
       ).toBe(expected)

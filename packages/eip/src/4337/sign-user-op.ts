@@ -11,8 +11,8 @@ import type { Address, Bytes, Uint } from "@ethernauta/core"
 import type { Signable } from "@ethernauta/transport"
 
 import { personal_sign } from "../191/method/personal_sign"
-import { get_user_op_hash } from "./user-op-hash"
 import type { UserOperation } from "./types"
+import { get_user_op_hash } from "./user-op-hash"
 
 export function sign_user_op({
   op,

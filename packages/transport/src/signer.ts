@@ -1,3 +1,4 @@
+import { addressSchema } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import {
   array,
@@ -11,7 +12,7 @@ import { chainIdSchema } from "./chain/chain-id"
 
 export const SignContextSchema = object({
   chain_id: chainIdSchema,
-  to: optional(string()),
+  to: optional(addressSchema),
 })
 export type SignContext = InferOutput<
   typeof SignContextSchema

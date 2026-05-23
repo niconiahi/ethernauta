@@ -9,6 +9,15 @@
     "maxSize": 1073741824
   },
   "assist": {
+    "includes": [
+      "**",
+      "!**/.wrangler/**",
+      "!**/.react-router/**",
+      "!**/build/**",
+      "!**/dist/**",
+      "!**/worker-configuration.d.ts",
+      "!**/packages/ens/src/data/**"
+    ],
     "actions": {
       "source": {
         "organizeImports": "on"
@@ -20,6 +29,8 @@
       "**",
       "!**/.wrangler/**",
       "!**/.react-router/**",
+      "!**/build/**",
+      "!**/dist/**",
       "!**/worker-configuration.d.ts",
       "!**/packages/ens/src/data/**"
     ],
@@ -40,10 +51,11 @@
       "**",
       "!**/.wrangler/**",
       "!**/.react-router/**",
+      "!**/build/**",
+      "!**/dist/**",
       "!**/worker-configuration.d.ts",
       "!**/src/chain/eip155",
-      "!**/packages/ens/src/data/**",
-      "!**/dist/**"
+      "!**/packages/ens/src/data/**"
     ],
     "rules": {
       "recommended": true,
@@ -70,5 +82,31 @@
         "noUselessElse": "error"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/packages/abi/src/**",
+        "**/packages/eth/src/method/filter/get-contract-events.ts",
+        "**/packages/eip/src/1014/deploy-contract.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }

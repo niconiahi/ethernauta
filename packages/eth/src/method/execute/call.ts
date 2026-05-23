@@ -1,3 +1,5 @@
+import type { Bytes } from "@ethernauta/core"
+import { bytesSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -5,8 +7,6 @@ import type {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { Bytes } from "@ethernauta/core"
-import { bytesSchema } from "@ethernauta/core"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
 import { genericTransactionSchema } from "../../core/transaction"
 

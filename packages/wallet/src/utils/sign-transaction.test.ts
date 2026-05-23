@@ -4,6 +4,10 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
+import {
+  bytes_to_hex,
+  number_to_hex,
+} from "@ethernauta/utils"
 import type { RecoveredSignature } from "@noble/secp256k1"
 import { HDKey } from "@scure/bip32"
 import type { Hex } from "viem"
@@ -17,10 +21,7 @@ import {
   private_key_to_address,
   seed_to_master_key,
 } from "./crypto"
-import {
-  bytes_to_hex,
-  number_to_hex,
-} from "@ethernauta/utils"
+import { sign_digest } from "./ecdsa"
 import { encode } from "./rlp"
 import {
   big_to_bytes,
@@ -36,7 +37,6 @@ import {
   make_unsigned_fields,
   sign_transaction,
 } from "./sign-transaction"
-import { sign_digest } from "./ecdsa"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -57,7 +57,7 @@ const sepolia_chain_id = encode_chain_id({
 const reader = create_reader([
   {
     chainId: sepolia_chain_id,
-    transports: SEPOLIA_RPC_URLS.map(http),
+    transports: SEPOLIA_RPC_URLS.map((url) => http(url)),
   },
 ])
 

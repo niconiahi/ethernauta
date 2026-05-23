@@ -19,8 +19,8 @@ import {
   type Blob,
   blobSchema,
   type KzgCommitment,
-  kzgCommitmentSchema,
   type KzgProof,
+  kzgCommitmentSchema,
   kzgProofSchema,
 } from "../schemas"
 import { compute_challenge } from "./challenge"

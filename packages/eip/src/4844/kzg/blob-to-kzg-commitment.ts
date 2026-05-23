@@ -8,7 +8,10 @@
 // G1 in Lagrange basis with the bit-reversal permutation already applied.
 // So the implementation collapses to a single MSM:
 //   commitment = g1_lincomb(g1_lagrange_brp, blob_field_elements_brp)
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { parse } from "valibot"
 
 import {

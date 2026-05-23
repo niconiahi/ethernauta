@@ -13,7 +13,10 @@
 //
 // Returns [proof_hex, y_hex]. `y_hex` is a 32-byte big-endian encoding
 // of the field element y = p(z).
-import { type Bytes32, bytes32Schema } from "@ethernauta/core"
+import {
+  type Bytes32,
+  bytes32Schema,
+} from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -31,10 +34,7 @@ import {
   kzgProofSchema,
 } from "../schemas"
 import { g1_lincomb } from "./commit"
-import {
-  fr_from_bytes_be,
-  fr_to_bytes_be,
-} from "./field"
+import { fr_from_bytes_be, fr_to_bytes_be } from "./field"
 import {
   compute_quotient_polynomial,
   evaluate_polynomial_in_evaluation_form,

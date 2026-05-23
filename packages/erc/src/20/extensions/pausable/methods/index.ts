@@ -1,3 +1,3 @@
 export * from "./pause"
-export * from "./unpause"
 export * from "./paused"
+export * from "./unpause"

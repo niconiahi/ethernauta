@@ -29,6 +29,7 @@ export const CHAINS: Chain[] = [
   },
 ]
 
+// biome-ignore lint/style/noNonNullAssertion: module-level CHAINS array is statically non-empty
 export const selected_chain = signal<Chain>(CHAINS[0]!)
 
 const NAMESPACE = "eip155"

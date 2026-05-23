@@ -1,12 +1,3 @@
-import type { InferOutput } from "valibot"
-import {
-  array,
-  literal,
-  object,
-  optional,
-  union,
-} from "valibot"
-
 import {
   addressSchema,
   bytes8Schema,
@@ -15,6 +6,14 @@ import {
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import {
+  array,
+  literal,
+  object,
+  optional,
+  union,
+} from "valibot"
 import { TransactionInfoSchema } from "./transaction"
 import { withdrawalSchema } from "./withdrawal"
 

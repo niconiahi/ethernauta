@@ -9,8 +9,8 @@ import type {
 import { ReadContextSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 import {
-  type Emitter,
   create_emitter,
+  type Emitter,
   type EventMap,
   type EventName,
 } from "./events"

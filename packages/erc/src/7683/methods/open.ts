@@ -1,8 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-7683 — IOriginSettler.open
 
 import {
-  bytes32,
   bytes,
+  bytes32,
   encode_function_call,
   tuple,
   uint32,

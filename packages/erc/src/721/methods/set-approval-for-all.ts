@@ -1,15 +1,16 @@
+import {
+  address,
+  bool,
+  encode_function_call,
+} from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
+import { addressSchema } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import {
-  address,
-  bool,
-  encode_function_call,
-} from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import {
   boolean,
@@ -18,7 +19,6 @@ import {
   tuple,
   union,
 } from "valibot"
-import { addressSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), bool()] as const
 

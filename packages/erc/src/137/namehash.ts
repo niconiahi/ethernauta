@@ -12,13 +12,12 @@ export function namehash(_name: string): Bytes32 {
   const labels = _name.split(".")
   for (let i = labels.length - 1; i >= 0; i--) {
     const label = labels[i] as string
-    const label_hash = keccak_256(
-      new TextEncoder().encode(label),
-    )
+    const encoded = new TextEncoder().encode(label)
+    const label_hash = keccak_256(new Uint8Array(encoded))
     const concat = new Uint8Array(64)
     concat.set(node, 0)
     concat.set(label_hash, 32)
-    node = keccak_256(concat)
+    node = new Uint8Array(keccak_256(concat))
   }
   return bytes_to_hex(node) as Bytes32
 }

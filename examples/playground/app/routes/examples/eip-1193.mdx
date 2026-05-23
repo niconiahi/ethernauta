@@ -13,6 +13,11 @@ source — an EIP-6963 announce, `window.ethereum`, a test
 mock — that lifts it into the same `method(args)(transport)`
 shape used everywhere else in the library.
 
+- **`use_provider_detail()`** — React hook that runs the
+  EIP-6963 discovery dance (announce/request) and rehydrates
+  the user's previously-picked wallet from `localStorage`.
+  Returns the live `Provider` or `null` while no wallet is
+  picked.
 - **`create_provider(provider)`** — returns a factory with
   `.signer({ chain_id })` for `Signable<T>` methods (sign,
   send, request accounts) and `.reader({ chain_id })` for
@@ -33,20 +38,22 @@ import { eth_getBalance } from "@ethernauta/eth"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   create_provider,
-  type Provider,
   watch_accounts,
   watch_chain,
 } from "@ethernauta/eip/1193"
+import { use_provider_detail } from "@ethernauta/eip/6963/use-provider-detail"
 import { encode_chain_id } from "@ethernauta/transport"
 
-// Assume you have a Provider — from EIP-6963 discovery, from
-// window.ethereum, or constructed in a test.
-const provider: Provider = /* ... */
+// The hook owns the entire 6963 dance: announce/request,
+// rdns persistence, restoration from localStorage. Returns
+// `null` until a wallet has been picked.
+const provider_detail = use_provider_detail()
+if (!provider_detail) return <Picker />
 
 // One factory call. Same provider, both shapes.
-const factory = create_provider(provider)
+const provider = create_provider(provider_detail)
 
-const current_hex = (await provider.request({
+const current_hex = (await provider_detail.request({
   method: "eth_chainId",
 })) as string
 const chain_id = encode_chain_id({
@@ -56,7 +63,7 @@ const chain_id = encode_chain_id({
 
 // Signable: ask the wallet for accounts.
 const accounts = await eth_requestAccounts()(
-  factory.signer({ chain_id }),
+  provider.signer({ chain_id }),
 )
 
 // Readable: route eth_getBalance through the wallet's
@@ -64,14 +71,14 @@ const accounts = await eth_requestAccounts()(
 // a wallet — the resolver shape is the same as a public-RPC
 // reader.
 const balance = await eth_getBalance({ address: accounts[0] })(
-  factory.reader({ chain_id }),
+  provider.reader({ chain_id }),
 )
 
 // Reactively watch updates from the injected provider.
-watch_accounts(provider, (next) => {
+watch_accounts(provider_detail, (next) => {
   // re-render with `next`
 })
-watch_chain(provider, (next) => {
+watch_chain(provider_detail, (next) => {
   // re-render with `next` (hex chain id)
 })
 ```

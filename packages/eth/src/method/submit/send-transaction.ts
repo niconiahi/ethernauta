@@ -1,11 +1,11 @@
+import type { Hash32 } from "@ethernauta/core"
+import { hash32Schema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import type { Hash32 } from "@ethernauta/core"
-import { hash32Schema } from "@ethernauta/core"
 import { genericTransactionSchema } from "../../core/transaction"
 
 const parametersSchema = union([

@@ -1,3 +1,4 @@
+import { encode_function_call } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -5,8 +6,6 @@ import type {
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import { encode_function_call } from "@ethernauta/abi"
-import { parse } from "valibot"
 
 const PARAM_CODECS = [] as const
 

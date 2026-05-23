@@ -59,6 +59,9 @@ importers:
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../../packages/eth
+      '@ethernauta/transaction':
+        specifier: workspace:*
+        version: link:../../packages/transaction
       '@ethernauta/transport':
         specifier: workspace:*
         version: link:../../packages/transport
@@ -227,6 +230,12 @@ importers:
       '@ethernauta/abi':
         specifier: workspace:*
         version: link:../abi
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)
@@ -311,6 +320,28 @@ importers:
       bun:
         specifier: ^1.2.20
         version: 1.3.14
+      tsdown:
+        specifier: ^0.13.3
+        version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)
+
+  packages/transaction:
+    dependencies:
+      '@ethernauta/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ethernauta/eth':
+        specifier: workspace:*
+        version: link:../eth
+      '@ethernauta/transport':
+        specifier: workspace:*
+        version: link:../transport
+      '@ethernauta/utils':
+        specifier: workspace:*
+        version: link:../utils
+      valibot:
+        specifier: ^1.1.0
+        version: 1.1.0(typescript@5.8.3)
+    devDependencies:
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)

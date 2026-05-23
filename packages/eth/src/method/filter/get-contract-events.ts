@@ -46,7 +46,7 @@ export type GetContractEventsInput = InferOutput<
 // never hand-craft topic0; per-position wildcards are
 // supported via `null` in `values`.
 export function get_contract_events<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(
   _parameters: GetContractEventsInput & {
     args: Args

@@ -13,11 +13,11 @@ import {
   type Capabilities,
 } from "@ethernauta/eip/5792"
 import { eth_getTransactionReceipt } from "@ethernauta/eth"
-import { CHAINS, get_chain, get_reader } from "./chain"
 import {
   type BatchRecord,
   get_batch,
 } from "./calls-registry"
+import { CHAINS, get_chain, get_reader } from "./chain"
 
 const CALLS_STATUS_VERSION = "2.0.0"
 
@@ -52,12 +52,14 @@ export async function compose_calls_status(
   }
   const { chain_id, reader } = get_reader(chain)
   const receipts = await Promise.all(
-    batch.tx_hashes.map(async (tx_hash) => {
-      const receipt = await eth_getTransactionReceipt([
-        tx_hash,
-      ])(reader({ chain_id }))
-      return { tx_hash, receipt }
-    }),
+    batch.transaction_hashes.map(
+      async (transaction_hash) => {
+        const receipt = await eth_getTransactionReceipt([
+          transaction_hash,
+        ])(reader({ chain_id }))
+        return { transaction_hash, receipt }
+      },
+    ),
   )
   return finalize_status(batch, receipts)
 }
@@ -65,7 +67,7 @@ export async function compose_calls_status(
 export function finalize_status(
   batch: BatchRecord,
   receipts: Array<{
-    tx_hash: `0x${string}`
+    transaction_hash: `0x${string}`
     receipt: Awaited<
       ReturnType<
         ReturnType<typeof eth_getTransactionReceipt>

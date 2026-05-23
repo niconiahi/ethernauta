@@ -3,8 +3,8 @@
 // so the only way to clear it from the browser is through
 // a response we control.
 
-import type { Route } from "./+types/logout"
 import { clear_session_cookie } from "../../../../lib/auth/session.server"
+import type { Route } from "./+types/logout"
 
 export async function action({
   request,

@@ -1,12 +1,11 @@
-import type { InferOutput } from "valibot"
-import { nullable, object, optional } from "valibot"
-
 import {
   addressSchema,
   byteSchema,
   bytesSchema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { nullable, object, optional } from "valibot"
 
 // https://github.com/ethereum/execution-apis/blob/main/src/schemas/transaction.yaml#L283
 const transactionLegacyUnsignedSchema = object({

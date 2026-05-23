@@ -125,7 +125,6 @@ const interval_id = setInterval(async () => {
 - [transaction/info.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/info.ts)
 - [transaction/legacy.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/legacy.ts)
 - [transaction/signed.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/signed.ts)
-- [transaction/submitted.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/submitted.ts)
 - [transaction/unsigned.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eth/src/core/transaction/unsigned.ts)
 
 ### method

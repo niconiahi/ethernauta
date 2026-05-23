@@ -1,10 +1,10 @@
-import type { InferOutput } from "valibot"
-import { intersect, object } from "valibot"
 import {
   addressSchema,
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { intersect, object } from "valibot"
 import { TransactionSignedSchema } from "./signed"
 
 /**

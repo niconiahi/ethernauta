@@ -2,8 +2,8 @@
 
 export {
   type SwitchEthereumChainParameter,
-  switchEthereumChainParameterSchema,
   type SwitchEthereumChainParameters,
+  switchEthereumChainParameterSchema,
   switchEthereumChainParametersSchema,
   wallet_switchEthereumChain,
 } from "./method/wallet_switchEthereumChain"

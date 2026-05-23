@@ -6,11 +6,7 @@ import {
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type {
-  Address,
-  Bytes,
-  Bytes32,
-} from "@ethernauta/core"
+import type { Address, Bytes } from "@ethernauta/core"
 import {
   addressSchema,
   bytes32Schema,

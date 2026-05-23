@@ -180,6 +180,7 @@ function DecodedCall({
       <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
         {labels.map((label, i) => (
           <Field
+            // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
             key={`${label}-${i}`}
             label={label}
             value={args[i]}
@@ -208,7 +209,7 @@ function Field({
     if (entry) {
       try {
         const { args } = decode_function_call(
-          [...entry.types] as Parameters<
+          [...entry.types] as unknown as Parameters<
             typeof decode_function_call
           >[0],
           value,
@@ -220,7 +221,7 @@ function Field({
               <DecodedCall
                 hex={value}
                 entry={entry}
-                args={args}
+                args={[...args] as unknown[]}
               />
             </dd>
           </div>
@@ -249,6 +250,7 @@ function Field({
         <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
           {value.map((v, i) => (
             <Field
+              // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
               key={`${label}-${i}`}
               label={String(i)}
               value={v}
@@ -323,12 +325,12 @@ function try_decode(input: string | undefined): {
   if (!entry) return null
   try {
     const { args } = decode_function_call(
-      [...entry.types] as Parameters<
+      [...entry.types] as unknown as Parameters<
         typeof decode_function_call
       >[0],
       input,
     )
-    return { entry, args }
+    return { entry, args: [...args] as unknown[] }
   } catch {
     return null
   }
@@ -398,6 +400,7 @@ function DecodedSign({
         <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
           {labels.map((label, i) => (
             <Field
+              // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
               key={`${label}-${i}`}
               label={label}
               value={args[i]}

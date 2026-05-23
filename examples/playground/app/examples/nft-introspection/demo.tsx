@@ -119,7 +119,8 @@ export function NftIntrospectionDemo() {
 
   useEffect(() => {
     run()
-  }, [])
+    // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
+  }, [run])
 
   return (
     <div style={{ margin: "16px 0 24px" }}>

@@ -89,7 +89,8 @@ describe("verify-message.ts", () => {
   })
 
   it("should accept a Uint8Array message that matches a viem-style signature", async () => {
-    const message = new TextEncoder().encode("bytes msg")
+    const encoded = new TextEncoder().encode("bytes msg")
+    const message = new Uint8Array(encoded)
     const signature = personal_sign(
       "bytes msg",
       PRIVATE_KEY,

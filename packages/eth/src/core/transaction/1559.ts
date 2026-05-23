@@ -1,12 +1,11 @@
-import type { InferOutput } from "valibot"
-import { nullable, object } from "valibot"
-
 import {
   addressSchema,
   byteSchema,
   bytesSchema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { nullable, object } from "valibot"
 import { accessListSchema } from "./access-list"
 
 export const transaction1559UnsignedSchema = object({

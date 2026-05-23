@@ -1,7 +1,6 @@
-import { keccak_256 } from "@noble/hashes/sha3"
 import {
-  bytesSchema,
   bytes32Schema,
+  bytesSchema,
   type Hash32,
   hash32Schema,
 } from "@ethernauta/core"
@@ -9,6 +8,7 @@ import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
+import { keccak_256 } from "@noble/hashes/sha3"
 import type { InferOutput } from "valibot"
 import {
   array,
@@ -189,7 +189,7 @@ export function encode_event_topics<
 // Caller is responsible for matching `topics[0]` to the right
 // event signature first (use `event_topic_hash`).
 export function decode_event_log<
-  Args extends readonly AbiCodec<unknown>[],
+  Args extends readonly AbiCodec<any>[],
 >(
   _input: DecodeEventLogInput & {
     args: Args

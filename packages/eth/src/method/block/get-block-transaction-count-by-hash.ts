@@ -1,3 +1,9 @@
+import type { NotFound, Uint } from "@ethernauta/core"
+import {
+  hash32Schema,
+  notFoundSchema,
+  uintSchema,
+} from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -5,13 +11,6 @@ import type {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-
-import type { NotFound, Uint } from "@ethernauta/core"
-import {
-  hash32Schema,
-  notFoundSchema,
-  uintSchema,
-} from "@ethernauta/core"
 
 const parametersSchema = union([
   tuple([hash32Schema]),

@@ -1,4 +1,8 @@
 import { eip155_1 } from "@ethernauta/chain"
+import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
 import {
   DOMAIN_SEPARATOR,
@@ -11,10 +15,6 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import {
-  addressSchema,
-  bytesSchema,
-} from "@ethernauta/core"
 import {
   deadline_in,
   format_unit,

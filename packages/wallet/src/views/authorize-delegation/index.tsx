@@ -105,7 +105,7 @@ export function AuthorizeDelegation() {
               selected_chain.value,
             )
             const nonce = await get_nonce(
-              active_account.value.address,
+              active_account.value.address as `0x${string}`,
               reader,
               chain_id,
             )
@@ -146,13 +146,14 @@ export function AuthorizeDelegation() {
               },
               private_key,
             )
-            const tx_hash = await eth_sendRawTransaction([
-              bytes_to_hex(raw),
-            ])(writer({ chain_id }))
+            const transaction_hash =
+              await eth_sendRawTransaction([
+                bytes_to_hex(raw),
+              ])(writer({ chain_id }))
             const response: SignTransactionResponse = {
               id: req.id,
               type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
-              signed_transaction: tx_hash,
+              signed_transaction: transaction_hash,
             }
             chrome.runtime.sendMessage(response)
             window.close()

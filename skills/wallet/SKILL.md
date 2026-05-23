@@ -92,7 +92,7 @@ The current view set (each backed by a folder under `packages/wallet/src/views/`
 | `"mnemonics"` | No vault exists | Initial setup — generate / import a mnemonic, set password, create vault |
 | `"wallet"` | Authenticated, no pending request | Idle home — balance, chain switcher |
 | `"connect"` | `eth_requestAccounts` arrived | Approve / reject account exposure |
-| `"sign"` | Generic `eth_signTransaction` arrived | Approve / reject EIP-1559 tx |
+| `"sign"` | Generic `eth_signTransaction` arrived | Approve / reject EIP-1559 transaction |
 | `"sign-typed-data"` | `eth_signTypedData_v4` arrived | EIP-712 typed-data approval |
 | `"personal-sign"` | `personal_sign` arrived | EIP-191 personal-message approval |
 | `"add-chain"` | `wallet_addEthereumChain` arrived | Approve / reject chain addition |
@@ -104,13 +104,13 @@ The request signals (`transaction_request`, `connection_request`, `typed_data_re
 
 ## EIP-5792 — batched calls
 
-The wallet implements `wallet_sendCalls` / `wallet_getCallsStatus` / `wallet_getCapabilities` (schemas + method bindings in `@ethernauta/eip/5792`). This is the surface dapps use for any multi-call flow; **dapps do not track underlying tx hashes themselves** — the wallet owns batch lifecycle and tx-hash tracking under the hood.
+The wallet implements `wallet_sendCalls` / `wallet_getCallsStatus` / `wallet_getCapabilities` (schemas + method bindings in `@ethernauta/eip/5792`). This is the surface dapps use for any multi-call flow; **dapps do not track underlying transaction hashes themselves** — the wallet owns batch lifecycle and transaction-hash tracking under the hood.
 
-**v1 strategy: sequential EOA sends.** When `wallet_sendCalls` arrives, the popup renders `views/send-calls/`. On approval, each call is encoded as its own EIP-1559 transaction with consecutive nonces and broadcast via `eth_sendRawTransaction`. A bundle id is minted (`utils/calls-registry.ts`) and the `bundle_id → tx_hashes` mapping is persisted in `chrome.storage.session`. The wallet rejects requests with `atomicRequired: true` — `wallet_getCapabilities` honestly reports `atomic: { status: "unsupported" }` per chain so dapps that branch on capabilities will degrade gracefully.
+**v1 strategy: sequential EOA sends.** When `wallet_sendCalls` arrives, the popup renders `views/send-calls/`. On approval, each call is encoded as its own EIP-1559 transaction with consecutive nonces and broadcast via `eth_sendRawTransaction`. A bundle id is minted (`utils/calls-registry.ts`) and the `bundle_id → transaction_hashes` mapping is persisted in `chrome.storage.session`. The wallet rejects requests with `atomicRequired: true` — `wallet_getCapabilities` honestly reports `atomic: { status: "unsupported" }` per chain so dapps that branch on capabilities will degrade gracefully.
 
 **Chain pinning.** The send-calls view rejects a batch whose `chainId` differs from the wallet's currently `selected_chain`. The user is asked to switch chains in the wallet and retry — the dapp's chain id is informational, not a switch command.
 
-**On-demand status, not continuous tracking.** `wallet_getCallsStatus(bundle_id)` is answered by the background entry (`extension.entry.ts` — no popup) by snapshot-polling `eth_getTransactionReceipt` for each tx hash in the bundle and composing a `CallsStatus`. There is no `chrome.alarms`-driven background watcher. MV3 service workers cannot run long-lived loops; status is computed per request. A continuous tracker with badging is a possible v3 enhancement and is deferred indefinitely.
+**On-demand status, not continuous tracking.** `wallet_getCallsStatus(bundle_id)` is answered by the background entry (`extension.entry.ts` — no popup) by snapshot-polling `eth_getTransactionReceipt` for each transaction hash in the bundle and composing a `CallsStatus`. There is no `chrome.alarms`-driven background watcher. MV3 service workers cannot run long-lived loops; status is computed per request. A continuous tracker with badging is a possible v3 enhancement and is deferred indefinitely.
 
 **Atomic execution (v2, future).** EIP-7702 will replace the sequential strategy on chains where a deployed `BatchExecutor` delegate exists. The wire protocol does not change — only `wallet_getCapabilities` flips to `atomic: { status: "supported" }` and the broadcast path switches to a single `0x04` transaction. Dapps written against v1 keep working.
 

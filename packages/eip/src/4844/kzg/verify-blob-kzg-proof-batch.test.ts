@@ -28,37 +28,40 @@ const have_fixtures =
 
 const suite = have_fixtures ? describe : describe.skip
 
-suite("EF KZG vectors — verify_blob_kzg_proof_batch", () => {
-  const kzg = load_kzg_from_txt(SETUP_PATH)
-  const cases = list_kzg_cases(CASES_DIR)
+suite(
+  "EF KZG vectors — verify_blob_kzg_proof_batch",
+  () => {
+    const kzg = load_kzg_from_txt(SETUP_PATH)
+    const cases = list_kzg_cases(CASES_DIR)
 
-  for (const c of cases) {
-    it(c.name, () => {
-      const { input, output } = parse_kzg_yaml(c.path)
-      const blobs = input.blobs as `0x${string}`[]
-      const commitments =
-        input.commitments as `0x${string}`[]
-      const proofs = input.proofs as `0x${string}`[]
-      if (output === null) {
-        expect(() =>
+    for (const c of cases) {
+      it(c.name, () => {
+        const { input, output } = parse_kzg_yaml(c.path)
+        const blobs = input.blobs as `0x${string}`[]
+        const commitments =
+          input.commitments as `0x${string}`[]
+        const proofs = input.proofs as `0x${string}`[]
+        if (output === null) {
+          expect(() =>
+            verify_blob_kzg_proof_batch(
+              kzg,
+              blobs,
+              commitments,
+              proofs,
+            ),
+          ).toThrow()
+          return
+        }
+        const expected = (output as string) === "true"
+        expect(
           verify_blob_kzg_proof_batch(
             kzg,
             blobs,
             commitments,
             proofs,
           ),
-        ).toThrow()
-        return
-      }
-      const expected = (output as string) === "true"
-      expect(
-        verify_blob_kzg_proof_batch(
-          kzg,
-          blobs,
-          commitments,
-          proofs,
-        ),
-      ).toBe(expected)
-    })
-  }
-})
+        ).toBe(expected)
+      })
+    }
+  },
+)

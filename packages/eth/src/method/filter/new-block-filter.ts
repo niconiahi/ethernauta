@@ -1,11 +1,11 @@
+import type { Uint } from "@ethernauta/core"
+import { uintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
-import type { Uint } from "@ethernauta/core"
-import { uintSchema } from "@ethernauta/core"
 
 /**
  * @returns The created block filter's identifier

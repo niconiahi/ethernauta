@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import {
-  ERROR_CODE,
   chain_disconnected,
   disconnected,
+  ERROR_CODE,
   invalid_params,
   provider_error,
   unauthorized,

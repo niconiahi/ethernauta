@@ -5,19 +5,19 @@ import {
   type ProviderInternal,
   type RequestArguments,
 } from "@ethernauta/eip/1193"
-import { announce } from "@ethernauta/eip/6963"
 import { addEthereumChainParametersSchema } from "@ethernauta/eip/3085"
+import { announce } from "@ethernauta/eip/6963"
 import { http } from "@ethernauta/transport"
 import { safeParse } from "valibot"
 import icon from "../public/icons/icon-128.png?inline"
 import {
-  CHAINS as WALLET_CHAINS,
-  to_provider_chain_id,
-} from "../src/utils/chain"
-import {
   compose_calls_status,
   compose_capabilities,
 } from "../src/utils/calls-status"
+import {
+  to_provider_chain_id,
+  CHAINS as WALLET_CHAINS,
+} from "../src/utils/chain"
 import { create_router } from "../src/utils/dispatch"
 import type {
   AddChainApprovedResponse,
@@ -99,7 +99,7 @@ async function rpc_call(
   const transport = http(chain.rpc_url)
   const response = await transport([
     method,
-    (params ?? []) as readonly unknown[] | object,
+    (params ?? []) as unknown[] | { [x: string]: unknown },
   ])
   if ("error" in response) {
     throw {

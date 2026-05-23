@@ -1,12 +1,18 @@
 import type { InferOutput } from "valibot"
-import { array, object, parse, string, unknown } from "valibot"
+import {
+  array,
+  object,
+  parse,
+  string,
+  unknown,
+} from "valibot"
 
 import type { AbiCodec } from "./abi-codec"
 import {
   decode_event_log,
   type EventLog,
-  eventLogSchema,
   event_topic_hash,
+  eventLogSchema,
 } from "./encoding/event"
 
 // Decoded log entry. `args` is positional in the matched event's
@@ -24,7 +30,8 @@ export type DecodedLogEntry = InferOutput<
 // for a single log. Topic hash is precomputed inside `decode_logs`
 // for dispatch.
 export type EventEntry<
-  Args extends readonly AbiCodec<unknown>[] = readonly AbiCodec<unknown>[],
+  Args extends
+    readonly AbiCodec<unknown>[] = readonly AbiCodec<unknown>[],
 > = {
   name: string
   args: Args
@@ -40,7 +47,9 @@ export function decode_logs(
   _entries: readonly EventEntry[],
   _logs: readonly EventLog[],
 ): DecodedLogEntry[] {
-  const logs = _logs.map((log) => parse(eventLogSchema, log))
+  const logs = _logs.map((log) =>
+    parse(eventLogSchema, log),
+  )
   const by_topic = new Map<string, EventEntry>()
   for (const entry of _entries) {
     if (entry.anonymous) continue

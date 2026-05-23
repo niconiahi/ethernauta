@@ -23,6 +23,7 @@
     "@ethernauta/eip": "workspace:*",
     "@ethernauta/erc": "workspace:*",
     "@ethernauta/eth": "workspace:*",
+    "@ethernauta/transaction": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*",
     "@ethernauta/wallet": "workspace:*",

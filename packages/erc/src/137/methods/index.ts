@@ -1,7 +1,7 @@
-export { addr, ADDR_SIGNATURE } from "./addr"
-export { name, NAME_SIGNATURE } from "./name"
+export { ADDR_SIGNATURE, addr } from "./addr"
+export { NAME_SIGNATURE, name } from "./name"
 export {
-  resolver,
   RESOLVER_SIGNATURE,
+  resolver,
 } from "./resolver"
-export { text, TEXT_SIGNATURE } from "./text"
+export { TEXT_SIGNATURE, text } from "./text"

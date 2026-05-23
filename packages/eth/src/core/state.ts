@@ -1,6 +1,3 @@
-import type { InferOutput } from "valibot"
-import { array, object } from "valibot"
-
 import {
   addressSchema,
   bytes32Schema,
@@ -9,6 +6,8 @@ import {
   uint64Schema,
   uint256Schema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { array, object } from "valibot"
 
 const storageProofSchema = object({
   key: bytes32Schema,

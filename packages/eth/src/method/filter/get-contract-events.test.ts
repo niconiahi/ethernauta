@@ -24,7 +24,7 @@ function fake_transport(_result: unknown): {
     const response: Response = {
       jsonrpc: "2.0",
       id: "test",
-      result: _result as Response["result"],
+      result: _result as never,
     }
     return response
   }
@@ -48,8 +48,8 @@ const LOG_FIXTURE = {
   removed: false,
   logIndex: "0x0",
   transactionIndex: "0x0",
-  transactionHash: "0x" + "a".repeat(64),
-  blockHash: "0x" + "b".repeat(64),
+  transactionHash: `0x${"a".repeat(64)}`,
+  blockHash: `0x${"b".repeat(64)}`,
   blockNumber: "0x1",
   address: CONTRACT,
   data: ONE_ETH_DATA,

@@ -195,13 +195,13 @@ function format_vectors(_vectors: Vector[]): string {
     lines.push(`  [[${src}],[${nfc}],[${nfd}]],`)
   }
   return [
-    `export const NFC_VECTORS: readonly (readonly [`,
-    `  readonly number[],`,
-    `  readonly number[],`,
-    `  readonly number[],`,
-    `])[] = [`,
+    "export const NFC_VECTORS: readonly (readonly [",
+    "  readonly number[],",
+    "  readonly number[],",
+    "  readonly number[],",
+    "])[] = [",
     ...lines,
-    `]`,
+    "]",
   ].join("\n")
 }
 

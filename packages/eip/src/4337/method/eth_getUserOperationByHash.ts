@@ -3,9 +3,9 @@
 import type { Hash32, NotFound } from "@ethernauta/core"
 import { notFoundSchema } from "@ethernauta/core"
 import {
+  callSchema,
   type Readable,
   type ResolvedReader,
-  callSchema,
 } from "@ethernauta/transport"
 import { parse, union } from "valibot"
 

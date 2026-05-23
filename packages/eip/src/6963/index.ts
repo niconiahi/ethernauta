@@ -2,6 +2,8 @@
 
 import type { Provider } from "../1193"
 
+export type { Provider } from "../1193"
+
 export interface EIP6963ProviderInfo {
   uuid: string
   name: string

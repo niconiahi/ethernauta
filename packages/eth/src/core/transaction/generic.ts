@@ -1,5 +1,3 @@
-import { array, nullable, object, optional } from "valibot"
-
 import {
   addressSchema,
   byteSchema,
@@ -8,6 +6,7 @@ import {
   uintSchema,
 } from "@ethernauta/core"
 import { ethernautaContextSchema } from "@ethernauta/transport"
+import { array, nullable, object, optional } from "valibot"
 import { accessListSchema } from "../transaction"
 
 /**

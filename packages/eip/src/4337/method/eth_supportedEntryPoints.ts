@@ -3,9 +3,9 @@
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
 import {
+  callSchema,
   type Readable,
   type ResolvedReader,
-  callSchema,
 } from "@ethernauta/transport"
 import { array, parse } from "valibot"
 

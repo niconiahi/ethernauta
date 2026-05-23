@@ -1,21 +1,22 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
-  eth_getTransactionReceipt,
   eth_sendRawTransaction,
   eth_signTransaction,
-  type SubmittedTransaction,
 } from "@ethernauta/eth"
 import {
-  create_reader,
+  create_tracker,
+  register_transaction,
+  type Transaction,
+  watch_transaction,
+  window_store,
+} from "@ethernauta/transaction"
+import {
   create_signer,
   create_writer,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import {
-  hex_to_number,
-  number_to_hex,
-} from "@ethernauta/utils"
+import { number_to_hex } from "@ethernauta/utils"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
 
@@ -36,11 +37,13 @@ const CHAINS = [
 ]
 const writer = create_writer(CHAINS)
 const signer = create_signer(CHAINS)
-const reader = create_reader(CHAINS)
+const tracker = create_tracker(CHAINS, {
+  store: window_store,
+})
 
 export default function () {
   const [transactions, setTransactions] = useState<
-    SubmittedTransaction[]
+    Transaction[]
   >([])
   const [error, set_error] = useState<string | null>(null)
   const last_transaction =
@@ -169,25 +172,16 @@ export default function () {
                 const hash = await writable(
                   writer({ chain_id: SEPOLIA_CHAIN_ID }),
                 )
-                setTransactions([
-                  { hash, status: "pending" },
-                ])
-                const interval_id = setInterval(async () => {
-                  const receipt =
-                    await eth_getTransactionReceipt([hash])(
-                      reader({
-                        chain_id: SEPOLIA_CHAIN_ID,
-                      }),
-                    )
-                  if (!receipt) return
-                  if (!receipt.status) return
-                  const next: SubmittedTransaction =
-                    hex_to_number(receipt.status) === 1
-                      ? { hash, status: "mined" }
-                      : { hash, status: "reverted" }
-                  setTransactions((prev) => [...prev, next])
-                  clearInterval(interval_id)
-                }, 2000)
+                const pending = await register_transaction(
+                  hash,
+                )(tracker({ chain_id: SEPOLIA_CHAIN_ID }))
+                setTransactions([pending])
+                watch_transaction(hash, (transaction) => {
+                  setTransactions((prev) => [
+                    ...prev,
+                    transaction,
+                  ])
+                })(tracker({ chain_id: SEPOLIA_CHAIN_ID }))
               } catch (e) {
                 set_error(
                   e instanceof Error
@@ -242,7 +236,10 @@ export default function () {
                 height="14"
                 viewBox="0 0 14 14"
                 fill="none"
+                role="img"
+                aria-label="Close"
               >
+                <title>Close</title>
                 <path
                   d="M1 1l12 12M13 1L1 13"
                   stroke="#666"
@@ -693,7 +690,7 @@ function render_error(message: string) {
   )
 }
 
-function render_transaction(transaction: SubmittedTransaction) {
+function render_transaction(transaction: Transaction) {
   const key = `transaction-${transaction.hash}-${transaction.status}`
   switch (transaction.status) {
     case "pending": {

@@ -1,8 +1,8 @@
-import { keccak_256 } from "@noble/hashes/sha3"
 import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
+import { keccak_256 } from "@noble/hashes/sha3"
 import { describe, expect, it } from "vitest"
 
 import { get_create2_address } from "./get-create2-address"

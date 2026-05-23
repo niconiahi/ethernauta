@@ -1,6 +1,3 @@
-import type { InferOutput } from "valibot"
-import { array, null_, object, union } from "valibot"
-
 import {
   addressesSchema,
   addressSchema,
@@ -8,6 +5,8 @@ import {
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { array, null_, object, union } from "valibot"
 import { logSchema } from "./receipt"
 
 export const filterTopicSchema = union([

@@ -5,8 +5,12 @@
 // Used by blob_to_kzg_commitment and the prove path. Pippenger groups
 // scalars into bit-windows and accumulates per-bucket, giving ~10–20×
 // speed-up over a naive 4096-iteration scalar-mul loop.
-import { bls12_381, bls12_381_Fr } from "@noble/curves/bls12-381"
+
 import { pippenger } from "@noble/curves/abstract/curve"
+import {
+  bls12_381,
+  bls12_381_Fr,
+} from "@noble/curves/bls12-381"
 
 type G1Point = ReturnType<
   typeof bls12_381.G1.Point.fromBytes

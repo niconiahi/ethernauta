@@ -101,7 +101,7 @@ describe("create_provider", () => {
     })
     expect(context.chain_id).toBe("eip155:11155111")
     expect(transports).toHaveLength(1)
-    const response = await transports[0]([
+    const response = await transports[0]!([
       "eth_chainId",
       [],
     ])
@@ -124,15 +124,15 @@ describe("create_provider", () => {
     ])
     expect(result).toBe("0xfeedbeef")
     expect(context.chain_id).toBe("eip155:1")
-    expect(captured.last?.method).toBe("eth_signTransaction")
+    expect(captured.last?.method).toBe(
+      "eth_signTransaction",
+    )
   })
 
   it("validates the reader context schema", () => {
     const { provider } = fake_provider(async () => "0x1")
     const resolver = create_provider(provider)
-    expect(() =>
-      resolver.reader({} as never),
-    ).toThrow()
+    expect(() => resolver.reader({} as never)).toThrow()
   })
 
   it("propagates wallet rejection from signer (4001)", async () => {

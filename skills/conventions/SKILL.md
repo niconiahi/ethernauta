@@ -33,6 +33,12 @@ That is the entire convention. Everything below is a corollary.
 - Both go in the same file, schema first, type immediately below. Both are exported unless the schema is intentionally private to the module.
 - When the schema is the canonical reference for a wire-level shape (Chrome message, JSON-RPC request/response), the convention is PascalCase + `Schema` — see `packages/wallet/src/utils/event.ts:18` (`SignTransactionRequestSchema`). Pick one style per file; do not mix.
 
+## Naming — no abbreviations
+
+Identifier names are spelled in full. Use `transaction_hash`, not `tx_hash`. Use `transactions`, not `txs`. Use `parameters`, not `params`. Use `request`, not `req`. Use `operation`, not `op`. The cost of typing the full word is paid once; the cost of decoding the abbreviation is paid by every future reader.
+
+Wire-level identifiers dictated by an external standard are exempt — JSON-RPC method names (`eth_sendRawTransaction`), ABI-bound function names (`balanceOf`, `transferFrom`), and EIP-spec field names (`chainId`, `gasLimit`, `params` at the JSON-RPC envelope layer) must match the spec verbatim regardless of casing or abbreviation. The exemption is for the wire boundary only; once a value has been `parse`d into a domain type, give the destination field its full name.
+
 ## Forbidden constructs
 
 - `interface Foo { ... }` — never. Use `object({ ... })` + `InferOutput`.

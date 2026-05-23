@@ -1,3 +1,5 @@
+import type { NotFound } from "@ethernauta/core"
+import { notFoundSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -5,9 +7,6 @@ import type {
 import { callSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { array, object, parse, tuple, union } from "valibot"
-
-import type { NotFound } from "@ethernauta/core"
-import { notFoundSchema } from "@ethernauta/core"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
 import type { ReceiptInfo } from "../../core/receipt"
 import { receiptInfoSchema } from "../../core/receipt"

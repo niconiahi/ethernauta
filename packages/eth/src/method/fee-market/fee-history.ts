@@ -1,3 +1,4 @@
+import { ratioSchema, uintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -15,8 +16,6 @@ import {
   tuple,
   union,
 } from "valibot"
-
-import { ratioSchema, uintSchema } from "@ethernauta/core"
 import { blockNumberOrTagSchema } from "../../core/block"
 
 const percentileSchema = pipe(

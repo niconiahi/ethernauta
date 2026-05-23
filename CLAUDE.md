@@ -7,7 +7,59 @@ Guidance for Claude Code working on the Ethernauta monorepo. This file is a **ro
 A pnpm workspace that ships:
 
 1. A Chrome MV3 wallet extension (`packages/wallet/`, private) that holds an encrypted mnemonic in IndexedDB and signs requests from dapps via a `window.postMessage` ↔ `chrome.runtime` bridge.
-2. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps consume to talk to the wallet and the chain.
+2. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps consume to talk to the wallet and the chain.
+
+## Maxims
+
+These are pillars. Read them before any design decision. If a proposed change conflicts with a maxim, the proposal yields — the maxim does not. They sit in front of the Hard rules below because the Hard rules enforce specifics; the Maxims set the philosophy those specifics serve.
+
+### M1 — Primitives are first-class
+
+The first-class citizens of this monorepo are small composable primitive functions: JSON-RPC methods (`eth_*`), encode/decode helpers (`encode_eip155_transaction_unsigned`, `decode_function_call`), hashing and normalization (`keccak256`, ENSIP normalize), Valibot schemas, and the four resolver factories (`create_reader`, `create_writer`, `create_signer`, `create_contract`). Adding a new EIP, ERC, or algorithm is a folder-shaped operation: create `packages/eip/src/<n>/` or `packages/erc/src/<n>/` (or extend the un-numbered base packages for cross-cutting helpers), declare the schemas, ship the method bindings. No coordinated work with a server, a hosted indexer, or a wallet release. Folder + done.
+
+The signing strategy that primitives default to is the **sign-with-`eth_signTransaction`-then-broadcast-with-the-writer** pattern (path 2 — see M3). Primitives never depend on a specific wallet implementation; they depend only on the JSON-RPC method protocol.
+
+### M2 — Standard wallet protocols are built on the primitives
+
+On top of the primitive layer the monorepo provides standard wallet protocols (the full EIP-1193 provider surface, EIP-5792 batched calls, EIP-6963 discovery, future EIP-7702 delegation). This is what makes Ethernauta interoperable: Ethernauta dapps can talk to ANY standards-compliant wallet, and the Ethernauta wallet can serve ANY standards-compliant dapp.
+
+When the wallet implements a standard RPC method (`eth_sendTransaction`, `wallet_sendCalls`, `personal_sign`, …), the implementation is a thin facade that composes primitives plus user confirmation — **never a parallel wallet-private code path**. The `wallet_sendCalls` handler reaches for `encode_eip155_transaction_unsigned` and `eth_sendRawTransaction`, not for some wallet-internal duplicate. This is what gives the wallet's RPC handlers their auditability and what makes iteration cheap.
+
+Anything implementing a numbered standard lives in `packages/eip/src/<n>/` or `packages/erc/src/<n>/`. The folder name is the standard number; the `index.ts` carries the spec link comment and re-exports the public surface. Primitives the implementation calls live in un-numbered packages (`@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/transaction`).
+
+### M3 — Two consumer paths, both first-class, both must always work
+
+```
+ethernauta primitives → standard interface implementation → consumer dapp   (path 1, with wallet)
+ethernauta primitives → consumer dapp                                       (path 2, no wallet required)
+```
+
+A dapp must be able to consume the library on **either path**. The four-shape resolver split exists specifically for this:
+
+- `Readable<T>` via `create_reader(CHAINS)` — chain reads, no wallet.
+- `Writable<T>` via `create_writer(CHAINS)` — broadcast pre-signed bytes, no wallet.
+- `Callable<T>` via `create_contract(CHAINS)` — `eth_call` reads, no wallet.
+- `Trackable<T>` / `Watchable` via `create_tracker(CHAINS, { store })` — lifecycle tracking via receipt polling, no wallet.
+- `Signable<T>` via `create_signer(CHAINS)` — the **only** shape that requires a wallet.
+
+Collapsing or removing path 2 is a violation of this maxim regardless of how clean the resulting code looks. When the wallet adds a standard RPC method, the matching primitive stays available on path 2. Concretely: `eth_sendTransaction` (path 1, `Signable<Hash32>` — wallet signs and broadcasts) and `eth_signTransaction` + `eth_sendRawTransaction` (path 2, primitive composition — dapp broadcasts) BOTH exist as exported methods. The library does not force a choice between them; the dapp does, per call. Documentation should show them side-by-side wherever the choice is non-obvious.
+
+### M4 — No paid services, no hosted infrastructure, no coordinated rollouts
+
+The library never introduces dependencies on third-party services (hosted indexers, bundlers, paymasters, RPC providers we operate). Every feature must work entirely from public RPC endpoints + the wallet extension + dapp code. This is what makes "folder + done" possible — the moment a new EIP requires us to also stand up an off-chain service or coordinate a wallet release with a server deploy, the iteration cost ceases to be O(1) and the maxim is broken. If a standard genuinely requires hosted infrastructure (ERC-4337 as written, for example), it is out of scope until or unless an in-house, dependency-free implementation becomes feasible.
+
+### M5 — The EIP-1193 provider is a transport facade, not a policy layer
+
+The 1193 envelope exposes only what EIP-1193 formally defines: `request`, the event emitter, and the standard error space. Method existence, routing (chain-read vs wallet-state vs signable vs wallet-internal), state caching, and confirmation policy are wallet-side concerns and live in `packages/wallet/`. Dapps consume providers symmetrically via the primitive adapter (`create_provider(provider).reader` / `.signer`), never via a parallel API surface.
+
+This is the symmetric dual of M2: when the wallet implements a 1193 method, the implementation is a thin facade over primitives plus user confirmation; when a dapp consumes a 1193 method, the call site is a thin facade over primitives. Both sides converge on the same `method(args)(transport)` shape, and EIP-1193 is a *protocol*, not the call shape.
+
+Concretely:
+
+- **Wallet side.** `create_envelope({ request })` in `@ethernauta/eip/1193` produces the four-field 1193 object (`request`, `on`, `removeListener`, `emit`) and nothing else. The router lives in `packages/wallet/src/utils/dispatch.ts` with four strict allowlists (wallet-state, chain-read, signable, wallet-internal); methods outside all four return 4200.
+- **Dapp side.** `create_provider(provider)` from `@ethernauta/eip/1193` adapts any 1193 source (an EIP-6963 announce result, `window.ethereum`, a test mock) into Ethernauta's resolver shape — `.reader({ chain_id })` for `Readable<T>` consumers, `.signer({ chain_id })` for `Signable<T>` consumers. The call site is identical to `create_reader(CHAINS)` / `create_signer(CHAINS)`; only the transport-construction line differs.
+
+Playground demos surface this convergence by showing the call shape once — the transport choice (public RPC reader vs wallet-routed provider) is the dapp's decision, made per call, not a visual contrast every demo has to enact.
 
 ## Routing — which skill to read
 

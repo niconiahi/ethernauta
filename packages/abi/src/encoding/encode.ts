@@ -1,5 +1,5 @@
-import { keccak_256 } from "@noble/hashes/sha3"
 import { bytes_to_hex } from "@ethernauta/utils"
+import { keccak_256 } from "@noble/hashes/sha3"
 
 import type { AbiCodec } from "../abi-codec"
 import { encode_sequence } from "../sequence"

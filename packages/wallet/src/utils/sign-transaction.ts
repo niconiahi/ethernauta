@@ -5,28 +5,20 @@ import {
 } from "@ethernauta/abi"
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
-  eth_getTransactionCount,
-  genericTransactionSchema,
-} from "@ethernauta/eth"
-import {
   type Address,
   addressSchema,
 } from "@ethernauta/core"
+import {
+  eth_getTransactionCount,
+  genericTransactionSchema,
+} from "@ethernauta/eth"
 import type { ChainId, Reader } from "@ethernauta/transport"
-import { invariant } from "@ethernauta/utils"
+import { hex_to_bytes, invariant } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import type { RecoveredSignature } from "@noble/secp256k1"
 import type { HDKey } from "@scure/bip32"
-import {
-  hexadecimal,
-  object,
-  optional,
-  parse,
-  pipe,
-  string,
-} from "valibot"
+import { hexadecimal, parse, pipe, string } from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
-import { hex_to_bytes } from "@ethernauta/utils"
 import { sign_digest } from "./ecdsa"
 import { encode } from "./rlp"
 import type { Transaction } from "./transaction"
@@ -143,10 +135,11 @@ function get_fields_from_transaction(
       }
     }
     case "transfer": {
-      const to = parse(addressSchema, params[0])
+      const args = params as unknown[]
+      const to = parse(addressSchema, args[0])
       const value = parse(
         pipe(string(), hexadecimal()),
-        params[1],
+        args[1],
       ) as `0x${string}`
       return {
         to,
@@ -155,9 +148,10 @@ function get_fields_from_transaction(
       }
     }
     case "safeMint": {
+      const args = params as unknown[]
       const contract = parse(addressSchema, to)
-      const nft_recipient = parse(addressSchema, params[0])
-      const uri = parse(string(), params[1])
+      const nft_recipient = parse(addressSchema, args[0])
+      const uri = parse(string(), args[1])
       return {
         to: contract,
         value: 0n,

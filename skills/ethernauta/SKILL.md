@@ -129,24 +129,25 @@ The four method shapes:
 
 **Two paths depending on the shape of what you are tracking.**
 
-### 8.1 Single-hash UI tracking (the common case)
+### 8.1 Single-hash UI tracking (path 2 — no wallet required)
 
-**What it is.** After `eth_sendRawTransaction` returns a hash, poll `eth_getTransactionReceipt` directly through a reader until the receipt arrives, then flip your UI state from `pending` to `mined` / `reverted`. There is no dedicated tracking package — it is ~10 lines of `setInterval` next to the broadcast call.
+**What it is.** After a transaction lands in the mempool, use `@ethernauta/transaction` to persist its lifecycle (`pending` → `mined` / `reverted`) and observe transitions in your UI. The package provides four verbs (`register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`) composed through a fifth factory `create_tracker(CHAINS, { store })` — same idiom as `create_reader` / `create_writer` / `create_signer` / `create_contract`.
 
-**When to reach for it.** Any single transaction your UI needs to surface (a transfer, a mint, an approval) where you want to render `pending` → `mined` / `reverted` in-line. The canonical `useTransaction()` hook below is what `examples/playground/app/routes/home.tsx` uses and what `animatronik`'s mint flow uses.
+**When to reach for it.** Any single transaction your UI needs to surface (a transfer, a mint, an approval, a broadcast against any wallet) where you want to render `pending` → `mined` / `reverted` in-line. Works without an Ethernauta wallet — only RPC transports are required.
 
 **Notes.**
-- `SubmittedTransaction` is the canonical Valibot-backed discriminated union for this lifecycle, exported from `@ethernauta/eth`: `{ hash, status: "pending" | "mined" | "reverted" }`. Import it; do not redefine.
-- The poll uses the same reader you would use for any other read — `create_reader` against the chain you broadcast to.
-- Clear the interval as soon as the receipt resolves. Do not leak timers across component unmounts.
+- `Transaction` is the canonical Valibot-backed discriminated union for this lifecycle, exported from `@ethernauta/transaction`: `{ hash, status: "pending" | "mined" | "reverted", ...receipt fields when mined/reverted }`. Import it; do not redefine.
+- The `store` config dependency-injects WHERE the lifecycle records persist. `window_store` is the default browser-side backend; pass any `Store`-shaped object for chrome-storage / IndexedDB / in-memory test backends.
+- `watch_transaction` returns an `unsubscribe` function on the second call — wire it into a `useEffect` cleanup so unmounted components don't fire `setState` after the receipt arrives.
+- For an awaitable "wait until N confirmations" flow, use `wait_for_receipt(hash, { confirmations, timeout_ms })(tracker(...))` instead.
 
 → **See** `examples/transaction-tracking/example.tsx`.
 
-### 8.2 Batched calls (EIP-5792)
+### 8.2 Batched calls (path 1 — EIP-5792, wallet required)
 
-**What it is.** For multi-call flows that should look like one user action (`approve` + `swap`, `permit` + `transfer`, etc.), use `wallet_sendCalls` from `@ethernauta/eip/5792`. The wallet mints a bundle ID, signs each call, broadcasts sequentially, and exposes status via `wallet_getCallsStatus`. **Dapps do not track the underlying tx hashes themselves** — the wallet owns batch lifecycle.
+**What it is.** For multi-call flows that should look like one user action (`approve` + `swap`, `permit` + `transfer`, etc.), use `wallet_sendCalls` from `@ethernauta/eip/5792`. The wallet mints a bundle ID, signs each call, broadcasts sequentially, and exposes status via `wallet_getCallsStatus`. **Dapps do not track the underlying transaction hashes themselves** — the wallet owns batch lifecycle.
 
-**When to reach for it.** Any flow that today consists of "send tx A, wait for it, then send tx B." Switch the *whole* flow to one `wallet_sendCalls` invocation; render UI off `wallet_getCallsStatus(bundle_id)` polling.
+**When to reach for it.** Any flow that today consists of "send transaction A, wait for it, then send transaction B." Switch the *whole* flow to one `wallet_sendCalls` invocation; render UI off `wallet_getCallsStatus(bundle_id)` polling.
 
 **Notes.**
 - `wallet_sendCalls` is a `Signable<SendCallsResult>` — same curried shape as every other Ethernauta method.
@@ -207,7 +208,8 @@ The four method shapes:
 |---|---|
 | `@ethernauta/chain` | `eip155_1`, `eip155_11155111`, … (500+ chain definitions) |
 | `@ethernauta/transport` | `create_reader`, `create_writer`, `create_signer`, `create_contract`, `http`, `encode_chain_id`, type `Readable`, `Writable`, `Signable`, `Callable`, `ResolvedSigner`, `ResolvedContract` |
-| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `submittedTransactionSchema` + type `SubmittedTransaction` (single-hash lifecycle — see section 8.1), `addressSchema`, `uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
+| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `addressSchema`, `uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
+| `@ethernauta/transaction` | `create_tracker`, `register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`, `window_store`, type `Store` / `Transaction` / `PendingTransaction` / `MinedTransaction` / `RevertedTransaction` (single-hash lifecycle — see section 8.1) |
 | `@ethernauta/eip/1102` | `eth_requestAccounts` |
 | `@ethernauta/eip/1193` | `create_provider`, `Provider` interface |
 | `@ethernauta/eip/6963` | `announce`, `EIP6963ProviderDetail`, `ANNOUNCE_EVENT`, `REQUEST_EVENT` |

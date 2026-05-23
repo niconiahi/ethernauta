@@ -1,3 +1,4 @@
+import { uintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -11,8 +12,6 @@ import {
   tuple,
   union,
 } from "valibot"
-
-import { uintSchema } from "@ethernauta/core"
 
 const parametersSchema = union([
   tuple([uintSchema]),

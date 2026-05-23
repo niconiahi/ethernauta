@@ -1,6 +1,6 @@
+import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { describe, expect, it } from "vitest"
-import { bytes_to_hex } from "@ethernauta/utils"
 import {
   build_personal_message,
   build_personal_message_hex,

@@ -159,6 +159,7 @@ export function EventDecodingDemo() {
           <tbody>
             {rows.map((r, i) => (
               <tr
+                // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
                 key={i}
                 style={{
                   borderTop: "1px solid #f0f0f0",

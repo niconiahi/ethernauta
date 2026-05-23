@@ -248,8 +248,8 @@ describe("create_router — unsupported", () => {
     ]
     for (let i = 0; i < sets.length; i += 1) {
       for (let j = i + 1; j < sets.length; j += 1) {
-        for (const method of sets[i]) {
-          expect(sets[j].has(method)).toBe(false)
+        for (const method of sets[i]!) {
+          expect(sets[j]!.has(method)).toBe(false)
         }
       }
     }

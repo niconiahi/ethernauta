@@ -1,5 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-4844
-import { bytes48Schema, hash32Schema } from "@ethernauta/core"
+import {
+  bytes48Schema,
+  hash32Schema,
+} from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { array, custom, object } from "valibot"
 

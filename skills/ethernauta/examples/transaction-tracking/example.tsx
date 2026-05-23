@@ -1,59 +1,64 @@
-// Single-hash UI tracking via inline eth_getTransactionReceipt
-// polling. There is no @ethernauta/transaction package anymore —
-// the wallet owns batch tracking (see EIP-5792 / wallet_getCallsStatus),
-// and dapps that just want to render pending → mined for a single
-// hash inline this ~10-line poll loop next to the broadcast call.
+// Single-hash UI tracking via @ethernauta/transaction.
+// Compose register_transaction + watch_transaction against a
+// tracker resolver. The tracker takes the same CHAINS array
+// as create_reader / create_writer / create_signer + a `store`
+// telling the package where to persist the lifecycle records.
+// `window_store` is the default browser-side backend (writes
+// into a Map hung off `window.transactions`); pass any
+// Store-shaped object for custom backends (chrome.storage,
+// IndexedDB, in-memory tests).
 
 import { eip155_11155111 } from "@ethernauta/chain"
 import type { Hash32 } from "@ethernauta/core"
 import {
-  eth_getTransactionReceipt,
-  type SubmittedTransaction,
-} from "@ethernauta/eth"
-import {
-  create_reader,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-import { hex_to_number } from "@ethernauta/utils"
-import { useState } from "react"
+  create_tracker,
+  register_transaction,
+  type Transaction,
+  watch_transaction,
+  window_store,
+} from "@ethernauta/transaction"
+import { encode_chain_id, http } from "@ethernauta/transport"
+import { useEffect, useRef, useState } from "react"
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155111.chainId,
 })
 
-const reader = create_reader([
-  {
-    chainId: CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-])
-
-const POLL_INTERVAL_MS = 2000
+const tracker = create_tracker(
+  [
+    {
+      chainId: CHAIN_ID,
+      transports: [
+        http("https://ethereum-sepolia-rpc.publicnode.com"),
+      ],
+    },
+  ],
+  { store: window_store },
+)
 
 export function useTransaction() {
-  const [tx, set_tx] = useState<SubmittedTransaction | null>(
-    null,
-  )
+  const [tx, set_tx] = useState<Transaction | null>(null)
+  // Hold the unsubscribe so the cleanup path can tear down the
+  // poll loop if the component unmounts before the receipt
+  // arrives.
+  const unsubscribe_ref = useRef<(() => void) | null>(null)
 
-  function track(hash: Hash32) {
-    set_tx({ hash, status: "pending" })
-    const interval_id = setInterval(async () => {
-      const receipt = await eth_getTransactionReceipt([hash])(
-        reader({ chain_id: CHAIN_ID }),
-      )
-      if (!receipt) return
-      if (!receipt.status) return
-      const next: SubmittedTransaction =
-        hex_to_number(receipt.status) === 1
-          ? { hash, status: "mined" }
-          : { hash, status: "reverted" }
-      set_tx(next)
-      clearInterval(interval_id)
-    }, POLL_INTERVAL_MS)
+  useEffect(() => {
+    return () => {
+      unsubscribe_ref.current?.()
+    }
+  }, [])
+
+  async function track(hash: Hash32) {
+    const pending = await register_transaction(hash)(
+      tracker({ chain_id: CHAIN_ID }),
+    )
+    set_tx(pending)
+    unsubscribe_ref.current = watch_transaction(
+      hash,
+      (transaction) => set_tx(transaction),
+    )(tracker({ chain_id: CHAIN_ID }))
   }
 
   return { tx, track }
@@ -62,7 +67,7 @@ export function useTransaction() {
 export function TxBadge({
   tx,
 }: {
-  tx: SubmittedTransaction | null
+  tx: Transaction | null
 }) {
   if (!tx) return null
   switch (tx.status) {

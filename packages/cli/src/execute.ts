@@ -62,7 +62,7 @@ function signature_key(d: Description): string {
   return `${d.name}(${param_types})`
 }
 
-function snake_or_kebab(name: string): string {
+function _snake_or_kebab(name: string): string {
   if (name.includes("_")) return name
   return name
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
@@ -105,10 +105,6 @@ function write_barrel(
 
 function is_generatable(d: Description): boolean {
   if (d.type !== "function") return false
-  const is_readable =
-    d.stateMutability === "view" ||
-    d.stateMutability === "pure"
-  if (is_readable && d.outputs.length > 1) return false
   return true
 }
 

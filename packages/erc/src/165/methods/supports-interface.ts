@@ -1,5 +1,5 @@
+import type { Bytes } from "@ethernauta/core"
 import type {
-  Bytes,
   Callable,
   ContractContext,
 } from "@ethernauta/transport"

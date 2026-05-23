@@ -22,8 +22,8 @@ import {
   type Blob,
   blobSchema,
   type KzgCommitment,
-  kzgCommitmentSchema,
   type KzgProof,
+  kzgCommitmentSchema,
   kzgProofSchema,
 } from "../schemas"
 import {
@@ -74,7 +74,9 @@ export function verify_blob_kzg_proof_batch(
   const commitments = _commitments.map((c) =>
     parse(kzgCommitmentSchema, c),
   )
-  const proofs = _proofs.map((p) => parse(kzgProofSchema, p))
+  const proofs = _proofs.map((p) =>
+    parse(kzgProofSchema, p),
+  )
   const commitment_points = commitments.map((c) =>
     parse_commitment_or_proof(c),
   )
@@ -121,17 +123,13 @@ export function verify_blob_kzg_proof_batch(
   // proof_z_lincomb = Σ (r^i · z_i) · proof_i
   const rz: bigint[] = []
   for (let i = 0; i < n; i += 1) {
-    rz.push(
-      Fr.mul(r_powers[i] as bigint, zs[i] as bigint),
-    )
+    rz.push(Fr.mul(r_powers[i] as bigint, zs[i] as bigint))
   }
   const proof_z_lincomb = g1_lincomb(proof_points, rz)
   // c_minus_y[i] = C_i − [y_i]·G1
   const c_minus_y = commitment_points.map((c, i) => {
     const y = ys[i] as bigint
-    return y === 0n
-      ? c
-      : c.subtract(G1_BASE.multiply(y))
+    return y === 0n ? c : c.subtract(G1_BASE.multiply(y))
   })
   const c_minus_y_lincomb = g1_lincomb(c_minus_y, r_powers)
   const rhs = c_minus_y_lincomb.add(proof_z_lincomb)
@@ -153,7 +151,8 @@ function pairing_or_one(
   p: ReturnType<typeof bls12_381.G1.Point.fromBytes>,
   q: ReturnType<typeof bls12_381.G2.Point.fromBytes>,
 ) {
-  if (p.equals(G1_ZERO) || q.equals(G2_ZERO)) return Fp12.ONE
+  if (p.equals(G1_ZERO) || q.equals(G2_ZERO))
+    return Fp12.ONE
   return bls12_381.pairing(p, q)
 }
 
@@ -165,10 +164,20 @@ function compute_r_powers(
 ): bigint[] {
   const n = _commitments.length
   // Initial data: RANDOM_CHALLENGE_KZG_BATCH_DOMAIN || degree (8 BE) || n (8 BE)
-  const initial = new Uint8Array(DOMAIN_BYTES.length + 8 + 8)
+  const initial = new Uint8Array(
+    DOMAIN_BYTES.length + 8 + 8,
+  )
   initial.set(DOMAIN_BYTES, 0)
-  write_uint64_be(initial, DOMAIN_BYTES.length, BigInt(FIELD_ELEMENTS_PER_BLOB))
-  write_uint64_be(initial, DOMAIN_BYTES.length + 8, BigInt(n))
+  write_uint64_be(
+    initial,
+    DOMAIN_BYTES.length,
+    BigInt(FIELD_ELEMENTS_PER_BLOB),
+  )
+  write_uint64_be(
+    initial,
+    DOMAIN_BYTES.length + 8,
+    BigInt(n),
+  )
   // Per case: commitment(48) || z(32) || y(32) || proof(48) = 160 bytes
   const per_case = 48 + 32 + 32 + 48
   const data = new Uint8Array(initial.length + n * per_case)
@@ -184,10 +193,7 @@ function compute_r_powers(
     cursor += 32
     data.set(fr_to_bytes_be(_ys[i] as bigint), cursor)
     cursor += 32
-    data.set(
-      hex_to_bytes(_proofs[i] as KzgProof),
-      cursor,
-    )
+    data.set(hex_to_bytes(_proofs[i] as KzgProof), cursor)
     cursor += 48
   }
   const r = hash_to_bls_field(data)
@@ -212,4 +218,3 @@ function write_uint64_be(
     v >>= 8n
   }
 }
-

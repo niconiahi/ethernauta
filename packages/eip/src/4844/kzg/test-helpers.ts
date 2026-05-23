@@ -2,10 +2,18 @@
 // the EF consensus-spec-tests YAML cases.
 //
 // NOT bundled — used only by *.test.ts files under packages/eip/.
-import { readdirSync, readFileSync, statSync } from "node:fs"
+import {
+  readdirSync,
+  readFileSync,
+  statSync,
+} from "node:fs"
 import { join } from "node:path"
 
-import { init_kzg, type Kzg, type TrustedSetup } from "./setup"
+import {
+  init_kzg,
+  type Kzg,
+  type TrustedSetup,
+} from "./setup"
 
 // Parse the c-kzg-4844 trusted_setup.txt. Layout (verified against
 // `load_trusted_setup_file` in c-kzg-4844/src/setup/setup.c):
@@ -85,7 +93,7 @@ export function parse_kzg_yaml(_path: string): KzgCase {
       continue
     }
     if (section === "input") {
-      const m = line.match(/^  ([^:]+):\s*(.*)$/)
+      const m = line.match(/^ {2}([^:]+):\s*(.*)$/)
       if (m) {
         flush_array()
         const [, key, value] = m
@@ -100,9 +108,11 @@ export function parse_kzg_yaml(_path: string): KzgCase {
         }
         continue
       }
-      const arr = line.match(/^  -\s*(.*)$/)
+      const arr = line.match(/^ {2}-\s*(.*)$/)
       if (arr) {
-        current_array.push(unquote((arr[1] as string).trim()))
+        current_array.push(
+          unquote((arr[1] as string).trim()),
+        )
       }
       continue
     }

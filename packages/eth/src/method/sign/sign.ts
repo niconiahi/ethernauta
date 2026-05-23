@@ -1,15 +1,15 @@
-import type {
-  ResolvedSigner,
-  Signable,
-} from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
 import type { Bytes65 } from "@ethernauta/core"
 import {
   addressSchema,
   bytes65Schema,
   bytesSchema,
 } from "@ethernauta/core"
+import type {
+  ResolvedSigner,
+  Signable,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const parametersSchema = union([
   tuple([addressSchema, bytesSchema]),

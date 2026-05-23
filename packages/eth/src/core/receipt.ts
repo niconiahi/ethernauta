@@ -1,12 +1,4 @@
 // https://github.com/ethereum/execution-apis/blob/main/src/eth/transaction.yaml
-import type { InferOutput } from "valibot"
-import {
-  array,
-  boolean,
-  nullable,
-  object,
-  optional,
-} from "valibot"
 
 import {
   addressSchema,
@@ -17,6 +9,14 @@ import {
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import {
+  array,
+  boolean,
+  nullable,
+  object,
+  optional,
+} from "valibot"
 
 export const logSchema = object({
   removed: boolean(),

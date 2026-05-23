@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest"
 import { eip155_1 } from "@ethernauta/chain"
 import {
   create_reader,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
+import { describe, expect, it } from "vitest"
 
 import { get_ens_address } from "./get-ens-address"
 import { get_ens_avatar } from "./get-ens-avatar"
@@ -30,7 +30,7 @@ const reader = create_reader([
       namespace: "eip155",
       reference: eip155_1.chainId,
     }),
-    transports: MAINNET_RPC_URLS.map(http),
+    transports: MAINNET_RPC_URLS.map((url) => http(url)),
   },
 ])
 

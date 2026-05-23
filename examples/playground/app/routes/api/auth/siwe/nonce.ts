@@ -12,9 +12,8 @@
 // CSRF-style misuse early.
 
 import { generate_siwe_nonce } from "@ethernauta/eip/4361"
-
-import type { Route } from "./+types/nonce"
 import { set_nonce_cookie } from "../../../../lib/auth/session.server"
+import type { Route } from "./+types/nonce"
 
 export async function action({
   request,

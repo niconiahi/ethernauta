@@ -24,9 +24,6 @@ const StorableAccountSchema = object({
   address: string(),
   xpriv: string(),
 })
-type StorableAccount = InferOutput<
-  typeof StorableAccountSchema
->
 
 const StorableAccountsSchema = object({
   list: array(StorableAccountSchema),

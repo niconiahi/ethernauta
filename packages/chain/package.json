@@ -22,6 +22,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
     "test:unit": "vitest",
     "indexer": "bun src/indexer.ts && pnpm run format"
   },

@@ -1,5 +1,5 @@
 // https://eips.ethereum.org/EIPS/eip-1014
-import { keccak_256 } from "@noble/hashes/sha3"
+
 import {
   type Address,
   addressSchema,
@@ -10,6 +10,7 @@ import {
   hex_to_bytes,
   rlp_encode,
 } from "@ethernauta/utils"
+import { keccak_256 } from "@noble/hashes/sha3"
 import type { InferOutput } from "valibot"
 import { bigint, object, parse, union } from "valibot"
 

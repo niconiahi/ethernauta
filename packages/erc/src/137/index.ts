@@ -1,8 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-137
 
 export {
-  parse_avatar,
   type AvatarResult,
+  parse_avatar,
 } from "./avatar"
 export { get_ens_address } from "./get-ens-address"
 export { get_ens_avatar } from "./get-ens-avatar"

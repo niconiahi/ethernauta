@@ -360,8 +360,9 @@ function build_readable(
     outputs.length >= 1,
     `build_readable requires at least one output (${name} has 0)`,
   )
-  const output = outputs[0] as FunctionOutput
-  const output_info = get_type_info(output.type)
+  const output_infos = outputs.map((o) =>
+    get_type_info(o.type),
+  )
   const input_infos = inputs.map((i) =>
     get_type_info(i.type),
   )
@@ -379,20 +380,46 @@ function build_readable(
     }
     builders.push(info.builder)
   }
-  if (output_info.valibot) {
-    valibot_names.add(
-      output_info.decoded_schema.replace("()", ""),
-    )
-  } else if (output_info.package === "eth") {
-    eth_schemas.push(output_info.decoded_schema)
-    eth_types.push(output_info.decoded_type)
+  for (const info of output_infos) {
+    if (info.valibot) {
+      valibot_names.add(
+        info.decoded_schema.replace("()", ""),
+      )
+    } else if (info.package === "eth") {
+      eth_schemas.push(info.decoded_schema)
+      eth_types.push(info.decoded_type)
+    }
+    builders.push(info.builder)
   }
-  builders.push(output_info.builder)
 
   const builder_names =
     collect_builders(builders).join(", ")
 
-  return `import type { Bytes, Callable, ContractContext } from "@ethernauta/transport"
+  const is_tuple = output_infos.length > 1
+  const return_type = is_tuple
+    ? `[${output_infos.map((i) => i.decoded_type).join(", ")}]`
+    : output_infos[0]?.decoded_type
+  const decode_body = is_tuple
+    ? `const decoded = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return [
+          ${output_infos
+            .map(
+              (i, idx) =>
+                `parse(${i.decoded_schema}, decoded[${idx}])`,
+            )
+            .join(",\n          ")},
+        ] as ${return_type}`
+    : `const [decoded] = decode_function_result(
+          OUTPUT_CODECS,
+          _result,
+        )
+        return parse(${output_infos[0]?.decoded_schema}, decoded)`
+
+  return `import type { Bytes } from "@ethernauta/core"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   ${builder_names},
@@ -410,10 +437,10 @@ ${compose_signature_const(name, inputs)}
 ${compose_parameters_block(inputs)}
 
 export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
-: (_context: ContractContext) => Callable<${output_info.decoded_type}> {
+: (_context: ContractContext) => Callable<${return_type}> {
   return (
     _context: ContractContext,
-  ): Callable<${output_info.decoded_type}> => {
+  ): Callable<${return_type}> => {
     ${compose_values_extraction(inputs)}
     const calldata = encode_function_call({
       name: "${name}",
@@ -424,12 +451,8 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
       chain_id: _context.chain_id,
       to: _context.to,
       data: bytes_to_hex(calldata),
-      decode: (_result: Bytes): ${output_info.decoded_type} => {
-        const [decoded] = decode_function_result(
-          OUTPUT_CODECS,
-          _result,
-        )
-        return parse(${output_info.decoded_schema}, decoded)
+      decode: (_result: Bytes): ${return_type} => {
+        ${decode_body}
       },
     }
   }
@@ -525,15 +548,6 @@ export function generate(
   }
   for (const description of descriptions) {
     if (description.type !== "function") continue
-    const is_readable =
-      description.stateMutability === "view" ||
-      description.stateMutability === "pure"
-    if (is_readable && description.outputs.length > 1) {
-      console.warn(
-        `skipping ${description.name}: multi-output methods not yet supported by generator`,
-      )
-      continue
-    }
     const emit_name = emit_name_for(
       description,
       descriptions,
@@ -542,6 +556,9 @@ export function generate(
       description,
       descriptions,
     )
+    const is_readable =
+      description.stateMutability === "view" ||
+      description.stateMutability === "pure"
     const body = is_readable
       ? build_readable(description, emit_name)
       : build_signable(description, emit_name)

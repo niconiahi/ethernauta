@@ -1,11 +1,11 @@
+import type { Address } from "@ethernauta/core"
+import { addressSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
 import { callSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
-import type { Address } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
 
 export function eth_coinbase(): Readable<Address> {
   return async ([

@@ -1,3 +1,8 @@
+import type { NotFound } from "@ethernauta/core"
+import {
+  hash32Schema,
+  notFoundSchema,
+} from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -11,12 +16,6 @@ import {
   tuple,
   union,
 } from "valibot"
-
-import type { NotFound } from "@ethernauta/core"
-import {
-  hash32Schema,
-  notFoundSchema,
-} from "@ethernauta/core"
 import type { Block } from "../../core/block"
 import { blockSchema } from "../../core/block"
 

@@ -1,12 +1,11 @@
 import { bytes_to_hex } from "@ethernauta/utils"
 import { sha256 } from "@noble/hashes/sha2"
 import { describe, expect, it } from "vitest"
-
-import { commitment_to_versioned_hash } from "./commitment-to-versioned-hash"
 import {
   fake_exponential,
   get_blob_gasprice,
 } from "./blob-gas"
+import { commitment_to_versioned_hash } from "./commitment-to-versioned-hash"
 import {
   BLOB_GASPRICE_UPDATE_FRACTION,
   MIN_BLOB_GASPRICE,
@@ -61,13 +60,19 @@ describe("commitment_to_versioned_hash", () => {
 describe("blob-gas math", () => {
   it("fake_exponential(1, 0, k) is 1", () => {
     expect(
-      fake_exponential(1n, 0n, BLOB_GASPRICE_UPDATE_FRACTION),
+      fake_exponential(
+        1n,
+        0n,
+        BLOB_GASPRICE_UPDATE_FRACTION,
+      ),
     ).toBe(1n)
   })
 
   it("get_blob_gasprice grows with excess_blob_gas", () => {
     const a = get_blob_gasprice(0n)
-    const b = get_blob_gasprice(BLOB_GASPRICE_UPDATE_FRACTION)
+    const b = get_blob_gasprice(
+      BLOB_GASPRICE_UPDATE_FRACTION,
+    )
     expect(a).toBe(MIN_BLOB_GASPRICE)
     expect(b).toBeGreaterThan(a)
   })

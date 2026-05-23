@@ -14,7 +14,7 @@ describe("normalize.ts — ENS official validation suite", () => {
       if ("error" in t) {
         try {
           ens_normalize(t.name)
-          detail = `expected error, got success`
+          detail = "expected error, got success"
         } catch {
           ok = true
         }

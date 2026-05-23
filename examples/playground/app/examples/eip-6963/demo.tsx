@@ -3,8 +3,8 @@ import {
   type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
   forget_picked_provider,
-  remember_picked_provider,
   REQUEST_EVENT,
+  remember_picked_provider,
   restore_picked_provider,
   type Storage,
 } from "@ethernauta/eip/6963"
@@ -81,7 +81,7 @@ export function Eip6963Demo() {
       if (detail) set_restored_name(detail.info.name)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [providers.length])
+  }, [providers.find])
 
   function pick(detail: EIP6963ProviderDetail) {
     remember_picked_provider({
@@ -140,10 +140,16 @@ export function Eip6963Demo() {
             fontSize: 13,
           }}
         >
-          <Row label="Persisted rdns" value={picked_rdns} mono />
+          <Row
+            label="Persisted rdns"
+            value={picked_rdns}
+            mono
+          />
           <Row
             label="Rehydrated"
-            value={restored_name ?? "(wallet not announcing)"}
+            value={
+              restored_name ?? "(wallet not announcing)"
+            }
           />
         </div>
       )}

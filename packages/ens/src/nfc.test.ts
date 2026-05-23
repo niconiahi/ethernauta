@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, it } from "vitest"
 
 import { NFC_VECTORS } from "./data/nfc-vectors"
 import { nfc, nfd } from "./nfc"

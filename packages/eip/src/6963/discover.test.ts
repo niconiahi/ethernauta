@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest"
 import {
-  announce,
+  discover_providers,
   forget_picked_provider,
   type Provider,
-  discover_providers,
   pick_provider,
   remember_picked_provider,
   restore_picked_provider,
@@ -48,7 +47,7 @@ describe("discover.ts", () => {
       ms: 30,
     })
     expect(providers).toHaveLength(1)
-    expect(providers[0].info.rdns).toBe("io.walleta")
+    expect(providers[0]!.info.rdns).toBe("io.walleta")
   })
 
   it("should dedupe announcements by rdns", async () => {

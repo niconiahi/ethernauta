@@ -1,5 +1,8 @@
 import { type Bytes, bytesSchema } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import {
   bigint,
@@ -41,8 +44,8 @@ export function decode_revert_reason(
     return { kind: "error", reason }
   }
   if (selector_hex === PANIC_SELECTOR) {
-    const code = uint256().decode(payload, 0)
-    return { kind: "panic", code }
+    const code_hex = uint256().decode(payload, 0)
+    return { kind: "panic", code: BigInt(code_hex) }
   }
   return {
     kind: "custom",

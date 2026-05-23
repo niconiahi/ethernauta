@@ -30,6 +30,7 @@
 //     stealing the parity bit into the top of `s`. Not produced
 //     by this function.
 
+import { bytes_to_hex } from "@ethernauta/utils"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import {
@@ -37,8 +38,6 @@ import {
   type RecoveredSignature,
   sign,
 } from "@noble/secp256k1"
-
-import { bytes_to_hex } from "@ethernauta/utils"
 
 export function sign_digest(
   digest: Uint8Array,

@@ -5,13 +5,13 @@
 // method outside all four is rejected with 4200.
 
 import {
+  invalid_params,
   type RequestArguments,
   unrecognized_chain,
   unsupported_method,
 } from "@ethernauta/eip/1193"
-import { safeParse } from "valibot"
 import { switchEthereumChainParametersSchema } from "@ethernauta/eip/3326"
-import { invalid_params } from "@ethernauta/eip/1193"
+import { safeParse } from "valibot"
 
 // Synchronous reads served from wallet-cached state. No
 // RPC, no popup, no chrome.storage.

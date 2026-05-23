@@ -11,14 +11,14 @@ const BATCH: BatchRecord = {
   id: "0xbatch",
   chainId: "0xaa36a7",
   atomic: false,
-  tx_hashes: [
+  transaction_hashes: [
     "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899",
     "0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
   ],
 }
 
 function make_receipt(
-  tx_hash: `0x${string}`,
+  transaction_hash: `0x${string}`,
   status: "0x0" | "0x1",
 ): ReceiptInfo {
   return {
@@ -30,7 +30,7 @@ function make_receipt(
     gasUsed: "0x5208",
     logs: [],
     logsBloom: `0x${"0".repeat(512)}` as `0x${string}`,
-    transactionHash: tx_hash,
+    transactionHash: transaction_hash,
     transactionIndex: "0x0",
     effectiveGasPrice: "0x1",
     to: "0x1111111111111111111111111111111111111111",
@@ -57,10 +57,16 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report PENDING when at least one call is unmined", () => {
     const status = finalize_status(BATCH, [
       {
-        tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x1"),
+        transaction_hash: BATCH.transaction_hashes[0]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[0]!,
+          "0x1",
+        ),
       },
-      { tx_hash: BATCH.tx_hashes[1]!, receipt: null },
+      {
+        transaction_hash: BATCH.transaction_hashes[1]!,
+        receipt: null,
+      },
     ])
     expect(status.status).toBe(CALLS_STATUS.PENDING)
     expect(status.receipts).toBeUndefined()
@@ -69,12 +75,18 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report CONFIRMED when every call mined and succeeded", () => {
     const status = finalize_status(BATCH, [
       {
-        tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x1"),
+        transaction_hash: BATCH.transaction_hashes[0]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[0]!,
+          "0x1",
+        ),
       },
       {
-        tx_hash: BATCH.tx_hashes[1]!,
-        receipt: make_receipt(BATCH.tx_hashes[1]!, "0x1"),
+        transaction_hash: BATCH.transaction_hashes[1]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[1]!,
+          "0x1",
+        ),
       },
     ])
     expect(status.status).toBe(CALLS_STATUS.CONFIRMED)
@@ -85,12 +97,18 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report REVERTED when every call reverted", () => {
     const status = finalize_status(BATCH, [
       {
-        tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x0"),
+        transaction_hash: BATCH.transaction_hashes[0]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[0]!,
+          "0x0",
+        ),
       },
       {
-        tx_hash: BATCH.tx_hashes[1]!,
-        receipt: make_receipt(BATCH.tx_hashes[1]!, "0x0"),
+        transaction_hash: BATCH.transaction_hashes[1]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[1]!,
+          "0x0",
+        ),
       },
     ])
     expect(status.status).toBe(CALLS_STATUS.REVERTED)
@@ -99,12 +117,18 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report PARTIALLY_REVERTED when some calls reverted", () => {
     const status = finalize_status(BATCH, [
       {
-        tx_hash: BATCH.tx_hashes[0]!,
-        receipt: make_receipt(BATCH.tx_hashes[0]!, "0x1"),
+        transaction_hash: BATCH.transaction_hashes[0]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[0]!,
+          "0x1",
+        ),
       },
       {
-        tx_hash: BATCH.tx_hashes[1]!,
-        receipt: make_receipt(BATCH.tx_hashes[1]!, "0x0"),
+        transaction_hash: BATCH.transaction_hashes[1]!,
+        receipt: make_receipt(
+          BATCH.transaction_hashes[1]!,
+          "0x0",
+        ),
       },
     ])
     expect(status.status).toBe(

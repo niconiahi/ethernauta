@@ -1,4 +1,4 @@
 export {
-  announce,
   ANNOUNCE_SIGNATURE,
+  announce,
 } from "./announce"

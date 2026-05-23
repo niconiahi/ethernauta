@@ -8,12 +8,17 @@
 // serialisation is big-endian, per EIP-4844.
 import { bls12_381_Fr } from "@noble/curves/bls12-381"
 
-import { BLS_MODULUS, BYTES_PER_FIELD_ELEMENT } from "../constants"
+import {
+  BLS_MODULUS,
+  BYTES_PER_FIELD_ELEMENT,
+} from "../constants"
 
 export const Fr = bls12_381_Fr
 export const FR_MODULUS = BLS_MODULUS
 
-export function fr_from_bytes_be(_bytes: Uint8Array): bigint {
+export function fr_from_bytes_be(
+  _bytes: Uint8Array,
+): bigint {
   if (_bytes.length !== BYTES_PER_FIELD_ELEMENT) {
     throw new Error(
       `fr_from_bytes_be: expected ${BYTES_PER_FIELD_ELEMENT} bytes, got ${_bytes.length}`,
@@ -39,7 +44,11 @@ export function fr_to_bytes_be(_value: bigint): Uint8Array {
   }
   const out = new Uint8Array(BYTES_PER_FIELD_ELEMENT)
   let v = _value
-  for (let i = BYTES_PER_FIELD_ELEMENT - 1; i >= 0; i -= 1) {
+  for (
+    let i = BYTES_PER_FIELD_ELEMENT - 1;
+    i >= 0;
+    i -= 1
+  ) {
     out[i] = Number(v & 0xffn)
     v >>= 8n
   }

@@ -1,5 +1,5 @@
-import { useEffect } from "preact/hooks"
 import { format_unit } from "@ethernauta/utils"
+import { useEffect } from "preact/hooks"
 import { balance, fetch_balance } from "../../utils/balance"
 import {
   get_chain_id,

@@ -6,8 +6,8 @@ export {
   ERROR_CODE,
   type ErrorCode,
   invalid_params,
-  provider_error,
   type ProviderRpcError,
+  provider_error,
   unauthorized,
   unrecognized_chain,
   unsupported_method,
@@ -30,9 +30,9 @@ export {
   providerRpcErrorSchema,
 } from "./inject"
 export {
+  type CreateProviderOptions,
   create_envelope,
   create_provider,
-  type CreateProviderOptions,
   type Provider,
   type ProviderInternal,
   type ProviderResolver,

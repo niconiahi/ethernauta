@@ -12,11 +12,11 @@ import { hex_to_bytes } from "@ethernauta/utils"
 import { sha256 } from "@noble/hashes/sha2"
 
 import {
+  BLS_MODULUS,
   BYTES_PER_BLOB,
   BYTES_PER_COMMITMENT,
   FIAT_SHAMIR_PROTOCOL_DOMAIN,
   FIELD_ELEMENTS_PER_BLOB,
-  BLS_MODULUS,
 } from "../constants"
 import type { Blob, KzgCommitment } from "../schemas"
 

@@ -1,11 +1,10 @@
-import type { InferOutput } from "valibot"
-import { object } from "valibot"
-
 import {
   addressSchema,
   uint64Schema,
   uint256Schema,
 } from "@ethernauta/core"
+import type { InferOutput } from "valibot"
+import { object } from "valibot"
 
 export const withdrawalSchema = object({
   index: uint64Schema,

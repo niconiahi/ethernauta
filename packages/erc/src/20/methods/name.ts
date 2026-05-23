@@ -1,14 +1,14 @@
+import {
+  decode_function_result,
+  encode_function_call,
+  string_,
+} from "@ethernauta/abi"
+import type { Bytes } from "@ethernauta/core"
 import type {
-  Bytes,
   Callable,
   ContractContext,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import {
-  string_,
-  decode_function_result,
-  encode_function_call,
-} from "@ethernauta/abi"
 import { parse, string } from "valibot"
 
 const PARAM_CODECS = [] as const

@@ -1,8 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-7683 — IDestinationSettler.fill
 
 import {
-  bytes32,
   bytes,
+  bytes32,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { Bytes, Hash32 } from "@ethernauta/core"

@@ -1,4 +1,4 @@
-import { array as v_array, parse } from "valibot"
+import { parse, array as v_array } from "valibot"
 
 import type { AbiCodec, InferCodec } from "./abi-codec"
 import {

@@ -1,1 +1,1 @@
-export * from "./royalty-info"
+export { royaltyInfo } from "./royalty-info"

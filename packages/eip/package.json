@@ -27,6 +27,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
     "kzg:fetch": "./scripts/fetch-kzg-fixtures.sh",
     "test:unit": "vitest"
   },
@@ -39,10 +40,18 @@
     "@noble/secp256k1": "^2.3.0"
   },
   "peerDependencies": {
+    "react": "^19.0.0",
     "valibot": "^1.1.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@ethernauta/abi": "workspace:*",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
     "tsdown": "^0.13.3",
     "valibot": "1.1.0"
   }

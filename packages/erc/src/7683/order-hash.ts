@@ -7,11 +7,11 @@
 // domain. Confirm against the target settler before treating
 // the returned bytes32 as the on-chain orderId.
 
+import type { Hash32 } from "@ethernauta/core"
 import {
   hash_typed_data,
   type TypedDataDomain,
 } from "@ethernauta/eip/712"
-import type { Hash32 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 
 import { make_gasless_order_typed_data } from "./typed-data"

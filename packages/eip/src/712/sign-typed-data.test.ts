@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
-import type { TypedData } from "./typed-data"
 import { assert_domain_chain } from "./sign-typed-data"
+import type { TypedData } from "./typed-data"
 
-const base_typed_data = {
+const base_typed_data: Omit<TypedData, "domain"> = {
   types: {
     EIP712Domain: [
       { name: "name", type: "string" },
@@ -12,7 +12,7 @@ const base_typed_data = {
   },
   primaryType: "Person",
   message: { name: "alice" },
-} as const
+}
 
 function with_domain(
   chainId: TypedData["domain"]["chainId"],

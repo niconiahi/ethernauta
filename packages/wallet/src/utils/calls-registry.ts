@@ -1,7 +1,7 @@
 // https://eips.ethereum.org/EIPS/eip-5792
 //
 // Persistent batch registry: maps a wallet-issued batch id to
-// the set of tx hashes the wallet broadcast for it. Lives in
+// the set of transaction hashes the wallet broadcast for it. Lives in
 // chrome.storage.session so the background script can answer
 // wallet_getCallsStatus polls without re-opening the popup.
 
@@ -11,7 +11,7 @@ export type BatchRecord = {
   id: string
   chainId: `0x${string}`
   atomic: boolean
-  tx_hashes: `0x${string}`[]
+  transaction_hashes: `0x${string}`[]
 }
 
 function compose_key(id: string): string {
