@@ -1,0 +1,101 @@
+import { GithubLink } from "../../components/github-link"
+import { Eip1193Demo } from "../../examples/eip-1193/demo"
+
+# EIP-1193 — provider as transport facade
+
+EIP-1193 specifies the envelope (`request`, the event
+emitter, the five wallet error codes) and nothing about
+which methods exist. Method existence comes from other
+EIPs (1474, 1102, 2255, 3085, 3326, 191, 712, 5792, 7702).
+
+Ethernauta provides one dapp-side adapter for any 1193
+source — an EIP-6963 announce, `window.ethereum`, a test
+mock — that lifts it into the same `method(args)(transport)`
+shape used everywhere else in the library.
+
+- **`create_provider(provider)`** — returns a factory with
+  `.signer({ chain_id })` for `Signable<T>` methods (sign,
+  send, request accounts) and `.reader({ chain_id })` for
+  `Readable<T>` methods (eth_call, eth_getBalance, …) that
+  routes through the wallet's selected RPC.
+- **`watch_accounts` / `watch_chain`** — typed wrappers
+  over `provider.on("accountsChanged" | "chainChanged", …)`
+  that validate the payload before invoking the handler.
+
+<Eip1193Demo />
+
+<GithubLink path="examples/playground/app/examples/eip-1193/demo.tsx" />
+
+## The code
+
+```ts
+import { eth_getBalance } from "@ethernauta/eth"
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import {
+  create_provider,
+  type Provider,
+  watch_accounts,
+  watch_chain,
+} from "@ethernauta/eip/1193"
+import { encode_chain_id } from "@ethernauta/transport"
+
+// Assume you have a Provider — from EIP-6963 discovery, from
+// window.ethereum, or constructed in a test.
+const provider: Provider = /* ... */
+
+// One factory call. Same provider, both shapes.
+const factory = create_provider(provider)
+
+const current_hex = (await provider.request({
+  method: "eth_chainId",
+})) as string
+const chain_id = encode_chain_id({
+  namespace: "eip155",
+  reference: Number.parseInt(current_hex, 16),
+})
+
+// Signable: ask the wallet for accounts.
+const accounts = await eth_requestAccounts()(
+  factory.signer({ chain_id }),
+)
+
+// Readable: route eth_getBalance through the wallet's
+// selected RPC. The method doesn't know it's going through
+// a wallet — the resolver shape is the same as a public-RPC
+// reader.
+const balance = await eth_getBalance({ address: accounts[0] })(
+  factory.reader({ chain_id }),
+)
+
+// Reactively watch updates from the injected provider.
+watch_accounts(provider, (next) => {
+  // re-render with `next`
+})
+watch_chain(provider, (next) => {
+  // re-render with `next` (hex chain id)
+})
+```
+
+## The two paths, side by side
+
+The same `eth_getBalance` call works against a public RPC
+with no wallet — just swap the transport:
+
+```ts
+import { create_reader, http } from "@ethernauta/transport"
+
+const reader = create_reader([
+  {
+    chainId: "eip155:1",
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+])
+const balance = await eth_getBalance({ address })(
+  reader({ chain_id: "eip155:1" }),
+)
+```
+
+`create_provider(wallet).reader({ chain_id })` and
+`create_reader(CHAINS)({ chain_id })` produce structurally
+the same `ResolvedReader`. The method doesn't know which one
+it's running against — that's the point.

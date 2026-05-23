@@ -63,9 +63,7 @@ export default [
       "deploy-contract",
       "./routes/examples/deploy-contract.mdx",
     ),
-    route(
-      "injected-1193",
-      "./routes/examples/injected-1193.mdx",
-    ),
+    route("eip-6963", "./routes/examples/eip-6963.mdx"),
+    route("eip-1193", "./routes/examples/eip-1193.mdx"),
   ]),
 ] satisfies RouteConfig

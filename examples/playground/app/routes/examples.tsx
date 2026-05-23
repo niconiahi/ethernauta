@@ -50,8 +50,12 @@ const EXAMPLES = [
     title: "EIP-1014 deploy",
   },
   {
-    to: "/examples/injected-1193",
-    title: "EIP-1193 + 6963",
+    to: "/examples/eip-6963",
+    title: "EIP-6963 discovery",
+  },
+  {
+    to: "/examples/eip-1193",
+    title: "EIP-1193 provider",
   },
 ] as const
 
