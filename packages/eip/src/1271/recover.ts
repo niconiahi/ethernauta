@@ -1,10 +1,10 @@
 // https://eips.ethereum.org/EIPS/eip-1271 (EOA fallback path)
 // https://eips.ethereum.org/EIPS/eip-2098 (compact 64-byte form)
 //
-// Pure ECDSA recovery. Lives here (rather than in @ethernauta/signature)
+// Pure ECDSA recovery. Lives here (rather than in @ethernauta/crypto)
 // because eip/1271's `verify_hash` uses it for the EOA fallback path —
-// hoisting it into the signature package would create a circular dep
-// (signature -> eip/1271 -> signature). The signature package re-exports
+// hoisting it into the crypto package would create a circular dep
+// (crypto -> eip/1271 -> crypto). The crypto package re-exports
 // this symbol so consumers can import it from either home.
 
 import type {

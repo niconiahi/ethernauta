@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@ethernauta/signature",
+  "name": "@ethernauta/crypto",
   "type": "module",
   "version": "0.0.43",
   "publishConfig": {

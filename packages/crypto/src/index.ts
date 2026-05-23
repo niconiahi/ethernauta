@@ -1,4 +1,4 @@
-// @ethernauta/signature
+// @ethernauta/crypto
 //
 // Cross-spec signature primitives that compose EIPs that don't individually
 // cover the full verification pipeline:

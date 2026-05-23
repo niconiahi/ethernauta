@@ -3,7 +3,7 @@
 // Folder scope: EIP-4361 SIWE format primitives (build, parse, nonce).
 // The cross-spec verifier (`verify_siwe_message`, which combines parse +
 // EIP-191 + EIP-1271 or EIP-6492 signature check) lives in
-// `@ethernauta/signature`.
+// `@ethernauta/crypto`.
 
 export { build_siwe_message } from "./build"
 export { generate_siwe_nonce } from "./nonce"
