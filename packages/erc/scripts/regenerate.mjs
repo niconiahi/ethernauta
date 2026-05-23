@@ -37,6 +37,7 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from "node:fs"
 import { dirname, join, resolve } from "node:path"
@@ -207,6 +208,9 @@ function process_route(route, host_set) {
   }
 
   const methods_dir = join(out_dir, "methods")
+  // Wipe methods/ before regen so orphaned files from earlier runs
+  // (e.g. before the host-signature subtraction landed) don't linger.
+  rmSync(methods_dir, { recursive: true, force: true })
   mkdirSync(methods_dir, { recursive: true })
   generate(functions, out_dir)
   writeFileSync(

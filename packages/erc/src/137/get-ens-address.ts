@@ -11,7 +11,7 @@ import type { InferOutput } from "valibot"
 import { object, optional, parse, string } from "valibot"
 
 import { eth_call } from "./eth-call"
-import { addr } from "./methods/addr"
+import { addr } from "./extensions/resolver/methods/addr"
 import { resolver } from "./methods/resolver"
 import { namehash } from "./namehash"
 import { normalize } from "./normalize"

@@ -12,9 +12,9 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse } from "valibot"
 
+import { addr } from "../137/extensions/resolver/methods/addr"
+import { name as name_method } from "../181/methods/name"
 import { eth_call } from "./eth-call"
-import { addr } from "./methods/addr"
-import { name as name_method } from "./methods/name"
 import { resolver } from "./methods/resolver"
 import { namehash, reverse_namehash } from "./namehash"
 import {

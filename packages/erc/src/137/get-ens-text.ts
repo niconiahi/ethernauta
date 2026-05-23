@@ -8,9 +8,9 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse, string } from "valibot"
 
+import { text } from "../634/methods/text"
 import { eth_call } from "./eth-call"
 import { resolver } from "./methods/resolver"
-import { text } from "./methods/text"
 import { namehash } from "./namehash"
 import { normalize } from "./normalize"
 import {
