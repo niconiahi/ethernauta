@@ -6,8 +6,9 @@
 //
 // Cross-spec compositions live in `@ethernauta/crypto`:
 //   - `recover_address` — pure ECDSA recover (not 1271-specific)
-//   - `verify_message_1271` — composes EIP-191 + EIP-1271
-//   - `verify_typed_data_1271` — composes EIP-712 + EIP-1271
+//   - `verify_message_deployed` — composes EIP-191 + EIP-1271
+//   - `verify_typed_data_deployed` — composes EIP-712 + EIP-1271
+//   - the `verify_message` / `verify_typed_data` routers
 
 export { MAGIC_VALUE } from "./magic-value"
 export { recover_address } from "./recover"

@@ -3,8 +3,10 @@ import { Verify1271Demo } from "../../examples/verify-1271/demo"
 
 # EIP-1271 — verify a signature
 
-`verify_message` decides whether a signature is valid for a
-given address. Two paths, tried in order:
+`verify_message_deployed` decides whether a signature is
+valid for a given address that already lives on-chain — an
+EOA or an already-deployed contract account. Two paths,
+tried in order:
 
 1. **EOA** — `ecrecover(hash, sig) === address`. Pure
    crypto, no RPC round-trip.
@@ -26,7 +28,7 @@ byte flips the result.
 ```ts
 import { eip155_11155111 } from "@ethernauta/chain"
 import { type Bytes, bytesSchema } from "@ethernauta/core"
-import { verify_message_1271 as verify_message } from "@ethernauta/crypto"
+import { verify_message_deployed } from "@ethernauta/crypto"
 import { personal_sign } from "@ethernauta/eip/191"
 import {
   create_reader,
@@ -63,8 +65,11 @@ const raw_sig = await personal_sign([MESSAGE, owner])(
 const signature: Bytes = parse(bytesSchema, raw_sig)
 
 // 2. verify — EOA path runs locally; contract path would
-//    hit eth_call isValidSignature(hash, sig)
-const ok = await verify_message({
+//    hit eth_call isValidSignature(hash, sig).
+//    For counterfactual (not-yet-deployed) accounts, use
+//    verify_message_universal instead; for "pick the right
+//    one based on the signature", use verify_message.
+const ok = await verify_message_deployed({
   address: owner,
   message: MESSAGE,
   signature,

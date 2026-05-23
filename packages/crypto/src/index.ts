@@ -1,12 +1,26 @@
 // @ethernauta/crypto
 //
 // Cross-spec signature primitives that compose EIPs that don't individually
-// cover the full verification pipeline:
-//   - `recover_address`            — pure ECDSA recover (no single EIP owns this)
-//   - `verify_message_1271`        — EIP-191 + EIP-1271 (contract-sig fallback)
-//   - `verify_typed_data_1271`     — EIP-712 + EIP-1271
-//   - `verify_message_6492`        — EIP-191 + EIP-6492 (counterfactual / wrapped)
-//   - `verify_typed_data_6492`     — EIP-712 + EIP-6492
+// cover the full verification pipeline.
+//
+// Personal-message (EIP-191) verification — three variants in verify-message.ts:
+//   - `verify_message_deployed`     EIP-191 + EIP-1271 (on-chain signer)
+//   - `verify_message_universal`    EIP-191 + EIP-6492 (also counterfactual)
+//   - `verify_message`              router; picks one based on the
+//                                   EIP-6492 magic-bytes suffix
+//
+// Typed-data (EIP-712) verification — three variants in verify-typed-data.ts,
+// same shape:
+//   - `verify_typed_data_deployed`
+//   - `verify_typed_data_universal`
+//   - `verify_typed_data`
+//
+// SIWE (EIP-4361) verification — verify-siwe.ts:
+//   - `verify_siwe_message`         EIP-4361 parse + delegate to verify_message
+//
+// Pure crypto:
+//   - `recover_address`             ECDSA recover (re-export from eip/1271
+//                                   until Phase 6 step 2 flips ownership)
 //
 // The single-EIP primitives stay in their numbered folders:
 //   - eip/191    — `build_personal_message`, `personal_sign`
@@ -16,15 +30,12 @@
 
 export { recover_address } from "./recover"
 export {
-  type VerifyMessage1271Parameters,
-  verify_message_1271,
-  verifyMessage1271ParametersSchema,
-} from "./verify-message-1271"
-export {
-  type VerifyMessage6492Parameters,
-  verify_message_6492,
-  verifyMessage6492ParametersSchema,
-} from "./verify-message-6492"
+  type VerifyMessageParameters,
+  verify_message,
+  verify_message_deployed,
+  verify_message_universal,
+  verifyMessageParametersSchema,
+} from "./verify-message"
 export {
   type VerifySiweMessageFailureReason,
   type VerifySiweMessageParameters,
@@ -33,12 +44,9 @@ export {
   verifySiweMessageParametersSchema,
 } from "./verify-siwe"
 export {
-  type VerifyTypedData1271Parameters,
-  verify_typed_data_1271,
-  verifyTypedData1271ParametersSchema,
-} from "./verify-typed-data-1271"
-export {
-  type VerifyTypedData6492Parameters,
-  verify_typed_data_6492,
-  verifyTypedData6492ParametersSchema,
-} from "./verify-typed-data-6492"
+  type VerifyTypedDataParameters,
+  verify_typed_data,
+  verify_typed_data_deployed,
+  verify_typed_data_universal,
+  verifyTypedDataParametersSchema,
+} from "./verify-typed-data"

@@ -4,13 +4,10 @@
 // enforce the SIWE-specific semantics (domain, nonce, uri,
 // chainId, address, issuedAt / expirationTime / notBefore)
 // against caller-supplied expectations, then delegate the
-// cryptographic check to either `@ethernauta/eip/1271`
-// (EOA fast-path + deployed contract account) or, when the
-// signature carries the 6492 wrap, `@ethernauta/eip/6492`
-// (counterfactual contract account — runs the deploy
-// factory inline via the universal validator). The branch
-// is based purely on whether the signature is wrapped, so
-// EOAs never pay an `eth_call`.
+// cryptographic check to `verify_message`, which itself
+// picks between the EIP-1271 path (deployed signer) and the
+// EIP-6492 path (counterfactual smart account) based on
+// whether the signature carries the wrap suffix.
 //
 // Returns a discriminated result so the caller can surface
 // a precise failure reason — most playground / dapp flows
@@ -34,14 +31,12 @@ import {
   string,
 } from "valibot"
 
-import { is_wrapped_signature } from "@ethernauta/eip/6492"
 import {
   parse_siwe_message,
   type SiweMessage,
 } from "@ethernauta/eip/4361"
 
-import { verify_message_1271 } from "./verify-message-1271"
-import { verify_message_6492 } from "./verify-message-6492"
+import { verify_message } from "./verify-message"
 
 export const verifySiweMessageParametersSchema = object({
   message: string(),
@@ -140,12 +135,7 @@ export function verify_siwe_message(
         return { ok: false, reason: "not_yet_valid" }
       }
     }
-    const verify = is_wrapped_signature(
-      parameters.signature,
-    )
-      ? verify_message_6492
-      : verify_message_1271
-    const valid = await verify({
+    const valid = await verify_message({
       address: fields.address,
       message: parameters.message,
       signature: parameters.signature,

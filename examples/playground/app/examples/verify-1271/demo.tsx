@@ -5,7 +5,7 @@ import {
   bytesSchema,
 } from "@ethernauta/core"
 import { personal_sign } from "@ethernauta/eip/191"
-import { verify_message_1271 as verify_message } from "@ethernauta/crypto"
+import { verify_message_deployed } from "@ethernauta/crypto"
 import {
   create_reader,
   create_signer,
@@ -60,7 +60,7 @@ export function Verify1271Demo() {
       )
       const sig = parse(bytesSchema, raw_sig)
       set_signature(sig)
-      const ok = await verify_message({
+      const ok = await verify_message_deployed({
         address: owner,
         message: MESSAGE,
         signature: sig,
@@ -79,7 +79,7 @@ export function Verify1271Demo() {
     set_error(null)
     try {
       const flipped = flip_last_byte(signature)
-      const ok = await verify_message({
+      const ok = await verify_message_deployed({
         address: owner,
         message: MESSAGE,
         signature: flipped,
@@ -112,7 +112,7 @@ export function Verify1271Demo() {
       )}
       {valid !== null && (
         <Row
-          label="verify_message"
+          label="verify_message_deployed"
           value={valid ? "true ✓" : "false ✗"}
         />
       )}
