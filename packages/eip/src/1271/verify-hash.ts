@@ -1,18 +1,21 @@
 // https://eips.ethereum.org/EIPS/eip-1271
 //
-// `verify_hash` is the primitive: given an address, a
-// 32-byte digest, and a signature, decide whether the
-// signature is valid for that address.
+// `verify_hash` is the primitive: given a contract address,
+// a 32-byte digest, and a signature, decide whether the
+// signature is valid for that contract per EIP-1271.
 //
-// Two paths, tried in order:
-//   1. EOA — `ecrecover(hash, sig) == address`. Pure crypto,
-//      no RPC round-trip.
-//   2. Contract — `eth_call address.isValidSignature(hash,
-//      sig)` and check the first 4 bytes of the result
-//      against `MAGIC_VALUE` (0x1626ba7e). Anything else,
-//      including a revert, is treated as "not valid"
-//      rather than thrown — non-1271 contracts and the
-//      "wrong signature" case both surface as `false`.
+// Strictly the on-chain path: `eth_call
+// address.isValidSignature(hash, sig)` and check the first
+// 4 bytes of the result against `MAGIC_VALUE` (0x1626ba7e).
+// Anything else — non-magic return, revert, network error —
+// surfaces as `false` rather than thrown.
+//
+// EOA verification (no `isValidSignature` on the target,
+// recover via ECDSA instead) is NOT this primitive's job.
+// It lives in `verify_message_deployed` /
+// `verify_typed_data_deployed` in `@ethernauta/crypto`,
+// which compose this call with `recover_address` and an
+// `eth_getCode` check.
 
 import {
   addressSchema,
@@ -31,7 +34,6 @@ import {
 import { type InferOutput, object, parse } from "valibot"
 
 import { MAGIC_VALUE } from "./magic-value"
-import { recover_address } from "./recover"
 
 export const verifyHashParametersSchema = object({
   address: addressSchema,
@@ -71,23 +73,6 @@ function encode_is_valid_signature_calldata(
   return bytes_to_hex(calldata)
 }
 
-function eoa_recovers_to(
-  parameters: VerifyHashParameters,
-): boolean {
-  try {
-    const recovered = recover_address(
-      parameters.hash,
-      parameters.signature,
-    )
-    return (
-      recovered.toLowerCase() ===
-      parameters.address.toLowerCase()
-    )
-  } catch {
-    return false
-  }
-}
-
 export function verify_hash(
   _parameters: VerifyHashParameters,
 ): Readable<boolean> {
@@ -99,7 +84,6 @@ export function verify_hash(
       verifyHashParametersSchema,
       _parameters,
     )
-    if (eoa_recovers_to(parameters)) return true
     const input = encode_is_valid_signature_calldata(
       parameters.hash,
       parameters.signature,

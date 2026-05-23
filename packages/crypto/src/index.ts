@@ -19,8 +19,7 @@
 //   - `verify_siwe_message`         EIP-4361 parse + delegate to verify_message
 //
 // Pure crypto:
-//   - `recover_address`             ECDSA recover (re-export from eip/1271
-//                                   until Phase 6 step 2 flips ownership)
+//   - `recover_address`             ECDSA recover (Yellow Paper Appendix F).
 //
 // The single-EIP primitives stay in their numbered folders:
 //   - eip/191    — `build_personal_message`, `personal_sign`

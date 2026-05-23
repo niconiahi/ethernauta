@@ -1,6 +1,71 @@
-// Re-export of the ECDSA recover primitive that lives in `@ethernauta/eip/1271`
-// (see the long comment there for why). Consumers who think of `recover_address`
-// as a generic crypto helper can import it from `@ethernauta/crypto` and
-// stay unaware of the EIP-1271 routing detail.
+// https://eips.ethereum.org/EIPS/eip-2098 (compact 64-byte form)
+//
+// Pure ECDSA recovery. Lives here as a generic crypto primitive —
+// no single EIP owns it. EIP-1271's `verify_hash` is strictly the
+// on-chain `isValidSignature` call; the EOA fallback that used to
+// rely on this helper now lives in `verify_message_deployed` /
+// `verify_typed_data_deployed`, which compose recover with the
+// `isValidSignature` call.
 
-export { recover_address } from "@ethernauta/eip/1271"
+import type {
+  Address,
+  Bytes,
+  Hash32,
+} from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+  hash32Schema,
+} from "@ethernauta/core"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
+import { keccak_256 } from "@noble/hashes/sha3"
+import { Signature } from "@noble/secp256k1"
+import { parse } from "valibot"
+
+function parse_signature(_signature: Bytes): {
+  compact: Uint8Array
+  recovery: number
+} {
+  const signature = parse(bytesSchema, _signature)
+  const bytes = hex_to_bytes(signature)
+  if (bytes.length === 65) {
+    const v = bytes[64] as number
+    let recovery: number
+    if (v === 0 || v === 1) recovery = v
+    else if (v === 27 || v === 28) recovery = v - 27
+    else
+      throw new Error(
+        `invalid signature v byte: ${v} (expected 0, 1, 27, or 28)`,
+      )
+    return { compact: bytes.slice(0, 64), recovery }
+  }
+  if (bytes.length === 64) {
+    const compact = new Uint8Array(64)
+    compact.set(bytes)
+    const top = compact[32] as number
+    const recovery = (top & 0x80) >> 7
+    compact[32] = top & 0x7f
+    return { compact, recovery }
+  }
+  throw new Error(
+    `invalid signature length: ${bytes.length} (expected 64 or 65)`,
+  )
+}
+
+export function recover_address(
+  _hash: Hash32,
+  _signature: Bytes,
+): Address {
+  const hash = parse(hash32Schema, _hash)
+  const { compact, recovery } = parse_signature(_signature)
+  const sig =
+    Signature.fromCompact(compact).addRecoveryBit(recovery)
+  const point = sig.recoverPublicKey(hex_to_bytes(hash))
+  const uncompressed = point.toBytes(false)
+  const hashed = keccak_256(uncompressed.slice(1))
+  const tail = hashed.slice(12)
+  return parse(addressSchema, bytes_to_hex(tail))
+}

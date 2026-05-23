@@ -1,5 +1,5 @@
-import type { Uint } from "@ethernauta/core"
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import type { Bytes } from "@ethernauta/core"
+import { addressSchema, bytesSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -20,15 +20,15 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 /**
- * @returns Code at a given address
+ * @returns Code at a given address. EOAs return `"0x"` (empty bytes).
  */
 export function eth_getCode(
   _parameters: Parameters,
-): Readable<Uint> {
+): Readable<Bytes> {
   return async ([
     transports,
     _context,
-  ]: ResolvedReader): Promise<Uint> => {
+  ]: ResolvedReader): Promise<Bytes> => {
     const method = "eth_getCode"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
@@ -39,7 +39,7 @@ export function eth_getCode(
       throw new Error(response.error.message)
     }
 
-    const result = parse(uintSchema, response.result)
+    const result = parse(bytesSchema, response.result)
 
     return result
   }

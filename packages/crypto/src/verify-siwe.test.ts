@@ -67,10 +67,14 @@ function valid_fields() {
 }
 
 describe("verify.ts — verify_siwe_message", () => {
-  it("should accept a valid EOA SIWE flow without touching the network", async () => {
+  it("should accept a valid EOA SIWE flow (one eth_getCode call to detect EOA, then local ecrecover)", async () => {
     const message = build_siwe_message(valid_fields())
     const signature = personal_sign(message, PRIVATE_KEY)
-    const transport = vi.fn()
+    const transport = vi.fn().mockResolvedValue({
+      jsonrpc: "2.0" as const,
+      id: 1,
+      result: "0x",
+    })
     const result = await verify_siwe_message({
       message,
       signature,
@@ -87,7 +91,7 @@ describe("verify.ts — verify_siwe_message", () => {
       ok: true,
       fields: valid_fields(),
     })
-    expect(transport).not.toHaveBeenCalled()
+    expect(transport).toHaveBeenCalledOnce()
   })
 
   it("should reject when the domain does not match", async () => {

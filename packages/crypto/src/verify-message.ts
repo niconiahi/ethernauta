@@ -1,9 +1,10 @@
 // Personal-message (EIP-191) verification, three flavors:
 //
 //   verify_message_deployed
-//     EIP-191 prefix + EIP-1271 `isValidSignature` on the address.
-//     Assumes the signer is on-chain — EOA or already-deployed
-//     contract account. Cheapest path: one `eth_call`.
+//     EIP-191 prefix + EOA-or-EIP-1271 dispatch. Detects whether the
+//     target address has code: empty code → ECDSA recover, otherwise
+//     `isValidSignature`. Two RPCs in the contract case (`eth_getCode`
+//     then `eth_call`); one RPC + one local recover in the EOA case.
 //
 //   verify_message_universal
 //     EIP-191 prefix + EIP-6492 universal validator. Handles EOA,
@@ -23,7 +24,6 @@ import {
   bytesSchema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
-import { verify_hash as verify_hash_1271 } from "@ethernauta/eip/1271"
 import {
   is_wrapped_signature,
   verify_hash as verify_hash_6492,
@@ -42,6 +42,8 @@ import {
   string,
   union,
 } from "valibot"
+
+import { verify_hash_deployed } from "./verify-hash-deployed"
 
 export const verifyMessageParametersSchema = object({
   address: addressSchema,
@@ -69,11 +71,12 @@ export function verify_message_deployed(
       verifyMessageParametersSchema,
       _parameters,
     )
-    return verify_hash_1271({
-      address: parameters.address,
-      hash: digest_of(parameters.message),
-      signature: parameters.signature,
-    })(resolved)
+    return verify_hash_deployed(
+      parameters.address,
+      digest_of(parameters.message),
+      parameters.signature,
+      resolved,
+    )
   }
 }
 

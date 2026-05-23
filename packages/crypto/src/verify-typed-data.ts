@@ -1,9 +1,9 @@
 // EIP-712 typed-data verification, three flavors:
 //
 //   verify_typed_data_deployed
-//     EIP-712 digest + EIP-1271 `isValidSignature` on the address.
-//     Assumes the signer is on-chain — EOA or already-deployed
-//     contract account.
+//     EIP-712 digest + EOA-or-EIP-1271 dispatch. Detects whether the
+//     target address has code: empty code → ECDSA recover, otherwise
+//     `isValidSignature`.
 //
 //   verify_typed_data_universal
 //     EIP-712 digest + EIP-6492 universal validator. Handles EOA,
@@ -18,7 +18,6 @@ import {
   addressSchema,
   bytesSchema,
 } from "@ethernauta/core"
-import { verify_hash as verify_hash_1271 } from "@ethernauta/eip/1271"
 import {
   hash_typed_data,
   typedDataSchema,
@@ -33,6 +32,8 @@ import type {
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { type InferOutput, object, parse } from "valibot"
+
+import { verify_hash_deployed } from "./verify-hash-deployed"
 
 export const verifyTypedDataParametersSchema = object({
   address: addressSchema,
@@ -59,11 +60,12 @@ export function verify_typed_data_deployed(
       verifyTypedDataParametersSchema,
       _parameters,
     )
-    return verify_hash_1271({
-      address: parameters.address,
-      hash: digest_of(parameters.typedData),
-      signature: parameters.signature,
-    })(resolved)
+    return verify_hash_deployed(
+      parameters.address,
+      digest_of(parameters.typedData),
+      parameters.signature,
+      resolved,
+    )
   }
 }
 

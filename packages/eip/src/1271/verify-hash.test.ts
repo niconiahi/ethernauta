@@ -3,6 +3,8 @@ import type {
   Bytes,
   Hash32,
 } from "@ethernauta/core"
+// EOA path moved to @ethernauta/crypto/verify-message-deployed; this file
+// now only covers the on-chain `isValidSignature` branch.
 import type {
   Http,
   ResolvedReader,
@@ -26,8 +28,6 @@ etc.hmacSha256Sync = (k, ...m) =>
 const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
-const EOA_ADDRESS =
-  "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" as Address
 const CONTRACT_ADDRESS =
   "0x000000000000000000000000000000000000c0de" as Address
 const CHAIN_ID = "eip155:1"
@@ -71,35 +71,6 @@ const DIGEST = keccak_256(
   new TextEncoder().encode("verify-hash"),
 )
 const HASH = bytes_to_hex(DIGEST) as Hash32
-const VALID_SIGNATURE = sign_to_hex(DIGEST, PRIVATE_KEY)
-
-describe("verify-hash.ts — eoa path", () => {
-  it("should return true when ecrecover matches the address", async () => {
-    const transport = vi.fn()
-    const result = await verify_hash({
-      address: EOA_ADDRESS,
-      hash: HASH,
-      signature: VALID_SIGNATURE,
-    })(resolved_with(transport as unknown as Http))
-    expect(result).toBe(true)
-    expect(transport).not.toHaveBeenCalled()
-  })
-
-  it("should fall through to the contract path when ecrecover yields the wrong address", async () => {
-    const padded_magic =
-      `${MAGIC_VALUE}${"0".repeat(56)}` as const
-    const transport = vi
-      .fn()
-      .mockResolvedValue(ok_response(padded_magic))
-    const result = await verify_hash({
-      address: CONTRACT_ADDRESS,
-      hash: HASH,
-      signature: VALID_SIGNATURE,
-    })(resolved_with(transport as unknown as Http))
-    expect(result).toBe(true)
-    expect(transport).toHaveBeenCalledOnce()
-  })
-})
 
 describe("verify-hash.ts — contract path", () => {
   const wrong_signature = sign_to_hex(

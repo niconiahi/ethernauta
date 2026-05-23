@@ -217,6 +217,9 @@ importers:
       '@ethernauta/eip':
         specifier: workspace:*
         version: link:../eip
+      '@ethernauta/eth':
+        specifier: workspace:*
+        version: link:../eth
       '@ethernauta/transport':
         specifier: workspace:*
         version: link:../transport
