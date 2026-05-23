@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest"
 import {
   announce,
+  forget_picked_provider,
   type Provider,
   discover_providers,
   pick_provider,
+  remember_picked_provider,
+  restore_picked_provider,
+  type Storage,
 } from "."
 
 const STUB_PROVIDER: Provider = {
@@ -165,5 +169,123 @@ describe("discover.ts", () => {
       ms: 30,
     })
     expect(missing).toBeUndefined()
+  })
+})
+
+function make_storage(): Storage {
+  const map = new Map<string, string>()
+  return {
+    get(key) {
+      return map.get(key) ?? null
+    },
+    set(key, value) {
+      map.set(key, value)
+    },
+    remove(key) {
+      map.delete(key)
+    },
+  }
+}
+
+describe("persistence helpers", () => {
+  it("remember and forget round-trip through storage", () => {
+    const storage = make_storage()
+    remember_picked_provider({
+      storage,
+      key: "wallet",
+      rdns: "com.ethernauta.wallet",
+    })
+    expect(storage.get("wallet")).toBe(
+      "com.ethernauta.wallet",
+    )
+    forget_picked_provider({ storage, key: "wallet" })
+    expect(storage.get("wallet")).toBeNull()
+  })
+
+  it("restore returns null when no rdns is persisted", async () => {
+    const target = build_target()
+    const storage = make_storage()
+    const provider = await restore_picked_provider({
+      storage,
+      key: "wallet",
+      target,
+      ms: 20,
+    })
+    expect(provider).toBeNull()
+  })
+
+  it("restore rehydrates the live Provider matching the persisted rdns", async () => {
+    const target = build_target()
+    const storage = make_storage()
+    remember_picked_provider({
+      storage,
+      key: "wallet",
+      rdns: "com.ethernauta.wallet",
+    })
+    const ETHERNAUTA: Provider = {
+      request: async () => "ethernauta",
+      on: () => {},
+      removeListener: () => {},
+    }
+    const OTHER: Provider = {
+      request: async () => "other",
+      on: () => {},
+      removeListener: () => {},
+    }
+    target.addEventListener(
+      "eip6963:requestProvider",
+      () => {
+        target.dispatchEvent(
+          new CustomEvent("eip6963:announceProvider", {
+            detail: {
+              info: {
+                uuid: "u",
+                name: "Other",
+                icon: "data:,",
+                rdns: "io.other",
+              },
+              provider: OTHER,
+            },
+          }),
+        )
+        target.dispatchEvent(
+          new CustomEvent("eip6963:announceProvider", {
+            detail: {
+              info: {
+                uuid: "v",
+                name: "Ethernauta",
+                icon: "data:,",
+                rdns: "com.ethernauta.wallet",
+              },
+              provider: ETHERNAUTA,
+            },
+          }),
+        )
+      },
+    )
+    const provider = await restore_picked_provider({
+      storage,
+      key: "wallet",
+      target,
+      ms: 30,
+    })
+    expect(provider).toBe(ETHERNAUTA)
+  })
+
+  it("restore returns null when the persisted wallet did not announce", async () => {
+    const target = build_target()
+    const storage = make_storage()
+    remember_picked_provider({
+      storage,
+      key: "wallet",
+      rdns: "com.ethernauta.wallet",
+    })
+    const provider = await restore_picked_provider({
+      storage,
+      key: "wallet",
+      target,
+      ms: 20,
+    })
+    expect(provider).toBeNull()
   })
 })

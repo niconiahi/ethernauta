@@ -97,3 +97,80 @@ export async function pick_provider(
   const providers = await discover_providers(options)
   return providers.find((p) => p.info.rdns === rdns)
 }
+
+/**
+ * Minimal storage interface — covers the synchronous shape
+ * of `window.localStorage` / `window.sessionStorage` and
+ * any in-memory shim. A test, an MV3 background script
+ * (via a thin wrapper), or a node process can each supply
+ * their own implementation.
+ */
+export type Storage = {
+  get(_key: string): string | null
+  set(_key: string, _value: string): void
+  remove(_key: string): void
+}
+
+export type RememberPickedProviderOptions = {
+  storage: Storage
+  key: string
+  rdns: string
+}
+
+/**
+ * Persist the user-picked wallet identifier (rdns) so a
+ * later page load can rehydrate the matching live
+ * Provider via `restore_picked_provider`. The Provider
+ * object itself is never serialized — only the rdns key.
+ */
+export function remember_picked_provider(
+  options: RememberPickedProviderOptions,
+): void {
+  options.storage.set(options.key, options.rdns)
+}
+
+export type ForgetPickedProviderOptions = {
+  storage: Storage
+  key: string
+}
+
+/**
+ * Clear a previously-persisted picked-wallet selection.
+ * Use on disconnect, or after `restore_picked_provider`
+ * resolves to null (wallet uninstalled).
+ */
+export function forget_picked_provider(
+  options: ForgetPickedProviderOptions,
+): void {
+  options.storage.remove(options.key)
+}
+
+export type RestorePickedProviderOptions = {
+  storage: Storage
+  key: string
+  target?: EventTarget
+  ms?: number
+}
+
+/**
+ * Rehydrate a Provider from a previously-persisted rdns by
+ * re-issuing the EIP-6963 announce request and filtering
+ * by rdns. Returns `null` when either no rdns is persisted
+ * or the matching wallet did not announce within `ms`
+ * (uninstalled, disabled, slow to initialize).
+ *
+ * Pattern:
+ *   read rdns → request announce → match by rdns
+ *             → Provider rehydrated
+ */
+export async function restore_picked_provider(
+  options: RestorePickedProviderOptions,
+): Promise<Provider | null> {
+  const rdns = options.storage.get(options.key)
+  if (!rdns) return null
+  const detail = await pick_provider(rdns, {
+    target: options.target,
+    ms: options.ms,
+  })
+  return detail?.provider ?? null
+}
