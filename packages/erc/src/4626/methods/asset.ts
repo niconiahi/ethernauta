@@ -1,16 +1,14 @@
+import type { Bytes } from "@ethernauta/core"
+import type { Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Address, Bytes } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
+import type { Address } from "@ethernauta/core"
+import { addressSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [address()] as const
@@ -23,10 +21,13 @@ export const ASSET_SIGNATURE: {
   names: [],
 }
 
-export function asset(): (
-  _context: ContractContext,
-) => Callable<Address> {
-  return (_context: ContractContext): Callable<Address> => {
+
+
+export function asset()
+: (_context: ContractContext) => Callable<Address> {
+  return (
+    _context: ContractContext,
+  ): Callable<Address> => {
     const values: unknown[] = []
     const calldata = encode_function_call({
       name: "asset",

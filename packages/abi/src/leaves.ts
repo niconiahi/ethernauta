@@ -253,12 +253,52 @@ export function uint8(): AbiCodec<Uint256> {
   return make_uint("uint8")
 }
 
+export function uint16(): AbiCodec<Uint256> {
+  return make_uint("uint16")
+}
+
+export function uint24(): AbiCodec<Uint256> {
+  return make_uint("uint24")
+}
+
 export function uint32(): AbiCodec<Uint256> {
   return make_uint("uint32")
 }
 
+export function uint40(): AbiCodec<Uint256> {
+  return make_uint("uint40")
+}
+
+export function uint48(): AbiCodec<Uint256> {
+  return make_uint("uint48")
+}
+
+export function uint56(): AbiCodec<Uint256> {
+  return make_uint("uint56")
+}
+
 export function uint64(): AbiCodec<Uint256> {
   return make_uint("uint64")
+}
+
+export function uint96(): AbiCodec<Uint256> {
+  return make_uint("uint96")
+}
+
+export function uint128(): AbiCodec<Uint256> {
+  return make_uint("uint128")
+}
+
+export function uint160(): AbiCodec<Uint256> {
+  return make_uint("uint160")
+}
+
+export function uint192(): AbiCodec<Uint256> {
+  return make_uint("uint192")
+}
+
+export function uint224(): AbiCodec<Uint256> {
+  return make_uint("uint224")
 }
 
 export function uint256(): AbiCodec<Uint256> {

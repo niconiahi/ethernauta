@@ -1,23 +1,15 @@
-// https://docs.ens.domains/registry/ens — resolver(node)
-
+import type { Bytes } from "@ethernauta/core"
+import type { Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  address,
-  bytes32,
+  address, bytes32,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Address, Bytes } from "@ethernauta/core"
-import {
-  addressSchema,
-  bytes32Schema,
-} from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
+import type { Address } from "@ethernauta/core"
+import { addressSchema, bytes32Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32()] as const
 const OUTPUT_CODECS = [address()] as const
@@ -36,10 +28,11 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function resolver(
-  _parameters: Parameters,
-): (_context: ContractContext) => Callable<Address> {
-  return (_context: ContractContext): Callable<Address> => {
+export function resolver(_parameters: Parameters)
+: (_context: ContractContext) => Callable<Address> {
+  return (
+    _context: ContractContext,
+  ): Callable<Address> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters

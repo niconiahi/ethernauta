@@ -167,46 +167,6 @@ function get_type_info(type: AbiType): Type_info {
         valibot: false,
         package: "eth",
       }
-    case "uint8":
-      return {
-        param_schema: "uint256Schema",
-        param_type: "Uint256",
-        decoded_schema: "uint256Schema",
-        decoded_type: "Uint256",
-        builder: "uint8()",
-        valibot: false,
-        package: "eth",
-      }
-    case "uint32":
-      return {
-        param_schema: "uint256Schema",
-        param_type: "Uint256",
-        decoded_schema: "uint256Schema",
-        decoded_type: "Uint256",
-        builder: "uint32()",
-        valibot: false,
-        package: "eth",
-      }
-    case "uint64":
-      return {
-        param_schema: "uint256Schema",
-        param_type: "Uint256",
-        decoded_schema: "uint256Schema",
-        decoded_type: "Uint256",
-        builder: "uint64()",
-        valibot: false,
-        package: "eth",
-      }
-    case "uint256":
-      return {
-        param_schema: "uint256Schema",
-        param_type: "Uint256",
-        decoded_schema: "uint256Schema",
-        decoded_type: "Uint256",
-        builder: "uint256()",
-        valibot: false,
-        package: "eth",
-      }
     case "hash32":
       return {
         param_schema: "hash32Schema",
@@ -217,10 +177,26 @@ function get_type_info(type: AbiType): Type_info {
         valibot: false,
         package: "eth",
       }
-    default:
+    default: {
+      const uint_match = /^uint(\d+)$/.exec(type)
+      if (uint_match) {
+        const bits = Number(uint_match[1])
+        if (bits >= 8 && bits <= 256 && bits % 8 === 0) {
+          return {
+            param_schema: "uint256Schema",
+            param_type: "Uint256",
+            decoded_schema: "uint256Schema",
+            decoded_type: "Uint256",
+            builder: `uint${bits}()`,
+            valibot: false,
+            package: "eth",
+          }
+        }
+      }
       throw new Error(
         `unhandled abi type "${type}". Please add it to packages/abi/src/generator/generator.ts.`,
       )
+    }
   }
 }
 
@@ -251,14 +227,19 @@ function compose_core_imports(
   schemas: string[],
   types: string[],
 ): string {
-  if (schemas.length === 0 && types.length === 0) return ""
+  // `Bytes` is always imported at the top of every generated file (it's the
+  // input type for the decoder). Dedupe it out of the per-method type set.
+  const filtered_types = unique(
+    types.filter((t) => t !== "Bytes"),
+  )
+  if (schemas.length === 0 && filtered_types.length === 0) return ""
   const value_imports =
     schemas.length > 0
       ? `import { ${unique(schemas).sort().join(", ")} } from "@ethernauta/core"`
       : ""
   const type_imports =
-    types.length > 0
-      ? `import type { ${unique(types).sort().join(", ")} } from "@ethernauta/core"`
+    filtered_types.length > 0
+      ? `import type { ${filtered_types.sort().join(", ")} } from "@ethernauta/core"`
       : ""
   return [type_imports, value_imports]
     .filter(Boolean)
@@ -326,19 +307,20 @@ function collect_builders(types: string[]): string[] {
   return Array.from(set).sort()
 }
 
-function signature_const_name(name: string): string {
-  return `${camel_to_kebab(name).replace(/-/g, "_").toUpperCase()}_SIGNATURE`
+function signature_const_name(emit_name: string): string {
+  return `${camel_to_kebab(emit_name).replace(/-/g, "_").toUpperCase()}_SIGNATURE`
 }
 
 function compose_signature_const(
   name: string,
+  emit_name: string,
   inputs: FunctionInput[],
 ): string {
   const canonical = `${name}(${inputs.map((i) => i.type).join(",")})`
   const names = inputs
     .map((i) => JSON.stringify(i.name))
     .join(", ")
-  return `export const ${signature_const_name(name)}: {
+  return `export const ${signature_const_name(emit_name)}: {
   signature: string
   names: string[]
 } = {
@@ -432,7 +414,7 @@ ${compose_core_imports(eth_schemas, eth_types)}
 ${compose_param_codecs_const(inputs)}
 ${compose_output_codecs_const(outputs)}
 
-${compose_signature_const(name, inputs)}
+${compose_signature_const(name, emit_name, inputs)}
 
 ${compose_parameters_block(inputs)}
 
@@ -502,7 +484,7 @@ ${compose_core_imports(eth_schemas, [])}
 
 ${compose_param_codecs_const(inputs)}
 
-${compose_signature_const(name, inputs)}
+${compose_signature_const(name, emit_name, inputs)}
 
 ${compose_parameters_block(inputs)}
 
@@ -529,7 +511,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
         value: "0x0",
         input: bytes_to_hex(calldata),
         _ethernauta: {
-          function: ${signature_const_name(name)},
+          function: ${signature_const_name(emit_name)},
         },
       }],
     )([signer, _context])
