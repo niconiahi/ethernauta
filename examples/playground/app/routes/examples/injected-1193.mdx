@@ -3,21 +3,28 @@ import { Injected1193Demo } from "../../examples/injected-1193/demo"
 
 # EIP-1193 + EIP-6963 — injected wallets
 
-Three primitives close the loop on browser integration:
+Four primitives close the loop on browser integration:
 
 - **EIP-6963 announce/request events** — wallets dispatch
   `eip6963:announceProvider` on load; dapps dispatch
   `eip6963:requestProvider` to nudge late announcers. Each
   announce carries `{ info: { name, rdns, uuid, icon },
   provider }`.
-- **`create_injected_signer(provider)`** — adapts any
-  EIP-1193 provider into the codebase's `ResolvedSigner`,
-  so every `Signable<T>` method works against MetaMask,
-  Brave, Ethernauta, etc. with no other changes.
-- **`watch_accounts` / `watch_chain`** — typed wrappers
-  over `provider.on("accountsChanged" | "chainChanged",
-  …)` that validate the payload before invoking the
-  handler.
+- **`create_provider(provider)`** — adapts any EIP-1193
+  provider (an announced wallet, `window.ethereum`, a test
+  mock) into a single factory with `.signer({ chain_id })`
+  feeding `Signable<T>` methods and `.reader({ chain_id })`
+  feeding `Readable<T>` methods. Same call shape as
+  `create_reader(CHAINS)` / `create_signer(CHAINS)` — only
+  the transport-construction line differs.
+- **`remember_picked_provider` / `restore_picked_provider`** —
+  persist the user's chosen rdns and rehydrate the live
+  Provider on the next page load via a fresh 6963 announce
+  handshake. The Provider object itself is never serialized;
+  only the rdns is.
+- **`watch_accounts` / `watch_chain`** — typed wrappers over
+  `provider.on("accountsChanged" | "chainChanged", …)` that
+  validate the payload before invoking the handler.
 
 <Injected1193Demo />
 
@@ -26,9 +33,10 @@ Three primitives close the loop on browser integration:
 ## The code
 
 ```ts
+import { eth_getBalance } from "@ethernauta/eth"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
-  create_injected_signer,
+  create_provider,
   type Provider,
   watch_accounts,
   watch_chain,
@@ -37,9 +45,20 @@ import {
   ANNOUNCE_EVENT,
   type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
+  remember_picked_provider,
   REQUEST_EVENT,
+  restore_picked_provider,
+  type Storage,
 } from "@ethernauta/eip/6963"
 import { encode_chain_id } from "@ethernauta/transport"
+
+const PICKED_KEY = "ethernauta:picked-wallet"
+
+const local_storage: Storage = {
+  get: (key) => window.localStorage.getItem(key),
+  set: (key, value) => window.localStorage.setItem(key, value),
+  remove: (key) => window.localStorage.removeItem(key),
+}
 
 // 1. Listen for announces, then trigger requestProvider so
 //    wallets that announce on-demand surface as well.
@@ -55,11 +74,29 @@ function on_announce(event: Event) {
 window.addEventListener(ANNOUNCE_EVENT, on_announce)
 window.dispatchEvent(new Event(REQUEST_EVENT))
 
-// 2. Pick one (here: the first) and connect through it.
-const picked = providers[0]
-const provider = picked.provider as Provider
+// 2. Pick a wallet — fresh user pick, or rehydrated from a
+//    previously-persisted rdns.
+const restored = await restore_picked_provider({
+  storage: local_storage,
+  key: PICKED_KEY,
+  ms: 200,
+})
+const picked = restored ?? (providers[0]?.provider as Provider)
 
-const current_hex = (await provider.request({
+// On a fresh pick, persist the rdns so the next reload
+// can call restore_picked_provider and end up here without
+// the user re-choosing.
+remember_picked_provider({
+  storage: local_storage,
+  key: PICKED_KEY,
+  rdns: providers[0].info.rdns,
+})
+
+// 3. Wrap the provider once — both .signer and .reader come
+//    from the same factory call.
+const factory = create_provider(picked)
+
+const current_hex = (await picked.request({
   method: "eth_chainId",
 })) as string
 const chain_id = encode_chain_id({
@@ -67,29 +104,47 @@ const chain_id = encode_chain_id({
   reference: Number.parseInt(current_hex, 16),
 })
 
-const signer = create_injected_signer(provider)
+// Signable: ask the wallet for accounts.
 const accounts = await eth_requestAccounts()(
-  signer({ chain_id }),
+  factory.signer({ chain_id }),
 )
 
-// 3. Reactively watch updates from the injected provider.
-const stop_a = watch_accounts(provider, (next) => {
+// Readable: route eth_getBalance through the wallet's
+// selected RPC. Same call shape as a non-wallet reader —
+// only the transport-construction line differs.
+const balance = await eth_getBalance({ address: accounts[0] })(
+  factory.reader({ chain_id }),
+)
+
+// 4. Reactively watch updates from the injected provider.
+const stop_a = watch_accounts(picked, (next) => {
   // re-render with `next`
 })
-const stop_c = watch_chain(provider, (next) => {
+const stop_c = watch_chain(picked, (next) => {
   // re-render with `next` (hex chain id)
 })
 ```
 
-## Reads stay on quality transports
+## The two paths, side by side
 
-`create_injected_transport(provider)` is also exported —
-it adapts the provider into the `Http` shape that
-`create_reader` accepts. Use it if you want reads to flow
-through the wallet's selected RPC.
+The same `eth_getBalance` call works against a public RPC
+with no wallet — just swap the transport:
 
-Most dapps should *not* do this. Reads work without a
-wallet connection if you provide your own HTTP RPC, which
-means anonymous visitors can browse without a popup. Reserve
-the injected transport for cases where matching the wallet's
-selected RPC is the actual requirement.
+```ts
+import { create_reader, http } from "@ethernauta/transport"
+
+const reader = create_reader([
+  {
+    chainId: "eip155:1",
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+])
+const balance = await eth_getBalance({ address })(
+  reader({ chain_id: "eip155:1" }),
+)
+```
+
+`create_provider(wallet).reader({ chain_id })` and
+`create_reader(CHAINS)({ chain_id })` produce structurally
+the same `ResolvedReader`. The method doesn't know which one
+it's running against — that's the point.

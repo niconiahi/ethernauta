@@ -1,7 +1,9 @@
+import { eth_getBalance } from "@ethernauta/eth"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
-  create_injected_signer,
+  create_provider,
   type Provider,
+  type ProviderResolver,
   watch_accounts,
   watch_chain,
 } from "@ethernauta/eip/1193"
@@ -9,11 +11,25 @@ import {
   ANNOUNCE_EVENT,
   type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
+  forget_picked_provider,
+  remember_picked_provider,
   REQUEST_EVENT,
+  restore_picked_provider,
+  type Storage,
 } from "@ethernauta/eip/6963"
 import { encode_chain_id } from "@ethernauta/transport"
 import { useEffect, useState } from "react"
 import { Button } from "../../components/button"
+
+const PICKED_KEY =
+  "ethernauta-playground:injected-1193:picked-wallet"
+
+const local_storage: Storage = {
+  get: (key) => window.localStorage.getItem(key),
+  set: (key, value) =>
+    window.localStorage.setItem(key, value),
+  remove: (key) => window.localStorage.removeItem(key),
+}
 
 export function Injected1193Demo() {
   const [providers, set_providers] = useState<
@@ -21,8 +37,13 @@ export function Injected1193Demo() {
   >([])
   const [picked, set_picked] =
     useState<EIP6963ProviderDetail | null>(null)
+  const [resolver, set_resolver] =
+    useState<ProviderResolver | null>(null)
   const [accounts, set_accounts] = useState<string[]>([])
   const [chain_id, set_chain_id] = useState<string | null>(
+    null,
+  )
+  const [balance, set_balance] = useState<string | null>(
     null,
   )
   const [busy, set_busy] = useState(false)
@@ -35,7 +56,7 @@ export function Injected1193Demo() {
 
   // Continuous listener — every wallet that ever announces
   // (synchronously on load, or late, or in response to our
-  // `requestProvider` dispatch) lands in the list. Dedup by
+  // requestProvider dispatch) lands in the list. Dedup by
   // rdns so re-announces don't pile up duplicates.
   useEffect(() => {
     function on_announce(event: Event) {
@@ -63,6 +84,35 @@ export function Injected1193Demo() {
     }
   }, [])
 
+  // Rehydrate from a previously-persisted rdns on mount —
+  // restore_picked_provider re-issues the 6963 announce
+  // request, filters by rdns, and resolves to the live
+  // Provider (or null if the wallet's gone).
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const provider = await restore_picked_provider({
+        storage: local_storage,
+        key: PICKED_KEY,
+        ms: 200,
+      })
+      if (cancelled) return
+      if (!provider) return
+      // Match the announced detail so the UI can mark it
+      // as selected in the list.
+      const rdns = local_storage.get(PICKED_KEY)
+      const detail = providers.find(
+        (p) => p.info.rdns === rdns,
+      )
+      if (!detail) return
+      await connect(detail, /* already_remembered */ true)
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providers.length])
+
   useEffect(() => {
     if (!picked) return
     const off_a = watch_accounts(
@@ -71,7 +121,10 @@ export function Injected1193Demo() {
     )
     const off_c = watch_chain(
       picked.provider as Provider,
-      (next) => set_chain_id(next),
+      (next) => {
+        set_chain_id(next)
+        set_balance(null)
+      },
     )
     return () => {
       off_a()
@@ -79,30 +132,65 @@ export function Injected1193Demo() {
     }
   }, [picked])
 
-  async function connect(detail: EIP6963ProviderDetail) {
+  async function connect(
+    detail: EIP6963ProviderDetail,
+    already_remembered = false,
+  ) {
     set_busy(true)
     set_error(null)
     try {
       set_picked(detail)
+      if (!already_remembered) {
+        remember_picked_provider({
+          storage: local_storage,
+          key: PICKED_KEY,
+          rdns: detail.info.rdns,
+        })
+      }
       const provider = detail.provider as Provider
+      // create_provider is the single dapp-side adapter:
+      // .signer({ chain_id }) feeds Signable<T> methods,
+      // .reader({ chain_id }) feeds Readable<T> methods.
+      const factory = create_provider(provider)
+      set_resolver(factory)
       const current = (await provider.request({
         method: "eth_chainId",
       })) as string
       set_chain_id(current)
-      const chain_id = encode_chain_id({
+      const wallet_chain_id = encode_chain_id({
         namespace: "eip155",
         reference: Number.parseInt(current, 16),
       })
-      const signer = create_injected_signer(provider)
       const next = await eth_requestAccounts()(
-        signer({ chain_id }),
+        factory.signer({ chain_id: wallet_chain_id }),
       )
       set_accounts(next)
+      // Demonstrate the .reader side of the same factory —
+      // route an eth_getBalance call through the wallet's
+      // selected RPC.
+      if (next[0]) {
+        const wei = await eth_getBalance({
+          address: next[0],
+        })(factory.reader({ chain_id: wallet_chain_id }))
+        set_balance(wei)
+      }
     } catch (e) {
       set_error(e instanceof Error ? e.message : String(e))
     } finally {
       set_busy(false)
     }
+  }
+
+  function disconnect() {
+    forget_picked_provider({
+      storage: local_storage,
+      key: PICKED_KEY,
+    })
+    set_picked(null)
+    set_resolver(null)
+    set_accounts([])
+    set_chain_id(null)
+    set_balance(null)
   }
 
   return (
@@ -117,17 +205,23 @@ export function Injected1193Demo() {
       }}
     >
       <p style={{ margin: 0, color: "#555", fontSize: 14 }}>
-        <code>discover_providers()</code> lists every wallet
-        announcing via EIP-6963. Pick one to connect through{" "}
-        <code>create_injected_signer</code> — accounts /
-        chain updates flow through{" "}
-        <code>watch_accounts</code> /{" "}
-        <code>watch_chain</code>.
+        EIP-6963 lists every wallet on the page; pick one,
+        and <code>create_provider</code> wraps it into a
+        single factory exposing <code>.signer</code> and{" "}
+        <code>.reader</code>. The chosen rdns is persisted
+        via <code>remember_picked_provider</code>, so a
+        reload calls <code>restore_picked_provider</code>{" "}
+        and reconnects to the same wallet automatically.
       </p>
-      <div>
+      <div style={{ display: "flex", gap: 8 }}>
         <Button onClick={rediscover} disabled={busy}>
           Re-discover
         </Button>
+        {picked && (
+          <Button onClick={disconnect} disabled={busy}>
+            Forget wallet
+          </Button>
+        )}
       </div>
       {providers.length === 0 ? (
         <p style={{ margin: 0, color: "#999" }}>
@@ -200,7 +294,7 @@ export function Injected1193Demo() {
           ))}
         </ul>
       )}
-      {picked && (
+      {picked && resolver && (
         <div
           style={{
             padding: 12,
@@ -223,6 +317,11 @@ export function Injected1193Demo() {
                 ? accounts.join(", ")
                 : "(none)"
             }
+            mono
+          />
+          <Row
+            label="Balance (wei, via .reader)"
+            value={balance ?? "(loading)"}
             mono
           />
         </div>
