@@ -12,15 +12,17 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse } from "valibot"
 
-import { addr } from "../137/extensions/resolver/methods/addr"
-import { name as name_method } from "../181/methods/name"
-import { eth_call } from "./eth-call"
-import { resolver } from "./methods/resolver"
-import { namehash, reverse_namehash } from "./namehash"
 import {
+  addr,
   get_registry_address,
+  namehash,
+  resolver,
+  reverse_namehash,
   ZERO_ADDRESS,
-} from "./registry"
+} from "@ethernauta/erc/137"
+import { name as name_method } from "@ethernauta/erc/181"
+
+import { eth_call } from "./eth-call"
 
 const parametersSchema = object({
   address: addressSchema,

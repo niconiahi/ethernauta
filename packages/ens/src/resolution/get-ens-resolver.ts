@@ -1,5 +1,4 @@
-// https://docs.ens.domains/resolvers/interfaces — forward
-// resolution: name -> address.
+// https://docs.ens.domains/registry/ens — registry.resolver
 
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
@@ -10,15 +9,15 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse, string } from "valibot"
 
-import { eth_call } from "./eth-call"
-import { addr } from "./extensions/resolver/methods/addr"
-import { resolver } from "./methods/resolver"
-import { namehash } from "./namehash"
-import { normalize } from "./normalize"
 import {
   get_registry_address,
+  namehash,
+  normalize,
+  resolver,
   ZERO_ADDRESS,
-} from "./registry"
+} from "@ethernauta/erc/137"
+
+import { eth_call } from "./eth-call"
 
 const parametersSchema = object({
   name: string(),
@@ -26,7 +25,7 @@ const parametersSchema = object({
 })
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function get_ens_address(
+export function get_ens_resolver(
   _parameters: Parameters,
 ): Readable<Address | null> {
   return async ([
@@ -39,27 +38,16 @@ export function get_ens_address(
       _context.chain_id,
       parameters.registry,
     )
-    const resolver_call = resolver({ node })({
+    const callable = resolver({ node })({
       chain_id: _context.chain_id,
       to: registry,
     })
-    const resolver_raw = await eth_call(
+    const raw = await eth_call(
       transports,
-      resolver_call.to,
-      resolver_call.data,
+      callable.to,
+      callable.data,
     )
-    const resolver_addr = resolver_call.decode(resolver_raw)
-    if (resolver_addr === ZERO_ADDRESS) return null
-    const addr_call = addr({ node })({
-      chain_id: _context.chain_id,
-      to: resolver_addr,
-    })
-    const addr_raw = await eth_call(
-      transports,
-      addr_call.to,
-      addr_call.data,
-    )
-    const decoded = addr_call.decode(addr_raw)
+    const decoded = callable.decode(raw)
     if (decoded === ZERO_ADDRESS) return null
     return decoded
   }

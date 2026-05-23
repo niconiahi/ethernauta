@@ -4,7 +4,7 @@ import {
   get_ens_avatar,
   get_ens_name,
   get_ens_text,
-} from "@ethernauta/erc/137"
+} from "@ethernauta/ens"
 import {
   create_reader,
   encode_chain_id,

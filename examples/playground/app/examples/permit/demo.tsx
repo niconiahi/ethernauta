@@ -7,7 +7,7 @@ import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
 import {
   DOMAIN_SEPARATOR,
   nonces,
-} from "@ethernauta/erc/20"
+} from "@ethernauta/erc/2612"
 import {
   contract,
   create_multicall,

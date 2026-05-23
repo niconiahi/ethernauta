@@ -234,8 +234,28 @@ for (const route of extensions) {
   process_route(route, host_signatures.get(route.host_number))
 }
 
+// Discover hand-written sibling .ts files at the folder root (non-test,
+// non-directory). These are spec content the autogen can't produce —
+// e.g. erc/137 keeps `namehash.ts`, `registry.ts`, `get-ens-resolver.ts`,
+// `normalize.ts` because EIP-137 specifies them but they aren't ABI
+// methods. The convention: anything sitting next to `methods/` and
+// `extensions/` is exported through the host barrel.
+function discover_sibling_modules(dir) {
+  if (!existsSync(dir)) return []
+  return readdirSync(dir, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        entry.name.endsWith(".ts") &&
+        !entry.name.endsWith(".test.ts"),
+    )
+    .map((entry) => entry.name.slice(0, -".ts".length))
+    .sort()
+}
+
 // Write each folder's top-level index.ts. Host folders include extension
-// barrels; extension folders just re-export their methods.
+// barrels and any hand-written sibling modules. Extension folders just
+// re-export their methods.
 for (const route of hosts) {
   const { host_number, out_dir } = route
   const extensions_for_host =
@@ -249,6 +269,9 @@ for (const route of hosts) {
     a.kebab < b.kebab ? -1 : 1,
   )) {
     lines.push(`export * from "./extensions/${kebab}/methods"`)
+  }
+  for (const basename of discover_sibling_modules(out_dir)) {
+    lines.push(`export * from "./${basename}"`)
   }
   writeFileSync(join(out_dir, "index.ts"), `${lines.join("\n")}\n`)
 }

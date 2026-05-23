@@ -25,7 +25,13 @@
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest",
-    "derive": "bun src/derive/nfc.ts && bun src/derive/spec.ts && pnpm run format"
+    "derive": "bun src/ensip-15/derive/nfc.ts && bun src/ensip-15/derive/spec.ts && pnpm run format"
+  },
+  "dependencies": {
+    "@ethernauta/core": "workspace:*",
+    "@ethernauta/erc": "workspace:*",
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"

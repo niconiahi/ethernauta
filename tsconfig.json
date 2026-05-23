@@ -19,6 +19,9 @@
       "@ethernauta/eip/*": [
         "./packages/eip/src/*"
       ],
+      "@ethernauta/erc/*": [
+        "./packages/erc/src/*"
+      ],
       "@ethernauta/abi/generator": [
         "./packages/abi/src/generator"
       ]

@@ -8,15 +8,16 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse, string } from "valibot"
 
-import { text } from "../634/methods/text"
-import { eth_call } from "./eth-call"
-import { resolver } from "./methods/resolver"
-import { namehash } from "./namehash"
-import { normalize } from "./normalize"
 import {
   get_registry_address,
+  namehash,
+  normalize,
+  resolver,
   ZERO_ADDRESS,
-} from "./registry"
+} from "@ethernauta/erc/137"
+import { text } from "@ethernauta/erc/634"
+
+import { eth_call } from "./eth-call"
 
 const parametersSchema = object({
   name: string(),

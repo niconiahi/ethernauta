@@ -27,6 +27,8 @@
       ],
       "@ethernauta/chain": ["../../packages/chain/src"],
       "@ethernauta/crypto": ["../../packages/crypto/src"],
+      "@ethernauta/ens": ["../../packages/ens/src"],
+      "@ethernauta/erc/*": ["../../packages/erc/src/*"],
       "@ethernauta/eth": ["../../packages/eth/src"],
       "@ethernauta/wallet": ["../../packages/wallet/src"]
     },
