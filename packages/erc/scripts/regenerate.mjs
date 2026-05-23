@@ -247,15 +247,23 @@ function discover_sibling_modules(dir) {
       (entry) =>
         entry.isFile() &&
         entry.name.endsWith(".ts") &&
-        !entry.name.endsWith(".test.ts"),
+        !entry.name.endsWith(".test.ts") &&
+        // `implementation.ts` IS the file we're regenerating here.
+        // Re-exporting it from itself would loop.
+        entry.name !== "implementation.ts",
     )
     .map((entry) => entry.name.slice(0, -".ts".length))
     .sort()
 }
 
-// Write each folder's top-level index.ts. Host folders include extension
-// barrels and any hand-written sibling modules. Extension folders just
-// re-export their methods.
+// Per the PAPER.md ceremony (D6, D10): each folder ships
+//   - implementation.ts — the actual exports + spec-URL header
+//   - index.ts          — thin `export * from "./implementation"`
+//   - PAPER.md          — verbatim spec (left untouched by regen)
+//
+// Host folders include extension barrels and any hand-written sibling
+// modules in implementation.ts. Extension folders just re-export their
+// methods.
 for (const route of hosts) {
   const { host_number, out_dir } = route
   const extensions_for_host =
@@ -268,18 +276,29 @@ for (const route of hosts) {
   for (const { kebab } of extensions_for_host.sort((a, b) =>
     a.kebab < b.kebab ? -1 : 1,
   )) {
-    lines.push(`export * from "./extensions/${kebab}/methods"`)
+    lines.push(`export * from "./extensions/${kebab}"`)
   }
   for (const basename of discover_sibling_modules(out_dir)) {
     lines.push(`export * from "./${basename}"`)
   }
-  writeFileSync(join(out_dir, "index.ts"), `${lines.join("\n")}\n`)
+  writeFileSync(
+    join(out_dir, "implementation.ts"),
+    `${lines.join("\n")}\n`,
+  )
+  writeFileSync(
+    join(out_dir, "index.ts"),
+    `export * from "./implementation"\n`,
+  )
 }
 for (const route of extensions) {
   const { out_dir } = route
   writeFileSync(
-    join(out_dir, "index.ts"),
+    join(out_dir, "implementation.ts"),
     `export * from "./methods"\n`,
+  )
+  writeFileSync(
+    join(out_dir, "index.ts"),
+    `export * from "./implementation"\n`,
   )
 }
 
