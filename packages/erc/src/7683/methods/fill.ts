@@ -1,17 +1,21 @@
-// https://eips.ethereum.org/EIPS/eip-7683 — IDestinationSettler.fill
-
-import {
-  bytes,
-  bytes32,
-  encode_function_call,
-} from "@ethernauta/abi"
-import type { Bytes, Hash32 } from "@ethernauta/core"
+import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
+import {
+  bytes,
+  bytes32,
+  encode_function_call,
+} from "@ethernauta/abi"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
+import {
+  bytes32Schema,
+  bytesSchema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32(), bytes(), bytes()] as const
 
@@ -23,37 +27,53 @@ export const FILL_SIGNATURE: {
   names: ["orderId", "originData", "fillerData"],
 }
 
-export function fill({
-  orderId,
-  originData,
-  fillerData,
-  value,
-}: {
-  orderId: Hash32
-  originData: `0x${string}`
-  fillerData: `0x${string}`
-  value?: `0x${string}`
-}): Signable<Bytes> {
+const parametersSchema = union([
+  tuple([bytes32Schema, bytesSchema, bytesSchema]),
+  object({
+    orderId: bytes32Schema,
+    originData: bytesSchema,
+    fillerData: bytesSchema,
+  }),
+])
+type Parameters = InferOutput<typeof parametersSchema>
+
+export function fill(
+  _parameters: Parameters,
+): Signable<Bytes> {
   return async ([
     signer,
-    _context,
+    context,
   ]: ResolvedSigner): Promise<Bytes> => {
-    if (!_context.to)
+    if (!context.to)
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
+    const parameters = parse(parametersSchema, _parameters)
+    const values = Array.isArray(parameters)
+      ? parameters
+      : [
+          parameters.orderId,
+          parameters.originData,
+          parameters.fillerData,
+        ]
     const calldata = encode_function_call({
       name: "fill",
       args: PARAM_CODECS,
-      values: [orderId, originData, fillerData] as never,
+      values: values as never,
     })
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
     return eth_signTransaction([
       {
-        to: _context.to,
-        value: value ?? "0x0",
+        to: context.to,
+        value: "0x0",
         input: bytes_to_hex(calldata),
-        _ethernauta: { function: FILL_SIGNATURE },
+        _ethernauta: {
+          function: FILL_SIGNATURE,
+        },
       },
-    ])([signer, _context])
+    ])([signer, context])
   }
 }

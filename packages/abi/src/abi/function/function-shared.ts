@@ -1,6 +1,8 @@
 import {
   array,
+  type GenericSchema,
   type InferOutput,
+  lazy,
   literal,
   object,
   string,
@@ -9,28 +11,43 @@ import {
 } from "valibot"
 import { tupleSchema, typeSchema } from "../shared"
 
-// TODO: this is the real type in need, but I have to solve the self-recursion problem
-//       for now, tuple are allowed to be only one-dimensional
-// export const function_tupleSchema = merge([
-//   tupleSchema,
-//   object({
-//     components: array(error_inputSchema),
-//   }),
-// ])
 export const stateMutabilitySchema = union([
   literal("pure"), // specified to not read blockchain state
   literal("view"), // specified to not modify the blockchain state
   literal("payable"), // function does not accept Ether
   literal("nonpayable"), // function accepts Ether
 ])
+
+// Components of a tuple-typed param can themselves be tuples (the
+// solidity struct-of-struct case — e.g. ERC-7683's ResolvedCrossChainOrder
+// has `tuple[]` fields whose components are `Output`/`FillInstruction`
+// structs). `lazy` lets the schema reference itself.
+export type TupleComponent = {
+  name: string
+  type: string
+  components?: TupleComponent[]
+}
+export const tupleComponentSchema: GenericSchema<TupleComponent> =
+  lazy(() =>
+    variant("type", [
+      object({
+        name: string(),
+        type: typeSchema,
+      }),
+      object({
+        name: string(),
+        type: union([
+          literal("tuple"),
+          literal("tuple[]"),
+        ]),
+        components: array(tupleComponentSchema),
+      }),
+    ]),
+  )
+
 export const function_tupleSchema = object({
   ...tupleSchema.entries,
-  components: array(
-    object({
-      name: string(),
-      type: typeSchema,
-    }),
-  ),
+  components: array(tupleComponentSchema),
 })
 export const function_inputSchema = variant("type", [
   object({

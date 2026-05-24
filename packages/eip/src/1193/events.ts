@@ -36,9 +36,9 @@ type Listener<E extends EventName> = (
 export type AnyListener = (payload: never) => void
 
 export type Emitter = {
-  on<E extends EventName>(
-    event: E,
-    listener: Listener<E>,
+  on<Event extends EventName>(
+    event: Event,
+    listener: Listener<Event>,
   ): void
   removeListener<E extends EventName>(
     event: E,
@@ -56,26 +56,19 @@ export function create_emitter(): Emitter {
     on(event, listener) {
       const existing = listeners.get(event)
       if (existing) {
-        existing.add(listener as AnyListener)
+        existing.add(listener)
         return
       }
-      listeners.set(
-        event,
-        new Set([listener as AnyListener]),
-      )
+      listeners.set(event, new Set([listener]))
     },
     removeListener(event, listener) {
-      listeners.get(event)?.delete(listener as AnyListener)
+      listeners.get(event)?.delete(listener)
     },
     emit(event, payload) {
       const set = listeners.get(event)
       if (!set) return
       for (const listener of set) {
-        ;(
-          listener as (
-            payload: EventMap[typeof event],
-          ) => void
-        )(payload)
+        listener(payload)
       }
     },
   }

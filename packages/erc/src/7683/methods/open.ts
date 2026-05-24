@@ -1,12 +1,3 @@
-// https://eips.ethereum.org/EIPS/eip-7683 — IOriginSettler.open
-
-import {
-  bytes,
-  bytes32,
-  encode_function_call,
-  tuple,
-  uint32,
-} from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -14,20 +5,28 @@ import type {
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import { parse } from "valibot"
-
 import {
-  type OnchainCrossChainOrder,
-  onchainCrossChainOrderSchema,
-} from "../types"
+  tuple as abi_tuple,
+  bytes,
+  bytes32,
+  uint32,
+  encode_function_call,
+} from "@ethernauta/abi"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
+import {
+  bytes32Schema,
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
-const ONCHAIN_ORDER_CODEC = tuple({
-  fillDeadline: uint32(),
-  orderDataType: bytes32(),
-  orderData: bytes(),
-})
-
-const PARAM_CODECS = [ONCHAIN_ORDER_CODEC] as const
+const PARAM_CODECS = [
+  abi_tuple({
+    fillDeadline: uint32(),
+    orderDataType: bytes32(),
+    orderData: bytes(),
+  }),
+] as const
 
 export const OPEN_SIGNATURE: {
   signature: string
@@ -37,33 +36,57 @@ export const OPEN_SIGNATURE: {
   names: ["order"],
 }
 
+const parametersSchema = union([
+  tuple([
+    object({
+      fillDeadline: uint256Schema,
+      orderDataType: bytes32Schema,
+      orderData: bytesSchema,
+    }),
+  ]),
+  object({
+    order: object({
+      fillDeadline: uint256Schema,
+      orderDataType: bytes32Schema,
+      orderData: bytesSchema,
+    }),
+  }),
+])
+type Parameters = InferOutput<typeof parametersSchema>
+
 export function open(
-  _order: OnchainCrossChainOrder,
+  _parameters: Parameters,
 ): Signable<Bytes> {
   return async ([
     signer,
-    _context,
+    context,
   ]: ResolvedSigner): Promise<Bytes> => {
-    if (!_context.to)
+    if (!context.to)
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const order = parse(
-      onchainCrossChainOrderSchema,
-      _order,
-    )
+    const parameters = parse(parametersSchema, _parameters)
+    const values = Array.isArray(parameters)
+      ? parameters
+      : [parameters.order]
     const calldata = encode_function_call({
       name: "open",
       args: PARAM_CODECS,
-      values: [order] as never,
+      values: values as never,
     })
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
     return eth_signTransaction([
       {
-        to: _context.to,
+        to: context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
-        _ethernauta: { function: OPEN_SIGNATURE },
+        _ethernauta: {
+          function: OPEN_SIGNATURE,
+        },
       },
-    ])([signer, _context])
+    ])([signer, context])
   }
 }

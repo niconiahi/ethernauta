@@ -1,14 +1,3 @@
-// https://eips.ethereum.org/EIPS/eip-7683 — IOriginSettler.openFor
-
-import {
-  address,
-  bytes,
-  bytes32,
-  encode_function_call,
-  tuple,
-  uint32,
-  uint256,
-} from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -16,26 +5,35 @@ import type {
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import { parse } from "valibot"
-
 import {
-  type GaslessCrossChainOrder,
-  gaslessCrossChainOrderSchema,
-} from "../types"
-
-export const GASLESS_ORDER_CODEC = tuple({
-  originSettler: address(),
-  user: address(),
-  nonce: uint256(),
-  originChainId: uint256(),
-  openDeadline: uint32(),
-  fillDeadline: uint32(),
-  orderDataType: bytes32(),
-  orderData: bytes(),
-})
+  tuple as abi_tuple,
+  address,
+  bytes,
+  bytes32,
+  uint256,
+  uint32,
+  encode_function_call,
+} from "@ethernauta/abi"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
+import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [
-  GASLESS_ORDER_CODEC,
+  abi_tuple({
+    originSettler: address(),
+    user: address(),
+    nonce: uint256(),
+    originChainId: uint256(),
+    openDeadline: uint32(),
+    fillDeadline: uint32(),
+    orderDataType: bytes32(),
+    orderData: bytes(),
+  }),
   bytes(),
   bytes(),
 ] as const
@@ -49,39 +47,75 @@ export const OPEN_FOR_SIGNATURE: {
   names: ["order", "signature", "originFillerData"],
 }
 
-export function openFor({
-  order: _order,
-  signature: _signature,
-  originFillerData: _filler_data,
-}: {
-  order: GaslessCrossChainOrder
-  signature: `0x${string}`
-  originFillerData: `0x${string}`
-}): Signable<Bytes> {
+const parametersSchema = union([
+  tuple([
+    object({
+      originSettler: addressSchema,
+      user: addressSchema,
+      nonce: uint256Schema,
+      originChainId: uint256Schema,
+      openDeadline: uint256Schema,
+      fillDeadline: uint256Schema,
+      orderDataType: bytes32Schema,
+      orderData: bytesSchema,
+    }),
+    bytesSchema,
+    bytesSchema,
+  ]),
+  object({
+    order: object({
+      originSettler: addressSchema,
+      user: addressSchema,
+      nonce: uint256Schema,
+      originChainId: uint256Schema,
+      openDeadline: uint256Schema,
+      fillDeadline: uint256Schema,
+      orderDataType: bytes32Schema,
+      orderData: bytesSchema,
+    }),
+    signature: bytesSchema,
+    originFillerData: bytesSchema,
+  }),
+])
+type Parameters = InferOutput<typeof parametersSchema>
+
+export function openFor(
+  _parameters: Parameters,
+): Signable<Bytes> {
   return async ([
     signer,
-    _context,
+    context,
   ]: ResolvedSigner): Promise<Bytes> => {
-    if (!_context.to)
+    if (!context.to)
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const order = parse(
-      gaslessCrossChainOrderSchema,
-      _order,
-    )
+    const parameters = parse(parametersSchema, _parameters)
+    const values = Array.isArray(parameters)
+      ? parameters
+      : [
+          parameters.order,
+          parameters.signature,
+          parameters.originFillerData,
+        ]
     const calldata = encode_function_call({
       name: "openFor",
       args: PARAM_CODECS,
-      values: [order, _signature, _filler_data] as never,
+      values: values as never,
     })
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
     return eth_signTransaction([
       {
-        to: _context.to,
+        to: context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
-        _ethernauta: { function: OPEN_FOR_SIGNATURE },
+        _ethernauta: {
+          function: OPEN_FOR_SIGNATURE,
+        },
       },
-    ])([signer, _context])
+    ])([signer, context])
   }
 }

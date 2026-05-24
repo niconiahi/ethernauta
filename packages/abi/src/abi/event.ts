@@ -7,25 +7,16 @@ import {
   variant,
 } from "valibot"
 
+import { tupleComponentSchema } from "./function/function-shared"
 import { tupleSchema, typeSchema } from "./shared"
 
-// TODO: this is the real type in need, but I have to solve the self-recursion problem
-//       for now, tuple are allowed to be only one-dimensional
-// export const event_tupleSchema = merge([
-//   tupleSchema,
-//   object({
-//     components: array(event_inputSchema),
-//     indexed: boolean(),
-//   }),
-// ])
+// Solidity events can declare tuple params whose components are
+// themselves tuples — reuse the recursive `tupleComponentSchema` from
+// the function side. The top-level event input keeps the `indexed`
+// flag; inner components do not.
 export const event_tupleSchema = object({
   ...tupleSchema.entries,
-  components: array(
-    object({
-      name: string(),
-      type: typeSchema,
-    }),
-  ),
+  components: array(tupleComponentSchema),
   indexed: boolean(),
 })
 export const event_inputSchema = variant("type", [

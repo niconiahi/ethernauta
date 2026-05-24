@@ -6,8 +6,6 @@ import type {
   ResolvedSigner,
   SignContext,
 } from "@ethernauta/transport"
-import { ReadContextSchema } from "@ethernauta/transport"
-import { parse } from "valibot"
 import {
   create_emitter,
   type Emitter,
@@ -80,18 +78,17 @@ export function create_envelope(
 //   eth_getBalance(addr)(provider.reader({ chain_id }))
 //   eth_sendTransaction(tx)(provider.signer({ chain_id }))
 export type ProviderResolver = {
-  reader: (_input: ReadContext) => ResolvedReader
-  signer: (_input: SignContext) => ResolvedSigner
+  reader: (context: ReadContext) => ResolvedReader
+  signer: (context: SignContext) => ResolvedSigner
 }
 
 export function create_provider(
-  _provider: Provider,
+  provider: Provider,
 ): ProviderResolver {
-  const http = create_injected_transport(_provider)
-  const signer_factory = create_injected_signer(_provider)
+  const http = create_injected_transport(provider)
+  const signer_factory = create_injected_signer(provider)
   return {
-    reader: (_input: ReadContext): ResolvedReader => {
-      const context = parse(ReadContextSchema, _input)
+    reader: (context: ReadContext): ResolvedReader => {
       return [[http], context]
     },
     signer: signer_factory,

@@ -1,23 +1,23 @@
-import {
-  address,
-  bytes,
-  encode_function_call,
-  uint256,
-} from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
-import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-} from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
+import {
+  address,
+  bytes,
+  uint256,
+  encode_function_call,
+} from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
+import {
+  addressSchema,
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [
   address(),
@@ -59,9 +59,9 @@ export function safeTransferFrom(
 ): Signable<Bytes> {
   return async ([
     signer,
-    _context,
+    context,
   ]: ResolvedSigner): Promise<Bytes> => {
-    if (!_context.to)
+    if (!context.to)
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
@@ -86,13 +86,13 @@ export function safeTransferFrom(
     //               Generator MUST leave these fields unset.
     return eth_signTransaction([
       {
-        to: _context.to,
+        to: context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
         _ethernauta: {
           function: SAFE_TRANSFER_FROM_SIGNATURE,
         },
       },
-    ])([signer, _context])
+    ])([signer, context])
   }
 }

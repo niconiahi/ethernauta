@@ -3,6 +3,7 @@
 
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
+import { eth_call } from "@ethernauta/eth"
 import type {
   Readable,
   ResolvedReader,
@@ -19,8 +20,6 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 
-import { eth_call } from "./eth-call"
-
 const parametersSchema = object({
   name: string(),
   registry: optional(addressSchema),
@@ -32,34 +31,30 @@ export function get_ens_address(
 ): Readable<Address | null> {
   return async ([
     transports,
-    _context,
+    context,
   ]: ResolvedReader): Promise<Address | null> => {
     const parameters = parse(parametersSchema, _parameters)
     const node = namehash(normalize(parameters.name))
     const registry = get_registry_address(
-      _context.chain_id,
+      context.chain_id,
       parameters.registry,
     )
     const resolver_call = resolver({ node })({
-      chain_id: _context.chain_id,
+      chain_id: context.chain_id,
       to: registry,
     })
-    const resolver_raw = await eth_call(
-      transports,
-      resolver_call.to,
-      resolver_call.data,
-    )
+    const resolver_raw = await eth_call([
+      { to: resolver_call.to, input: resolver_call.data },
+    ])([transports, context])
     const resolver_addr = resolver_call.decode(resolver_raw)
     if (resolver_addr === ZERO_ADDRESS) return null
     const addr_call = addr({ node })({
-      chain_id: _context.chain_id,
+      chain_id: context.chain_id,
       to: resolver_addr,
     })
-    const addr_raw = await eth_call(
-      transports,
-      addr_call.to,
-      addr_call.data,
-    )
+    const addr_raw = await eth_call([
+      { to: addr_call.to, input: addr_call.data },
+    ])([transports, context])
     const decoded = addr_call.decode(addr_raw)
     if (decoded === ZERO_ADDRESS) return null
     return decoded

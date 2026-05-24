@@ -27,11 +27,6 @@
 //   - <out>/methods/<method>.ts      — generated bindings
 //   - <out>/methods/index.ts         — barrel
 //
-// Skip list (need follow-up; the abi generator doesn't yet handle dynamic
-// array types like `address[]` / `uint256[]`):
-//   - IERC1155.sol (balanceOfBatch, safeBatchTransferFrom)
-//   - IERC1155MetadataURI.sol (depends on 1155 being skipped to stay coherent)
-
 import {
   existsSync,
   mkdirSync,
@@ -55,17 +50,7 @@ const contracts_dir = join(repo_root, "contracts")
 const forge_out = join(contracts_dir, "out")
 const erc_src = join(repo_root, "packages/erc/src")
 
-// Interfaces blocked on the generator gaining type support it doesn't yet
-// have. ERC-1155 needs dynamic arrays (`address[]`, `uint256[]`). ERC-7683
-// needs Solidity structs (encoded as ABI `tuple`s). Add `array` + `tuple`
-// support to packages/abi/src/generator/generator.ts and remove these.
-const SKIP_INTERFACES = new Set([
-  "IERC1155",
-  "IERC1155MetadataURI",
-  "IERC7683",
-  "IOriginSettler",
-  "IDestinationSettler",
-])
+const SKIP_INTERFACES = new Set()
 
 // Map from "host interface name with no suffix" to "set of extra interfaces
 // whose ABIs merge into the same `methods/` folder". Today only IERC7683's
@@ -248,22 +233,22 @@ function discover_sibling_modules(dir) {
         entry.isFile() &&
         entry.name.endsWith(".ts") &&
         !entry.name.endsWith(".test.ts") &&
-        // `implementation.ts` IS the file we're regenerating here.
+        // `index.ts` IS the file we're regenerating here.
         // Re-exporting it from itself would loop.
-        entry.name !== "implementation.ts",
+        entry.name !== "index.ts",
     )
     .map((entry) => entry.name.slice(0, -".ts".length))
     .sort()
 }
 
-// Per the PAPER.md ceremony (D6, D10): each folder ships
-//   - implementation.ts — the actual exports + spec-URL header
-//   - index.ts          — thin `export * from "./implementation"`
-//   - PAPER.md          — verbatim spec (left untouched by regen)
+// Each folder ships exactly two files:
+//   - index.ts  — spec-URL header + the actual exports (THIS is the
+//                 implementation; `/erc/<n>/index.ts` answers
+//                 "what implements ERC-<n>?")
+//   - PAPER.md  — verbatim spec (left untouched by regen)
 //
 // Host folders include extension barrels and any hand-written sibling
-// modules in implementation.ts. Extension folders just re-export their
-// methods.
+// modules. Extension folders just re-export their methods.
 for (const route of hosts) {
   const { host_number, out_dir } = route
   const extensions_for_host =
@@ -282,23 +267,15 @@ for (const route of hosts) {
     lines.push(`export * from "./${basename}"`)
   }
   writeFileSync(
-    join(out_dir, "implementation.ts"),
-    `${lines.join("\n")}\n`,
-  )
-  writeFileSync(
     join(out_dir, "index.ts"),
-    `export * from "./implementation"\n`,
+    `${lines.join("\n")}\n`,
   )
 }
 for (const route of extensions) {
   const { out_dir } = route
   writeFileSync(
-    join(out_dir, "implementation.ts"),
-    `export * from "./methods"\n`,
-  )
-  writeFileSync(
     join(out_dir, "index.ts"),
-    `export * from "./implementation"\n`,
+    `export * from "./methods"\n`,
   )
 }
 

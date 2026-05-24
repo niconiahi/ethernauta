@@ -1,13 +1,23 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  bool, bytes4,
+  bool,
+  bytes4,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import { boolean, object, parse, tuple, union } from "valibot"
+import {
+  boolean,
+  object,
+  parse,
+  tuple,
+  union,
+} from "valibot"
 import { bytes4Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes4()] as const
@@ -27,11 +37,8 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function supportsInterface(_parameters: Parameters)
-: (_context: ContractContext) => Callable<boolean> {
-  return (
-    _context: ContractContext,
-  ): Callable<boolean> => {
+export function supportsInterface(_parameters: Parameters) {
+  return (context: ContractContext): Callable<boolean> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
@@ -42,13 +49,13 @@ export function supportsInterface(_parameters: Parameters)
       values: values as never,
     })
     return {
-      chain_id: _context.chain_id,
-      to: _context.to,
+      chain_id: context.chain_id,
+      to: context.to,
       data: bytes_to_hex(calldata),
-      decode: (_result: Bytes): boolean => {
+      decode: (result: Bytes): boolean => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
-          _result,
+          result,
         )
         return parse(boolean(), decoded)
       },

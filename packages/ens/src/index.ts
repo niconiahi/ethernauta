@@ -5,6 +5,6 @@
 // — this package owns the ENSIP-level helpers and the multi-call flows
 // that compose them.
 
-export * from "./ensip-12/implementation"
-export * from "./ensip-15/implementation"
-export * from "./resolution/implementation"
+export * from "./ensip-12"
+export * from "./ensip-15"
+export * from "./resolution"

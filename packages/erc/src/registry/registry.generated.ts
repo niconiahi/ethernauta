@@ -7,6 +7,12 @@ export const REGISTRY = {
     types: ["address", "uint256"],
     param_names: ["account", "id"],
   },
+  "0x0178b8bf": {
+    name: "resolver",
+    signature: "resolver(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
+  },
   "0x01e1d114": {
     name: "totalAssets",
     signature: "totalAssets()",
@@ -18,6 +24,18 @@ export const REGISTRY = {
     signature: "supportsInterface(bytes4)",
     types: ["bytes4"],
     param_names: ["interfaceId"],
+  },
+  "0x02571be3": {
+    name: "owner",
+    signature: "owner(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
+  },
+  "0x06ab5923": {
+    name: "setSubnodeOwner",
+    signature: "setSubnodeOwner(bytes32,bytes32,address)",
+    types: ["bytes32", "bytes32", "address"],
+    param_names: ["node", "label", "owner"],
   },
   "0x06fdde03": {
     name: "name",
@@ -36,6 +54,12 @@ export const REGISTRY = {
     signature: "getApproved(uint256)",
     types: ["uint256"],
     param_names: ["tokenId"],
+  },
+  "0x0826ec7e": {
+    name: "resolveFor",
+    signature: "resolveFor(tuple,bytes)",
+    types: ["tuple", "bytes"],
+    param_names: ["order", "originFillerData"],
   },
   "0x095ea7b3": {
     name: "approve",
@@ -61,11 +85,29 @@ export const REGISTRY = {
     types: ["uint256"],
     param_names: ["tokenId"],
   },
+  "0x14ab9038": {
+    name: "setTTL",
+    signature: "setTTL(bytes32,uint64)",
+    types: ["bytes32", "uint64"],
+    param_names: ["node", "ttl"],
+  },
+  "0x16a25cbd": {
+    name: "ttl",
+    signature: "ttl(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
+  },
   "0x18160ddd": {
     name: "totalSupply",
     signature: "totalSupply()",
     types: [],
     param_names: [],
+  },
+  "0x1896f70a": {
+    name: "setResolver",
+    signature: "setResolver(bytes32,address)",
+    types: ["bytes32", "address"],
+    param_names: ["node", "resolver"],
   },
   "0x205c2878": {
     name: "withdrawTo",
@@ -84,6 +126,19 @@ export const REGISTRY = {
     signature: "royaltyInfo(uint256,uint256)",
     types: ["uint256", "uint256"],
     param_names: ["tokenId", "salePrice"],
+  },
+  "0x2eb2c2d6": {
+    name: "safeBatchTransferFrom",
+    signature:
+      "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)",
+    types: [
+      "address",
+      "address",
+      "uint256[]",
+      "uint256[]",
+      "bytes",
+    ],
+    param_names: ["from", "to", "ids", "values", "data"],
   },
   "0x2f4f21e2": {
     name: "depositFor",
@@ -127,6 +182,12 @@ export const REGISTRY = {
     types: ["address", "uint256"],
     param_names: ["account", "timepoint"],
   },
+  "0x3b3b57de": {
+    name: "addr",
+    signature: "addr(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
+  },
   "0x3f4ba83a": {
     name: "unpause",
     signature: "unpause()",
@@ -143,7 +204,7 @@ export const REGISTRY = {
     name: "mint",
     signature: "mint(address,uint256)",
     types: ["address", "uint256"],
-    param_names: ["to", "value"],
+    param_names: ["to", "amount"],
   },
   "0x42842e0e": {
     name: "safeTransferFrom",
@@ -163,6 +224,12 @@ export const REGISTRY = {
     types: ["tuple"],
     param_names: ["order"],
   },
+  "0x4bf5d7e9": {
+    name: "CLOCK_MODE",
+    signature: "CLOCK_MODE()",
+    types: [],
+    param_names: [],
+  },
   "0x4cdad506": {
     name: "previewRedeem",
     signature: "previewRedeem(uint256)",
@@ -180,6 +247,12 @@ export const REGISTRY = {
       "metadata",
     ],
   },
+  "0x4e1273f4": {
+    name: "balanceOfBatch",
+    signature: "balanceOfBatch(address[],uint256[])",
+    types: ["address[]", "uint256[]"],
+    param_names: ["accounts", "ids"],
+  },
   "0x4f6ccce7": {
     name: "tokenByIndex",
     signature: "tokenByIndex(uint256)",
@@ -191,6 +264,18 @@ export const REGISTRY = {
     signature: "delegates(address)",
     types: ["address"],
     param_names: ["account"],
+  },
+  "0x59d1d43c": {
+    name: "text",
+    signature: "text(bytes32,string)",
+    types: ["bytes32", "string"],
+    param_names: ["node", "key"],
+  },
+  "0x5b0fc9c3": {
+    name: "setOwner",
+    signature: "setOwner(bytes32,address)",
+    types: ["bytes32", "address"],
+    param_names: ["node", "owner"],
   },
   "0x5c19a95c": {
     name: "delegate",
@@ -208,7 +293,26 @@ export const REGISTRY = {
     name: "flashLoan",
     signature: "flashLoan(address,address,uint256,bytes)",
     types: ["address", "address", "uint256", "bytes"],
-    param_names: ["receiver", "token", "value", "data"],
+    param_names: ["receiver", "token", "amount", "data"],
+  },
+  "0x5ef2c7f0": {
+    name: "setSubnodeRecord",
+    signature:
+      "setSubnodeRecord(bytes32,bytes32,address,address,uint64)",
+    types: [
+      "bytes32",
+      "bytes32",
+      "address",
+      "address",
+      "uint64",
+    ],
+    param_names: [
+      "node",
+      "label",
+      "owner",
+      "resolver",
+      "ttl",
+    ],
   },
   "0x613255ab": {
     name: "maxFlashLoan",
@@ -221,6 +325,18 @@ export const REGISTRY = {
     signature: "ownerOf(uint256)",
     types: ["uint256"],
     param_names: ["tokenId"],
+  },
+  "0x68d8b4f2": {
+    name: "resolve",
+    signature: "resolve(tuple)",
+    types: ["tuple"],
+    param_names: ["order"],
+  },
+  "0x691f3431": {
+    name: "name",
+    signature: "name(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
   },
   "0x6e553f65": {
     name: "deposit",
@@ -244,12 +360,7 @@ export const REGISTRY = {
     name: "permit",
     signature: "permit(address,uint256,uint256,bytes)",
     types: ["address", "uint256", "uint256", "bytes"],
-    param_names: [
-      "spender",
-      "tokenId",
-      "deadline",
-      "signature",
-    ],
+    param_names: ["spender", "tokenId", "deadline", "sig"],
   },
   "0x79cc6790": {
     name: "burnFrom",
@@ -286,6 +397,12 @@ export const REGISTRY = {
     signature: "getPastTotalSupply(uint256)",
     types: ["uint256"],
     param_names: ["timepoint"],
+  },
+  "0x91ddadf4": {
+    name: "clock",
+    signature: "clock()",
+    types: [],
+    param_names: [],
   },
   "0x94bf804d": {
     name: "mint",
@@ -387,6 +504,12 @@ export const REGISTRY = {
     types: ["address"],
     param_names: ["owner"],
   },
+  "0xcf408823": {
+    name: "setRecord",
+    signature: "setRecord(bytes32,address,address,uint64)",
+    types: ["bytes32", "address", "address", "uint64"],
+    param_names: ["node", "owner", "resolver", "ttl"],
+  },
   "0xd505accf": {
     name: "permit",
     signature:
@@ -420,7 +543,7 @@ export const REGISTRY = {
     name: "flashFee",
     signature: "flashFee(address,uint256)",
     types: ["address", "uint256"],
-    param_names: ["token", "value"],
+    param_names: ["token", "amount"],
   },
   "0xdd62ed3e": {
     name: "allowance",
@@ -440,6 +563,12 @@ export const REGISTRY = {
     types: ["uint256"],
     param_names: ["assets"],
   },
+  "0xf1cb7e06": {
+    name: "addr",
+    signature: "addr(bytes32,uint256)",
+    types: ["bytes32", "uint256"],
+    param_names: ["node", "coinType"],
+  },
   "0xf242432a": {
     name: "safeTransferFrom",
     signature:
@@ -452,6 +581,12 @@ export const REGISTRY = {
       "bytes",
     ],
     param_names: ["from", "to", "id", "value", "data"],
+  },
+  "0xf79fe538": {
+    name: "recordExists",
+    signature: "recordExists(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
   },
 } as const
 

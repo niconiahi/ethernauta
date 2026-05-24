@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint48,
@@ -21,13 +24,8 @@ export const CLOCK_SIGNATURE: {
   names: [],
 }
 
-
-
-export function clock()
-: (_context: ContractContext) => Callable<Uint256> {
-  return (
-    _context: ContractContext,
-  ): Callable<Uint256> => {
+export function clock() {
+  return (context: ContractContext): Callable<Uint256> => {
     const values: unknown[] = []
     const calldata = encode_function_call({
       name: "clock",
@@ -35,13 +33,13 @@ export function clock()
       values: values as never,
     })
     return {
-      chain_id: _context.chain_id,
-      to: _context.to,
+      chain_id: context.chain_id,
+      to: context.to,
       data: bytes_to_hex(calldata),
-      decode: (_result: Bytes): Uint256 => {
+      decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
-          _result,
+          result,
         )
         return parse(uint256Schema, decoded)
       },

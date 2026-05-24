@@ -2,6 +2,7 @@
 
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
+import { eth_call } from "@ethernauta/eth"
 import type {
   Readable,
   ResolvedReader,
@@ -17,8 +18,6 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 
-import { eth_call } from "./eth-call"
-
 const parametersSchema = object({
   name: string(),
   registry: optional(addressSchema),
@@ -30,23 +29,21 @@ export function get_ens_resolver(
 ): Readable<Address | null> {
   return async ([
     transports,
-    _context,
+    context,
   ]: ResolvedReader): Promise<Address | null> => {
     const parameters = parse(parametersSchema, _parameters)
     const node = namehash(normalize(parameters.name))
     const registry = get_registry_address(
-      _context.chain_id,
+      context.chain_id,
       parameters.registry,
     )
     const callable = resolver({ node })({
-      chain_id: _context.chain_id,
+      chain_id: context.chain_id,
       to: registry,
     })
-    const raw = await eth_call(
-      transports,
-      callable.to,
-      callable.data,
-    )
+    const raw = await eth_call([
+      { to: callable.to, input: callable.data },
+    ])([transports, context])
     const decoded = callable.decode(raw)
     if (decoded === ZERO_ADDRESS) return null
     return decoded

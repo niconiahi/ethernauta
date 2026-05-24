@@ -13,11 +13,57 @@ import type { FunctionInput, FunctionOutput } from "../abi"
 import type { Description } from "../abi/description"
 import { to_selector } from "../encoding/encode"
 
+// A tuple component is either a leaf {name, type} or a nested tuple
+// {name, type: "tuple"|"tuple[]", components: [...]}. The valibot
+// `function_tupleSchema` only types one level deep, so we re-declare
+// the recursive shape here and read it via `unknown` casts where the
+// TS surface doesn't reach.
+type TupleComponent = {
+  name: string
+  type: string
+  components?: TupleComponent[]
+}
+
+type InputLike = {
+  name: string
+  type: string
+  components?: TupleComponent[]
+}
+
+function get_components(input: InputLike): TupleComponent[] {
+  const components = (
+    input as unknown as { components?: TupleComponent[] }
+  ).components
+  invariant(
+    Array.isArray(components),
+    `expected components on input ${input.name} of type ${input.type}`,
+  )
+  return components
+}
+
+function canonical_type(input: InputLike): string {
+  if (input.type === "tuple") {
+    const inner = get_components(input)
+      .map(canonical_type)
+      .join(",")
+    return `(${inner})`
+  }
+  if (input.type === "tuple[]") {
+    const inner = get_components(input)
+      .map(canonical_type)
+      .join(",")
+    return `(${inner})[]`
+  }
+  return input.type
+}
+
 function canonical_signature(
   name: string,
   inputs: FunctionInput[],
 ): string {
-  return `${name}(${inputs.map((i) => i.type).join(",")})`
+  return `${name}(${inputs
+    .map((i) => canonical_type(i as InputLike))
+    .join(",")})`
 }
 
 function selector_suffix(signature: string): string {
@@ -69,128 +115,173 @@ export function emit_file_basename_for(
   )
 }
 
-type AbiType = string
-
+// Codegen carries four parallel import-requirement sets per type:
+//   - valibot_names: bare symbols imported from "valibot" (e.g. "boolean",
+//     "object", "v_array"). The `v_array` symbol is aliased on import as
+//     `array as v_array` to avoid colliding with abi's `array`.
+//   - core_schemas / core_types: value + type imports from "@ethernauta/core".
+//   - abi_builders: bare codec-builder symbols from "@ethernauta/abi"
+//     (e.g. "address", "uint256", "array", "abi_tuple"). `abi_tuple` is
+//     aliased on import as `tuple as abi_tuple` to avoid colliding with
+//     valibot's `tuple`.
 type Type_info = {
   param_schema: string
   param_type: string
   decoded_schema: string
   decoded_type: string
   builder: string
-  valibot: boolean
-  package: "eth" | null
+  valibot_names: Set<string>
+  core_schemas: Set<string>
+  core_types: Set<string>
+  abi_builders: Set<string>
 }
 
-const VALIBOT_BOOL: Type_info = {
-  param_schema: "boolean()",
-  param_type: "boolean",
-  decoded_schema: "boolean()",
-  decoded_type: "boolean",
-  builder: "bool()",
-  valibot: true,
-  package: null,
+function valibot_leaf(
+  valibot_name: string,
+  ts_type: string,
+  builder_name: string,
+): Type_info {
+  return {
+    param_schema: `${valibot_name}()`,
+    param_type: ts_type,
+    decoded_schema: `${valibot_name}()`,
+    decoded_type: ts_type,
+    builder: `${builder_name}()`,
+    valibot_names: new Set([valibot_name]),
+    core_schemas: new Set(),
+    core_types: new Set(),
+    abi_builders: new Set([builder_name]),
+  }
 }
 
-const VALIBOT_STRING: Type_info = {
-  param_schema: "string()",
-  param_type: "string",
-  decoded_schema: "string()",
-  decoded_type: "string",
-  builder: "string_()",
-  valibot: true,
-  package: null,
+function core_leaf(
+  schema_name: string,
+  ts_type: string,
+  builder_name: string,
+): Type_info {
+  return {
+    param_schema: schema_name,
+    param_type: ts_type,
+    decoded_schema: schema_name,
+    decoded_type: ts_type,
+    builder: `${builder_name}()`,
+    valibot_names: new Set(),
+    core_schemas: new Set([schema_name]),
+    core_types: new Set([ts_type]),
+    abi_builders: new Set([builder_name]),
+  }
 }
 
-function get_type_info(type: AbiType): Type_info {
+function merge_into(target: Type_info, child: Type_info): void {
+  for (const v of child.valibot_names) target.valibot_names.add(v)
+  for (const s of child.core_schemas) target.core_schemas.add(s)
+  for (const t of child.core_types) target.core_types.add(t)
+  for (const b of child.abi_builders) target.abi_builders.add(b)
+}
+
+function get_type_info(input: InputLike): Type_info {
+  const type = input.type
+
+  if (type === "tuple" || type === "tuple[]") {
+    const components = get_components(input)
+    const child_infos = components.map((c) => get_type_info(c))
+
+    const schema_fields = components
+      .map((c, i) => `${c.name}: ${child_infos[i]!.param_schema}`)
+      .join(", ")
+    const struct_schema = `object({ ${schema_fields} })`
+
+    const type_fields = components
+      .map((c, i) => `${c.name}: ${child_infos[i]!.param_type}`)
+      .join("; ")
+    const struct_type = `{ ${type_fields} }`
+
+    const builder_fields = components
+      .map((c, i) => `${c.name}: ${child_infos[i]!.builder}`)
+      .join(", ")
+    const struct_builder = `abi_tuple({ ${builder_fields} })`
+
+    const info: Type_info = {
+      param_schema: struct_schema,
+      param_type: struct_type,
+      decoded_schema: struct_schema,
+      decoded_type: struct_type,
+      builder: struct_builder,
+      valibot_names: new Set(["object"]),
+      core_schemas: new Set(),
+      core_types: new Set(),
+      abi_builders: new Set(["abi_tuple"]),
+    }
+    for (const child of child_infos) merge_into(info, child)
+
+    if (type === "tuple[]") {
+      info.valibot_names.add("v_array")
+      info.abi_builders.add("array")
+      return {
+        ...info,
+        param_schema: `v_array(${struct_schema})`,
+        param_type: `${struct_type}[]`,
+        decoded_schema: `v_array(${struct_schema})`,
+        decoded_type: `${struct_type}[]`,
+        builder: `array(${struct_builder})`,
+      }
+    }
+    return info
+  }
+
+  // Dynamic array of a primitive (or another array): T[]
+  const arr_match = /^(.+)\[\]$/.exec(type)
+  if (arr_match) {
+    const inner_type = arr_match[1] as string
+    const inner = get_type_info({
+      name: input.name,
+      type: inner_type,
+    })
+    const info: Type_info = {
+      param_schema: `v_array(${inner.param_schema})`,
+      param_type: `${inner.param_type}[]`,
+      decoded_schema: `v_array(${inner.decoded_schema})`,
+      decoded_type: `${inner.decoded_type}[]`,
+      builder: `array(${inner.builder})`,
+      valibot_names: new Set(inner.valibot_names),
+      core_schemas: new Set(inner.core_schemas),
+      core_types: new Set(inner.core_types),
+      abi_builders: new Set(inner.abi_builders),
+    }
+    info.valibot_names.add("v_array")
+    info.abi_builders.add("array")
+    return info
+  }
+
   switch (type) {
     case "bool":
-      return VALIBOT_BOOL
+      return valibot_leaf("boolean", "boolean", "bool")
     case "string":
-      return VALIBOT_STRING
+      return valibot_leaf("string", "string", "string_")
     case "address":
-      return {
-        param_schema: "addressSchema",
-        param_type: "Address",
-        decoded_schema: "addressSchema",
-        decoded_type: "Address",
-        builder: "address()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("addressSchema", "Address", "address")
     case "bytes":
-      return {
-        param_schema: "bytesSchema",
-        param_type: "Bytes",
-        decoded_schema: "bytesSchema",
-        decoded_type: "Bytes",
-        builder: "bytes()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("bytesSchema", "Bytes", "bytes")
     case "bytes4":
-      return {
-        param_schema: "bytes4Schema",
-        param_type: "Bytes4",
-        decoded_schema: "bytes4Schema",
-        decoded_type: "Bytes4",
-        builder: "bytes4()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("bytes4Schema", "Bytes4", "bytes4")
     case "bytes8":
-      return {
-        param_schema: "bytes8Schema",
-        param_type: "Bytes8",
-        decoded_schema: "bytes8Schema",
-        decoded_type: "Bytes8",
-        builder: "bytes8()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("bytes8Schema", "Bytes8", "bytes8")
     case "bytes32":
-      return {
-        param_schema: "bytes32Schema",
-        param_type: "Bytes32",
-        decoded_schema: "bytes32Schema",
-        decoded_type: "Bytes32",
-        builder: "bytes32()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("bytes32Schema", "Bytes32", "bytes32")
     case "uint":
-      return {
-        param_schema: "uint256Schema",
-        param_type: "Uint256",
-        decoded_schema: "uint256Schema",
-        decoded_type: "Uint256",
-        builder: "uint()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("uint256Schema", "Uint256", "uint")
     case "hash32":
-      return {
-        param_schema: "hash32Schema",
-        param_type: "Hash32",
-        decoded_schema: "hash32Schema",
-        decoded_type: "Hash32",
-        builder: "hash32()",
-        valibot: false,
-        package: "eth",
-      }
+      return core_leaf("hash32Schema", "Hash32", "hash32")
     default: {
       const uint_match = /^uint(\d+)$/.exec(type)
       if (uint_match) {
         const bits = Number(uint_match[1])
         if (bits >= 8 && bits <= 256 && bits % 8 === 0) {
-          return {
-            param_schema: "uint256Schema",
-            param_type: "Uint256",
-            decoded_schema: "uint256Schema",
-            decoded_type: "Uint256",
-            builder: `uint${bits}()`,
-            valibot: false,
-            package: "eth",
-          }
+          return core_leaf(
+            "uint256Schema",
+            "Uint256",
+            `uint${bits}`,
+          )
         }
       }
       throw new Error(
@@ -200,13 +291,8 @@ function get_type_info(type: AbiType): Type_info {
   }
 }
 
-function unique<T>(items: T[]): T[] {
-  return Array.from(new Set(items))
-}
-
 function compose_valibot_imports(
-  names: string[],
-  _is_readable: boolean,
+  collected: Set<string>,
   has_inputs: boolean,
 ): string {
   const base = new Set<string>(["parse"])
@@ -215,8 +301,10 @@ function compose_valibot_imports(
     base.add("tuple")
     base.add("object")
   }
-  for (const n of names) base.add(n)
-  const items = Array.from(base).sort()
+  for (const n of collected) base.add(n)
+  const items = Array.from(base)
+    .sort()
+    .map((n) => (n === "v_array" ? "array as v_array" : n))
   const type_import = has_inputs
     ? 'import type { InferOutput } from "valibot"\n'
     : ""
@@ -224,18 +312,16 @@ function compose_valibot_imports(
 }
 
 function compose_core_imports(
-  schemas: string[],
-  types: string[],
+  schemas: Set<string>,
+  types: Set<string>,
 ): string {
   // `Bytes` is always imported at the top of every generated file (it's the
   // input type for the decoder). Dedupe it out of the per-method type set.
-  const filtered_types = unique(
-    types.filter((t) => t !== "Bytes"),
-  )
-  if (schemas.length === 0 && filtered_types.length === 0) return ""
+  const filtered_types = Array.from(types).filter((t) => t !== "Bytes")
+  if (schemas.size === 0 && filtered_types.length === 0) return ""
   const value_imports =
-    schemas.length > 0
-      ? `import { ${unique(schemas).sort().join(", ")} } from "@ethernauta/core"`
+    schemas.size > 0
+      ? `import { ${Array.from(schemas).sort().join(", ")} } from "@ethernauta/core"`
       : ""
   const type_imports =
     filtered_types.length > 0
@@ -246,19 +332,29 @@ function compose_core_imports(
     .join("\n")
 }
 
+function compose_abi_imports(
+  builders: Set<string>,
+  extra: string[],
+): string {
+  const items = [
+    ...Array.from(builders)
+      .sort()
+      .map((n) => (n === "abi_tuple" ? "tuple as abi_tuple" : n)),
+    ...extra,
+  ]
+  return `import {
+  ${items.join(",\n  ")},
+} from "@ethernauta/abi"`
+}
+
 function compose_parameters_block(
   inputs: FunctionInput[],
+  infos: Type_info[],
 ): string {
   if (inputs.length === 0) return ""
-  const infos = inputs.map((i) => ({
-    name: i.name,
-    info: get_type_info(i.type),
-  }))
-  const tuple_items = infos
-    .map((i) => i.info.param_schema)
-    .join(", ")
-  const object_items = infos
-    .map((i) => `${i.name}: ${i.info.param_schema}`)
+  const tuple_items = infos.map((i) => i.param_schema).join(", ")
+  const object_items = inputs
+    .map((input, i) => `${input.name}: ${infos[i]!.param_schema}`)
     .join(", ")
   return `const parametersSchema = union([
   tuple([${tuple_items}]),
@@ -281,30 +377,17 @@ function compose_values_extraction(
 }
 
 function compose_param_codecs_const(
-  inputs: FunctionInput[],
+  infos: Type_info[],
 ): string {
-  const builders = inputs
-    .map((i) => get_type_info(i.type).builder)
-    .join(", ")
+  const builders = infos.map((i) => i.builder).join(", ")
   return `const PARAM_CODECS = [${builders}] as const`
 }
 
 function compose_output_codecs_const(
-  outputs: FunctionOutput[],
+  infos: Type_info[],
 ): string {
-  const builders = outputs
-    .map((i) => get_type_info(i.type).builder)
-    .join(", ")
+  const builders = infos.map((i) => i.builder).join(", ")
   return `const OUTPUT_CODECS = [${builders}] as const`
-}
-
-function collect_builders(types: string[]): string[] {
-  const set = new Set<string>()
-  for (const t of types) {
-    // e.g. "address()" -> "address"
-    set.add(t.replace("()", ""))
-  }
-  return Array.from(set).sort()
 }
 
 function signature_const_name(emit_name: string): string {
@@ -316,7 +399,7 @@ function compose_signature_const(
   emit_name: string,
   inputs: FunctionInput[],
 ): string {
-  const canonical = `${name}(${inputs.map((i) => i.type).join(",")})`
+  const canonical = canonical_signature(name, inputs)
   const names = inputs
     .map((i) => JSON.stringify(i.name))
     .join(", ")
@@ -327,6 +410,39 @@ function compose_signature_const(
   signature: ${JSON.stringify(canonical)},
   names: [${names}],
 }`
+}
+
+type Aggregate = {
+  valibot_names: Set<string>
+  core_schemas: Set<string>
+  core_types: Set<string>
+  abi_builders: Set<string>
+}
+
+function empty_aggregate(): Aggregate {
+  return {
+    valibot_names: new Set<string>(),
+    core_schemas: new Set<string>(),
+    core_types: new Set<string>(),
+    abi_builders: new Set<string>(),
+  }
+}
+
+// Inputs contribute schemas, valibot symbols, and builders, but NOT
+// core types: the `Parameters` type is derived from `parametersSchema`
+// via `InferOutput`, so no input type ever appears directly. Outputs
+// contribute everything because the decoded type is the return type.
+function fold_input(target: Aggregate, info: Type_info): void {
+  for (const v of info.valibot_names) target.valibot_names.add(v)
+  for (const s of info.core_schemas) target.core_schemas.add(s)
+  for (const b of info.abi_builders) target.abi_builders.add(b)
+}
+
+function fold_output(target: Aggregate, info: Type_info): void {
+  for (const v of info.valibot_names) target.valibot_names.add(v)
+  for (const s of info.core_schemas) target.core_schemas.add(s)
+  for (const t of info.core_types) target.core_types.add(t)
+  for (const b of info.abi_builders) target.abi_builders.add(b)
 }
 
 function build_readable(
@@ -342,49 +458,25 @@ function build_readable(
     outputs.length >= 1,
     `build_readable requires at least one output (${name} has 0)`,
   )
-  const output_infos = outputs.map((o) =>
-    get_type_info(o.type),
-  )
   const input_infos = inputs.map((i) =>
-    get_type_info(i.type),
+    get_type_info(i as InputLike),
+  )
+  const output_infos = outputs.map((o) =>
+    get_type_info(o as InputLike),
   )
 
-  const eth_schemas: string[] = []
-  const eth_types: string[] = []
-  const valibot_names = new Set<string>()
-  const builders: string[] = []
-
-  for (const info of input_infos) {
-    if (info.valibot) {
-      valibot_names.add(info.param_schema.replace("()", ""))
-    } else if (info.package === "eth") {
-      eth_schemas.push(info.param_schema)
-    }
-    builders.push(info.builder)
-  }
-  for (const info of output_infos) {
-    if (info.valibot) {
-      valibot_names.add(
-        info.decoded_schema.replace("()", ""),
-      )
-    } else if (info.package === "eth") {
-      eth_schemas.push(info.decoded_schema)
-      eth_types.push(info.decoded_type)
-    }
-    builders.push(info.builder)
-  }
-
-  const builder_names =
-    collect_builders(builders).join(", ")
+  const agg = empty_aggregate()
+  for (const info of input_infos) fold_input(agg, info)
+  for (const info of output_infos) fold_output(agg, info)
 
   const is_tuple = output_infos.length > 1
   const return_type = is_tuple
     ? `[${output_infos.map((i) => i.decoded_type).join(", ")}]`
-    : output_infos[0]?.decoded_type
+    : output_infos[0]!.decoded_type
   const decode_body = is_tuple
     ? `const decoded = decode_function_result(
           OUTPUT_CODECS,
-          _result,
+          result,
         )
         return [
           ${output_infos
@@ -396,33 +488,29 @@ function build_readable(
         ] as ${return_type}`
     : `const [decoded] = decode_function_result(
           OUTPUT_CODECS,
-          _result,
+          result,
         )
-        return parse(${output_infos[0]?.decoded_schema}, decoded)`
+        return parse(${output_infos[0]!.decoded_schema}, decoded)`
 
   return `import type { Bytes } from "@ethernauta/core"
 import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import {
-  ${builder_names},
-  decode_function_result,
-  encode_function_call,
-} from "@ethernauta/abi"
-${compose_valibot_imports(Array.from(valibot_names), true, inputs.length > 0)}
-${compose_core_imports(eth_schemas, eth_types)}
+${compose_abi_imports(agg.abi_builders, [
+  "decode_function_result",
+  "encode_function_call",
+])}
+${compose_valibot_imports(agg.valibot_names, inputs.length > 0)}
+${compose_core_imports(agg.core_schemas, agg.core_types)}
 
-${compose_param_codecs_const(inputs)}
-${compose_output_codecs_const(outputs)}
+${compose_param_codecs_const(input_infos)}
+${compose_output_codecs_const(output_infos)}
 
 ${compose_signature_const(name, emit_name, inputs)}
 
-${compose_parameters_block(inputs)}
+${compose_parameters_block(inputs, input_infos)}
 
-export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
-: (_context: ContractContext) => Callable<${return_type}> {
-  return (
-    _context: ContractContext,
-  ): Callable<${return_type}> => {
+export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""}) {
+  return (context: ContractContext): Callable<${return_type}> => {
     ${compose_values_extraction(inputs)}
     const calldata = encode_function_call({
       name: "${name}",
@@ -430,10 +518,10 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
       values: values as never,
     })
     return {
-      chain_id: _context.chain_id,
-      to: _context.to,
+      chain_id: context.chain_id,
+      to: context.to,
       data: bytes_to_hex(calldata),
-      decode: (_result: Bytes): ${return_type} => {
+      decode: (result: Bytes): ${return_type} => {
         ${decode_body}
       },
     }
@@ -452,48 +540,28 @@ function build_signable(
   )
   const { name, inputs } = description
   const input_infos = inputs.map((i) =>
-    get_type_info(i.type),
+    get_type_info(i as InputLike),
   )
-
-  const eth_schemas: string[] = []
-  const valibot_names = new Set<string>()
-  const builders: string[] = []
-  for (const info of input_infos) {
-    if (info.valibot) {
-      valibot_names.add(info.param_schema.replace("()", ""))
-    } else if (info.package === "eth") {
-      eth_schemas.push(info.param_schema)
-    }
-    builders.push(info.builder)
-  }
-
-  const builder_names =
-    collect_builders(builders).join(", ")
-  const builder_import_line =
-    builders.length > 0 ? `${builder_names},\n  ` : ""
+  const agg = empty_aggregate()
+  for (const info of input_infos) fold_input(agg, info)
 
   return `import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type { ResolvedSigner, Signable } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import {
-  ${builder_import_line}encode_function_call,
-} from "@ethernauta/abi"
-${compose_valibot_imports(Array.from(valibot_names), false, inputs.length > 0)}
-${compose_core_imports(eth_schemas, [])}
+${compose_abi_imports(agg.abi_builders, ["encode_function_call"])}
+${compose_valibot_imports(agg.valibot_names, inputs.length > 0)}
+${compose_core_imports(agg.core_schemas, agg.core_types)}
 
-${compose_param_codecs_const(inputs)}
+${compose_param_codecs_const(input_infos)}
 
 ${compose_signature_const(name, emit_name, inputs)}
 
-${compose_parameters_block(inputs)}
+${compose_parameters_block(inputs, input_infos)}
 
-export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""})
-: Signable<Bytes> {
-  return async (
-    [signer, _context]: ResolvedSigner,
-  ): Promise<Bytes> => {
-    if (!_context.to)
+export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : ""}): Signable<Bytes> {
+  return async ([signer, context]: ResolvedSigner): Promise<Bytes> => {
+    if (!context.to)
       throw new Error("contract Signable requires a 'to' on the signer resolver")
     ${compose_values_extraction(inputs)}
     const calldata = encode_function_call({
@@ -507,14 +575,14 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     //               Generator MUST leave these fields unset.
     return eth_signTransaction(
       [{
-        to: _context.to,
+        to: context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
         _ethernauta: {
           function: ${signature_const_name(emit_name)},
         },
       }],
-    )([signer, _context])
+    )([signer, context])
   }
 }
 `

@@ -1,16 +1,30 @@
 import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
-import type { ResolvedSigner, Signable } from "@ethernauta/transport"
+import type {
+  ResolvedSigner,
+  Signable,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  address, bytes, uint256,
+  address,
+  bytes,
+  uint256,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
-const PARAM_CODECS = [address(), uint256(), uint256(), bytes()] as const
+const PARAM_CODECS = [
+  address(),
+  uint256(),
+  uint256(),
+  bytes(),
+] as const
 
 export const PERMIT_SIGNATURE: {
   signature: string
@@ -21,22 +35,41 @@ export const PERMIT_SIGNATURE: {
 }
 
 const parametersSchema = union([
-  tuple([addressSchema, uint256Schema, uint256Schema, bytesSchema]),
-  object({ spender: addressSchema, tokenId: uint256Schema, deadline: uint256Schema, sig: bytesSchema }),
+  tuple([
+    addressSchema,
+    uint256Schema,
+    uint256Schema,
+    bytesSchema,
+  ]),
+  object({
+    spender: addressSchema,
+    tokenId: uint256Schema,
+    deadline: uint256Schema,
+    sig: bytesSchema,
+  }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function permit(_parameters: Parameters)
-: Signable<Bytes> {
-  return async (
-    [signer, _context]: ResolvedSigner,
-  ): Promise<Bytes> => {
-    if (!_context.to)
-      throw new Error("contract Signable requires a 'to' on the signer resolver")
+export function permit(
+  _parameters: Parameters,
+): Signable<Bytes> {
+  return async ([
+    signer,
+    context,
+  ]: ResolvedSigner): Promise<Bytes> => {
+    if (!context.to)
+      throw new Error(
+        "contract Signable requires a 'to' on the signer resolver",
+      )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
-      : [parameters.spender, parameters.tokenId, parameters.deadline, parameters.sig]
+      : [
+          parameters.spender,
+          parameters.tokenId,
+          parameters.deadline,
+          parameters.sig,
+        ]
     const calldata = encode_function_call({
       name: "permit",
       args: PARAM_CODECS,
@@ -46,15 +79,15 @@ export function permit(_parameters: Parameters)
     //               maxPriorityFeePerGas by querying the network
     //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
     //               Generator MUST leave these fields unset.
-    return eth_signTransaction(
-      [{
-        to: _context.to,
+    return eth_signTransaction([
+      {
+        to: context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
         _ethernauta: {
           function: PERMIT_SIGNATURE,
         },
-      }],
-    )([signer, _context])
+      },
+    ])([signer, context])
   }
 }

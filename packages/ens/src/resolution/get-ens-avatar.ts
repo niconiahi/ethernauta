@@ -7,7 +7,10 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, parse, string } from "valibot"
 
-import { type AvatarResult, parse_avatar } from "../ensip-12/avatar"
+import {
+  type AvatarResult,
+  parse_avatar,
+} from "../ensip-12/avatar"
 
 import { get_ens_text } from "./get-ens-text"
 
