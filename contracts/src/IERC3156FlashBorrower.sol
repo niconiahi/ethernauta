@@ -3,6 +3,9 @@
 
 pragma solidity >=0.6.2;
 
+/// @dev Interface of the ERC-3156 (Flash Loans) borrower callback.
+/// Receives `onFlashLoan` from an IERC3156FlashLender during a flash
+/// loan. The lender interface lives in IERC3156FlashLender.sol.
 interface IERC3156FlashBorrower {
     function onFlashLoan(
         address initiator,
@@ -11,16 +14,4 @@ interface IERC3156FlashBorrower {
         uint256 fee,
         bytes calldata data
     ) external returns (bytes32);
-}
-
-/// @dev Interface of the ERC-3156 (Flash Loans) lender.
-interface IERC3156 {
-    function maxFlashLoan(address token) external view returns (uint256);
-    function flashFee(address token, uint256 amount) external view returns (uint256);
-    function flashLoan(
-        IERC3156FlashBorrower receiver,
-        address token,
-        uint256 amount,
-        bytes calldata data
-    ) external returns (bool);
 }

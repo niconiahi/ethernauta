@@ -4,7 +4,7 @@
 pragma solidity >=0.6.2;
 
 /// @dev Interface of ERC-5564 (Stealth Address Announcer).
-interface IERC5564 {
+interface IERC5564Announcer {
     event Announcement(
         uint256 indexed schemeId,
         address indexed stealthAddress,

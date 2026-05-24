@@ -5,20 +5,26 @@ import {
 } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
 
-import { FILL_SIGNATURE, fill } from "./methods/fill"
-import { OPEN_SIGNATURE, open } from "./methods/open"
+import {
+  FILL_SIGNATURE,
+  fill,
+} from "./extensions/destination-settler/methods/fill"
+import {
+  OPEN_SIGNATURE,
+  open,
+} from "./extensions/origin-settler/methods/open"
 import {
   OPEN_FOR_SIGNATURE,
   openFor,
-} from "./methods/open-for"
+} from "./extensions/origin-settler/methods/open-for"
 import {
   RESOLVE_SIGNATURE,
   resolve,
-} from "./methods/resolve"
+} from "./extensions/origin-settler/methods/resolve"
 import {
   RESOLVE_FOR_SIGNATURE,
   resolveFor,
-} from "./methods/resolve-for"
+} from "./extensions/origin-settler/methods/resolve-for"
 
 const ORDER = {
   fillDeadline: "0x65b3b3b3" as const,

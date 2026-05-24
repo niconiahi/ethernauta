@@ -66,8 +66,3 @@ interface IOriginSettler {
         view
         returns (ResolvedCrossChainOrder memory);
 }
-
-/// @dev Interface of ERC-7683 destination settler.
-interface IDestinationSettler {
-    function fill(bytes32 orderId, bytes calldata originData, bytes calldata fillerData) external;
-}

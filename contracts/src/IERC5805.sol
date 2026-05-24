@@ -1,14 +1,9 @@
 // SPDX-License-Identifier: MIT
 // https://eips.ethereum.org/EIPS/eip-5805
-// References EIP-6372 for the clock.
 
 pragma solidity >=0.6.2;
 
-interface IERC6372 {
-    function clock() external view returns (uint48);
-    // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() external view returns (string memory);
-}
+import {IERC6372} from "./IERC6372.sol";
 
 /// @dev Interface of ERC-5805 (Voting with delegation).
 interface IERC5805 is IERC6372 {

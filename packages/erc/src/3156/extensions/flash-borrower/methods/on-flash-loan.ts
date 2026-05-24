@@ -12,29 +12,29 @@ import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
 
-const PARAM_CODECS = [uint256(), address(), bytes(), bytes()] as const
+const PARAM_CODECS = [address(), address(), uint256(), uint256(), bytes()] as const
 
-export const ANNOUNCE_SIGNATURE = {
-  signature: "announce(uint256,address,bytes,bytes)",
-  names: ["schemeId", "stealthAddress", "ephemeralPubKey", "metadata"],
+export const ON_FLASH_LOAN_SIGNATURE = {
+  signature: "onFlashLoan(address,address,uint256,uint256,bytes)",
+  names: ["initiator", "token", "amount", "fee", "data"],
 }
 
 const parametersSchema = union([
-  tuple([uint256Schema, addressSchema, bytesSchema, bytesSchema]),
-  object({ schemeId: uint256Schema, stealthAddress: addressSchema, ephemeralPubKey: bytesSchema, metadata: bytesSchema }),
+  tuple([addressSchema, addressSchema, uint256Schema, uint256Schema, bytesSchema]),
+  object({ initiator: addressSchema, token: addressSchema, amount: uint256Schema, fee: uint256Schema, data: bytesSchema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function announce(_parameters: Parameters): Signable<Bytes> {
+export function onFlashLoan(_parameters: Parameters): Signable<Bytes> {
   return async ([signer, context]: ResolvedSigner): Promise<Bytes> => {
     if (!context.to)
       throw new Error("contract Signable requires a 'to' on the signer resolver")
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? ([parameters[0], parameters[1], parameters[2], parameters[3]] as const)
-      : ([parameters.schemeId, parameters.stealthAddress, parameters.ephemeralPubKey, parameters.metadata] as const)
+      ? ([parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]] as const)
+      : ([parameters.initiator, parameters.token, parameters.amount, parameters.fee, parameters.data] as const)
     const calldata = encode_function_call({
-      name: "announce",
+      name: "onFlashLoan",
       args: PARAM_CODECS,
       values,
     })
@@ -48,7 +48,7 @@ export function announce(_parameters: Parameters): Signable<Bytes> {
         value: "0x0",
         input: bytes_to_hex(calldata),
         _ethernauta: {
-          function: ANNOUNCE_SIGNATURE,
+          function: ON_FLASH_LOAN_SIGNATURE,
         },
       }],
     )([signer, context])

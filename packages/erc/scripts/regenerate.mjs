@@ -2,28 +2,28 @@
 //
 // Run: bun packages/erc/scripts/regenerate.mjs
 //
-// Source of truth: `contracts/src/IERC<N>[<Suffix>].sol` files compiled by
-// Foundry. Routing is 100% convention-driven from the filename:
+// Source of truth: `contracts/src/I*.sol` files compiled by Foundry. Each
+// file declares ONE interface whose name matches the file basename and
+// carries a spec-link header `// https://eips.ethereum.org/EIPS/eip-<N>`.
+// The link is what routes the file — host number comes from the EIP, the
+// extension suffix comes from whatever's left of the basename after
+// stripping the matching `IERC<N>` prefix (when present) or just the
+// leading `I`.
 //
-//   contracts/src/IERC<N>.sol            -> packages/erc/src/<N>/
-//   contracts/src/IERC<N><Suffix>.sol    -> packages/erc/src/<N>/extensions/<suffix>/
+//   contracts/src/IERC20.sol           (// eip-20) -> packages/erc/src/20/
+//   contracts/src/IERC20Burnable.sol   (// eip-20) -> packages/erc/src/20/extensions/burnable/
+//   contracts/src/IERC1155MetadataURI.sol (// eip-1155) -> packages/erc/src/1155/extensions/metadata-uri/
+//   contracts/src/IERC137Resolver.sol  (// eip-137) -> packages/erc/src/137/extensions/resolver/
+//   contracts/src/IOriginSettler.sol   (// eip-7683) -> packages/erc/src/7683/extensions/origin-settler/
+//   contracts/src/IDestinationSettler.sol (// eip-7683) -> packages/erc/src/7683/extensions/destination-settler/
 //
-//   <suffix> is converted from PascalCase to kebab-case. Examples:
-//     IERC20.sol            -> packages/erc/src/20/
-//     IERC20Burnable.sol    -> packages/erc/src/20/extensions/burnable/
-//     IERC20Metadata.sol    -> packages/erc/src/20/extensions/metadata/
-//     IERC1155MetadataURI.sol -> packages/erc/src/1155/extensions/metadata-uri/
-//     IERC137.sol           -> packages/erc/src/137/
-//     IERC137Resolver.sol   -> packages/erc/src/137/extensions/resolver/
-//     IERC2304.sol          -> packages/erc/src/2304/
-//
-// `IERC7683.sol` is a multi-interface file (IOriginSettler +
-// IDestinationSettler). The route is still derived from the filename
-// (`packages/erc/src/7683/`), and ABIs from BOTH interfaces are merged into
-// the host folder. Methods are deduped by signature.
+// Files with no spec-link comment are skipped only if explicitly listed in
+// SKIP_FILES (e.g. BatchExecutor.sol — an implementation, not an interface).
+// Any other file lacking a spec link is a hard error so a missing header
+// can't silently drop an interface from the binding tree.
 //
 // Outputs (all overwritten on every run):
-//   - <out>/<InterfaceName>.abi.json — extracted ABI array per interface
+//   - <out>/<InterfaceName>.abi.json — extracted ABI array
 //   - <out>/methods/<method>.ts      — generated bindings
 //   - <out>/methods/index.ts         — barrel
 //
@@ -50,15 +50,6 @@ const repo_root = resolve(__dirname, "../../..")
 const contracts_dir = join(repo_root, "contracts")
 const forge_out = join(contracts_dir, "out")
 const erc_src = join(repo_root, "packages/erc/src")
-
-const SKIP_INTERFACES = new Set()
-
-// Map from "host interface name with no suffix" to "set of extra interfaces
-// whose ABIs merge into the same `methods/` folder". Today only IERC7683's
-// two interfaces co-locate in one .sol file.
-const MULTI_INTERFACE_FILES = {
-  IERC7683: ["IOriginSettler", "IDestinationSettler"],
-}
 
 function run_forge_build() {
   console.log("→ forge build")
@@ -94,14 +85,85 @@ function pascal_to_kebab(s) {
     .toLowerCase()
 }
 
+const SPEC_LINK_RE =
+  /^\/\/\s*https:\/\/eips\.ethereum\.org\/EIPS\/eip-(\d+)\s*$/m
+const INTERFACE_DECL_RE = /^interface\s+\w/m
+const CONTRACT_DECL_RE = /^contract\s+\w/m
+
+function read_source(filename) {
+  return readFileSync(
+    join(contracts_dir, "src", `${filename}.sol`),
+    "utf8",
+  )
+}
+
+function classify_file(filename) {
+  // Decides whether to route the file based on two independent signals
+  // that must agree:
+  //
+  //   filename:    starts with `I` (Solidity interface convention).
+  //   declaration: top-level `interface X` vs `contract X` in the source.
+  //
+  //  | I-prefix | interface | contract | → action                              |
+  //  |----------|-----------|----------|---------------------------------------|
+  //  | yes      | yes       | no       | route                                  |
+  //  | yes      | no        | yes      | error (I-prefix but declares contract) |
+  //  | no       | no        | yes      | skip (implementation file)             |
+  //  | no       | yes       | no       | error (interface without I-prefix)     |
+  //  | any      | yes       | yes      | error (mixed — not supported)          |
+  //  | any      | no        | no       | skip (no top-level declaration)        |
+  const starts_with_i = filename.startsWith("I")
+  const source = read_source(filename)
+  const has_interface = INTERFACE_DECL_RE.test(source)
+  const has_contract = CONTRACT_DECL_RE.test(source)
+  if (has_interface && has_contract) {
+    throw new Error(
+      `${filename}.sol declares both an \`interface\` and a \`contract\`. ` +
+        `Split into separate files so each one is routable or skippable on its own.`,
+    )
+  }
+  if (has_interface && !starts_with_i) {
+    throw new Error(
+      `${filename}.sol declares an interface but its basename does not start ` +
+        `with \`I\`. Rename the file (and the interface) to follow the Solidity convention.`,
+    )
+  }
+  if (has_contract && starts_with_i) {
+    throw new Error(
+      `${filename}.sol's basename starts with \`I\` (interface convention) but ` +
+        `the file declares a \`contract\`. Either rename to drop the \`I\` prefix ` +
+        `or restructure the file as an interface.`,
+    )
+  }
+  if (!has_interface) return "skip"
+  return "interface"
+}
+
 function route_for(filename) {
-  // filename without ".sol". Returns { source_file, host_number, suffix, out_dir, interfaces }.
-  // Skips non-IERC files. Skips files in SKIP_INTERFACES.
-  const match = /^IERC(\d+)(.*)$/.exec(filename)
-  if (!match) return null
-  const host_number = match[1]
-  const suffix = match[2] // possibly empty
-  const source_file = filename
+  // Returns { source_file, host_number, suffix, out_dir } or null when
+  // the file is not a routable interface. Steps:
+  //
+  //   1. classify_file → interface | skip | (throws on convention break).
+  //   2. Spec-link header → hard error if missing on an interface file
+  //      (every routed file must declare which EIP it implements).
+  //   3. Filename prefix:
+  //      - starts with `IERC<host_number>` → strip → suffix.
+  //      - starts with `I` only → strip the `I` → suffix.
+  //      - Empty suffix → host route; non-empty → extension route.
+  if (classify_file(filename) === "skip") return null
+  const source = read_source(filename)
+  const link_match = SPEC_LINK_RE.exec(source)
+  if (!link_match) {
+    throw new Error(
+      `${filename}.sol declares an interface but has no ` +
+        `\`// https://eips.ethereum.org/EIPS/eip-<N>\` header.`,
+    )
+  }
+  const host_number = link_match[1]
+  const ierc_prefix = `IERC${host_number}`
+  const suffix = filename.startsWith(ierc_prefix)
+    ? filename.slice(ierc_prefix.length)
+    : filename.slice(1)
   const out_dir = suffix
     ? join(
         erc_src,
@@ -110,18 +172,7 @@ function route_for(filename) {
         pascal_to_kebab(suffix),
       )
     : join(erc_src, host_number)
-  const interfaces = MULTI_INTERFACE_FILES[source_file] ?? [
-    source_file,
-  ]
-  if (interfaces.some((i) => SKIP_INTERFACES.has(i)))
-    return null
-  return {
-    source_file,
-    host_number,
-    suffix,
-    out_dir,
-    interfaces,
-  }
+  return { source_file: filename, host_number, suffix, out_dir }
 }
 
 function signature_key(fn) {
@@ -148,13 +199,10 @@ const extensions = routes.filter((r) => r.suffix)
 
 const host_signatures = new Map() // host_number -> Set<signature_key>
 let processed = 0
-let skipped = sources.filter(
-  (f) => f.startsWith("IERC") && !route_for(f),
-).length
-
+const skipped = sources.length - routes.length
 for (const f of sources) {
-  if (f.startsWith("IERC") && !route_for(f)) {
-    console.log(`  [skip] ${f}.sol (in SKIP_INTERFACES)`)
+  if (classify_file(f) === "skip") {
+    console.log(`  [skip] ${f}.sol (not an interface)`)
   }
 }
 
@@ -163,41 +211,34 @@ for (const f of sources) {
 const host_extensions = new Map() // host_number -> Array<{ suffix, kebab }>
 
 function process_route(route, host_set) {
-  const {
-    source_file,
-    out_dir,
-    interfaces,
-    host_number,
-    suffix,
-  } = route
+  const { source_file, out_dir, host_number, suffix } = route
   mkdirSync(out_dir, { recursive: true })
 
-  for (const interface_name of interfaces) {
-    const abi = read_artifact_abi(
-      source_file,
-      interface_name,
-    )
-    writeFileSync(
-      join(out_dir, `${interface_name}.abi.json`),
-      `${JSON.stringify(abi, null, 2)}\n`,
-    )
+  // Each route writes exactly one ABI file (named after the source file).
+  // Wipe any stale `*.abi.json` first so a previous layout's leftovers
+  // (e.g. the old `IERC<N>.abi.json` when the host has just been split
+  // into per-interface files) don't linger.
+  for (const entry of readdirSync(out_dir)) {
+    if (entry.endsWith(".abi.json")) {
+      rmSync(join(out_dir, entry))
+    }
   }
+
+  const abi = read_artifact_abi(source_file, source_file)
+  writeFileSync(
+    join(out_dir, `${source_file}.abi.json`),
+    `${JSON.stringify(abi, null, 2)}\n`,
+  )
 
   const seen = new Set()
   const functions = []
-  for (const interface_name of interfaces) {
-    const abi = read_artifact_abi(
-      source_file,
-      interface_name,
-    )
-    for (const description of abi) {
-      if (description.type !== "function") continue
-      const key = signature_key(description)
-      if (seen.has(key)) continue
-      if (host_set?.has(key)) continue
-      seen.add(key)
-      functions.push(description)
-    }
+  for (const description of abi) {
+    if (description.type !== "function") continue
+    const key = signature_key(description)
+    if (seen.has(key)) continue
+    if (host_set?.has(key)) continue
+    seen.add(key)
+    functions.push(description)
   }
 
   if (!suffix) {
@@ -300,6 +341,57 @@ for (const route of extensions) {
   writeFileSync(
     join(out_dir, "index.ts"),
     `export * from "./methods"\n`,
+  )
+}
+
+// Implicit hosts: host numbers that own extensions but no host .sol
+// (e.g. IERC5564 lives in IERC5564Announcer.sol, so `5564/` itself has
+// no IERC5564.sol — it routes through the extension). They still need
+// their top-level `index.ts` regenerated so the extension barrel + any
+// hand-written sibling modules are re-exported, and any stale
+// `methods/` folder from a previous host-as-.sol layout is wiped.
+const explicit_host_numbers = new Set(
+  hosts.map((r) => r.host_number),
+)
+const implicit_host_numbers = [...host_extensions.keys()]
+  .filter((n) => !explicit_host_numbers.has(n))
+  .sort()
+for (const host_number of implicit_host_numbers) {
+  const out_dir = join(erc_src, host_number)
+  const extensions_for_host =
+    host_extensions.get(host_number) ?? []
+  const stale_methods = join(out_dir, "methods")
+  if (existsSync(stale_methods)) {
+    rmSync(stale_methods, { recursive: true, force: true })
+  }
+  // Implicit hosts never own an ABI of their own — extensions write
+  // theirs inside `extensions/<kebab>/`. Anything matching `*.abi.json`
+  // at the host root is a leftover from a previous host-as-.sol layout.
+  if (existsSync(out_dir)) {
+    for (const entry of readdirSync(out_dir)) {
+      if (entry.endsWith(".abi.json")) {
+        rmSync(join(out_dir, entry))
+      }
+    }
+  }
+  const lines = [
+    `// https://eips.ethereum.org/EIPS/eip-${host_number}`,
+    "",
+  ]
+  for (const { kebab } of extensions_for_host.sort(
+    (a, b) => (a.kebab < b.kebab ? -1 : 1),
+  )) {
+    lines.push(`export * from "./extensions/${kebab}"`)
+  }
+  for (const basename of discover_sibling_modules(out_dir)) {
+    lines.push(`export * from "./${basename}"`)
+  }
+  writeFileSync(
+    join(out_dir, "index.ts"),
+    `${lines.join("\n")}\n`,
+  )
+  console.log(
+    `  (implicit host) → ${out_dir.slice(repo_root.length + 1)}/index.ts  (extensions-only)`,
   )
 }
 
