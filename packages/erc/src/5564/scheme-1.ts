@@ -4,11 +4,20 @@
 // keccak256, view tag = first byte of the hashed shared
 // secret. The default and only mandatory scheme.
 
-import type { Address } from "@ethernauta/core"
+import {
+  type Address,
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
+import {
+  type InferOutput,
+  number,
+  object,
+} from "valibot"
 import { keccak_256 } from "@noble/hashes/sha3"
 import {
   CURVE,
@@ -44,10 +53,13 @@ function point_to_address(point: Point): Address {
   return bytes_to_hex(hash.slice(-20)) as Address
 }
 
-export type StealthMetaAddress = {
-  spending_public_key: `0x${string}`
-  viewing_public_key: `0x${string}`
-}
+export const stealthMetaAddressSchema = object({
+  spending_public_key: bytesSchema,
+  viewing_public_key: bytesSchema,
+})
+export type StealthMetaAddress = InferOutput<
+  typeof stealthMetaAddressSchema
+>
 
 // Parse a concatenated stealth meta-address: 33 bytes
 // spending pubkey + 33 bytes viewing pubkey, hex-encoded.
@@ -90,11 +102,14 @@ export function derive_meta_address(input: {
   }
 }
 
-export type GeneratedStealthAddress = {
-  stealth_address: Address
-  ephemeral_public_key: `0x${string}`
-  view_tag: number
-}
+export const generatedStealthAddressSchema = object({
+  stealth_address: addressSchema,
+  ephemeral_public_key: bytesSchema,
+  view_tag: number(),
+})
+export type GeneratedStealthAddress = InferOutput<
+  typeof generatedStealthAddressSchema
+>
 
 // Sender side: derive a one-shot recipient address from a
 // stealth meta-address. Returns the address to send funds

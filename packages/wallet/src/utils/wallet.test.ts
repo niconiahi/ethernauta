@@ -1,5 +1,13 @@
 import "fake-indexeddb/auto"
 import {
+  custom,
+  type InferOutput,
+  object,
+  record,
+  string,
+  unknown,
+} from "valibot"
+import {
   beforeEach,
   describe,
   expect,
@@ -42,10 +50,13 @@ function reset_accounts_signal() {
   }
 }
 
-type ChromeStub = {
-  store: Record<string, unknown>
-  send_message: ReturnType<typeof vi.fn>
-}
+const chromeStubSchema = object({
+  store: record(string(), unknown()),
+  send_message: custom<ReturnType<typeof vi.fn>>(
+    (value) => typeof value === "function",
+  ),
+})
+type ChromeStub = InferOutput<typeof chromeStubSchema>
 
 function stub_chrome(): ChromeStub {
   const store: Record<string, unknown> = {}

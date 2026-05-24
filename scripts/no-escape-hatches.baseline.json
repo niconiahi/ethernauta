@@ -4,10 +4,10 @@
   "ts_ignore": 2,
   "biome_ignore_line": 7,
   "biome_ignore_all": 0,
-  "interface": 17,
-  "object_type": 64,
+  "interface": 1,
+  "object_type": 2,
   "eslint_disable": 4,
   "any": 17,
   "never": 31,
-  "unknown": 265
+  "unknown": 267
 }

@@ -9,12 +9,19 @@ import {
   http,
 } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
+import {
+  type InferOutput,
+  number,
+  object,
+  string,
+} from "valibot"
 
-export type Chain = {
-  id: number
-  name: string
-  rpc_url: string
-}
+export const chainSchema = object({
+  id: number(),
+  name: string(),
+  rpc_url: string(),
+})
+export type Chain = InferOutput<typeof chainSchema>
 
 export const CHAINS: Chain[] = [
   {

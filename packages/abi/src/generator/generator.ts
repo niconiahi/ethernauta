@@ -9,26 +9,18 @@ import {
   invariant,
 } from "@ethernauta/utils"
 
+import { type InferOutput, object, set, string } from "valibot"
+
 import type { FunctionInput, FunctionOutput } from "../abi"
 import type { Description } from "../abi/description"
+import { type TupleComponent } from "../abi/function/function-shared"
 import { to_selector } from "../encoding/encode"
 
-// A tuple component is either a leaf {name, type} or a nested tuple
-// {name, type: "tuple"|"tuple[]", components: [...]}. The valibot
-// `function_tupleSchema` only types one level deep, so we re-declare
-// the recursive shape here and read it via `unknown` casts where the
-// TS surface doesn't reach.
-type TupleComponent = {
-  name: string
-  type: string
-  components?: TupleComponent[]
-}
-
-type InputLike = {
-  name: string
-  type: string
-  components?: TupleComponent[]
-}
+// A function input is either a leaf {name, type} or a tuple with
+// nested components. Structurally identical to `TupleComponent` once
+// we read it through `unknown` casts to reach the recursive shape that
+// `function_tupleSchema` only types one level deep.
+type InputLike = TupleComponent
 
 function get_components(input: InputLike): TupleComponent[] {
   const components = (
@@ -124,17 +116,18 @@ export function emit_file_basename_for(
 //     (e.g. "address", "uint256", "array", "abi_tuple"). `abi_tuple` is
 //     aliased on import as `tuple as abi_tuple` to avoid colliding with
 //     valibot's `tuple`.
-type Type_info = {
-  param_schema: string
-  param_type: string
-  decoded_schema: string
-  decoded_type: string
-  builder: string
-  valibot_names: Set<string>
-  core_schemas: Set<string>
-  core_types: Set<string>
-  abi_builders: Set<string>
-}
+const typeInfoSchema = object({
+  param_schema: string(),
+  param_type: string(),
+  decoded_schema: string(),
+  decoded_type: string(),
+  builder: string(),
+  valibot_names: set(string()),
+  core_schemas: set(string()),
+  core_types: set(string()),
+  abi_builders: set(string()),
+})
+type Type_info = InferOutput<typeof typeInfoSchema>
 
 function valibot_leaf(
   valibot_name: string,
@@ -409,12 +402,13 @@ function compose_signature_const(
 }`
 }
 
-type Aggregate = {
-  valibot_names: Set<string>
-  core_schemas: Set<string>
-  core_types: Set<string>
-  abi_builders: Set<string>
-}
+const aggregateSchema = object({
+  valibot_names: set(string()),
+  core_schemas: set(string()),
+  core_types: set(string()),
+  abi_builders: set(string()),
+})
+type Aggregate = InferOutput<typeof aggregateSchema>
 
 function empty_aggregate(): Aggregate {
   return {

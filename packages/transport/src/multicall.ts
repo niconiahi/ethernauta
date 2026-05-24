@@ -16,7 +16,13 @@ import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
-import { parse } from "valibot"
+import {
+  boolean,
+  type InferOutput,
+  object,
+  optional,
+  parse,
+} from "valibot"
 import { callSchema as rpcCallSchema } from "./call"
 import type { Callable } from "./contract"
 import {
@@ -47,9 +53,12 @@ const resultSchema = tuple({
   returnData: bytes(),
 })
 
-type MulticallOptions = {
-  allow_failure?: boolean
-}
+const multicallOptionsSchema = object({
+  allow_failure: optional(boolean()),
+})
+type MulticallOptions = InferOutput<
+  typeof multicallOptionsSchema
+>
 
 type ValuesOf<T extends readonly Callable<unknown>[]> = {
   [K in keyof T]: T[K] extends Callable<infer U> ? U : never

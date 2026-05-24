@@ -77,23 +77,25 @@ export const WALLET_INTERNAL_METHODS = new Set<string>([
   "wallet_getCallsStatus",
 ])
 
-export type RouterDeps = {
-  get_active_chain(): string
-  get_accounts(): string[]
-  has_chain(_chain_id: string): boolean
-  set_active_chain(_chain_id: string): void
-  get_capabilities(): unknown
-  get_permissions(): unknown
-  rpc_call(
+// Function-bearing DI contract — kept as an intersection-shaped
+// alias because Valibot cannot type per-call argument relations.
+export type RouterDeps = Readonly<{
+  get_active_chain: () => string
+  get_accounts: () => string[]
+  has_chain: (_chain_id: string) => boolean
+  set_active_chain: (_chain_id: string) => void
+  get_capabilities: () => unknown
+  get_permissions: () => unknown
+  rpc_call: (
     _chain_id: string,
     _method: string,
     _params: unknown,
-  ): Promise<unknown>
-  forward_to_popup(
+  ) => Promise<unknown>
+  forward_to_popup: (
     _args: RequestArguments,
-  ): Promise<unknown>
-  read_calls_status(_id: string): Promise<unknown>
-}
+  ) => Promise<unknown>
+  read_calls_status: (_id: string) => Promise<unknown>
+}>
 
 function chain_id_to_decimal(hex: string): string {
   if (!hex.startsWith("0x"))

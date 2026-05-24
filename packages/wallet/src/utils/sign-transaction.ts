@@ -17,33 +17,53 @@ import { hex_to_bytes, invariant } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import type { RecoveredSignature } from "@noble/secp256k1"
 import type { HDKey } from "@scure/bip32"
-import { hexadecimal, parse, pipe, string } from "valibot"
+import {
+  array,
+  bigint,
+  custom,
+  hexadecimal,
+  type InferOutput,
+  object,
+  parse,
+  pipe,
+  string,
+} from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
 import { sign_digest } from "./ecdsa"
 import { encode } from "./rlp"
 import type { Transaction } from "./transaction"
 
-export interface Eip1559TransactionUnsigned {
-  chain_id: bigint
-  nonce: bigint
-  max_priority_fee_per_gas: bigint
-  max_fee_per_gas: bigint
-  gas_limit: bigint
-  to: Address
-  value: bigint
-  data: Uint8Array
-  access_list: AccessListItem[]
-}
-export interface AccessListItem {
-  address: Address
-  storage_keys: string[]
-}
-export interface Eip1559TransactionSigned
-  extends Eip1559TransactionUnsigned {
-  y_parity: bigint
-  r: bigint
-  s: bigint
-}
+export const accessListItemSchema = object({
+  address: addressSchema,
+  storage_keys: array(string()),
+})
+export type AccessListItem = InferOutput<
+  typeof accessListItemSchema
+>
+
+export const eip1559TransactionUnsignedSchema = object({
+  chain_id: bigint(),
+  nonce: bigint(),
+  max_priority_fee_per_gas: bigint(),
+  max_fee_per_gas: bigint(),
+  gas_limit: bigint(),
+  to: addressSchema,
+  value: bigint(),
+  data: custom<Uint8Array>(
+    (value) => value instanceof Uint8Array,
+  ),
+  access_list: array(accessListItemSchema),
+})
+export type Eip1559TransactionUnsigned = InferOutput<
+  typeof eip1559TransactionUnsignedSchema
+>
+
+export type Eip1559TransactionSigned =
+  Eip1559TransactionUnsigned & {
+    y_parity: bigint
+    r: bigint
+    s: bigint
+  }
 type EncodedAccessListItem = [Uint8Array, Uint8Array[]]
 type EncodedAccessList = EncodedAccessListItem[]
 type Field = Uint8Array<ArrayBufferLike> | EncodedAccessList

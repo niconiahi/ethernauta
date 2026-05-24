@@ -8,34 +8,53 @@
 //     y_parity, r, s
 //   ])
 
+import { addressSchema, bytesSchema } from "@ethernauta/core"
 import {
   hex_to_bytes,
   type RlpInput,
   rlp_encode,
 } from "@ethernauta/utils"
+import {
+  array,
+  bigint,
+  custom,
+  type InferOutput,
+  object,
+} from "valibot"
+
 import type {
   AuthorizationList,
   AuthorizationSigned,
 } from "./authorization"
 import { SET_CODE_TX_TYPE } from "./authorization"
 
-export type AccessListItem = {
-  address: `0x${string}`
-  storageKeys: `0x${string}`[]
-}
+export const accessListItemSchema = object({
+  address: addressSchema,
+  storageKeys: array(bytesSchema),
+})
+export type AccessListItem = InferOutput<
+  typeof accessListItemSchema
+>
 
-export type SetCodeTransactionUnsigned = {
-  chainId: bigint
-  nonce: bigint
-  maxPriorityFeePerGas: bigint
-  maxFeePerGas: bigint
-  gasLimit: bigint
-  to: `0x${string}`
-  value: bigint
-  data: Uint8Array
-  accessList: AccessListItem[]
-  authorizationList: AuthorizationList
-}
+export const setCodeTransactionUnsignedSchema = object({
+  chainId: bigint(),
+  nonce: bigint(),
+  maxPriorityFeePerGas: bigint(),
+  maxFeePerGas: bigint(),
+  gasLimit: bigint(),
+  to: addressSchema,
+  value: bigint(),
+  data: custom<Uint8Array>(
+    (value) => value instanceof Uint8Array,
+  ),
+  accessList: array(accessListItemSchema),
+  authorizationList: custom<AuthorizationList>((value) =>
+    Array.isArray(value),
+  ),
+})
+export type SetCodeTransactionUnsigned = InferOutput<
+  typeof setCodeTransactionUnsignedSchema
+>
 
 export type SetCodeTransactionSigned =
   SetCodeTransactionUnsigned & {

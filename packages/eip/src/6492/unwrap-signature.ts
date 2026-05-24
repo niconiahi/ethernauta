@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-6492
 
-import type { Address, Bytes } from "@ethernauta/core"
+import type { Bytes } from "@ethernauta/core"
 import {
   addressSchema,
   bytesSchema,
@@ -9,7 +9,7 @@ import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
-import { parse } from "valibot"
+import { type InferOutput, object, parse } from "valibot"
 
 import {
   type DecodedAddressBytesBytes,
@@ -17,11 +17,14 @@ import {
 } from "./abi"
 import { is_wrapped_signature } from "./is-wrapped-signature"
 
-export type UnwrappedSignature = {
-  readonly factory: Address
-  readonly factoryData: Bytes
-  readonly signature: Bytes
-}
+export const unwrappedSignatureSchema = object({
+  factory: addressSchema,
+  factoryData: bytesSchema,
+  signature: bytesSchema,
+})
+export type UnwrappedSignature = InferOutput<
+  typeof unwrappedSignatureSchema
+>
 
 // Inverse of `wrap_signature`. Returns null when the input
 // is missing the magic suffix, has an inner shape that

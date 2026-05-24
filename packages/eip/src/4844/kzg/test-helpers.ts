@@ -10,6 +10,16 @@ import {
 import { join } from "node:path"
 
 import {
+  array,
+  type InferOutput,
+  nullable,
+  object,
+  record,
+  string,
+  union,
+} from "valibot"
+
+import {
   init_kzg,
   type Kzg,
   type TrustedSetup,
@@ -50,10 +60,11 @@ export function load_kzg_from_txt(_path: string): Kzg {
 //     - '<value>'
 //
 // Returns { input: {...}, output: string | null | string[] }.
-export type KzgCase = {
-  input: Record<string, string | string[]>
-  output: string | null | string[]
-}
+export const kzgCaseSchema = object({
+  input: record(string(), union([string(), array(string())])),
+  output: nullable(union([string(), array(string())])),
+})
+export type KzgCase = InferOutput<typeof kzgCaseSchema>
 export function parse_kzg_yaml(_path: string): KzgCase {
   const text = readFileSync(_path, "utf8")
   const lines = text.split("\n")

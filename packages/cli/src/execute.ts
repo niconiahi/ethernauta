@@ -14,7 +14,13 @@ import {
   emit_name_for,
   generate,
 } from "@ethernauta/abi/generator"
-import { array, parse } from "valibot"
+import {
+  array,
+  type InferOutput,
+  object,
+  parse,
+  string,
+} from "valibot"
 
 function selector_hex(signature: string): `0x${string}` {
   const bytes = to_selector(signature)
@@ -164,13 +170,14 @@ function walk_abi_jsons(root: string): string[] {
   return found.sort()
 }
 
-type RegistryEntry = {
-  signature: string
-  name: string
-  types: string[]
-  param_names: string[]
-  source: string
-}
+const registryEntrySchema = object({
+  signature: string(),
+  name: string(),
+  types: array(string()),
+  param_names: array(string()),
+  source: string(),
+})
+type RegistryEntry = InferOutput<typeof registryEntrySchema>
 
 function collect_entries(
   files: string[],

@@ -287,6 +287,40 @@ type Foo = InferOutput<typeof fooSchema>
 Validate at every boundary with `parse(fooSchema, raw)`. Throws are the
 contract — never `safeParse`.
 
+**Allowed exceptions (the narrow list):**
+
+1. **Recursive Valibot schemas.** `lazy()` requires a forward-declared
+   hand-rolled type to break the inference cycle
+   (`GenericSchema<T>` where `T` is the recursive shape). This is the
+   pattern Valibot's own docs prescribe. Current instances:
+   `packages/abi/src/abi/function/function-shared.ts:TupleComponent`
+   and `packages/ens/src/ensip-15/normalize.ts:Node`.
+2. **Declaration merging on global / built-in interfaces.** TypeScript
+   requires the `interface` keyword for declaration merging. Current
+   instance: `packages/transaction/src/store.ts:Window` (augments
+   `globalThis.Window` with `transactions?: Map<...>`).
+3. **Function-bearing strategy / DI interfaces.** When the type's job
+   is to declare a contract whose fields are functions with per-call
+   type relations (often generic), no Valibot schema can capture the
+   call signature. Use `Readonly<{ ... }>` so the regex-form-banned
+   `type X = {` does not match. Convention:
+
+   ```ts
+   // Function-bearing DI contract — kept as an intersection-shaped
+   // alias because Valibot cannot type per-call argument relations.
+   export type Store = Readonly<{
+     get: (hash: Hash32) => Promise<Transaction | undefined>
+     set: (hash: Hash32, transaction: Transaction) => Promise<void>
+   }>
+   ```
+
+Any new exception must fall into one of the three above and carry the
+matching comment in-file. The ratchet baseline only counts declarations
+that match the form-banned regex; `Readonly<...>`, intersection (`&`),
+and `extends`-based shapes pass through silently — that's intentional,
+because the form is what signals "I am NOT a Valibot-typeable value
+record."
+
 ## R5 — Generators are subject to the same rules
 
 The output of `packages/abi/src/generator/generator.ts`, the chain

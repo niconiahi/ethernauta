@@ -6,6 +6,11 @@
 // builds its own packing.
 
 import { hex_to_bytes } from "@ethernauta/utils"
+import {
+  custom,
+  type InferOutput,
+  object,
+} from "valibot"
 
 const WORD = 32
 
@@ -127,11 +132,20 @@ export function encode_address_bytes32_bytes(
   return concat([head, sig_tail])
 }
 
-export type DecodedAddressBytesBytes = {
-  readonly address: Uint8Array
-  readonly first: Uint8Array
-  readonly second: Uint8Array
-}
+export const decodedAddressBytesBytesSchema = object({
+  address: custom<Uint8Array>(
+    (value) => value instanceof Uint8Array,
+  ),
+  first: custom<Uint8Array>(
+    (value) => value instanceof Uint8Array,
+  ),
+  second: custom<Uint8Array>(
+    (value) => value instanceof Uint8Array,
+  ),
+})
+export type DecodedAddressBytesBytes = InferOutput<
+  typeof decodedAddressBytesBytesSchema
+>
 
 export function decode_address_bytes_bytes(
   _bytes: Uint8Array,

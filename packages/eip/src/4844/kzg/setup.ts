@@ -13,8 +13,13 @@
 import { type Bytes, bytesSchema } from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { bls12_381 } from "@noble/curves/bls12-381"
-import type { InferOutput } from "valibot"
-import { array, object, parse } from "valibot"
+import {
+  array,
+  custom,
+  type InferOutput,
+  object,
+  parse,
+} from "valibot"
 
 import {
   BYTES_PER_COMMITMENT,
@@ -45,13 +50,22 @@ type G2Point = ReturnType<
   typeof bls12_381.G2.Point.fromBytes
 >
 
-// Generic carrier — function/capability shape, not a value-bearing
-// boundary, so a hand-rolled type is fine here (conventions §"Where
-// hand-written types are still tolerated", case 1).
-export type Kzg = {
-  g1_lagrange: G1Point[]
-  g2_monomial: G2Point[]
-}
+// Carrier of pre-parsed curve points. The schema's `custom`
+// guards use object-typeof checks because G1Point / G2Point
+// come from @noble/curves and have no public discriminator.
+export const kzgSchema = object({
+  g1_lagrange: array(
+    custom<G1Point>(
+      (value) => value != null && typeof value === "object",
+    ),
+  ),
+  g2_monomial: array(
+    custom<G2Point>(
+      (value) => value != null && typeof value === "object",
+    ),
+  ),
+})
+export type Kzg = InferOutput<typeof kzgSchema>
 
 export function init_kzg(_setup: TrustedSetup): Kzg {
   const setup = parse(trustedSetupSchema, _setup)

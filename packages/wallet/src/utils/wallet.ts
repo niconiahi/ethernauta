@@ -3,7 +3,9 @@ import { computed, signal } from "@preact/signals"
 import { HDKey } from "@scure/bip32"
 import {
   array,
+  custom,
   type InferOutput,
+  nullable,
   number,
   object,
   optional,
@@ -33,17 +35,25 @@ type StorableAccounts = InferOutput<
   typeof StorableAccountsSchema
 >
 
-export type Account = {
-  index: number
-  address: string
-  key: HDKey
-}
+export const accountSchema = object({
+  index: number(),
+  address: string(),
+  key: custom<HDKey>(
+    (value) => value != null && typeof value === "object",
+  ),
+})
+export type Account = InferOutput<typeof accountSchema>
 
-type AccountsState = {
-  list: Account[]
-  active_index: number
-  master: HDKey | null
-}
+const accountsStateSchema = object({
+  list: array(accountSchema),
+  active_index: number(),
+  master: nullable(
+    custom<HDKey>(
+      (value) => value != null && typeof value === "object",
+    ),
+  ),
+})
+type AccountsState = InferOutput<typeof accountsStateSchema>
 
 const EMPTY_KEY = new HDKey({
   privateKey: new Uint8Array(32).fill(1),

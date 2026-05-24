@@ -20,6 +20,13 @@ import {
 } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+import {
+  array,
+  type InferOutput,
+  nullable,
+  number,
+  object,
+} from "valibot"
 
 const UCD_VERSION = "16.0.0"
 const UCD_BASE = `https://www.unicode.org/Public/${UCD_VERSION}/ucd`
@@ -34,11 +41,12 @@ const VECTORS_PATH = join(
 )
 const CACHE_DIR = join(HERE, ".cache")
 
-type Row = {
-  cp: number
-  ccc: number
-  decomp: number[] | null
-}
+const rowSchema = object({
+  cp: number(),
+  ccc: number(),
+  decomp: nullable(array(number())),
+})
+type Row = InferOutput<typeof rowSchema>
 
 function parse_unicode_data(_text: string): Row[] {
   const rows: Row[] = []
@@ -148,11 +156,12 @@ function fetch_text(_url: string, _name: string): string {
   return readFileSync(cache_path, "utf8")
 }
 
-type Vector = {
-  source: number[]
-  nfc: number[]
-  nfd: number[]
-}
+const vectorSchema = object({
+  source: array(number()),
+  nfc: array(number()),
+  nfd: array(number()),
+})
+type Vector = InferOutput<typeof vectorSchema>
 
 function parse_cps(_field: string): number[] {
   const trimmed = _field.trim()

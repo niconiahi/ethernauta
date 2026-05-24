@@ -1,29 +1,49 @@
 // https://eips.ethereum.org/EIPS/eip-6963
 
+import {
+  custom,
+  type InferOutput,
+  instance,
+  number,
+  object,
+  optional,
+  string,
+} from "valibot"
+
 import type { Provider } from "../1193"
 
 export type { Provider } from "../1193"
 
-export interface EIP6963ProviderInfo {
-  uuid: string
-  name: string
-  icon: string
-  rdns: string
-}
+export const eip6963ProviderInfoSchema = object({
+  uuid: string(),
+  name: string(),
+  icon: string(),
+  rdns: string(),
+})
+export type EIP6963ProviderInfo = InferOutput<
+  typeof eip6963ProviderInfoSchema
+>
 
-export interface EIP6963ProviderDetail {
-  info: EIP6963ProviderInfo
-  provider: Provider
-}
+export const eip6963ProviderDetailSchema = object({
+  info: eip6963ProviderInfoSchema,
+  provider: custom<Provider>(
+    (value) => value != null && typeof value === "object",
+  ),
+})
+export type EIP6963ProviderDetail = InferOutput<
+  typeof eip6963ProviderDetailSchema
+>
 
-export interface EIP6963AnnounceProviderEvent
-  extends CustomEvent {
-  type: "eip6963:announceProvider"
-  detail: EIP6963ProviderDetail
-}
+// DOM-class extensions: intersection types preserve the named
+// event shape (with literal `type`) without re-declaring the
+// base CustomEvent / Event surface.
+export type EIP6963AnnounceProviderEvent =
+  CustomEvent<EIP6963ProviderDetail> & {
+    readonly type: "eip6963:announceProvider"
+  }
 
-export interface EIP6963RequestProviderEvent extends Event {
-  type: "eip6963:requestProvider"
+export type EIP6963RequestProviderEvent = Event & {
+  readonly type: "eip6963:requestProvider"
 }
 
 export const ANNOUNCE_EVENT =
@@ -49,12 +69,13 @@ export function announce(
   window.addEventListener(REQUEST_EVENT, dispatch)
 }
 
-export type DiscoverOptions = {
-  /** Window to listen on (defaults to `window`). */
-  target?: EventTarget
-  /** How long to wait for late-announcing wallets. */
-  ms?: number
-}
+export const discoverOptionsSchema = object({
+  target: optional(instance(EventTarget)),
+  ms: optional(number()),
+})
+export type DiscoverOptions = InferOutput<
+  typeof discoverOptionsSchema
+>
 
 /**
  * Dapp-side discovery — fires `eip6963:requestProvider`,
@@ -106,18 +127,26 @@ export async function pick_provider(
  * any in-memory shim. A test, an MV3 background script
  * (via a thin wrapper), or a node process can each supply
  * their own implementation.
+ *
+ * Function-bearing DI contract — kept as an intersection-shaped
+ * alias because Valibot cannot type per-call argument relations.
  */
-export type Storage = {
-  get(_key: string): string | null
-  set(_key: string, _value: string): void
-  remove(_key: string): void
-}
+export type Storage = Readonly<{
+  get: (_key: string) => string | null
+  set: (_key: string, _value: string) => void
+  remove: (_key: string) => void
+}>
 
-export type RememberPickedProviderOptions = {
-  storage: Storage
-  key: string
-  rdns: string
-}
+export const rememberPickedProviderOptionsSchema = object({
+  storage: custom<Storage>(
+    (value) => value != null && typeof value === "object",
+  ),
+  key: string(),
+  rdns: string(),
+})
+export type RememberPickedProviderOptions = InferOutput<
+  typeof rememberPickedProviderOptionsSchema
+>
 
 /**
  * Persist the user-picked wallet identifier (rdns) so a
@@ -131,10 +160,15 @@ export function remember_picked_provider(
   options.storage.set(options.key, options.rdns)
 }
 
-export type ForgetPickedProviderOptions = {
-  storage: Storage
-  key: string
-}
+export const forgetPickedProviderOptionsSchema = object({
+  storage: custom<Storage>(
+    (value) => value != null && typeof value === "object",
+  ),
+  key: string(),
+})
+export type ForgetPickedProviderOptions = InferOutput<
+  typeof forgetPickedProviderOptionsSchema
+>
 
 /**
  * Clear a previously-persisted picked-wallet selection.
@@ -147,12 +181,17 @@ export function forget_picked_provider(
   options.storage.remove(options.key)
 }
 
-export type RestorePickedProviderOptions = {
-  storage: Storage
-  key: string
-  target?: EventTarget
-  ms?: number
-}
+export const restorePickedProviderOptionsSchema = object({
+  storage: custom<Storage>(
+    (value) => value != null && typeof value === "object",
+  ),
+  key: string(),
+  target: optional(instance(EventTarget)),
+  ms: optional(number()),
+})
+export type RestorePickedProviderOptions = InferOutput<
+  typeof restorePickedProviderOptionsSchema
+>
 
 /**
  * Rehydrate a Provider from a previously-persisted rdns by

@@ -1,4 +1,13 @@
 import { hex_to_bytes } from "@ethernauta/utils"
+import {
+  array,
+  bigint,
+  custom,
+  type InferOutput,
+  nullable,
+  object,
+  string,
+} from "valibot"
 
 type RLPInput =
   | string
@@ -117,27 +126,34 @@ function encode_length(length: number): Uint8Array {
   return new Uint8Array(bytes)
 }
 
-interface EIP1559TransactionUnsigned {
-  chain_id: bigint
-  nonce: bigint
-  max_priority_fee_per_gas: bigint
-  max_fee_per_gas: bigint
-  gas_limit: bigint
-  to: string | null
-  value: bigint
-  data: Uint8Array
-  access_list: Array<{
-    address: string
-    storage_keys: string[]
-  }>
-}
+const eip1559TransactionUnsignedSchema = object({
+  chain_id: bigint(),
+  nonce: bigint(),
+  max_priority_fee_per_gas: bigint(),
+  max_fee_per_gas: bigint(),
+  gas_limit: bigint(),
+  to: nullable(string()),
+  value: bigint(),
+  data: custom<Uint8Array>(
+    (value) => value instanceof Uint8Array,
+  ),
+  access_list: array(
+    object({
+      address: string(),
+      storage_keys: array(string()),
+    }),
+  ),
+})
+type EIP1559TransactionUnsigned = InferOutput<
+  typeof eip1559TransactionUnsignedSchema
+>
 
-interface EIP1559TransactionSigned
-  extends EIP1559TransactionUnsigned {
-  v: bigint
-  r: bigint
-  s: bigint
-}
+type EIP1559TransactionSigned =
+  EIP1559TransactionUnsigned & {
+    v: bigint
+    r: bigint
+    s: bigint
+  }
 
 export function encode_eip_1559_unsigned(
   transaction: EIP1559TransactionUnsigned,

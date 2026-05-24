@@ -1,4 +1,11 @@
-import { parse } from "valibot"
+import {
+  boolean,
+  type InferOutput,
+  object,
+  optional,
+  parse,
+  string,
+} from "valibot"
 
 import {
   type Description,
@@ -168,11 +175,12 @@ function parse_constructor(_sig: string): Description {
   })
 }
 
-type ParsedArg = {
-  name: string
-  type: string
-  indexed?: boolean
-}
+const parsedArgSchema = object({
+  name: string(),
+  type: typeSchema,
+  indexed: optional(boolean()),
+})
+type ParsedArg = InferOutput<typeof parsedArgSchema>
 
 function parse_arg(
   _arg: string,

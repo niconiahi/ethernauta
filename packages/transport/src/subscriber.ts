@@ -1,5 +1,11 @@
-import type { InferOutput } from "valibot"
-import { object, parse } from "valibot"
+import {
+  array,
+  custom,
+  type InferOutput,
+  object,
+  parse,
+  string,
+} from "valibot"
 
 import { chainIdSchema } from "./chain/chain-id"
 import type {
@@ -14,10 +20,17 @@ export type SubscribeContext = InferOutput<
   typeof SubscribeContextSchema
 >
 
-export type WsChainEntry = {
-  chainId: string
-  websockets: WebsocketTransport[]
-}
+export const wsChainEntrySchema = object({
+  chainId: string(),
+  websockets: array(
+    custom<WebsocketTransport>(
+      (value) => value != null && typeof value === "object",
+    ),
+  ),
+})
+export type WsChainEntry = InferOutput<
+  typeof wsChainEntrySchema
+>
 
 export type ResolvedSubscriber = [
   WebsocketTransport[],

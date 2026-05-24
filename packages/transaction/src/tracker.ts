@@ -47,9 +47,12 @@ export type Watchable = (
   _resolved: ResolvedTracker,
 ) => () => void
 
-export type TrackerConfig = {
+// Carries a function-bearing strategy (`Store`) — kept as a
+// Readonly intersection because Valibot cannot type per-call
+// method signatures.
+export type TrackerConfig = Readonly<{
   store: Store
-}
+}>
 
 export function create_tracker(
   chains: ChainEntry[],

@@ -1,4 +1,15 @@
-import { parse } from "valibot"
+import {
+  boolean,
+  custom,
+  type InferOutput,
+  number,
+  object,
+  optional,
+  parse,
+  record,
+  string,
+  union,
+} from "valibot"
 
 import type { Call } from "./call"
 import type {
@@ -8,23 +19,32 @@ import type {
 } from "./json-rpc"
 import { requestSchema, responseSchema } from "./json-rpc"
 
-export type HttpRetryOptions = {
-  attempts: number
-  base_delay_ms?: number
-  max_delay_ms?: number
-}
+export const httpRetryOptionsSchema = object({
+  attempts: number(),
+  base_delay_ms: optional(number()),
+  max_delay_ms: optional(number()),
+})
+export type HttpRetryOptions = InferOutput<
+  typeof httpRetryOptionsSchema
+>
 
-export type HttpBatchOptions = {
-  window_ms?: number
-  max_size?: number
-}
+export const httpBatchOptionsSchema = object({
+  window_ms: optional(number()),
+  max_size: optional(number()),
+})
+export type HttpBatchOptions = InferOutput<
+  typeof httpBatchOptionsSchema
+>
 
-export type HttpOptions = {
-  timeout_ms?: number
-  retry?: HttpRetryOptions
-  batch?: boolean | HttpBatchOptions
-  headers?: Record<string, string>
-}
+export const httpOptionsSchema = object({
+  timeout_ms: optional(number()),
+  retry: optional(httpRetryOptionsSchema),
+  batch: optional(union([boolean(), httpBatchOptionsSchema])),
+  headers: optional(record(string(), string())),
+})
+export type HttpOptions = InferOutput<
+  typeof httpOptionsSchema
+>
 
 export function http(
   url: string,
@@ -66,11 +86,16 @@ function create_batching_http(
   const window_ms = batch_options.window_ms ?? 0
   const max_size = batch_options.max_size ?? 100
 
-  type Slot = {
-    request: Request
-    resolve: (_response: Response) => void
-    reject: (_error: Error) => void
-  }
+  const slotSchema = object({
+    request: requestSchema,
+    resolve: custom<(_response: Response) => void>(
+      (value) => typeof value === "function",
+    ),
+    reject: custom<(_error: Error) => void>(
+      (value) => typeof value === "function",
+    ),
+  })
+  type Slot = InferOutput<typeof slotSchema>
   let queue: Slot[] = []
   let timer: ReturnType<typeof setTimeout> | null = null
 

@@ -1,13 +1,28 @@
 // https://eips.ethereum.org/EIPS/eip-7683 — order builder helpers.
 
-import type { Address, Hash32 } from "@ethernauta/core"
+import {
+  type Address,
+  addressSchema,
+  bytesSchema,
+  type Hash32,
+  hash32Schema,
+} from "@ethernauta/core"
+import {
+  type InferOutput,
+  number,
+  object,
+  optional,
+} from "valibot"
 
 import type { GaslessCrossChainOrder } from "./types"
 
-export type DeadlineWindow = {
-  open_window_s: number
-  fill_window_s: number
-}
+export const deadlineWindowSchema = object({
+  open_window_s: number(),
+  fill_window_s: number(),
+})
+export type DeadlineWindow = InferOutput<
+  typeof deadlineWindowSchema
+>
 
 export function compute_deadlines(
   window: DeadlineWindow,
@@ -59,15 +74,18 @@ export function strip_hex_zeros(
   return `0x${stripped === "" ? "0" : stripped}` as `0x${string}`
 }
 
-export type GaslessOrderBuilder = {
-  originSettler: Address
-  user: Address
-  originChainId: `0x${string}`
-  orderDataType: Hash32
-  orderData: `0x${string}`
-  window: DeadlineWindow
-  nonce?: `0x${string}`
-}
+export const gaslessOrderBuilderSchema = object({
+  originSettler: addressSchema,
+  user: addressSchema,
+  originChainId: bytesSchema,
+  orderDataType: hash32Schema,
+  orderData: bytesSchema,
+  window: deadlineWindowSchema,
+  nonce: optional(bytesSchema),
+})
+export type GaslessOrderBuilder = InferOutput<
+  typeof gaslessOrderBuilderSchema
+>
 
 export function build_gasless_order(
   input: GaslessOrderBuilder,

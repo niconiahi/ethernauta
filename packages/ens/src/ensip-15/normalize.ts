@@ -11,6 +11,20 @@
 // ENSIP-15 reference data by `./derive/spec`.
 
 import {
+  array,
+  custom,
+  type InferOutput,
+  literal,
+  map,
+  number,
+  object,
+  pipe,
+  readonly,
+  set,
+  variant,
+} from "valibot"
+
+import {
   ALL_CM,
   EMOJI,
   FENCED,
@@ -128,12 +142,17 @@ const CP_TO_GROUPS: ReadonlyMap<number, readonly Group[]> =
 //      are "shared" (WHOLE_VALID) and skipped — they don't
 //      narrow a confusable target on their own.
 
-type WholeProc = {
-  readonly complement_by_cp: ReadonlyMap<
-    number,
-    ReadonlySet<Group>
-  >
-}
+const wholeProcSchema = object({
+  complement_by_cp: map(
+    number(),
+    set(
+      custom<Group>(
+        (value) => value != null && typeof value === "object",
+      ),
+    ),
+  ),
+})
+type WholeProc = InferOutput<typeof wholeProcSchema>
 
 const WHOLE_VALID: ReadonlySet<number> = (() => {
   const s = new Set<number>()
@@ -180,8 +199,8 @@ const WHOLE_MAP: ReadonlyMap<number, WholeProc> = (() => {
   const out = new Map<number, WholeProc>()
   for (const w of WHOLES) {
     const members: number[] = [...w.valid, ...w.confused]
-    type Rec = { groups: Set<Group>; cps: number[] }
-    const recs: Rec[] = []
+    const recs: Array<{ groups: Set<Group>; cps: number[] }> =
+      []
     for (const cp of members) {
       const gs = CP_TO_GROUPS.get(cp) ?? []
       let rec = recs.find((r) =>
@@ -274,6 +293,9 @@ function check_whole(
 // FE0F from both spec entries and input when matching).
 // `canonical` holds the spec entry verbatim (with FE0F)
 // for the longest sequence ending at this node.
+// Recursive trie node — Valibot's `lazy()` would need a hand-rolled
+// type to break the inference cycle (same Valibot-docs pattern as
+// `tupleComponentSchema`). Kept as a type alias.
 type Node = {
   children: Map<number, Node>
   canonical: readonly number[] | null
@@ -301,10 +323,11 @@ const EMOJI_ROOT: Node = (() => {
   return root
 })()
 
-type EmojiMatch = {
-  canonical: readonly number[]
-  consumed: number
-}
+const emojiMatchSchema = object({
+  canonical: pipe(array(number()), readonly()),
+  consumed: number(),
+})
+type EmojiMatch = InferOutput<typeof emojiMatchSchema>
 
 function match_emoji(
   _cps: readonly number[],
@@ -344,13 +367,27 @@ function match_emoji(
 
 // ---------------------------------------------- tokens
 
-type TextToken = { kind: "text"; cps: number[] }
-type EmojiToken = {
-  kind: "emoji"
-  cps: readonly number[]
-}
-type StopToken = { kind: "stop" }
-type Token = TextToken | EmojiToken | StopToken
+const textTokenSchema = object({
+  kind: literal("text"),
+  cps: array(number()),
+})
+type TextToken = InferOutput<typeof textTokenSchema>
+
+const emojiTokenSchema = object({
+  kind: literal("emoji"),
+  cps: pipe(array(number()), readonly()),
+})
+type EmojiToken = InferOutput<typeof emojiTokenSchema>
+
+const stopTokenSchema = object({ kind: literal("stop") })
+type StopToken = InferOutput<typeof stopTokenSchema>
+
+const tokenSchema = variant("kind", [
+  textTokenSchema,
+  emojiTokenSchema,
+  stopTokenSchema,
+])
+type Token = InferOutput<typeof tokenSchema>
 
 function tokenize(_cps: readonly number[]): Token[] {
   const out: Token[] = []

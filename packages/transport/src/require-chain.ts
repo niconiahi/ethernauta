@@ -1,9 +1,20 @@
+import {
+  array,
+  custom,
+  type InferOutput,
+  object,
+  string,
+} from "valibot"
+
 import type { Http } from "./http"
 
-export type ChainEntry = {
-  chainId: string
-  transports: Http[]
-}
+export const chainEntrySchema = object({
+  chainId: string(),
+  transports: array(
+    custom<Http>((value) => typeof value === "function"),
+  ),
+})
+export type ChainEntry = InferOutput<typeof chainEntrySchema>
 
 export function require_chain(
   chains: ChainEntry[],

@@ -18,7 +18,7 @@ export const ERROR_CODE = {
 export type ErrorCode =
   (typeof ERROR_CODE)[keyof typeof ERROR_CODE]
 
-export interface ProviderRpcError extends Error {
+export type ProviderRpcError = Error & {
   code: number
   data?: unknown
 }

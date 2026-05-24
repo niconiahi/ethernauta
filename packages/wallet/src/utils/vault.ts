@@ -1,10 +1,19 @@
 // Vault utilities for secure mnemonic storage using IndexedDB
 // Based on MetaMask's approach: password + PBKDF2 + AES-GCM encryption
-export type VaultRecord = {
-  salt: string // Base64-encoded salt for PBKDF2
-  iv: string // Base64-encoded initialization vector for AES-GCM
-  cipher: string // Base64-encoded encrypted mnemonic
-}
+import {
+  type InferOutput,
+  object,
+  string,
+} from "valibot"
+
+export const vaultRecordSchema = object({
+  salt: string(),
+  iv: string(),
+  cipher: string(),
+})
+export type VaultRecord = InferOutput<
+  typeof vaultRecordSchema
+>
 
 const PBKDF2_CONFIG = {
   iterations: 100_000,

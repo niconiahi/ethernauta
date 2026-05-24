@@ -7,6 +7,14 @@ import type {
   SignContext,
 } from "@ethernauta/transport"
 import {
+  custom,
+  type InferOutput,
+  object,
+  optional,
+  string,
+} from "valibot"
+
+import {
   create_emitter,
   type Emitter,
   type EventMap,
@@ -17,34 +25,49 @@ import {
   create_injected_transport,
 } from "./inject"
 
-export interface RequestArguments {
-  readonly method: string
-  readonly params?: readonly unknown[] | object
-}
+export const requestArgumentsSchema = object({
+  method: string(),
+  params: optional(
+    custom<readonly unknown[] | object>(
+      (value) => typeof value === "object" && value !== null,
+    ),
+  ),
+})
+export type RequestArguments = InferOutput<
+  typeof requestArgumentsSchema
+>
 
 export type SignableHandler = (
   args: RequestArguments,
 ) => Promise<unknown>
 
-export interface Provider {
-  request(args: RequestArguments): Promise<unknown>
-  on<E extends EventName>(
+// Generic methods (`on<E>`) cannot be expressed via a Valibot
+// schema. Provider is a DI contract; validation happens at the
+// request boundary inside whichever bridge creates it.
+export type Provider = Readonly<{
+  request: (args: RequestArguments) => Promise<unknown>
+  on: <E extends EventName>(
     event: E,
     listener: (payload: EventMap[E]) => void,
-  ): void
-  removeListener<E extends EventName>(
+  ) => void
+  removeListener: <E extends EventName>(
     event: E,
     listener: (payload: EventMap[E]) => void,
-  ): void
-}
+  ) => void
+}>
 
-export interface ProviderInternal extends Provider {
+export type ProviderInternal = Provider & {
   emit: Emitter["emit"]
 }
 
-export type CreateProviderOptions = {
-  request: SignableHandler
-}
+export const createProviderOptionsSchema = object({
+  request: custom<SignableHandler>(
+    (value) => typeof value === "function",
+  ),
+})
+export type CreateProviderOptions = InferOutput<
+  typeof createProviderOptionsSchema
+>
 
 // The 1193 envelope. No dispatch, no state, no policy —
 // just the four-field shape EIP-1193 specifies (request,
@@ -77,10 +100,17 @@ export function create_envelope(
 //   const provider = create_provider(eip1193)
 //   eth_getBalance(addr)(provider.reader({ chain_id }))
 //   eth_sendTransaction(tx)(provider.signer({ chain_id }))
-export type ProviderResolver = {
-  reader: (context: ReadContext) => ResolvedReader
-  signer: (context: SignContext) => ResolvedSigner
-}
+export const providerResolverSchema = object({
+  reader: custom<(context: ReadContext) => ResolvedReader>(
+    (value) => typeof value === "function",
+  ),
+  signer: custom<(context: SignContext) => ResolvedSigner>(
+    (value) => typeof value === "function",
+  ),
+})
+export type ProviderResolver = InferOutput<
+  typeof providerResolverSchema
+>
 
 export function create_provider(
   provider: Provider,

@@ -1,31 +1,53 @@
 // https://eips.ethereum.org/EIPS/eip-1193#events
 
+import {
+  array,
+  custom,
+  type InferOutput,
+  literal,
+  object,
+  string,
+  unknown,
+} from "valibot"
+
 import type { ProviderRpcError } from "./error"
 
-export interface ProviderConnectInfo {
-  readonly chainId: string
-}
+export const providerConnectInfoSchema = object({
+  chainId: string(),
+})
+export type ProviderConnectInfo = InferOutput<
+  typeof providerConnectInfoSchema
+>
 
-export interface ProviderMessage {
-  readonly type: string
-  readonly data: unknown
-}
+export const providerMessageSchema = object({
+  type: string(),
+  data: unknown(),
+})
+export type ProviderMessage = InferOutput<
+  typeof providerMessageSchema
+>
 
-export interface EthSubscription extends ProviderMessage {
-  readonly type: "eth_subscription"
-  readonly data: {
-    readonly subscription: string
-    readonly result: unknown
-  }
-}
+export const ethSubscriptionSchema = object({
+  type: literal("eth_subscription"),
+  data: object({
+    subscription: string(),
+    result: unknown(),
+  }),
+})
+export type EthSubscription = InferOutput<
+  typeof ethSubscriptionSchema
+>
 
-export type EventMap = {
-  connect: ProviderConnectInfo
-  disconnect: ProviderRpcError
-  chainChanged: string
-  accountsChanged: string[]
-  message: ProviderMessage
-}
+export const eventMapSchema = object({
+  connect: providerConnectInfoSchema,
+  disconnect: custom<ProviderRpcError>(
+    (value) => value instanceof Error,
+  ),
+  chainChanged: string(),
+  accountsChanged: array(string()),
+  message: providerMessageSchema,
+})
+export type EventMap = InferOutput<typeof eventMapSchema>
 
 export type EventName = keyof EventMap
 
@@ -35,20 +57,23 @@ type Listener<E extends EventName> = (
 
 export type AnyListener = (payload: never) => void
 
-export type Emitter = {
-  on<Event extends EventName>(
+// Generic methods cannot be expressed as a Valibot schema (no
+// per-call type relation). Kept as an intersection-shaped type
+// alias — the "schema" is the dispatcher itself in create_emitter.
+export type Emitter = Readonly<{
+  on: <Event extends EventName>(
     event: Event,
     listener: Listener<Event>,
-  ): void
-  removeListener<E extends EventName>(
+  ) => void
+  removeListener: <E extends EventName>(
     event: E,
     listener: Listener<E>,
-  ): void
-  emit<E extends EventName>(
+  ) => void
+  emit: <E extends EventName>(
     event: E,
     payload: EventMap[E],
-  ): void
-}
+  ) => void
+}>
 
 export function create_emitter(): Emitter {
   const listeners = new Map<EventName, Set<AnyListener>>()

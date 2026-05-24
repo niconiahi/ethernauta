@@ -1,11 +1,15 @@
 import { addressSchema } from "@ethernauta/core"
-import type { InferOutput } from "valibot"
 import {
   array,
+  type InferOutput,
+  literal,
   object,
   optional,
   parse,
+  record,
   string,
+  union,
+  unknown,
 } from "valibot"
 
 import { chainIdSchema } from "./chain/chain-id"
@@ -61,35 +65,52 @@ const ERROR_CODE = {
   USER_REJECTED_REQUEST: 4001,
 } as const
 
-type SignTransactionRequest = {
-  id: string
-  type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION"
-  method: string
-  chainId: string
-  params?: unknown[] | Record<string, unknown>
-}
+const signTransactionRequestSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
+  method: string(),
+  chainId: string(),
+  params: optional(
+    union([array(unknown()), record(string(), unknown())]),
+  ),
+})
+type SignTransactionRequest = InferOutput<
+  typeof signTransactionRequestSchema
+>
 
-type SignTransactionResponse = {
-  id: string
-  type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"
-  signed_transaction: string
-}
+const signTransactionResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"),
+  signed_transaction: string(),
+})
+type SignTransactionResponse = InferOutput<
+  typeof signTransactionResponseSchema
+>
 
-type SignTypedDataResponse = {
-  id: string
-  type: "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"
-  signature: string
-}
+const signTypedDataResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"),
+  signature: string(),
+})
+type SignTypedDataResponse = InferOutput<
+  typeof signTypedDataResponseSchema
+>
 
-type TransactionRejectedResponse = {
-  id: string
-  type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
-}
+const transactionRejectedResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"),
+})
+type TransactionRejectedResponse = InferOutput<
+  typeof transactionRejectedResponseSchema
+>
 
-type NativeExtensionCloseResponse = {
-  id: string
-  type: "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-}
+const nativeExtensionCloseResponseSchema = object({
+  id: string(),
+  type: literal("ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"),
+})
+type NativeExtensionCloseResponse = InferOutput<
+  typeof nativeExtensionCloseResponseSchema
+>
 
 export function create_signer(
   chains: Array<{ chainId: string; transports?: unknown }>,

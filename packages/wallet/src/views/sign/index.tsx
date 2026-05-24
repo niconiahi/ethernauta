@@ -9,7 +9,18 @@ import type { FunctionSignature } from "@ethernauta/transport"
 import { parametersSchema } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import type { ComponentChildren } from "preact"
-import { parse, safeParse } from "valibot"
+import {
+  array,
+  type InferOutput,
+  literal,
+  object,
+  parse,
+  pipe,
+  readonly,
+  safeParse,
+  string,
+  union,
+} from "valibot"
 import { Button } from "../../components/button"
 import {
   get_reader,
@@ -53,13 +64,14 @@ function looks_like_calldata(
   )
 }
 
-type DecodeEntry = {
-  name: string
-  signature: string
-  types: readonly string[]
-  param_names: readonly string[]
-  source: "sidecar" | "bundled"
-}
+const decodeEntrySchema = object({
+  name: string(),
+  signature: string(),
+  types: pipe(array(string()), readonly()),
+  param_names: pipe(array(string()), readonly()),
+  source: union([literal("sidecar"), literal("bundled")]),
+})
+type DecodeEntry = InferOutput<typeof decodeEntrySchema>
 
 function lookup_registry(
   selector: string,

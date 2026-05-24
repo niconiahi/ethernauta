@@ -22,6 +22,18 @@ import {
 } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+import {
+  array,
+  boolean,
+  type InferOutput,
+  literal,
+  looseObject,
+  number,
+  object,
+  optional,
+  string,
+  tuple,
+} from "valibot"
 
 const SPEC_URL =
   "https://raw.githubusercontent.com/adraffy/ens-normalize.js/main/derive/output/spec.json"
@@ -38,31 +50,36 @@ const TESTS_PATH = join(
 )
 const CACHE_DIR = join(HERE, ".cache")
 
-type RawSpec = {
-  created: string
-  unicode: string
-  cldr: string
-  mapped: [number, number[]][]
-  ignored: number[]
-  fenced: [number, string][]
-  nsm: number[]
-  nsm_max: number
-  cm: number[]
-  emoji: number[][]
-  nfc_check: number[]
-  groups: {
-    name: string
-    primary: number[]
-    secondary: number[]
-    cm?: number[]
-    restricted?: boolean
-  }[]
-  wholes: {
-    target?: string
-    valid: number[]
-    confused: number[]
-  }[]
-}
+const rawSpecGroupSchema = object({
+  name: string(),
+  primary: array(number()),
+  secondary: array(number()),
+  cm: optional(array(number())),
+  restricted: optional(boolean()),
+})
+
+const rawSpecWholeSchema = object({
+  target: optional(string()),
+  valid: array(number()),
+  confused: array(number()),
+})
+
+const rawSpecSchema = object({
+  created: string(),
+  unicode: string(),
+  cldr: string(),
+  mapped: array(tuple([number(), array(number())])),
+  ignored: array(number()),
+  fenced: array(tuple([number(), string()])),
+  nsm: array(number()),
+  nsm_max: number(),
+  cm: array(number()),
+  emoji: array(array(number())),
+  nfc_check: array(number()),
+  groups: array(rawSpecGroupSchema),
+  wholes: array(rawSpecWholeSchema),
+})
+type RawSpec = InferOutput<typeof rawSpecSchema>
 
 function fetch_json(_url: string, _name: string): string {
   mkdirSync(CACHE_DIR, { recursive: true })
@@ -160,13 +177,16 @@ function format_groups(_groups: RawSpec["groups"]): string {
     )
   }
   return [
-    "export type Group = {",
-    "  readonly name: string",
-    "  readonly primary: readonly number[]",
-    "  readonly secondary: readonly number[]",
-    "  readonly cm: readonly number[]",
-    "  readonly restricted: boolean",
-    "}",
+    `import { array, boolean, type InferOutput, number, object, string } from "valibot"`,
+    "",
+    "export const groupSchema = object({",
+    "  name: string(),",
+    "  primary: array(number()),",
+    "  secondary: array(number()),",
+    "  cm: array(number()),",
+    "  restricted: boolean(),",
+    "})",
+    "export type Group = InferOutput<typeof groupSchema>",
     "",
     "export const GROUPS: readonly Group[] = [",
     ...lines,
@@ -191,11 +211,12 @@ function format_wholes(_wholes: RawSpec["wholes"]): string {
     )
   }
   return [
-    "export type Whole = {",
-    "  readonly target: string | null",
-    "  readonly valid: readonly number[]",
-    "  readonly confused: readonly number[]",
-    "}",
+    "export const wholeSchema = object({",
+    "  target: nullable(string()),",
+    "  valid: array(number()),",
+    "  confused: array(number()),",
+    "})",
+    "export type Whole = InferOutput<typeof wholeSchema>",
     "",
     "export const WHOLES: readonly Whole[] = [",
     ...lines,
@@ -203,14 +224,16 @@ function format_wholes(_wholes: RawSpec["wholes"]): string {
   ].join("\n")
 }
 
-type RawTest =
-  | { name: string; error: true; comment?: string }
-  | {
-      name: string
-      norm?: string
-      comment?: string
-    }
-  | Record<string, unknown> // version marker
+// Three-shape union (error case / norm case / version marker
+// record). Uses looseObject so the version-marker record passes
+// even when it has none of the known keys.
+const rawTestSchema = looseObject({
+  name: optional(string()),
+  error: optional(literal(true)),
+  norm: optional(string()),
+  comment: optional(string()),
+})
+type RawTest = InferOutput<typeof rawTestSchema>
 
 function format_tests(_tests: RawTest[]): string {
   const lines: string[] = []
@@ -228,9 +251,21 @@ function format_tests(_tests: RawTest[]): string {
     }
   }
   return [
-    "export type EnsTest =",
-    "  | { readonly name: string; readonly error: true }",
-    "  | { readonly name: string; readonly norm: string }",
+    `import { boolean, type InferOutput, literal, object, string, variant } from "valibot"`,
+    "",
+    "const ensErrorTestSchema = object({",
+    "  name: string(),",
+    "  error: literal(true),",
+    "})",
+    "const ensNormTestSchema = object({",
+    "  name: string(),",
+    "  norm: string(),",
+    "})",
+    `export const ensTestSchema = variant("name", [`,
+    "  ensErrorTestSchema,",
+    "  ensNormTestSchema,",
+    "])",
+    "export type EnsTest = InferOutput<typeof ensTestSchema>",
     "",
     "export const ENS_TESTS: readonly EnsTest[] = [",
     ...lines,

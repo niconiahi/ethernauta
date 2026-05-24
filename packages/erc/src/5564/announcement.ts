@@ -12,12 +12,21 @@
 // scheme-defined free-form data (e.g. an ERC-20 transfer
 // descriptor).
 
-import type { Bytes, Hash32 } from "@ethernauta/core"
+import {
+  type Bytes,
+  bytesSchema,
+  type Hash32,
+} from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
+import {
+  type InferOutput,
+  number,
+  object,
+} from "valibot"
 
 const EVENT_SIGNATURE =
   "Announcement(uint256,address,address,bytes,bytes)"
@@ -29,10 +38,11 @@ export const ANNOUNCEMENT_EVENT_TOPIC: Hash32 = (() => {
   return bytes_to_hex(hash) as Hash32
 })()
 
-export type Metadata = {
-  view_tag: number
-  body: Bytes
-}
+export const metadataSchema = object({
+  view_tag: number(),
+  body: bytesSchema,
+})
+export type Metadata = InferOutput<typeof metadataSchema>
 
 export function encode_metadata({
   view_tag,

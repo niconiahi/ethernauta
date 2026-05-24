@@ -7,11 +7,17 @@ import type { Transaction } from "./transaction"
  * verbs read and write. Async-shaped so a sync Map can be
  * wrapped trivially and an async backend (chrome.storage.session,
  * IndexedDB, etc.) drops in without changing the verbs.
+ *
+ * Function-bearing DI contract — kept as an intersection-shaped
+ * alias because Valibot cannot type per-call argument relations.
  */
-export type Store = {
-  get(hash: Hash32): Promise<Transaction | undefined>
-  set(hash: Hash32, transaction: Transaction): Promise<void>
-}
+export type Store = Readonly<{
+  get: (hash: Hash32) => Promise<Transaction | undefined>
+  set: (
+    hash: Hash32,
+    transaction: Transaction,
+  ) => Promise<void>
+}>
 
 declare global {
   interface Window {

@@ -1,12 +1,15 @@
-import type { InferOutput } from "valibot"
 import {
+  custom,
+  type InferOutput,
   literal,
+  nullable,
   object,
   parse,
   string,
   unknown,
 } from "valibot"
 
+import { callSchema } from "./call"
 import type { Call } from "./call"
 import type { Parameters, Response } from "./json-rpc"
 import { requestSchema, responseSchema } from "./json-rpc"
@@ -25,25 +28,42 @@ export type SubscriptionNotification = InferOutput<
 
 export type Unsubscribe = () => Promise<void>
 
-export type WebsocketTransport = {
-  call: (_call: Call) => Promise<Response>
-  subscribe: (
-    _call: Call,
-    _on_notification: (data: unknown) => void,
-  ) => Promise<Unsubscribe>
-  close: () => Promise<void>
-}
+export const websocketTransportSchema = object({
+  call: custom<(_call: Call) => Promise<Response>>(
+    (value) => typeof value === "function",
+  ),
+  subscribe: custom<
+    (
+      _call: Call,
+      _on_notification: (data: unknown) => void,
+    ) => Promise<Unsubscribe>
+  >((value) => typeof value === "function"),
+  close: custom<() => Promise<void>>(
+    (value) => typeof value === "function",
+  ),
+})
+export type WebsocketTransport = InferOutput<
+  typeof websocketTransportSchema
+>
 
-type Pending = {
-  resolve: (_response: Response) => void
-  reject: (_error: Error) => void
-}
+const pendingSchema = object({
+  resolve: custom<(_response: Response) => void>(
+    (value) => typeof value === "function",
+  ),
+  reject: custom<(_error: Error) => void>(
+    (value) => typeof value === "function",
+  ),
+})
+type Pending = InferOutput<typeof pendingSchema>
 
-type Subscription = {
-  call: Call
-  on_notification: (_data: unknown) => void
-  server_id: string | null
-}
+const subscriptionSchema = object({
+  call: callSchema,
+  on_notification: custom<(_data: unknown) => void>(
+    (value) => typeof value === "function",
+  ),
+  server_id: nullable(string()),
+})
+type Subscription = InferOutput<typeof subscriptionSchema>
 
 export function websocket(url: string): WebsocketTransport {
   let socket: WebSocket | null = null
