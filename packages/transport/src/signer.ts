@@ -106,7 +106,9 @@ type TransactionRejectedResponse = InferOutput<
 
 const nativeExtensionCloseResponseSchema = object({
   id: string(),
-  type: literal("ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"),
+  type: literal(
+    "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE",
+  ),
 })
 type NativeExtensionCloseResponse = InferOutput<
   typeof nativeExtensionCloseResponseSchema

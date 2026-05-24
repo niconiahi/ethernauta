@@ -39,7 +39,9 @@ export type HttpBatchOptions = InferOutput<
 export const httpOptionsSchema = object({
   timeout_ms: optional(number()),
   retry: optional(httpRetryOptionsSchema),
-  batch: optional(union([boolean(), httpBatchOptionsSchema])),
+  batch: optional(
+    union([boolean(), httpBatchOptionsSchema]),
+  ),
   headers: optional(record(string(), string())),
 })
 export type HttpOptions = InferOutput<

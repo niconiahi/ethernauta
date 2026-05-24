@@ -4,8 +4,8 @@ import {
   type Bytes,
   bytesSchema,
 } from "@ethernauta/core"
-import { personal_sign } from "@ethernauta/eip/191"
 import { verify_message_deployed } from "@ethernauta/crypto"
+import { personal_sign } from "@ethernauta/eip/191"
 import {
   create_reader,
   create_signer,

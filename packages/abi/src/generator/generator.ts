@@ -9,11 +9,16 @@ import {
   invariant,
 } from "@ethernauta/utils"
 
-import { type InferOutput, object, set, string } from "valibot"
+import {
+  type InferOutput,
+  object,
+  set,
+  string,
+} from "valibot"
 
-import type { FunctionInput, FunctionOutput } from "../abi"
+import type { FunctionInput } from "../abi"
 import type { Description } from "../abi/description"
-import { type TupleComponent } from "../abi/function/function-shared"
+import type { TupleComponent } from "../abi/function/function-shared"
 import { to_selector } from "../encoding/encode"
 
 // A function input is either a leaf {name, type} or a tuple with
@@ -22,7 +27,9 @@ import { to_selector } from "../encoding/encode"
 // `function_tupleSchema` only types one level deep.
 type InputLike = TupleComponent
 
-function get_components(input: InputLike): TupleComponent[] {
+function get_components(
+  input: InputLike,
+): TupleComponent[] {
   const components = (
     input as unknown as { components?: TupleComponent[] }
   ).components
@@ -165,11 +172,17 @@ function core_leaf(
   }
 }
 
-function merge_into(target: Type_info, child: Type_info): void {
-  for (const v of child.valibot_names) target.valibot_names.add(v)
-  for (const s of child.core_schemas) target.core_schemas.add(s)
+function merge_into(
+  target: Type_info,
+  child: Type_info,
+): void {
+  for (const v of child.valibot_names)
+    target.valibot_names.add(v)
+  for (const s of child.core_schemas)
+    target.core_schemas.add(s)
   for (const t of child.core_types) target.core_types.add(t)
-  for (const b of child.abi_builders) target.abi_builders.add(b)
+  for (const b of child.abi_builders)
+    target.abi_builders.add(b)
 }
 
 function get_type_info(input: InputLike): Type_info {
@@ -177,20 +190,30 @@ function get_type_info(input: InputLike): Type_info {
 
   if (type === "tuple" || type === "tuple[]") {
     const components = get_components(input)
-    const child_infos = components.map((c) => get_type_info(c))
+    const child_infos = components.map((c) =>
+      get_type_info(c),
+    )
 
     const schema_fields = components
-      .map((c, i) => `${c.name}: ${child_infos[i]!.param_schema}`)
+      .map(
+        (c, i) =>
+          `${c.name}: ${child_infos[i]?.param_schema}`,
+      )
       .join(", ")
     const struct_schema = `object({ ${schema_fields} })`
 
     const type_fields = components
-      .map((c, i) => `${c.name}: ${child_infos[i]!.param_type}`)
+      .map(
+        (c, i) =>
+          `${c.name}: ${child_infos[i]?.param_type}`,
+      )
       .join("; ")
     const struct_type = `{ ${type_fields} }`
 
     const builder_fields = components
-      .map((c, i) => `${c.name}: ${child_infos[i]!.builder}`)
+      .map(
+        (c, i) => `${c.name}: ${child_infos[i]?.builder}`,
+      )
       .join(", ")
     const struct_builder = `abi_tuple({ ${builder_fields} })`
 
@@ -252,7 +275,11 @@ function get_type_info(input: InputLike): Type_info {
     case "string":
       return valibot_leaf("string", "string", "string_")
     case "address":
-      return core_leaf("addressSchema", "Address", "address")
+      return core_leaf(
+        "addressSchema",
+        "Address",
+        "address",
+      )
     case "bytes":
       return core_leaf("bytesSchema", "Bytes", "bytes")
     case "bytes4":
@@ -260,7 +287,11 @@ function get_type_info(input: InputLike): Type_info {
     case "bytes8":
       return core_leaf("bytes8Schema", "Bytes8", "bytes8")
     case "bytes32":
-      return core_leaf("bytes32Schema", "Bytes32", "bytes32")
+      return core_leaf(
+        "bytes32Schema",
+        "Bytes32",
+        "bytes32",
+      )
     case "uint":
       return core_leaf("uint256Schema", "Uint256", "uint")
     case "hash32":
@@ -310,8 +341,11 @@ function compose_core_imports(
 ): string {
   // `Bytes` is always imported at the top of every generated file (it's the
   // input type for the decoder). Dedupe it out of the per-method type set.
-  const filtered_types = Array.from(types).filter((t) => t !== "Bytes")
-  if (schemas.size === 0 && filtered_types.length === 0) return ""
+  const filtered_types = Array.from(types).filter(
+    (t) => t !== "Bytes",
+  )
+  if (schemas.size === 0 && filtered_types.length === 0)
+    return ""
   const value_imports =
     schemas.size > 0
       ? `import { ${Array.from(schemas).sort().join(", ")} } from "@ethernauta/core"`
@@ -332,7 +366,9 @@ function compose_abi_imports(
   const items = [
     ...Array.from(builders)
       .sort()
-      .map((n) => (n === "abi_tuple" ? "tuple as abi_tuple" : n)),
+      .map((n) =>
+        n === "abi_tuple" ? "tuple as abi_tuple" : n,
+      ),
     ...extra,
   ]
   return `import {
@@ -345,9 +381,14 @@ function compose_parameters_block(
   infos: Type_info[],
 ): string {
   if (inputs.length === 0) return ""
-  const tuple_items = infos.map((i) => i.param_schema).join(", ")
+  const tuple_items = infos
+    .map((i) => i.param_schema)
+    .join(", ")
   const object_items = inputs
-    .map((input, i) => `${input.name}: ${infos[i]!.param_schema}`)
+    .map(
+      (input, i) =>
+        `${input.name}: ${infos[i]?.param_schema}`,
+    )
     .join(", ")
   return `const parametersSchema = union([
   tuple([${tuple_items}]),
@@ -423,17 +464,29 @@ function empty_aggregate(): Aggregate {
 // core types: the `Parameters` type is derived from `parametersSchema`
 // via `InferOutput`, so no input type ever appears directly. Outputs
 // contribute everything because the decoded type is the return type.
-function fold_input(target: Aggregate, info: Type_info): void {
-  for (const v of info.valibot_names) target.valibot_names.add(v)
-  for (const s of info.core_schemas) target.core_schemas.add(s)
-  for (const b of info.abi_builders) target.abi_builders.add(b)
+function fold_input(
+  target: Aggregate,
+  info: Type_info,
+): void {
+  for (const v of info.valibot_names)
+    target.valibot_names.add(v)
+  for (const s of info.core_schemas)
+    target.core_schemas.add(s)
+  for (const b of info.abi_builders)
+    target.abi_builders.add(b)
 }
 
-function fold_output(target: Aggregate, info: Type_info): void {
-  for (const v of info.valibot_names) target.valibot_names.add(v)
-  for (const s of info.core_schemas) target.core_schemas.add(s)
+function fold_output(
+  target: Aggregate,
+  info: Type_info,
+): void {
+  for (const v of info.valibot_names)
+    target.valibot_names.add(v)
+  for (const s of info.core_schemas)
+    target.core_schemas.add(s)
   for (const t of info.core_types) target.core_types.add(t)
-  for (const b of info.abi_builders) target.abi_builders.add(b)
+  for (const b of info.abi_builders)
+    target.abi_builders.add(b)
 }
 
 function build_readable(
@@ -463,7 +516,7 @@ function build_readable(
   const is_tuple = output_infos.length > 1
   const return_type = is_tuple
     ? `[${output_infos.map((i) => i.decoded_type).join(", ")}]`
-    : output_infos[0]!.decoded_type
+    : output_infos[0]?.decoded_type
   const decode_body = is_tuple
     ? `const decoded = decode_function_result(
           OUTPUT_CODECS,
@@ -481,7 +534,7 @@ function build_readable(
           OUTPUT_CODECS,
           result,
         )
-        return parse(${output_infos[0]!.decoded_schema}, decoded)`
+        return parse(${output_infos[0]?.decoded_schema}, decoded)`
 
   return `import type { Bytes } from "@ethernauta/core"
 import type { Callable, ContractContext } from "@ethernauta/transport"

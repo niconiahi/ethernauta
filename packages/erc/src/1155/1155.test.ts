@@ -7,8 +7,8 @@ import { bytes_to_hex } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
 
 import {
-  balanceOfBatch,
   BALANCE_OF_BATCH_SIGNATURE,
+  balanceOfBatch,
 } from "./methods"
 
 describe("ERC-1155 balanceOfBatch — generated binding", () => {

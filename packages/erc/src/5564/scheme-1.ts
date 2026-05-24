@@ -13,11 +13,6 @@ import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
-import {
-  type InferOutput,
-  number,
-  object,
-} from "valibot"
 import { keccak_256 } from "@noble/hashes/sha3"
 import {
   CURVE,
@@ -26,6 +21,7 @@ import {
   Point,
   utils,
 } from "@noble/secp256k1"
+import { type InferOutput, number, object } from "valibot"
 
 export const SCHEME_1_ID = 1 as const
 

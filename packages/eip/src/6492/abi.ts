@@ -6,11 +6,7 @@
 // builds its own packing.
 
 import { hex_to_bytes } from "@ethernauta/utils"
-import {
-  custom,
-  type InferOutput,
-  object,
-} from "valibot"
+import { custom, type InferOutput, object } from "valibot"
 
 const WORD = 32
 

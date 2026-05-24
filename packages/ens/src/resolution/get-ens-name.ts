@@ -3,14 +3,6 @@
 
 import type { Address } from "@ethernauta/core"
 import { addressSchema } from "@ethernauta/core"
-import { eth_call } from "@ethernauta/eth"
-import type {
-  Readable,
-  ResolvedReader,
-} from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import { object, optional, parse } from "valibot"
-
 import {
   addr,
   get_registry_address,
@@ -20,6 +12,13 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 import { name as name_method } from "@ethernauta/erc/181"
+import { eth_call } from "@ethernauta/eth"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, optional, parse } from "valibot"
 
 const parametersSchema = object({
   address: addressSchema,

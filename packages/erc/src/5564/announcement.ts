@@ -22,11 +22,7 @@ import {
   hex_to_bytes,
 } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
-import {
-  type InferOutput,
-  number,
-  object,
-} from "valibot"
+import { type InferOutput, number, object } from "valibot"
 
 const EVENT_SIGNATURE =
   "Announcement(uint256,address,address,bytes,bytes)"

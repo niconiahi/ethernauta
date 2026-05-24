@@ -27,6 +27,8 @@
 //   - <out>/methods/<method>.ts      — generated bindings
 //   - <out>/methods/index.ts         — barrel
 //
+
+import { execFileSync } from "node:child_process"
 import {
   existsSync,
   mkdirSync,
@@ -37,7 +39,6 @@ import {
 } from "node:fs"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { execFileSync } from "node:child_process"
 
 import {
   emit_file_basename_for,
@@ -102,11 +103,18 @@ function route_for(filename) {
   const suffix = match[2] // possibly empty
   const source_file = filename
   const out_dir = suffix
-    ? join(erc_src, host_number, "extensions", pascal_to_kebab(suffix))
+    ? join(
+        erc_src,
+        host_number,
+        "extensions",
+        pascal_to_kebab(suffix),
+      )
     : join(erc_src, host_number)
-  const interfaces =
-    MULTI_INTERFACE_FILES[source_file] ?? [source_file]
-  if (interfaces.some((i) => SKIP_INTERFACES.has(i))) return null
+  const interfaces = MULTI_INTERFACE_FILES[source_file] ?? [
+    source_file,
+  ]
+  if (interfaces.some((i) => SKIP_INTERFACES.has(i)))
+    return null
   return {
     source_file,
     host_number,
@@ -140,10 +148,9 @@ const extensions = routes.filter((r) => r.suffix)
 
 const host_signatures = new Map() // host_number -> Set<signature_key>
 let processed = 0
-let skipped =
-  sources.filter(
-    (f) => f.startsWith("IERC") && !route_for(f),
-  ).length
+let skipped = sources.filter(
+  (f) => f.startsWith("IERC") && !route_for(f),
+).length
 
 for (const f of sources) {
   if (f.startsWith("IERC") && !route_for(f)) {
@@ -156,11 +163,20 @@ for (const f of sources) {
 const host_extensions = new Map() // host_number -> Array<{ suffix, kebab }>
 
 function process_route(route, host_set) {
-  const { source_file, out_dir, interfaces, host_number, suffix } = route
+  const {
+    source_file,
+    out_dir,
+    interfaces,
+    host_number,
+    suffix,
+  } = route
   mkdirSync(out_dir, { recursive: true })
 
   for (const interface_name of interfaces) {
-    const abi = read_artifact_abi(source_file, interface_name)
+    const abi = read_artifact_abi(
+      source_file,
+      interface_name,
+    )
     writeFileSync(
       join(out_dir, `${interface_name}.abi.json`),
       `${JSON.stringify(abi, null, 2)}\n`,
@@ -170,12 +186,15 @@ function process_route(route, host_set) {
   const seen = new Set()
   const functions = []
   for (const interface_name of interfaces) {
-    const abi = read_artifact_abi(source_file, interface_name)
+    const abi = read_artifact_abi(
+      source_file,
+      interface_name,
+    )
     for (const description of abi) {
       if (description.type !== "function") continue
       const key = signature_key(description)
       if (seen.has(key)) continue
-      if (host_set && host_set.has(key)) continue
+      if (host_set?.has(key)) continue
       seen.add(key)
       functions.push(description)
     }
@@ -216,7 +235,10 @@ function process_route(route, host_set) {
 
 for (const route of hosts) process_route(route, null)
 for (const route of extensions) {
-  process_route(route, host_signatures.get(route.host_number))
+  process_route(
+    route,
+    host_signatures.get(route.host_number),
+  )
 }
 
 // Discover hand-written sibling .ts files at the folder root (non-test,
@@ -258,12 +280,14 @@ for (const route of hosts) {
     "",
     `export * from "./methods"`,
   ]
-  for (const { kebab } of extensions_for_host.sort((a, b) =>
-    a.kebab < b.kebab ? -1 : 1,
+  for (const { kebab } of extensions_for_host.sort(
+    (a, b) => (a.kebab < b.kebab ? -1 : 1),
   )) {
     lines.push(`export * from "./extensions/${kebab}"`)
   }
-  for (const basename of discover_sibling_modules(out_dir)) {
+  for (const basename of discover_sibling_modules(
+    out_dir,
+  )) {
     lines.push(`export * from "./${basename}"`)
   }
   writeFileSync(
@@ -279,4 +303,6 @@ for (const route of extensions) {
   )
 }
 
-console.log(`\ndone: ${processed} processed, ${skipped} skipped`)
+console.log(
+  `\ndone: ${processed} processed, ${skipped} skipped`,
+)

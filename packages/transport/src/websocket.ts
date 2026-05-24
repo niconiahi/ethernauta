@@ -8,9 +8,8 @@ import {
   string,
   unknown,
 } from "valibot"
-
-import { callSchema } from "./call"
 import type { Call } from "./call"
+import { callSchema } from "./call"
 import type { Parameters, Response } from "./json-rpc"
 import { requestSchema, responseSchema } from "./json-rpc"
 

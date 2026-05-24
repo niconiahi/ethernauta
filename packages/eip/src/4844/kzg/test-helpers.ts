@@ -61,7 +61,10 @@ export function load_kzg_from_txt(_path: string): Kzg {
 //
 // Returns { input: {...}, output: string | null | string[] }.
 export const kzgCaseSchema = object({
-  input: record(string(), union([string(), array(string())])),
+  input: record(
+    string(),
+    union([string(), array(string())]),
+  ),
   output: nullable(union([string(), array(string())])),
 })
 export type KzgCase = InferOutput<typeof kzgCaseSchema>

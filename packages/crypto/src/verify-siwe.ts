@@ -18,6 +18,10 @@ import {
   addressSchema,
   bytesSchema,
 } from "@ethernauta/core"
+import {
+  parse_siwe_message,
+  type SiweMessage,
+} from "@ethernauta/eip/4361"
 import type {
   Readable,
   ResolvedReader,
@@ -30,11 +34,6 @@ import {
   parse,
   string,
 } from "valibot"
-
-import {
-  parse_siwe_message,
-  type SiweMessage,
-} from "@ethernauta/eip/4361"
 
 import { verify_message } from "./verify-message"
 

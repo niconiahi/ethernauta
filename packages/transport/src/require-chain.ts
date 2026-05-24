@@ -14,7 +14,9 @@ export const chainEntrySchema = object({
     custom<Http>((value) => typeof value === "function"),
   ),
 })
-export type ChainEntry = InferOutput<typeof chainEntrySchema>
+export type ChainEntry = InferOutput<
+  typeof chainEntrySchema
+>
 
 export function require_chain(
   chains: ChainEntry[],

@@ -8,7 +8,10 @@
 //     y_parity, r, s
 //   ])
 
-import { addressSchema, bytesSchema } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 import {
   hex_to_bytes,
   type RlpInput,

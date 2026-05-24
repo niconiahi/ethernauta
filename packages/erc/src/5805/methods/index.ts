@@ -1,5 +1,5 @@
-export * from "./clock_mode"
 export * from "./clock"
+export * from "./clock_mode"
 export * from "./delegate"
 export * from "./delegate-by-sig"
 export * from "./delegates"

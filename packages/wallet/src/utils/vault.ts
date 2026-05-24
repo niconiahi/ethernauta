@@ -1,10 +1,6 @@
 // Vault utilities for secure mnemonic storage using IndexedDB
 // Based on MetaMask's approach: password + PBKDF2 + AES-GCM encryption
-import {
-  type InferOutput,
-  object,
-  string,
-} from "valibot"
+import { type InferOutput, object, string } from "valibot"
 
 export const vaultRecordSchema = object({
   salt: string(),

@@ -108,7 +108,9 @@ export function verify_message(
       verifyMessageParametersSchema,
       _parameters,
     )
-    const verify = is_wrapped_signature(parameters.signature)
+    const verify = is_wrapped_signature(
+      parameters.signature,
+    )
       ? verify_message_universal
       : verify_message_deployed
     return verify(parameters)(resolved)

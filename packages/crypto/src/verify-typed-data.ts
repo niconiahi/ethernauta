@@ -97,7 +97,9 @@ export function verify_typed_data(
       verifyTypedDataParametersSchema,
       _parameters,
     )
-    const verify = is_wrapped_signature(parameters.signature)
+    const verify = is_wrapped_signature(
+      parameters.signature,
+    )
       ? verify_typed_data_universal
       : verify_typed_data_deployed
     return verify(parameters)(resolved)

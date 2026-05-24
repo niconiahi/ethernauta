@@ -1,15 +1,24 @@
-import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  string_,
-  uint256,
   decode_function_result,
   encode_function_call,
+  string_,
+  uint256,
 } from "@ethernauta/abi"
-import type { InferOutput } from "valibot"
-import { object, parse, string, tuple, union } from "valibot"
+import type { Bytes } from "@ethernauta/core"
 import { uint256Schema } from "@ethernauta/core"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
+import type { InferOutput } from "valibot"
+import {
+  object,
+  parse,
+  string,
+  tuple,
+  union,
+} from "valibot"
 
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [string_()] as const

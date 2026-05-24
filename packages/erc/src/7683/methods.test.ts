@@ -5,19 +5,19 @@ import {
 } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
 
-import { fill, FILL_SIGNATURE } from "./methods/fill"
-import { open, OPEN_SIGNATURE } from "./methods/open"
+import { FILL_SIGNATURE, fill } from "./methods/fill"
+import { OPEN_SIGNATURE, open } from "./methods/open"
 import {
-  openFor,
   OPEN_FOR_SIGNATURE,
+  openFor,
 } from "./methods/open-for"
 import {
-  resolve,
   RESOLVE_SIGNATURE,
+  resolve,
 } from "./methods/resolve"
 import {
-  resolveFor,
   RESOLVE_FOR_SIGNATURE,
+  resolveFor,
 } from "./methods/resolve-for"
 
 const ORDER = {

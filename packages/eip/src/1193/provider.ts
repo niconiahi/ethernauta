@@ -29,7 +29,8 @@ export const requestArgumentsSchema = object({
   method: string(),
   params: optional(
     custom<readonly unknown[] | object>(
-      (value) => typeof value === "object" && value !== null,
+      (value) =>
+        typeof value === "object" && value !== null,
     ),
   ),
 })

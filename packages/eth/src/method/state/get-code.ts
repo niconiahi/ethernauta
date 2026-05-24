@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import { addressSchema, bytesSchema } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,

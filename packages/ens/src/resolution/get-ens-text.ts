@@ -1,14 +1,6 @@
 // https://docs.ens.domains/ensip/5 — text(node, key)
 
 import { addressSchema } from "@ethernauta/core"
-import { eth_call } from "@ethernauta/eth"
-import type {
-  Readable,
-  ResolvedReader,
-} from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
-import { object, optional, parse, string } from "valibot"
-
 import {
   get_registry_address,
   namehash,
@@ -17,6 +9,13 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 import { text } from "@ethernauta/erc/634"
+import { eth_call } from "@ethernauta/eth"
+import type {
+  Readable,
+  ResolvedReader,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, optional, parse, string } from "valibot"
 
 const parametersSchema = object({
   name: string(),

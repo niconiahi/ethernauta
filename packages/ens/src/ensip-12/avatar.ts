@@ -7,12 +7,12 @@
 export type AvatarResult =
   | { kind: "uri"; uri: string }
   | {
-    kind: "nft"
-    namespace: "erc721" | "erc1155"
-    chain_id: string
-    contract: `0x${string}`
-    token_id: string
-  }
+      kind: "nft"
+      namespace: "erc721" | "erc1155"
+      chain_id: string
+      contract: `0x${string}`
+      token_id: string
+    }
 
 const IPFS_GATEWAY = "https://ipfs.io/ipfs/"
 

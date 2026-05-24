@@ -127,7 +127,9 @@ describe("generator.ts", () => {
       )
       // valibot `array` collides with abi `array`, so the valibot side is
       // aliased on import as `v_array`. The abi side keeps its plain name.
-      expect(file).toContain('array as v_array } from "valibot"')
+      expect(file).toContain(
+        'array as v_array } from "valibot"',
+      )
       expect(file).toContain("array,")
       expect(file).toContain(
         "PARAM_CODECS = [array(address()), array(uint256())] as const",
@@ -172,7 +174,10 @@ describe("generator.ts", () => {
                 type: "tuple",
                 components: [
                   { name: "fillDeadline", type: "uint32" },
-                  { name: "orderDataType", type: "bytes32" },
+                  {
+                    name: "orderDataType",
+                    type: "bytes32",
+                  },
                   { name: "orderData", type: "bytes" },
                 ],
               } as never,
@@ -189,7 +194,7 @@ describe("generator.ts", () => {
       )
       // abi `tuple` collides with valibot `tuple`, so the abi side is
       // aliased as `abi_tuple` on import.
-      expect(file).toContain('tuple as abi_tuple,')
+      expect(file).toContain("tuple as abi_tuple,")
       expect(file).toContain(
         "PARAM_CODECS = [abi_tuple({ fillDeadline: uint32(), orderDataType: bytes32(), orderData: bytes() })] as const",
       )
@@ -229,7 +234,10 @@ describe("generator.ts", () => {
                 type: "tuple",
                 components: [
                   { name: "fillDeadline", type: "uint32" },
-                  { name: "orderDataType", type: "bytes32" },
+                  {
+                    name: "orderDataType",
+                    type: "bytes32",
+                  },
                   { name: "orderData", type: "bytes" },
                 ],
               } as never,
@@ -297,7 +305,10 @@ describe("generator.ts", () => {
                 type: "tuple",
                 components: [
                   { name: "fillDeadline", type: "uint32" },
-                  { name: "orderDataType", type: "bytes32" },
+                  {
+                    name: "orderDataType",
+                    type: "bytes32",
+                  },
                   { name: "orderData", type: "bytes" },
                 ],
               } as never,

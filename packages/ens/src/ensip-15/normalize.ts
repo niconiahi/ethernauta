@@ -147,7 +147,8 @@ const wholeProcSchema = object({
     number(),
     set(
       custom<Group>(
-        (value) => value != null && typeof value === "object",
+        (value) =>
+          value != null && typeof value === "object",
       ),
     ),
   ),
@@ -199,8 +200,10 @@ const WHOLE_MAP: ReadonlyMap<number, WholeProc> = (() => {
   const out = new Map<number, WholeProc>()
   for (const w of WHOLES) {
     const members: number[] = [...w.valid, ...w.confused]
-    const recs: Array<{ groups: Set<Group>; cps: number[] }> =
-      []
+    const recs: Array<{
+      groups: Set<Group>
+      cps: number[]
+    }> = []
     for (const cp of members) {
       const gs = CP_TO_GROUPS.get(cp) ?? []
       let rec = recs.find((r) =>

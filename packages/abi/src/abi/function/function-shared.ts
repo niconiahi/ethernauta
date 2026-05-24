@@ -36,10 +36,7 @@ export const tupleComponentSchema: GenericSchema<TupleComponent> =
       }),
       object({
         name: string(),
-        type: union([
-          literal("tuple"),
-          literal("tuple[]"),
-        ]),
+        type: union([literal("tuple"), literal("tuple[]")]),
         components: array(tupleComponentSchema),
       }),
     ]),

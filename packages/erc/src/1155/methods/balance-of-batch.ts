@@ -1,19 +1,33 @@
-import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
   array,
-  uint256,
   decode_function_result,
   encode_function_call,
+  uint256,
 } from "@ethernauta/abi"
+import type { Bytes, Uint256 } from "@ethernauta/core"
+import {
+  addressSchema,
+  uint256Schema,
+} from "@ethernauta/core"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union, array as v_array } from "valibot"
-import type { Uint256 } from "@ethernauta/core"
-import { addressSchema, uint256Schema } from "@ethernauta/core"
+import {
+  object,
+  parse,
+  tuple,
+  union,
+  array as v_array,
+} from "valibot"
 
-const PARAM_CODECS = [array(address()), array(uint256())] as const
+const PARAM_CODECS = [
+  array(address()),
+  array(uint256()),
+] as const
 const OUTPUT_CODECS = [array(uint256())] as const
 
 export const BALANCE_OF_BATCH_SIGNATURE = {
@@ -23,12 +37,17 @@ export const BALANCE_OF_BATCH_SIGNATURE = {
 
 const parametersSchema = union([
   tuple([v_array(addressSchema), v_array(uint256Schema)]),
-  object({ accounts: v_array(addressSchema), ids: v_array(uint256Schema) }),
+  object({
+    accounts: v_array(addressSchema),
+    ids: v_array(uint256Schema),
+  }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
 export function balanceOfBatch(_parameters: Parameters) {
-  return (context: ContractContext): Callable<Uint256[]> => {
+  return (
+    context: ContractContext,
+  ): Callable<Uint256[]> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters
