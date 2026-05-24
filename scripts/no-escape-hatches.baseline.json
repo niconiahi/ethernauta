@@ -1,6 +1,6 @@
 {
   "_comment": "Counters tracked by scripts/no-escape-hatches.sh. The ratchet fails if any number rises above its baseline. Numbers only move DOWN, in the same commit as the cleanup that drops them. Counts are source-only — dist/ and *.d.ts are excluded. The `never` and `unknown` counters mix legitimate uses (per R0.2's allowed list) with violations — the ratchet flags every delta, and PRs that add a legit occurrence bump the baseline with a one-line justification. See skills/no-violations/SKILL.md.",
-  "as": 70,
+  "as": 65,
   "ts_ignore": 0,
   "biome_ignore_line": 0,
   "biome_ignore_all": 0,

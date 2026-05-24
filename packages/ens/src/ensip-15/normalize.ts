@@ -12,15 +12,12 @@
 
 import {
   array,
-  custom,
   type InferOutput,
   literal,
-  map,
   number,
   object,
   pipe,
   readonly,
-  set,
   variant,
 } from "valibot"
 
@@ -69,29 +66,39 @@ const ALL_VALID: ReadonlySet<number> = (() => {
 // Per-group membership lookups. The raw arrays in spec.ts
 // are huge (Han primary ≈ 90k cps) — O(n) `includes` calls
 // dominate validation, so we mirror them as Sets once at
-// module load.
-const GROUP_PRIMARY: ReadonlyMap<
-  Group,
-  ReadonlySet<number>
-> = new Map(
-  GROUPS.map((g) => [g, new Set(g.primary)] as const),
-)
-const GROUP_SECONDARY: ReadonlyMap<
-  Group,
-  ReadonlySet<number>
-> = new Map(
-  GROUPS.map((g) => [g, new Set(g.secondary)] as const),
-)
+// module load. `group_sets` is a closure-bound lookup with
+// a lazy fallback: every group in GROUPS is pre-seeded, and
+// any unseen-but-valid Group falls through to a fresh build
+// (no undefined leakage, so no cast).
+const group_sets = (() => {
+  const cache = new WeakMap<
+    Group,
+    {
+      primary: ReadonlySet<number>
+      secondary: ReadonlySet<number>
+    }
+  >()
+  for (const g of GROUPS) {
+    cache.set(g, {
+      primary: new Set(g.primary),
+      secondary: new Set(g.secondary),
+    })
+  }
+  return (g: Group) => {
+    const cached = cache.get(g)
+    if (cached) return cached
+    const fresh = {
+      primary: new Set(g.primary),
+      secondary: new Set(g.secondary),
+    }
+    cache.set(g, fresh)
+    return fresh
+  }
+})()
 
 function group_has_cp(_group: Group, _cp: number): boolean {
-  return (
-    (GROUP_PRIMARY.get(_group) as ReadonlySet<number>).has(
-      _cp,
-    ) ||
-    (
-      GROUP_SECONDARY.get(_group) as ReadonlySet<number>
-    ).has(_cp)
-  )
+  const sets = group_sets(_group)
+  return sets.primary.has(_cp) || sets.secondary.has(_cp)
 }
 
 // Inverted index: cp → groups that contain it. Built once
@@ -142,19 +149,6 @@ const CP_TO_GROUPS: ReadonlyMap<number, readonly Group[]> =
 //      are "shared" (WHOLE_VALID) and skipped — they don't
 //      narrow a confusable target on their own.
 
-const wholeProcSchema = object({
-  complement_by_cp: map(
-    number(),
-    set(
-      custom<Group>(
-        (value) =>
-          value != null && typeof value === "object",
-      ),
-    ),
-  ),
-})
-type WholeProc = InferOutput<typeof wholeProcSchema>
-
 const WHOLE_VALID: ReadonlySet<number> = (() => {
   const s = new Set<number>()
   for (const w of WHOLES) {
@@ -196,8 +190,16 @@ const WHOLE_UNIQUE: ReadonlySet<number> = (() => {
   return s
 })()
 
-const WHOLE_MAP: ReadonlyMap<number, WholeProc> = (() => {
-  const out = new Map<number, WholeProc>()
+// cp → set of groups that COULD claim this cp as their own
+// in a confusable swap. Lookups go directly from cp to its
+// complement set; the prior `complement_by_cp` indirection
+// inside a `WholeProc` was dead weight (every consumer
+// looked up the same cp it used to index WHOLE_MAP).
+const WHOLE_MAP: ReadonlyMap<
+  number,
+  ReadonlySet<Group>
+> = (() => {
+  const out = new Map<number, ReadonlySet<Group>>()
   for (const w of WHOLES) {
     const members: number[] = [...w.valid, ...w.confused]
     const recs: Array<{
@@ -219,19 +221,15 @@ const WHOLE_MAP: ReadonlyMap<number, WholeProc> = (() => {
     const union_groups = new Set<Group>()
     for (const r of recs)
       for (const g of r.groups) union_groups.add(g)
-    const complement_by_cp = new Map<number, Set<Group>>()
     for (const r of recs) {
       const complement = new Set<Group>()
       for (const g of union_groups) {
         if (!r.groups.has(g)) complement.add(g)
       }
       for (const cp of r.cps) {
-        complement_by_cp.set(cp, complement)
+        if (WHOLE_VALID.has(cp)) continue
+        out.set(cp, complement)
       }
-    }
-    const proc: WholeProc = { complement_by_cp }
-    for (const cp of members) {
-      if (!WHOLE_VALID.has(cp)) out.set(cp, proc)
     }
   }
   return out
@@ -260,11 +258,8 @@ function check_whole(
     // no whole pins the label to that group — no whole
     // confusable can apply, return early.
     if (WHOLE_UNIQUE.has(cp)) return
-    const whole = WHOLE_MAP.get(cp)
-    if (whole !== undefined) {
-      const candidates = whole.complement_by_cp.get(
-        cp,
-      ) as ReadonlySet<Group>
+    const candidates = WHOLE_MAP.get(cp)
+    if (candidates !== undefined) {
       if (maker === null) {
         maker = new Set(candidates)
       } else {
@@ -336,33 +331,26 @@ function match_emoji(
   _cps: readonly number[],
   _pos: number,
 ): EmojiMatch | null {
-  let node: Node | undefined = EMOJI_ROOT
+  let node: Node = EMOJI_ROOT
   let last_match: EmojiMatch | null = null
-  let i = _pos
-  while (i < _cps.length && node !== undefined) {
-    const cp = _cps[i] as number
+  let consumed = 0
+  for (const cp of _cps.slice(_pos)) {
     if (cp === FE0F) {
       // FE0F is consumed at any point but doesn't advance
       // the trie. The spec entry may or may not include
       // it at this position — we accept either form.
-      i++
+      consumed++
       if (node.canonical !== null) {
-        last_match = {
-          canonical: node.canonical,
-          consumed: i - _pos,
-        }
+        last_match = { canonical: node.canonical, consumed }
       }
       continue
     }
-    const child: Node | undefined = node.children.get(cp)
+    const child = node.children.get(cp)
     if (child === undefined) break
     node = child
-    i++
+    consumed++
     if (node.canonical !== null) {
-      last_match = {
-        canonical: node.canonical,
-        consumed: i - _pos,
-      }
+      last_match = { canonical: node.canonical, consumed }
     }
   }
   return last_match
@@ -383,7 +371,6 @@ const emojiTokenSchema = object({
 type EmojiToken = InferOutput<typeof emojiTokenSchema>
 
 const stopTokenSchema = object({ kind: literal("stop") })
-type StopToken = InferOutput<typeof stopTokenSchema>
 
 const tokenSchema = variant("kind", [
   textTokenSchema,
@@ -410,7 +397,8 @@ function tokenize(_cps: readonly number[]): Token[] {
       i += emoji.consumed
       continue
     }
-    const cp = _cps[i] as number
+    const cp = _cps[i]
+    if (cp === undefined) break
     i++
     if (cp === STOP) {
       flush()
@@ -503,26 +491,30 @@ function check_fenced(
   _text: number[],
   _label_repr: string,
 ): void {
-  if (_text.length === 0) return
-  if (FENCED_MAP.has(_text[0] as number)) {
+  const [first, ...rest] = _text
+  if (first === undefined) return
+  if (FENCED_MAP.has(first)) {
     throw new Error(
-      `label "${_label_repr}" starts with fenced ${FENCED_MAP.get(_text[0] as number)}`,
+      `label "${_label_repr}" starts with fenced ${FENCED_MAP.get(first)}`,
     )
   }
-  if (FENCED_MAP.has(_text[_text.length - 1] as number)) {
+  const last = _text.at(-1)
+  if (last !== undefined && FENCED_MAP.has(last)) {
     throw new Error(
-      `label "${_label_repr}" ends with fenced ${FENCED_MAP.get(_text[_text.length - 1] as number)}`,
+      `label "${_label_repr}" ends with fenced ${FENCED_MAP.get(last)}`,
     )
   }
-  for (let i = 1; i < _text.length; i++) {
-    if (
-      FENCED_MAP.has(_text[i] as number) &&
-      FENCED_MAP.has(_text[i - 1] as number)
-    ) {
+  // Sliding-window over the remainder; `first` is known
+  // non-fenced (we threw above) so seeding `prev = first`
+  // can't yield a false positive on the first iteration.
+  let prev = first
+  for (const cp of rest) {
+    if (FENCED_MAP.has(cp) && FENCED_MAP.has(prev)) {
       throw new Error(
         `label "${_label_repr}" has consecutive fenced chars`,
       )
     }
+    prev = cp
   }
 }
 
@@ -602,14 +594,13 @@ function check_combining_marks(
   // A combining mark may not begin a label and may not
   // come immediately after an emoji.
   let prev_was_emoji = false
-  for (let i = 0; i < _label.length; i++) {
-    const tok = _label[i] as TextToken | EmojiToken
+  for (const [i, tok] of _label.entries()) {
     if (tok.kind === "text") {
-      if (tok.cps.length === 0) {
+      const [first] = tok.cps
+      if (first === undefined) {
         prev_was_emoji = false
         continue
       }
-      const first = tok.cps[0] as number
       if (CM_SET.has(first)) {
         if (i === 0) {
           throw new Error(
@@ -629,19 +620,28 @@ function check_combining_marks(
   }
 }
 
-function narrow_candidates(
-  _initial: readonly Group[],
-  _non_cm: readonly number[],
-): Group[] {
-  let candidates: Group[] = _initial.slice()
-  for (const cp of _non_cm) {
-    candidates = candidates.filter(
-      (g) =>
-        g.primary.includes(cp) || g.secondary.includes(cp),
-    )
-    if (candidates.length === 0) break
+function group_contains_all(
+  _group: Group,
+  _text: readonly number[],
+): boolean {
+  const sets = group_sets(_group)
+  for (const cp of _text) {
+    if (!sets.primary.has(cp) && !sets.secondary.has(cp)) {
+      return false
+    }
   }
-  return candidates
+  return true
+}
+
+function group_primary_contains_all(
+  _group: Group,
+  _text: readonly number[],
+): boolean {
+  const sets = group_sets(_group)
+  for (const cp of _text) {
+    if (!sets.primary.has(cp)) return false
+  }
+  return true
 }
 
 function determine_group(
@@ -656,25 +656,48 @@ function determine_group(
   // disambiguates shared digits — "१𑠲" combines a digit
   // in {Devanagari, Dogr, Kthi, Mahj} with a Dogra-only CM,
   // and narrowing collapses to Dogr.
-  let candidates = narrow_candidates(
-    GROUPS.filter((g) => !g.restricted),
-    _text,
-  )
-  if (candidates.length === 0) {
-    candidates = narrow_candidates(
-      GROUPS.filter((g) => g.restricted),
-      _text,
-    )
+  //
+  // Three passes, early return. Avoids materializing an
+  // intermediate `candidates: Group[]` array — and avoids
+  // the `candidates[0]` indexed-access nag.
+  //
+  //   1. unrestricted, primary-only fit (best match)
+  //   2. unrestricted, primary∪secondary fit
+  //   3. restricted, primary-only fit
+  //   4. restricted, primary∪secondary fit
+  //
+  // Tier 2 is only reached if no unrestricted has a primary
+  // fit; tier 3/4 are only reached if no unrestricted fits at
+  // all — matching the original narrow_candidates(unrestricted)
+  // → narrow_candidates(restricted) cascade.
+  let any_unrestricted_fits = false
+  for (const g of GROUPS) {
+    if (g.restricted) continue
+    if (group_primary_contains_all(g, _text)) return g
+    if (
+      !any_unrestricted_fits &&
+      group_contains_all(g, _text)
+    ) {
+      any_unrestricted_fits = true
+    }
   }
-  if (candidates.length === 0) {
-    throw new Error(
-      `label "${_label_repr}" mixes scripts (no single group contains all cps)`,
-    )
+  if (any_unrestricted_fits) {
+    for (const g of GROUPS) {
+      if (g.restricted) continue
+      if (group_contains_all(g, _text)) return g
+    }
   }
-  const primary_first = candidates.find((g) =>
-    _text.every((cp) => g.primary.includes(cp)),
+  for (const g of GROUPS) {
+    if (!g.restricted) continue
+    if (group_primary_contains_all(g, _text)) return g
+  }
+  for (const g of GROUPS) {
+    if (!g.restricted) continue
+    if (group_contains_all(g, _text)) return g
+  }
+  throw new Error(
+    `label "${_label_repr}" mixes scripts (no single group contains all cps)`,
   )
-  return primary_first ?? (candidates[0] as Group)
 }
 
 function check_group_cm(
