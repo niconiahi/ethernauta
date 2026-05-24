@@ -36,6 +36,7 @@ import {
   make_transaction_hash,
   make_unsigned_fields,
   sign_transaction,
+  type UnsignedFields,
 } from "./sign-transaction"
 
 const NAMESPACE = {
@@ -168,9 +169,18 @@ describe("transaction.ts", () => {
   })
 
   it("should create 12 fields with signature", () => {
-    const unsigned_fields = new Array(9).fill(
-      new Uint8Array([0x01]),
-    )
+    const filler = new Uint8Array([0x01])
+    const unsigned_fields: UnsignedFields = [
+      filler,
+      filler,
+      filler,
+      filler,
+      filler,
+      filler,
+      filler,
+      filler,
+      filler,
+    ]
     const signature = sign(
       new Uint8Array(32).fill(0x01),
       TEST_PRIVATE_KEY,

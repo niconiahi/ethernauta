@@ -14,7 +14,7 @@ import {
   genericTransactionSchema,
 } from "@ethernauta/eth"
 import type { ChainId, Reader } from "@ethernauta/transport"
-import { hex_to_bytes, invariant } from "@ethernauta/utils"
+import { hex_to_bytes } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import type { RecoveredSignature } from "@noble/secp256k1"
 import type { HDKey } from "@scure/bip32"
@@ -40,6 +40,16 @@ export const accessListItemSchema = object({
 export type AccessListItem = InferOutput<
   typeof accessListItemSchema
 >
+
+// Post-parse tightening of `genericTransactionSchema` for the
+// `eth_signTransaction` boundary: `to` is required (a Signable
+// can't broadcast to "no address" — that's `eth_sendTransaction`
+// contract-deployment territory, which Ethernauta routes via
+// EIP-1014's deploy flow, not this signer).
+const signableTransactionSchema = object({
+  ...genericTransactionSchema.entries,
+  to: addressSchema,
+})
 
 export const eip1559TransactionUnsignedSchema = object({
   chain_id: bigint(),
@@ -139,11 +149,7 @@ function get_fields_from_transaction(
       const raw = Array.isArray(params)
         ? params[0]
         : params.transaction
-      const tx = parse(genericTransactionSchema, raw)
-      invariant(
-        tx.to,
-        "eth_signTransaction requires a `to` address",
-      )
+      const tx = parse(signableTransactionSchema, raw)
       const value_hex = tx.value ?? "0x0"
       const input_hex = tx.input ?? "0x"
       const data =
@@ -288,77 +294,59 @@ export function concat_bytes(
 export function encode_access_list(
   access_list: AccessListItem[],
 ): EncodedAccessList {
-  const encoded_list = new Array<EncodedAccessListItem>(
-    access_list.length,
-  )
-  for (let i = 0; i < access_list.length; i++) {
-    const item = access_list[i]
-    invariant(item, "access list item should exist")
-    const storage_keys = new Array<Uint8Array>(
-      item.storage_keys.length,
-    )
-    for (let j = 0; j < item.storage_keys.length; j++) {
-      const storage_key = item.storage_keys[j]
-      invariant(storage_key, "storage key should exist")
-      storage_keys[j] = hex_to_bytes(storage_key)
-    }
-    encoded_list[i] = [
-      hex_to_bytes(item.address),
-      storage_keys,
-    ]
-  }
-  return encoded_list
+  return access_list.map((item) => [
+    hex_to_bytes(item.address),
+    item.storage_keys.map((storage_key) =>
+      hex_to_bytes(storage_key),
+    ),
+  ])
 }
 
+// EIP-1559 unsigned transaction has exactly 9 RLP fields per
+// the spec; `make_signed_fields` appends y_parity + r + s for the
+// 12-field signed form. Expressing the count in the tuple type
+// (instead of `Field[]` + a runtime invariant) makes the precondition
+// statically enforced — TS narrows each index without an explicit
+// guard.
+export type UnsignedFields = [
+  Field,
+  Field,
+  Field,
+  Field,
+  Field,
+  Field,
+  Field,
+  Field,
+  Field,
+]
+
 export function make_signed_fields(
-  unsigned_fields: Field[],
+  unsigned_fields: UnsignedFields,
   signature: RecoveredSignature,
 ): Field[] {
-  const fields = new Array<Field>(12)
-  invariant(
-    unsigned_fields[0] &&
-      unsigned_fields[1] &&
-      unsigned_fields[2] &&
-      unsigned_fields[3] &&
-      unsigned_fields[4] &&
-      unsigned_fields[5] &&
-      unsigned_fields[6] &&
-      unsigned_fields[7] &&
-      unsigned_fields[8],
-    "all the required encoded fields must exist",
-  )
-  fields[0] = unsigned_fields[0]
-  fields[1] = unsigned_fields[1]
-  fields[2] = unsigned_fields[2]
-  fields[3] = unsigned_fields[3]
-  fields[4] = unsigned_fields[4]
-  fields[5] = unsigned_fields[5]
-  fields[6] = unsigned_fields[6]
-  fields[7] = unsigned_fields[7]
-  fields[8] = unsigned_fields[8]
   const y_parity = compose_y_parity(signature.recovery)
-  fields[9] = big_to_bytes(y_parity)
-  fields[10] = big_to_bytes(signature.r)
-  fields[11] = big_to_bytes(signature.s)
-  return fields
+  return [
+    ...unsigned_fields,
+    big_to_bytes(y_parity),
+    big_to_bytes(signature.r),
+    big_to_bytes(signature.s),
+  ]
 }
 
 export function make_unsigned_fields(
   transaction: Eip1559TransactionUnsigned,
-): Field[] {
-  const fields = new Array<Field>(9)
-  fields[0] = big_to_bytes(transaction.chain_id)
-  fields[1] = big_to_bytes(transaction.nonce)
-  fields[2] = big_to_bytes(
-    transaction.max_priority_fee_per_gas,
-  )
-  fields[3] = big_to_bytes(transaction.max_fee_per_gas)
-  fields[4] = big_to_bytes(transaction.gas_limit)
-  fields[5] = hex_to_bytes(transaction.to)
-  fields[6] = big_to_bytes(transaction.value)
-  fields[7] = transaction.data
-  fields[8] = encode_access_list([])
-  return fields
+): UnsignedFields {
+  return [
+    big_to_bytes(transaction.chain_id),
+    big_to_bytes(transaction.nonce),
+    big_to_bytes(transaction.max_priority_fee_per_gas),
+    big_to_bytes(transaction.max_fee_per_gas),
+    big_to_bytes(transaction.gas_limit),
+    hex_to_bytes(transaction.to),
+    big_to_bytes(transaction.value),
+    transaction.data,
+    encode_access_list([]),
+  ]
 }
 
 export function encode_fields(fields: Field[]) {

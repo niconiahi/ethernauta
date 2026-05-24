@@ -1,4 +1,3 @@
-import { invariant } from "@ethernauta/utils"
 import { number, object, parse, string } from "valibot"
 import {
   compose_calls_status,
@@ -48,8 +47,7 @@ chrome.runtime.onMessage.addListener(
         EthernautaRequestSchema,
         message,
       )
-      const tab_id = sender.tab?.id
-      invariant(tab_id, "request must come from a tab")
+      const tab_id = parse(number(), sender.tab?.id)
       if (
         request.method === "wallet_getCapabilities" ||
         request.method === "wallet_getCallsStatus"
@@ -113,12 +111,9 @@ chrome.runtime.onMessage.addListener(
       const key = compose_key(response.id)
       const session_results =
         await chrome.storage.session.get(key)
-      const pending_request = session_results[key] as
-        | { tab_id: number }
-        | undefined
-      invariant(
-        pending_request,
-        "there should be a pending request for this response",
+      const pending_request = parse(
+        pendingRecordSchema,
+        session_results[key],
       )
       chrome.tabs.sendMessage(
         pending_request.tab_id,

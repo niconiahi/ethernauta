@@ -1,10 +1,10 @@
-import { invariant } from "@ethernauta/utils"
 import { computed, signal } from "@preact/signals"
 import { HDKey } from "@scure/bip32"
 import {
   array,
   custom,
   type InferOutput,
+  instance,
   nullable,
   number,
   object,
@@ -90,11 +90,7 @@ export function get_active_account(): Account {
 
 function derive_at(master: HDKey, index: number): Account {
   const key = master.derive(`${ACCOUNT_PATH}/${index}`)
-  const private_key = key.privateKey
-  invariant(
-    private_key,
-    "derived account must have a private key",
-  )
+  const private_key = parse(instance(Uint8Array), key.privateKey)
   const address = private_key_to_address(private_key)
   return { index, address, key }
 }
@@ -139,8 +135,7 @@ export async function restore_accounts(): Promise<void> {
 export async function init_accounts(
   password: string,
 ): Promise<void> {
-  const mnemonic = await get_vault(password)
-  invariant(mnemonic, "vault should exist to sign in")
+  const mnemonic = parse(string(), await get_vault(password))
   const seed = mnemonic_to_seed(mnemonic)
   const master = seed_to_master_key(seed)
   const current = accounts.value
@@ -166,12 +161,9 @@ export function master_unlocked(): boolean {
 // memory — `init_accounts` caches it at login time.
 export async function add_account(): Promise<Account> {
   const state = accounts.value
-  invariant(
-    state.master,
-    "master key must be unlocked to add an account",
-  )
+  const master = parse(instance(HDKey), state.master)
   const next_index = next_free_index(state.list)
-  const account = derive_at(state.master, next_index)
+  const account = derive_at(master, next_index)
   const next: AccountsState = {
     ...state,
     list: [...state.list, account],
@@ -185,10 +177,9 @@ export async function set_active_index(
   index: number,
 ): Promise<void> {
   const state = accounts.value
-  const account = state.list.find((a) => a.index === index)
-  invariant(
-    account,
-    `cannot activate index ${index}: not in account list`,
+  const account = parse(
+    accountSchema,
+    state.list.find((a) => a.index === index),
   )
   const next: AccountsState = {
     ...state,
