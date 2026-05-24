@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1071: Chain = {
+export const eip155_1071 = {
   name: "OpenGPU Mainnet",
   shortName: "ogpu",
   chain: "OGPU",
@@ -32,4 +31,4 @@ export const eip155_1071: Chain = {
     },
   ],
   redFlags: ["reusedChainId"],
-}
+} satisfies Chain

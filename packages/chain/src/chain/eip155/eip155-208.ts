@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_208: Chain = {
+export const eip155_208 = {
   name: "Structx Mainnet",
   shortName: "utx",
   chain: "utx",
@@ -15,4 +14,4 @@ export const eip155_208: Chain = {
   infoURL: "https://structx.io",
   chainId: 208,
   networkId: 208,
-}
+} satisfies Chain

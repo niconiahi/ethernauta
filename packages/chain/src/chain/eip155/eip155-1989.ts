@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1989: Chain = {
+export const eip155_1989 = {
   name: "Lydia Coin",
   shortName: "lydia",
   chain: "LYDIA",
@@ -16,4 +15,4 @@ export const eip155_1989: Chain = {
     "https://raas.gelato.network/rollups/details/public/lydia-coin",
   chainId: 1989,
   networkId: 1989,
-}
+} satisfies Chain

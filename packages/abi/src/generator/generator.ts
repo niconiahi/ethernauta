@@ -403,10 +403,7 @@ function compose_signature_const(
   const names = inputs
     .map((i) => JSON.stringify(i.name))
     .join(", ")
-  return `export const ${signature_const_name(emit_name)}: {
-  signature: string
-  names: string[]
-} = {
+  return `export const ${signature_const_name(emit_name)} = {
   signature: ${JSON.stringify(canonical)},
   names: [${names}],
 }`
@@ -485,7 +482,7 @@ function build_readable(
                 `parse(${i.decoded_schema}, decoded[${idx}])`,
             )
             .join(",\n          ")},
-        ] as ${return_type}`
+        ]`
     : `const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
@@ -515,7 +512,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     const calldata = encode_function_call({
       name: "${name}",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,
@@ -567,7 +564,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     const calldata = encode_function_call({
       name: "${name}",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
     //               maxPriorityFeePerGas by querying the network

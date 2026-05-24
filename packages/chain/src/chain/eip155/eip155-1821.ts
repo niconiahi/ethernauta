@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1821: Chain = {
+export const eip155_1821 = {
   name: "Ruby Smart Chain MAINNET",
   shortName: "RUBY",
   chain: "RUBY",
@@ -27,4 +26,4 @@ export const eip155_1821: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

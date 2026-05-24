@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_18289463: Chain = {
+export const eip155_18289463 = {
   name: "IOLite",
   shortName: "ilt",
   chain: "ILT",
@@ -15,4 +14,4 @@ export const eip155_18289463: Chain = {
   infoURL: "https://iolite.io",
   chainId: 18289463,
   networkId: 18289463,
-}
+} satisfies Chain

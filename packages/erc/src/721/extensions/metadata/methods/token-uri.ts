@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   string_,
@@ -11,22 +8,13 @@ import {
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import {
-  object,
-  parse,
-  string,
-  tuple,
-  union,
-} from "valibot"
+import { object, parse, string, tuple, union } from "valibot"
 import { uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [string_()] as const
 
-export const TOKEN_URI_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const TOKEN_URI_SIGNATURE = {
   signature: "tokenURI(uint256)",
   names: ["tokenId"],
 }
@@ -46,7 +34,7 @@ export function tokenURI(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "tokenURI",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

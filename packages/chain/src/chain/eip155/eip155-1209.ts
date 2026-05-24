@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1209: Chain = {
+export const eip155_1209 = {
   name: "SaitaBlockChain(SBC)",
   shortName: "SBC",
   chain: "SaitaBlockChain(SBC)",
@@ -23,4 +22,4 @@ export const eip155_1209: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

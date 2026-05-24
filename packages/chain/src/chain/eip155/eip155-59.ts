@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_59: Chain = {
+export const eip155_59 = {
   name: "EOS EVM Legacy",
   shortName: "eos-legacy",
   chain: "EOS",
@@ -17,4 +16,4 @@ export const eip155_59: Chain = {
   networkId: 59,
   explorers: [],
   status: "deprecated",
-}
+} satisfies Chain

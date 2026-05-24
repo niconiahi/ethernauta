@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bytes32,
@@ -11,22 +8,13 @@ import {
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import {
-  object,
-  parse,
-  string,
-  tuple,
-  union,
-} from "valibot"
+import { object, parse, string, tuple, union } from "valibot"
 import { bytes32Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32()] as const
 const OUTPUT_CODECS = [string_()] as const
 
-export const NAME_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const NAME_SIGNATURE = {
   signature: "name(bytes32)",
   names: ["node"],
 }
@@ -46,7 +34,7 @@ export function name(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "name",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

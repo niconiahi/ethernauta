@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_282: Chain = {
+export const eip155_282 = {
   name: "Deprecated Cronos zkEVM Testnet",
   shortName: "deprecated-zkTCRO",
   chain: "deprecatedCronosZkEVMTestnet",
@@ -24,4 +23,4 @@ export const eip155_282: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_978657: Chain = {
+export const eip155_978657 = {
   name: "Treasure Ruby",
   shortName: "treasure-ruby",
   chain: "TRS",
@@ -32,4 +31,4 @@ export const eip155_978657: Chain = {
     bridges: [],
   },
   status: "deprecated",
-}
+} satisfies Chain

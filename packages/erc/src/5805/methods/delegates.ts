@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
@@ -17,10 +14,7 @@ import { addressSchema } from "@ethernauta/core"
 const PARAM_CODECS = [address()] as const
 const OUTPUT_CODECS = [address()] as const
 
-export const DELEGATES_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const DELEGATES_SIGNATURE = {
   signature: "delegates(address)",
   names: ["account"],
 }
@@ -40,7 +34,7 @@ export function delegates(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "delegates",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

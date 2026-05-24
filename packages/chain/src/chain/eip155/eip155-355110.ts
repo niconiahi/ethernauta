@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_355110: Chain = {
+export const eip155_355110 = {
   name: "Bitfinity Network Mainnet",
   shortName: "bitfinity-mainnet",
   chain: "BTF",
@@ -30,4 +29,4 @@ export const eip155_355110: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

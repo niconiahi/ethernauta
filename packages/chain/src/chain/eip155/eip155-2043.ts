@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2043: Chain = {
+export const eip155_2043 = {
   name: "NeuroWeb",
   shortName: "NEURO",
   chain: "NEUROWEB",
@@ -18,4 +17,4 @@ export const eip155_2043: Chain = {
   infoURL: "https://neuroweb.ai",
   chainId: 2043,
   networkId: 2043,
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_119139: Chain = {
+export const eip155_119139 = {
   name: "MetaDAP Enterprise Testnet",
   shortName: "MetaDAP-T",
   title: "MetaDAP Enterprise Testnet",
@@ -27,4 +26,4 @@ export const eip155_119139: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

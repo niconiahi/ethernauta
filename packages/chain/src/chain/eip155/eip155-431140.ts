@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_431140: Chain = {
+export const eip155_431140 = {
   name: "Markr Go",
   shortName: "markr-go",
   chain: "Unified",
@@ -18,4 +17,4 @@ export const eip155_431140: Chain = {
   networkId: 431140,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain

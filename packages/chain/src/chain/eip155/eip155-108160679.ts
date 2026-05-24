@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_108160679: Chain = {
+export const eip155_108160679 = {
   name: "Oraichain Mainnet",
   shortName: "Oraichain",
   title: "Oraichain Mainnet",
@@ -24,4 +23,4 @@ export const eip155_108160679: Chain = {
   infoURL: "https://orai.io",
   chainId: 108160679,
   networkId: 108160679,
-}
+} satisfies Chain

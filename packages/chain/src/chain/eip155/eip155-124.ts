@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_124: Chain = {
+export const eip155_124 = {
   name: "Decentralized Web Mainnet",
   shortName: "dwu",
   chain: "DWU",
@@ -15,4 +14,4 @@ export const eip155_124: Chain = {
   infoURL: "https://decentralized-web.tech/dw_chain.php",
   chainId: 124,
   networkId: 124,
-}
+} satisfies Chain

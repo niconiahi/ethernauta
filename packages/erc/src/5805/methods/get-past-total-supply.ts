@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint256,
@@ -17,10 +14,7 @@ import { uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [uint256()] as const
 
-export const GET_PAST_TOTAL_SUPPLY_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const GET_PAST_TOTAL_SUPPLY_SIGNATURE = {
   signature: "getPastTotalSupply(uint256)",
   names: ["timepoint"],
 }
@@ -31,9 +25,7 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function getPastTotalSupply(
-  _parameters: Parameters,
-) {
+export function getPastTotalSupply(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
@@ -42,7 +34,7 @@ export function getPastTotalSupply(
     const calldata = encode_function_call({
       name: "getPastTotalSupply",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

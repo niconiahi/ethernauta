@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_404: Chain = {
+export const eip155_404 = {
   name: "Syndr L3",
   shortName: "syndr-l3",
   title: "Syndr L3 Rollup",
@@ -33,4 +32,4 @@ export const eip155_404: Chain = {
       },
     ],
   },
-}
+} satisfies Chain

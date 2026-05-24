@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_47803: Chain = {
+export const eip155_47803 = {
   name: "ReDeFi Layer 1",
   shortName: "bax",
   chain: "ReDeFi",
@@ -24,4 +23,4 @@ export const eip155_47803: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_253: Chain = {
+export const eip155_253 = {
   name: "Glide L2 Protocol XP",
   shortName: "glidexp",
   chain: "GLXP",
@@ -39,4 +38,4 @@ export const eip155_253: Chain = {
     chain: "eip155-251",
   },
   status: "active",
-}
+} satisfies Chain

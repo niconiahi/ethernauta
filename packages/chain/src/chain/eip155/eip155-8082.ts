@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8082: Chain = {
+export const eip155_8082 = {
   name: "Shardeum Sphinx 1.X",
   shortName: "Sphinx10",
   chain: "Shardeum",
@@ -24,4 +23,4 @@ export const eip155_8082: Chain = {
     },
   ],
   redFlags: ["reusedChainId"],
-}
+} satisfies Chain

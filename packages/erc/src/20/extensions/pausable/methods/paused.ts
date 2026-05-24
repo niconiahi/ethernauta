@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bool,
@@ -11,16 +8,16 @@ import {
 } from "@ethernauta/abi"
 import { boolean, parse } from "valibot"
 
+
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [bool()] as const
 
-export const PAUSED_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const PAUSED_SIGNATURE = {
   signature: "paused()",
   names: [],
 }
+
+
 
 export function paused() {
   return (context: ContractContext): Callable<boolean> => {
@@ -28,7 +25,7 @@ export function paused() {
     const calldata = encode_function_call({
       name: "paused",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

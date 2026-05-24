@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1422: Chain = {
+export const eip155_1422 = {
   name: "Polygon zkEVM Testnet Pre Audit-Upgraded",
   shortName: "testnet-zkEVM-mango-pre-audit-upgraded",
   title: "Polygon zkEVM Testnet Pre Audit-Upgraded",
@@ -26,4 +25,4 @@ export const eip155_1422: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

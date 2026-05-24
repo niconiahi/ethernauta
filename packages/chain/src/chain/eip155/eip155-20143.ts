@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_20143: Chain = {
+export const eip155_20143 = {
   name: "Monad Devnet",
   shortName: "mon-devnet",
   chain: "MON",
@@ -26,4 +25,4 @@ export const eip155_20143: Chain = {
   networkId: 20143,
   slip44: 1,
   explorers: [],
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1449000: Chain = {
+export const eip155_1449000 = {
   name: "XRPL EVM Sidechain Testnet",
   shortName: "xrplevmtestnet",
   chain: "XRPLEVM Testnet",
@@ -34,4 +33,4 @@ export const eip155_1449000: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

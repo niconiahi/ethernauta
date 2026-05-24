@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint256,
@@ -17,10 +14,7 @@ import { uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [uint256()] as const
 
-export const PREVIEW_MINT_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const PREVIEW_MINT_SIGNATURE = {
   signature: "previewMint(uint256)",
   names: ["shares"],
 }
@@ -40,7 +34,7 @@ export function previewMint(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "previewMint",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

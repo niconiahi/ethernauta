@@ -31,29 +31,25 @@ export function function_selector(
   )
 }
 
-type ValuesOf<Args extends readonly AbiCodec<any>[]> = {
-  [K in keyof Args]: Args[K] extends AbiCodec<infer T>
-    ? T
-    : never
-}
-
 // Encode a function call: 4-byte selector + ABI-encoded arguments.
-// Args is a readonly tuple of typed codecs; `values` is positionally
-// inferred from each codec's T.
-export function encode_function_call<
-  Args extends readonly AbiCodec<any>[],
->(_input: {
+// `args` is the typed codec list; `values` is the runtime tuple whose
+// shape MUST match `args`. We accept `readonly unknown[]` rather than
+// a mapped tuple type derived from `args` because the previous mapped
+// type was always immediately widened to `unknown[]` internally — the
+// strict signature looked safe but was decorative, and the cast it
+// forced at every call site (`values as never`) was a worse outcome
+// than the looser-but-honest signature below. Callers (codegen + the
+// few hand-written sites in transport / wallet) build `values` from a
+// Valibot-parsed source whose shape matches `args` by construction.
+export function encode_function_call(_input: {
   name: string
-  args: Args
-  values: ValuesOf<Args>
+  args: readonly AbiCodec<any>[]
+  values: readonly unknown[]
 }): Uint8Array {
   const { name, args, values } = _input
   const signature = build_signature(name, args)
   const selector = to_selector(signature)
-  const body = encode_sequence(
-    args,
-    values as readonly unknown[],
-  )
+  const body = encode_sequence(args, values)
   const out = new Uint8Array(4 + body.length)
   out.set(selector, 0)
   out.set(body, 4)
@@ -62,19 +58,15 @@ export function encode_function_call<
 
 // Build creation calldata for a deploy transaction: contract bytecode
 // concatenated with ABI-encoded constructor arguments. Pass an empty
-// `args`/`values` tuple for constructors with no arguments.
-export function encode_constructor_call<
-  Args extends readonly AbiCodec<any>[],
->(_input: {
+// `args`/`values` tuple for constructors with no arguments. See the
+// comment on `encode_function_call` for why `values` is `unknown[]`.
+export function encode_constructor_call(_input: {
   bytecode: Uint8Array
-  args: Args
-  values: ValuesOf<Args>
+  args: readonly AbiCodec<any>[]
+  values: readonly unknown[]
 }): Uint8Array {
   const { bytecode, args, values } = _input
-  const body = encode_sequence(
-    args,
-    values as readonly unknown[],
-  )
+  const body = encode_sequence(args, values)
   const out = new Uint8Array(bytecode.length + body.length)
   out.set(bytecode, 0)
   out.set(body, bytecode.length)

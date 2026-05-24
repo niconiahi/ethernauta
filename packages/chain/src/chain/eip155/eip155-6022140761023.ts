@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_6022140761023: Chain = {
+export const eip155_6022140761023 = {
   name: "Molereum Network",
   shortName: "mole",
   chain: "ETH",
@@ -15,4 +14,4 @@ export const eip155_6022140761023: Chain = {
   infoURL: "https://github.com/Jdubedition/molereum",
   chainId: 6022140761023,
   networkId: 6022140761023,
-}
+} satisfies Chain

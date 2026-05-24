@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2606: Chain = {
+export const eip155_2606 = {
   name: "PoCRNet",
   shortName: "pocrnet",
   title: "Proof of Climate awaReness mainnet",
@@ -28,4 +27,4 @@ export const eip155_2606: Chain = {
     },
   ],
   status: "active",
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_100008: Chain = {
+export const eip155_100008 = {
   name: "QuarkChain Mainnet Shard 7",
   shortName: "qkc-s7",
   chain: "QuarkChain",
@@ -29,4 +28,4 @@ export const eip155_100008: Chain = {
     type: "shard",
     chain: "eip155-100000",
   },
-}
+} satisfies Chain

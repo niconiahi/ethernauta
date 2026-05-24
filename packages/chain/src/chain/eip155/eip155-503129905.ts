@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_503129905: Chain = {
+export const eip155_503129905 = {
   name: "Deprecated SKALE Nebula Hub Testnet",
   shortName: "deprecated-nebula-testnet",
   chain: "staging-faint-slimy-achird",
@@ -28,4 +27,4 @@ export const eip155_503129905: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

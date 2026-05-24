@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_814: Chain = {
+export const eip155_814 = {
   name: "Firechain zkEVM",
   shortName: "firechan-zkEVM",
   title: "Firechain zkEVM",
@@ -30,4 +29,4 @@ export const eip155_814: Chain = {
       },
     ],
   },
-}
+} satisfies Chain

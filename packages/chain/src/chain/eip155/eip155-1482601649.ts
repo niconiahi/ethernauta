@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1482601649: Chain = {
+export const eip155_1482601649 = {
   name: "SKALE Nebula Hub",
   shortName: "nebula-mainnet",
   chain: "green-giddy-denebola",
@@ -26,4 +25,4 @@ export const eip155_1482601649: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

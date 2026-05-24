@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_22040: Chain = {
+export const eip155_22040 = {
   name: "AirDAO Testnet",
   shortName: "airdao-test",
   chain: "ambnet-test",
@@ -24,4 +23,4 @@ export const eip155_22040: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

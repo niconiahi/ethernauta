@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_268: Chain = {
+export const eip155_268 = {
   name: "Neura Devnet",
   shortName: "dneura",
   title: "Neura Devnet",
@@ -28,4 +27,4 @@ export const eip155_268: Chain = {
   slip44: 1,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain

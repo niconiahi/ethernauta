@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_17001: Chain = {
+export const eip155_17001 = {
   name: "Redstone Holesky Testnet",
   shortName: "redstone-holesky",
   chain: "ETH",
@@ -25,4 +24,4 @@ export const eip155_17001: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

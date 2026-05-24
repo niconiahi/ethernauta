@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_14333: Chain = {
+export const eip155_14333 = {
   name: "Vitruveo Testnet",
   shortName: "vitruveo-test",
   title: "Vitruveo is a blockchain for Creators",
@@ -29,4 +28,4 @@ export const eip155_14333: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

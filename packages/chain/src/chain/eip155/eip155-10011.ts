@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_10011: Chain = {
+export const eip155_10011 = {
   name: "DeepSafe Beta Mainnet",
   shortName: "DeepSafe",
   chain: "DeepSafe",
@@ -18,4 +17,4 @@ export const eip155_10011: Chain = {
   infoURL: "https://deepsafe.network/",
   chainId: 10011,
   networkId: 10011,
-}
+} satisfies Chain

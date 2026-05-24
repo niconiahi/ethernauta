@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_7776: Chain = {
+export const eip155_7776 = {
   name: "PandaSea Mainnet",
   shortName: "pandaSea-mainnet",
   chain: "PandaSea",
@@ -22,4 +21,4 @@ export const eip155_7776: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint8,
@@ -16,13 +13,12 @@ import { uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint8()] as const
 
-export const DECIMALS_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const DECIMALS_SIGNATURE = {
   signature: "decimals()",
   names: [],
 }
+
+
 
 export function decimals() {
   return (context: ContractContext): Callable<Uint256> => {
@@ -30,7 +26,7 @@ export function decimals() {
     const calldata = encode_function_call({
       name: "decimals",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

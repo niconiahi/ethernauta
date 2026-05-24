@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_821: Chain = {
+export const eip155_821 = {
   name: "Callisto Testnet Deprecated",
   shortName: "tclo",
   chain: "CLO",
@@ -17,4 +16,4 @@ export const eip155_821: Chain = {
   networkId: 2,
   slip44: 1,
   status: "deprecated",
-}
+} satisfies Chain

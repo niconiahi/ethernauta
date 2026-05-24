@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_3109: Chain = {
+export const eip155_3109 = {
   name: "SatoshiVM Alpha Mainnet",
   shortName: "SAVM",
   chain: "SatoshiVM",
@@ -16,4 +15,4 @@ export const eip155_3109: Chain = {
   infoURL: "https://www.satoshivm.io/",
   chainId: 3109,
   networkId: 3109,
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_3306: Chain = {
+export const eip155_3306 = {
   name: "Debounce Subnet Testnet",
   shortName: "debounce-devnet",
   chain: "Debounce Network",
@@ -24,4 +23,4 @@ export const eip155_3306: Chain = {
       standard: "EIP3091",
     },
   ],
-}
+} satisfies Chain

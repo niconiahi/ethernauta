@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_840000: Chain = {
+export const eip155_840000 = {
   name: "RUNEVM Testnet",
   shortName: "runevm-test",
   chain: "RuneVM",
@@ -22,4 +21,4 @@ export const eip155_840000: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

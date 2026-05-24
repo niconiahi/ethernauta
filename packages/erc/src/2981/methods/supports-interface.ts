@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bool,
@@ -11,22 +8,13 @@ import {
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import {
-  boolean,
-  object,
-  parse,
-  tuple,
-  union,
-} from "valibot"
+import { boolean, object, parse, tuple, union } from "valibot"
 import { bytes4Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes4()] as const
 const OUTPUT_CODECS = [bool()] as const
 
-export const SUPPORTS_INTERFACE_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const SUPPORTS_INTERFACE_SIGNATURE = {
   signature: "supportsInterface(bytes4)",
   names: ["interfaceId"],
 }
@@ -46,7 +34,7 @@ export function supportsInterface(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "supportsInterface",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

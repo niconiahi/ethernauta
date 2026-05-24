@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_2357: Chain = {
+export const eip155_2357 = {
   name: "(deprecated) Kroma Sepolia",
   shortName: "deprecated-kroma-sepolia",
   title: "(deprecated) Kroma Testnet Sepolia",
@@ -35,4 +34,4 @@ export const eip155_2357: Chain = {
     ],
   },
   status: "deprecated",
-}
+} satisfies Chain

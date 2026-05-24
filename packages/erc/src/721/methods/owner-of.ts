@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
@@ -13,18 +10,12 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Address } from "@ethernauta/core"
-import {
-  addressSchema,
-  uint256Schema,
-} from "@ethernauta/core"
+import { addressSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [address()] as const
 
-export const OWNER_OF_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const OWNER_OF_SIGNATURE = {
   signature: "ownerOf(uint256)",
   names: ["tokenId"],
 }
@@ -44,7 +35,7 @@ export function ownerOf(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "ownerOf",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_5315: Chain = {
+export const eip155_5315 = {
   name: "Uzmi Network Mainnet",
   shortName: "UZMI",
   chain: "UZMI",
@@ -15,4 +14,4 @@ export const eip155_5315: Chain = {
   infoURL: "https://uzmigames.com.br/",
   chainId: 5315,
   networkId: 5315,
-}
+} satisfies Chain

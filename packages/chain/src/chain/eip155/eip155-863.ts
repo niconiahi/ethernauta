@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_863: Chain = {
+export const eip155_863 = {
   name: "Radius Testnet",
   shortName: "radius-testnet",
   chain: "Radius",
@@ -15,4 +14,4 @@ export const eip155_863: Chain = {
   infoURL: "https://www.theradius.xyz/",
   chainId: 863,
   networkId: 863,
-}
+} satisfies Chain

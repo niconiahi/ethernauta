@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_3269: Chain = {
+export const eip155_3269 = {
   name: "Dubxcoin network",
   shortName: "dubx",
   chain: "DUBX",
@@ -15,4 +14,4 @@ export const eip155_3269: Chain = {
   infoURL: "https://arabianchain.org",
   chainId: 3269,
   networkId: 3269,
-}
+} satisfies Chain

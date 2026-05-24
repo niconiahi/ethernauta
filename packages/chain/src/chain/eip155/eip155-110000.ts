@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_110000: Chain = {
+export const eip155_110000 = {
   name: "QuarkChain Devnet Root",
   shortName: "qkc-d-r",
   chain: "QuarkChain",
@@ -15,4 +14,4 @@ export const eip155_110000: Chain = {
   infoURL: "https://www.quarkchain.io",
   chainId: 110000,
   networkId: 110000,
-}
+} satisfies Chain

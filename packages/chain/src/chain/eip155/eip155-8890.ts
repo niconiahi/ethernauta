@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8890: Chain = {
+export const eip155_8890 = {
   name: "Orenium Testnet Protocol",
   shortName: "tore",
   chain: "ORE",
@@ -30,4 +29,4 @@ export const eip155_8890: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

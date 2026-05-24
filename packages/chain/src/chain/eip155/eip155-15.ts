@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_15: Chain = {
+export const eip155_15 = {
   name: "Diode Prenet",
   shortName: "diode",
   chain: "DIODE",
@@ -19,4 +18,4 @@ export const eip155_15: Chain = {
   infoURL: "https://diode.io/prenet",
   chainId: 15,
   networkId: 15,
-}
+} satisfies Chain

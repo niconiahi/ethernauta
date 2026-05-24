@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_8889: Chain = {
+export const eip155_8889 = {
   name: "Vyvo Smart Chain",
   shortName: "vsc",
   chain: "VSC",
@@ -15,4 +14,4 @@ export const eip155_8889: Chain = {
   infoURL: "https://vsc-dataseed.vyvo.org",
   chainId: 8889,
   networkId: 8889,
-}
+} satisfies Chain

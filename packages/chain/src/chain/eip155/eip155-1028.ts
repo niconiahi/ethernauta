@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1028: Chain = {
+export const eip155_1028 = {
   name: "BitTorrent Chain Testnet",
   shortName: "tbtt-deprecated",
   chain: "BTTC",
@@ -24,4 +23,4 @@ export const eip155_1028: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

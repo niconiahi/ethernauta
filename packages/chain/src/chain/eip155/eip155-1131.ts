@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_1131: Chain = {
+export const eip155_1131 = {
   name: "DeFiChain EVM Network Testnet",
   shortName: "DFI-T",
   chain: "defichain-evm-testnet",
@@ -19,4 +18,4 @@ export const eip155_1131: Chain = {
   slip44: 1,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain

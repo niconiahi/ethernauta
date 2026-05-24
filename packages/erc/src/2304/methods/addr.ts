@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bytes,
@@ -13,19 +10,12 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import {
-  bytes32Schema,
-  bytesSchema,
-  uint256Schema,
-} from "@ethernauta/core"
+import { bytes32Schema, bytesSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32(), uint256()] as const
 const OUTPUT_CODECS = [bytes()] as const
 
-export const ADDR_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const ADDR_SIGNATURE = {
   signature: "addr(bytes32,uint256)",
   names: ["node", "coinType"],
 }
@@ -45,7 +35,7 @@ export function addr(_parameters: Parameters) {
     const calldata = encode_function_call({
       name: "addr",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

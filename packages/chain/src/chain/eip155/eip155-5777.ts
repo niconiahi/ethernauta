@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_5777: Chain = {
+export const eip155_5777 = {
   name: "Ganache",
   shortName: "ggui",
   title: "Ganache GUI Ethereum Testnet",
@@ -19,4 +18,4 @@ export const eip155_5777: Chain = {
   networkId: 5777,
   slip44: 1,
   explorers: [],
-}
+} satisfies Chain

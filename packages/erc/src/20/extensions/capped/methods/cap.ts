@@ -1,8 +1,5 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint256,
@@ -16,13 +13,12 @@ import { uint256Schema } from "@ethernauta/core"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint256()] as const
 
-export const CAP_SIGNATURE: {
-  signature: string
-  names: string[]
-} = {
+export const CAP_SIGNATURE = {
   signature: "cap()",
   names: [],
 }
+
+
 
 export function cap() {
   return (context: ContractContext): Callable<Uint256> => {
@@ -30,7 +26,7 @@ export function cap() {
     const calldata = encode_function_call({
       name: "cap",
       args: PARAM_CODECS,
-      values: values as never,
+      values,
     })
     return {
       chain_id: context.chain_id,

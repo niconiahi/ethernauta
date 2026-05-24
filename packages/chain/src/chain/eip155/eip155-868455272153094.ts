@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_868455272153094: Chain = {
+export const eip155_868455272153094 = {
   name: "Godwoken Testnet (V1)",
   shortName: "gw-testnet-v1-deprecated",
   chain: "GWT",
@@ -24,4 +23,4 @@ export const eip155_868455272153094: Chain = {
     },
   ],
   status: "deprecated",
-}
+} satisfies Chain

@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_614: Chain = {
+export const eip155_614 = {
   name: "Graphlinq Blockchain Mainnet",
   shortName: "glq",
   chain: "GLQ Blockchain",
@@ -22,4 +21,4 @@ export const eip155_614: Chain = {
       standard: "none",
     },
   ],
-}
+} satisfies Chain

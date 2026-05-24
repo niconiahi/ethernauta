@@ -27,7 +27,13 @@ fi
 # ---- counters ----
 
 count_as() {
-  grep -rnE "\bas\s+([A-Z]\w*|\{|\()" packages/ \
+  # Counts every banned form of `as`: `as PascalType`, `as { ... }`,
+  # `as (...) =>`, plus the four lowercase banned coercions
+  # `never|unknown|null|undefined`. The three allowed operators
+  # (`const|keyof|typeof`) are excluded. Comments and import/export
+  # statements (where `as` is the rename keyword, not a coercion) are
+  # stripped first.
+  grep -rnE "\bas\s+([A-Z]\w*|\{|\(|never|unknown|null|undefined)\b" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
     | grep -vE "\bas\s+(const|keyof|typeof)\b" \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \

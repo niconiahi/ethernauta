@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_666666666: Chain = {
+export const eip155_666666666 = {
   name: "Degen Chain",
   shortName: "degen-chain",
   title: "Degen Chain",
@@ -18,4 +17,4 @@ export const eip155_666666666: Chain = {
   chainId: 666666666,
   networkId: 666666666,
   status: "incubating",
-}
+} satisfies Chain

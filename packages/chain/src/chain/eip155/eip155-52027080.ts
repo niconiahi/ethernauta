@@ -1,7 +1,6 @@
-// biome-ignore-all lint: disable Biome linting for this file
 import type { Chain } from "../shared"
 
-export const eip155_52027080: Chain = {
+export const eip155_52027080 = {
   name: "Deviant Token Blockchain Testnet",
   shortName: "tdtbc",
   chain: "tDTBC",
@@ -17,4 +16,4 @@ export const eip155_52027080: Chain = {
   networkId: 52027080,
   explorers: [],
   status: "incubating",
-}
+} satisfies Chain
