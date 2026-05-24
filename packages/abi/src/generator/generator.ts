@@ -4,35 +4,39 @@ import {
   writeFileSync,
 } from "node:fs"
 import { join, resolve } from "node:path"
-import {
-  camel_to_kebab,
-  invariant,
-} from "@ethernauta/utils"
+import { camel_to_kebab } from "@ethernauta/utils"
 
 import {
+  array,
   type InferOutput,
   object,
+  parse,
   set,
   string,
+  tupleWithRest,
 } from "valibot"
 
 import type { FunctionInput } from "../abi"
 import type { Description } from "../abi/description"
+import type { _Function } from "../abi/function/function"
 import type { AbiInput } from "../abi/function/function-shared"
+import {
+  abiInputSchema,
+  function_outputSchema,
+} from "../abi/function/function-shared"
 import { to_selector } from "../encoding/encode"
 
 // A function input is either a leaf {name, type} or a tuple with
 // nested components. `FunctionInput` (a discriminated union from
 // `function_inputSchema`) is structurally assignable to
 // `AbiInput` — the recursive Valibot anchor whose tuple variant
-// carries `components: AbiInput[]`.
+// carries `components: AbiInput[]`. The runtime `parse` here is the
+// boundary between the loose anchor type and the tuple-arm contract:
+// callers only invoke `get_components` when `input.type === "tuple"`
+// or `"tuple[]"`, where the variant schema guarantees a non-empty
+// components array on the wire.
 function get_components(input: AbiInput): AbiInput[] {
-  const components = input.components
-  invariant(
-    Array.isArray(components),
-    `expected components on input ${input.name} of type ${input.type}`,
-  )
-  return components
+  return parse(array(abiInputSchema), input.components)
 }
 
 function canonical_type(input: AbiInput): string {
@@ -504,17 +508,16 @@ function fold_output(
 }
 
 function build_readable(
-  description: Description,
+  description: _Function,
   emit_name: string,
 ): string {
-  invariant(
-    description.type === "function",
-    "build_readable requires a function description",
-  )
-  const { name, inputs, outputs } = description
-  invariant(
-    outputs.length >= 1,
-    `build_readable requires at least one output (${name} has 0)`,
+  const { name, inputs } = description
+  const outputs = parse(
+    tupleWithRest(
+      [function_outputSchema],
+      function_outputSchema,
+    ),
+    description.outputs,
   )
   const input_infos = inputs.map((i) => get_type_info(i))
   const output_infos = outputs.map((o) => get_type_info(o))
@@ -585,13 +588,9 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
 }
 
 function build_signable(
-  description: Description,
+  description: _Function,
   emit_name: string,
 ): string {
-  invariant(
-    description.type === "function",
-    "build_signable requires a function description",
-  )
   const { name, inputs } = description
   const input_infos = inputs.map((i) => get_type_info(i))
   const agg = empty_aggregate()

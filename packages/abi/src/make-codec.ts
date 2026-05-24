@@ -1,5 +1,3 @@
-import { invariant } from "@ethernauta/utils"
-
 import type { AbiCodec } from "./abi-codec"
 import { array } from "./array"
 import {
@@ -91,13 +89,13 @@ export function make_codec(_name: string): AbiCodec<unknown>
 export function make_codec(
   _name: string,
 ): AbiCodec<unknown> {
-  const arr_match = /^(.+)\[\]$/.exec(_name)
-  if (arr_match) {
-    const [, inner] = arr_match
-    invariant(
-      inner !== undefined,
-      `make_codec: regex matched without group for "${_name}"`,
-    )
+  if (_name.endsWith("[]")) {
+    const inner = _name.slice(0, -2)
+    if (inner.length === 0) {
+      throw new Error(
+        `make_codec: empty element type in "${_name}"`,
+      )
+    }
     return array(make_codec(inner))
   }
   const factory = CODEC_MAP.get(_name)

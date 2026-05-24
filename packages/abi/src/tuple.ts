@@ -1,4 +1,3 @@
-import { invariant } from "@ethernauta/utils"
 import {
   custom,
   parse,
@@ -36,33 +35,22 @@ type TupleValue<F extends Fields> = {
 export function tuple<F extends Fields>(
   _fields: F,
 ): AbiCodec<TupleValue<F>> {
-  const names = Object.keys(_fields)
-  const codecs = names.map((n) => {
-    const codec = _fields[n]
-    invariant(
-      codec,
-      `tuple: missing codec for field "${n}"`,
-    )
-    return codec
-  })
+  const entries = Object.entries(_fields)
+  const names = entries.map(([n]) => n)
+  const codecs = entries.map(([, c]) => c)
   const signature = `(${codecs.map((c) => c.signature).join(",")})`
   const is_dynamic = codecs.some((c) => c.is_dynamic)
 
   function normalize(_input: unknown): unknown[] {
     if (Array.isArray(_input)) {
-      if (_input.length !== names.length) {
+      if (_input.length !== entries.length) {
         throw new Error(
-          `tuple ${signature}: expected ${names.length} positional values, got ${_input.length}`,
+          `tuple ${signature}: expected ${entries.length} positional values, got ${_input.length}`,
         )
       }
-      return _input.map((v, i) => {
-        const codec = codecs[i]
-        invariant(
-          codec,
-          `tuple ${signature}: codec missing at index ${i}`,
-        )
-        return parse(codec.schema, v)
-      })
+      return entries.map(([, codec], i) =>
+        parse(codec.schema, _input[i]),
+      )
     }
     if (_input === null || typeof _input !== "object") {
       throw new Error(
@@ -78,17 +66,12 @@ export function tuple<F extends Fields>(
         )
       }
     }
-    return names.map((n, i) => {
+    return entries.map(([n, codec]) => {
       if (!(n in obj)) {
         throw new Error(
           `tuple ${signature}: missing required key "${n}"`,
         )
       }
-      const codec = codecs[i]
-      invariant(
-        codec,
-        `tuple ${signature}: codec missing at index ${i}`,
-      )
       return parse(codec.schema, obj[n])
     })
   }
