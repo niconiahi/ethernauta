@@ -1,6 +1,6 @@
 import {
-  codec_for_type,
   decode_function_call,
+  make_codec,
   to_selector,
 } from "@ethernauta/abi"
 import { addressSchema } from "@ethernauta/core"
@@ -167,11 +167,11 @@ function decode_with_entry(
   hex: `0x${string}`,
 ): unknown[] | undefined {
   try {
-    const codecs = entry.types.map(codec_for_type)
+    const codecs = entry.types.map(make_codec)
     const { args } = decode_function_call(codecs, hex)
     return [...args]
   } catch {
-    // codec_for_type rejects tuples / unsupported types, and
+    // make_codec rejects tuples / unsupported types, and
     // decode_function_call throws on malformed calldata. Either
     // path means we can't decode — fall through to raw-hex render.
     return undefined
