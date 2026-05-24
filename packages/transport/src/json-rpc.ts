@@ -55,22 +55,18 @@ export type Notification = InferOutput<
 >
 
 // https://www.jsonrpc.org/specification#error_object
+//
+// JSON-RPC 2.0 reserves -32768..-32000 for transport / protocol
+// errors (parse, invalid request, method not found, …). EIP-1193
+// adds the wallet-side codes 4001 / 4100 / 4200 / 4900 / 4901,
+// which the injected-provider adapter forwards verbatim. Validate
+// `code` as `number` rather than enumerating literals — any code
+// outside that range is still a real JSON-RPC error response and
+// shouldn't be coerced into a different one to satisfy the schema.
 const errorSchema = object({
   data: optional(unknown()),
   message: string(),
-  code: union([
-    literal(-32000),
-    literal(-32300),
-    literal(-32400),
-    literal(-32500),
-    literal(-32600),
-    literal(-32601),
-    literal(-32602),
-    literal(-32603),
-    literal(-32700),
-    literal(-32701),
-    literal(-32702),
-  ]),
+  code: number(),
 })
 
 // https://www.jsonrpc.org/specification#response_object

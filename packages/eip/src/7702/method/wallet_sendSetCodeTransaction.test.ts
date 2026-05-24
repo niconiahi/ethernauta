@@ -86,7 +86,7 @@ describe("wallet_sendSetCodeTransaction.ts", () => {
     )
   })
 
-  it("should return the tx hash parsed as Hash32", async () => {
+  it("returns the tx hash narrowed via hash32Schema", async () => {
     const out = await wallet_sendSetCodeTransaction(VALID)(
       mock_signer(TX_HASH),
     )

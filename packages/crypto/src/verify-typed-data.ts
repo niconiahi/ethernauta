@@ -17,6 +17,7 @@ import type { Hash32 } from "@ethernauta/core"
 import {
   addressSchema,
   bytesSchema,
+  hash32Schema,
 } from "@ethernauta/core"
 import {
   hash_typed_data,
@@ -47,7 +48,7 @@ export type VerifyTypedDataParameters = InferOutput<
 function digest_of(
   typedData: VerifyTypedDataParameters["typedData"],
 ): Hash32 {
-  return bytes_to_hex(hash_typed_data(typedData)) as Hash32
+  return parse(hash32Schema, bytes_to_hex(hash_typed_data(typedData)))
 }
 
 export function verify_typed_data_deployed(

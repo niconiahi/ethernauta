@@ -6,11 +6,13 @@ import type {
   ResolvedSigner,
   SignContext,
 } from "@ethernauta/transport"
+import { ReadContextSchema } from "@ethernauta/transport"
 import {
   custom,
   type InferOutput,
   object,
   optional,
+  parse,
   string,
 } from "valibot"
 
@@ -120,7 +122,7 @@ export function create_provider(
   const signer_factory = create_injected_signer(provider)
   return {
     reader: (context: ReadContext): ResolvedReader => {
-      return [[http], context]
+      return [[http], parse(ReadContextSchema, context)]
     },
     signer: signer_factory,
   }

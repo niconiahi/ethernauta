@@ -19,11 +19,13 @@ import type {
   Hash32,
   Uint,
 } from "@ethernauta/core"
+import { hash32Schema } from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
+import { parse } from "valibot"
 
 import { pack_user_operation } from "./packing"
 import type {
@@ -98,7 +100,7 @@ export function inner_user_op_hash(
     bytes32_to_32(op.gasFees),
     keccak_bytes(op.paymasterAndData),
   )
-  return bytes_to_hex(keccak_256(encoded)) as Hash32
+  return parse(hash32Schema, bytes_to_hex(keccak_256(encoded)))
 }
 
 export function get_user_op_hash({
@@ -118,5 +120,5 @@ export function get_user_op_hash({
     address_to_32(entryPoint),
     uint_to_32(chainId),
   )
-  return bytes_to_hex(keccak_256(encoded)) as Hash32
+  return parse(hash32Schema, bytes_to_hex(keccak_256(encoded)))
 }

@@ -41,6 +41,6 @@ export function make_gasless_order_typed_data({
         ...GASLESS_CROSS_CHAIN_ORDER_FIELDS,
       ],
     },
-    message: order as unknown as Record<string, unknown>,
+    message: order,
   }
 }

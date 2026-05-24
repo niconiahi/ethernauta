@@ -1,5 +1,5 @@
 import { invariant } from "@ethernauta/utils"
-import { parse } from "valibot"
+import { number, object, parse, string } from "valibot"
 import {
   compose_calls_status,
   compose_capabilities,
@@ -12,6 +12,11 @@ import {
   type SignTransactionResponse,
 } from "../src/utils/event"
 
+const pendingRecordSchema = object({
+  tab_id: number(),
+  request: object({ id: string() }),
+})
+
 function compose_key(id: string) {
   return `pending_${id}`
 }
@@ -21,10 +26,10 @@ chrome.runtime.onConnect.addListener((port) => {
     const session = await chrome.storage.session.get(null)
     for (const [key, value] of Object.entries(session)) {
       if (!key.startsWith("pending_")) continue
-      const { tab_id, request } = value as {
-        tab_id: number
-        request: { id: string }
-      }
+      const { tab_id, request } = parse(
+        pendingRecordSchema,
+        value,
+      )
       const response: NativeExtensionCloseResponse = {
         id: request.id,
         type: "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE",

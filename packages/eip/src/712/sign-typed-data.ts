@@ -3,6 +3,7 @@
 // EIP-712 digest internally and signs with the user's private key.
 
 import type { Address, Bytes } from "@ethernauta/core"
+import { bytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
@@ -32,9 +33,7 @@ function normalize_bigints(value: unknown): unknown {
     return value.map(normalize_bigints)
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(
-      value as Record<string, unknown>,
-    )) {
+    for (const [k, v] of Object.entries(value)) {
       out[k] = normalize_bigints(v)
     }
     return out
@@ -80,13 +79,14 @@ export function eth_signTypedData_v4(
     const [address, typed_data] = _parameters
     const validated = parse(typedDataSchema, typed_data)
     assert_domain_chain(validated, context.chain_id)
-    const wire_safe = normalize_bigints(
-      validated,
-    ) as TypedData
+    const wire_safe = parse(
+      typedDataSchema,
+      normalize_bigints(validated),
+    )
     const signature = await signer("eth_signTypedData_v4", [
       address,
       wire_safe,
     ])
-    return signature as Bytes
+    return parse(bytesSchema, signature)
   }
 }

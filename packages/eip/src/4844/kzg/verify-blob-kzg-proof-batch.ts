@@ -69,24 +69,16 @@ export function verify_blob_kzg_proof_batch(
   const n = _blobs.length
   if (n === 0) return true
 
-  // Parse + validate inputs and derive (z_i, y_i) per case.
-  const blobs = _blobs.map((b) => parse(blobSchema, b))
-  const commitments = _commitments.map((c) =>
-    parse(kzgCommitmentSchema, c),
-  )
-  const proofs = _proofs.map((p) =>
-    parse(kzgProofSchema, p),
-  )
-  const commitment_points = commitments.map((c) =>
-    parse_commitment_or_proof(c),
-  )
-  const proof_points = proofs.map((p) =>
-    parse_commitment_or_proof(p),
-  )
-  const zs: bigint[] = []
-  const ys: bigint[] = []
-  for (let i = 0; i < n; i += 1) {
-    const blob = blobs[i] as Blob
+  // Bundle inputs + derived (z, y, point forms) per case, so the
+  // parallel arrays collapse into one typed iteration. Parse via
+  // narrow schemas at the boundary — under noUncheckedIndexedAccess
+  // `_commitments[i]` is `T | undefined`; passing it through `parse`
+  // turns "missing slot" into a runtime throw (which the length check
+  // above already proved cannot happen).
+  const cases = _blobs.map((b, i) => {
+    const blob = parse(blobSchema, b)
+    const commitment = parse(kzgCommitmentSchema, _commitments[i])
+    const proof = parse(kzgProofSchema, _proofs[i])
     const blob_bytes = hex_to_bytes(blob)
     const polynomial = new Array<bigint>(
       FIELD_ELEMENTS_PER_BLOB,
@@ -99,38 +91,38 @@ export function verify_blob_kzg_proof_batch(
         ),
       )
     }
-    const z = compute_challenge(
-      blob,
-      commitments[i] as KzgCommitment,
-    )
+    const z = compute_challenge(blob, commitment)
     const y = evaluate_polynomial_in_evaluation_form(
       polynomial,
       z,
     )
-    zs.push(z)
-    ys.push(y)
-  }
+    return {
+      commitment,
+      commitment_point: parse_commitment_or_proof(commitment),
+      proof,
+      proof_point: parse_commitment_or_proof(proof),
+      z,
+      y,
+    }
+  })
 
-  const r_powers = compute_r_powers(
-    commitments,
-    zs,
-    ys,
-    proofs,
-  )
+  // Pair each case with its r^i power in one pass, so r and the case
+  // share a single tuple element (no parallel-array indexing).
+  const paired = compute_r_powers_paired(cases)
+  const r_powers = paired.map(({ r }) => r)
+  const proof_points = paired.map(({ c }) => c.proof_point)
 
   // proof_lincomb = Σ r^i · proof_i
   const proof_lincomb = g1_lincomb(proof_points, r_powers)
   // proof_z_lincomb = Σ (r^i · z_i) · proof_i
-  const rz: bigint[] = []
-  for (let i = 0; i < n; i += 1) {
-    rz.push(Fr.mul(r_powers[i] as bigint, zs[i] as bigint))
-  }
+  const rz = paired.map(({ c, r }) => Fr.mul(r, c.z))
   const proof_z_lincomb = g1_lincomb(proof_points, rz)
   // c_minus_y[i] = C_i − [y_i]·G1
-  const c_minus_y = commitment_points.map((c, i) => {
-    const y = ys[i] as bigint
-    return y === 0n ? c : c.subtract(G1_BASE.multiply(y))
-  })
+  const c_minus_y = paired.map(({ c }) =>
+    c.y === 0n
+      ? c.commitment_point
+      : c.commitment_point.subtract(G1_BASE.multiply(c.y)),
+  )
   const c_minus_y_lincomb = g1_lincomb(c_minus_y, r_powers)
   const rhs = c_minus_y_lincomb.add(proof_z_lincomb)
 
@@ -156,13 +148,15 @@ function pairing_or_one(
   return bls12_381.pairing(p, q)
 }
 
-function compute_r_powers(
-  _commitments: readonly KzgCommitment[],
-  _zs: readonly bigint[],
-  _ys: readonly bigint[],
-  _proofs: readonly KzgProof[],
-): bigint[] {
-  const n = _commitments.length
+function compute_r_powers_paired<
+  C extends {
+    commitment: KzgCommitment
+    proof: KzgProof
+    z: bigint
+    y: bigint
+  },
+>(_cases: readonly C[]): Array<{ c: C; r: bigint }> {
+  const n = _cases.length
   // Initial data: RANDOM_CHALLENGE_KZG_BATCH_DOMAIN || degree (8 BE) || n (8 BE)
   const initial = new Uint8Array(
     DOMAIN_BYTES.length + 8 + 8,
@@ -183,28 +177,24 @@ function compute_r_powers(
   const data = new Uint8Array(initial.length + n * per_case)
   data.set(initial, 0)
   let cursor = initial.length
-  for (let i = 0; i < n; i += 1) {
-    data.set(
-      hex_to_bytes(_commitments[i] as KzgCommitment),
-      cursor,
-    )
+  for (const c of _cases) {
+    data.set(hex_to_bytes(c.commitment), cursor)
     cursor += 48
-    data.set(fr_to_bytes_be(_zs[i] as bigint), cursor)
+    data.set(fr_to_bytes_be(c.z), cursor)
     cursor += 32
-    data.set(fr_to_bytes_be(_ys[i] as bigint), cursor)
+    data.set(fr_to_bytes_be(c.y), cursor)
     cursor += 32
-    data.set(hex_to_bytes(_proofs[i] as KzgProof), cursor)
+    data.set(hex_to_bytes(c.proof), cursor)
     cursor += 48
   }
   const r = hash_to_bls_field(data)
-  // [r^0, r^1, ..., r^(n-1)]
-  const powers = new Array<bigint>(n)
+  // Build [r^0, r^1, ..., r^(n-1)] paired with each case in one pass.
   let cur = 1n
-  for (let i = 0; i < n; i += 1) {
-    powers[i] = cur
+  return _cases.map((c) => {
+    const pair = { c, r: cur }
     cur = Fr.mul(cur, r)
-  }
-  return powers
+    return pair
+  })
 }
 
 function write_uint64_be(

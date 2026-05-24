@@ -4,9 +4,12 @@ import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
-import type {
-  Permission,
-  RequestedPermissions,
+import { array, parse } from "valibot"
+
+import {
+  type Permission,
+  permissionSchema,
+  type RequestedPermissions,
 } from "../permission"
 
 export function wallet_requestPermissions(
@@ -17,6 +20,6 @@ export function wallet_requestPermissions(
       "wallet_requestPermissions",
       _parameters,
     )
-    return JSON.parse(result) as Permission[]
+    return parse(array(permissionSchema), JSON.parse(result))
   }
 }

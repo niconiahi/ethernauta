@@ -1,5 +1,6 @@
 import { CALLS_STATUS } from "@ethernauta/eip/5792"
 import type { ReceiptInfo } from "@ethernauta/eth"
+import { object, parse, string } from "valibot"
 import { describe, expect, it } from "vitest"
 import type { BatchRecord } from "./calls-registry"
 import {
@@ -47,9 +48,10 @@ describe("calls-status.ts — compose_capabilities", () => {
     const keys = Object.keys(caps)
     expect(keys.length).toBeGreaterThan(0)
     for (const key of keys) {
-      const chain_caps = caps[key] as {
-        atomic: { status: string }
-      }
+      const chain_caps = parse(
+        object({ atomic: object({ status: string() }) }),
+        caps[key],
+      )
       expect(chain_caps.atomic.status).toBe("unsupported")
     }
   })

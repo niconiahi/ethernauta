@@ -1,3 +1,4 @@
+import { addressesSchema } from "@ethernauta/core"
 import {
   create_envelope,
   ERROR_CODE,
@@ -7,31 +8,25 @@ import {
 } from "@ethernauta/eip/1193"
 import { addEthereumChainParametersSchema } from "@ethernauta/eip/3085"
 import { announce } from "@ethernauta/eip/6963"
-import { http } from "@ethernauta/transport"
-import { safeParse } from "valibot"
+import { callSchema, http } from "@ethernauta/transport"
+import { parse, safeParse } from "valibot"
 import icon from "../public/icons/icon-128.png?inline"
 import {
   compose_calls_status,
   compose_capabilities,
 } from "../src/utils/calls-status"
 import {
+  CHAINS,
   to_provider_chain_id,
-  CHAINS as WALLET_CHAINS,
 } from "../src/utils/chain"
 import { create_router } from "../src/utils/dispatch"
-import type {
-  AddChainApprovedResponse,
-  NativeExtensionCloseResponse,
-  PersonalSignResponse,
-  SignTransactionRequest,
-  SignTransactionResponse,
-  SignTypedDataResponse,
-  TransactionRejectedResponse,
+import {
+  EthernautaNotificationSchema,
+  EthernautaResponseSchema,
+  SignTransactionRequestSchema,
 } from "../src/utils/event"
 
-const CHAIN_HEX_LIST = WALLET_CHAINS.map(
-  to_provider_chain_id,
-)
+const CHAIN_HEX_LIST = CHAINS.map(to_provider_chain_id)
 const known_chains = new Set<string>(CHAIN_HEX_LIST)
 let active_chain_id: string = CHAIN_HEX_LIST[0] ?? "0x1"
 let accounts: string[] = []
@@ -89,18 +84,14 @@ async function rpc_call(
     chain_id_hex.slice(2),
     16,
   )
-  const chain = WALLET_CHAINS.find(
-    (c) => c.id === chain_num,
-  )
+  const chain = CHAINS.find((c) => c.id === chain_num)
   if (!chain)
     throw invalid_params(
       `no RPC configured for chain: ${chain_id_hex}`,
     )
   const transport = http(chain.rpc_url)
-  const response = await transport([
-    method,
-    (params ?? []) as unknown[] | { [x: string]: unknown },
-  ])
+  const call = parse(callSchema, [method, params ?? []])
+  const response = await transport(call)
   if ("error" in response) {
     throw {
       code: response.error.code,
@@ -116,83 +107,63 @@ function postmessage_and_wait(
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const id = crypto.randomUUID()
-    window.addEventListener(
-      "message",
-      function handler(
-        event: MessageEvent<
-          | SignTransactionResponse
-          | SignTypedDataResponse
-          | PersonalSignResponse
-          | AddChainApprovedResponse
-          | TransactionRejectedResponse
-          | NativeExtensionCloseResponse
-        >,
+    window.addEventListener("message", function handler(event) {
+      const parsed = safeParse(
+        EthernautaResponseSchema,
+        event.data,
+      )
+      if (!parsed.success) return
+      const data = parsed.output
+      if (data.id !== id) return
+      window.removeEventListener("message", handler)
+      if (
+        data.type === "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
       ) {
-        if (
-          !event.data?.type?.startsWith(
-            "ETHERNAUTA_RESPONSE",
-          ) ||
-          event.data.id !== id
-        )
-          return
-        window.removeEventListener("message", handler)
-        if (
-          event.data.type ===
-          "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
-        ) {
-          reject({
-            code: ERROR_CODE.USER_REJECTED_REQUEST,
-            message: "User rejected request",
-          })
-          return
+        reject({
+          code: ERROR_CODE.USER_REJECTED_REQUEST,
+          message: "User rejected request",
+        })
+        return
+      }
+      if (
+        data.type ===
+        "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
+      ) {
+        reject({
+          code: ERROR_CODE.USER_REJECTED_REQUEST,
+          message: "Extension closed",
+        })
+        return
+      }
+      if (
+        data.type === "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA" ||
+        data.type === "ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"
+      ) {
+        resolve(data.signature)
+        return
+      }
+      if (data.type === "ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED") {
+        resolve(null)
+        return
+      }
+      const payload = data.signed_transaction
+      if (args.method === "eth_requestAccounts") {
+        try {
+          resolve(JSON.parse(payload))
+        } catch {
+          resolve(payload)
         }
-        if (
-          event.data.type ===
-          "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-        ) {
-          reject({
-            code: ERROR_CODE.USER_REJECTED_REQUEST,
-            message: "Extension closed",
-          })
-          return
-        }
-        if (
-          event.data.type ===
-            "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA" ||
-          event.data.type ===
-            "ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"
-        ) {
-          resolve(event.data.signature)
-          return
-        }
-        if (
-          event.data.type ===
-          "ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED"
-        ) {
-          resolve(null)
-          return
-        }
-        const payload = (
-          event.data as SignTransactionResponse
-        ).signed_transaction
-        if (args.method === "eth_requestAccounts") {
-          try {
-            resolve(JSON.parse(payload))
-          } catch {
-            resolve(payload)
-          }
-          return
-        }
-        resolve(payload)
-      },
-    )
-    const request: SignTransactionRequest = {
+        return
+      }
+      resolve(payload)
+    })
+    const request = parse(SignTransactionRequestSchema, {
       type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
       id,
       method: args.method,
       chainId: active_chain_id,
-      params: args.params as unknown[],
-    }
+      params: args.params,
+    })
     window.postMessage(request, window.location.origin)
   })
 }
@@ -208,18 +179,14 @@ async function forward_to_popup(
     const next = await postmessage_and_wait({
       method: "eth_requestAccounts",
     })
-    const accounts_next = Array.isArray(next)
-      ? (next as string[])
-      : []
-    set_accounts(accounts_next)
+    const parsed = safeParse(addressesSchema, next)
+    set_accounts(parsed.success ? parsed.output : [])
     return get_permissions()
   }
   const result = await postmessage_and_wait(args)
   if (args.method === "eth_requestAccounts") {
-    const next = Array.isArray(result)
-      ? (result as string[])
-      : []
-    set_accounts(next)
+    const parsed = safeParse(addressesSchema, result)
+    set_accounts(parsed.success ? parsed.output : [])
   }
   if (args.method === "wallet_addEthereumChain") {
     const added = extract_added_chain_id(args.params)
@@ -246,21 +213,19 @@ const provider: ProviderInternal = create_envelope({
 
 window.addEventListener("message", (event) => {
   if (event.source !== window) return
-  if (
-    event.data?.type ===
-    "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"
-  ) {
-    const chain_id = event.data.chainId as string
-    if (!known_chains.has(chain_id)) return
-    set_active_chain(chain_id)
+  const notification = safeParse(
+    EthernautaNotificationSchema,
+    event.data,
+  )
+  if (!notification.success) return
+  const note = notification.output
+  if (note.type === "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED") {
+    if (!known_chains.has(note.chainId)) return
+    set_active_chain(note.chainId)
     return
   }
-  if (
-    event.data?.type ===
-    "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"
-  ) {
-    const next = event.data.accounts as string[]
-    set_accounts(next)
+  if (note.type === "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED") {
+    set_accounts(note.accounts)
     return
   }
 })

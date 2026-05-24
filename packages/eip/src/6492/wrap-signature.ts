@@ -43,5 +43,5 @@ export function wrap_signature(
   const out = new Uint8Array(body.length + magic.length)
   out.set(body, 0)
   out.set(magic, body.length)
-  return bytes_to_hex(out) as Bytes
+  return parse(bytesSchema, bytes_to_hex(out))
 }

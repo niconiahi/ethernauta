@@ -7,6 +7,7 @@ import {
   number,
   object,
   optional,
+  safeParse,
   string,
 } from "valibot"
 
@@ -92,9 +93,18 @@ export function discover_providers(
   return new Promise((resolve) => {
     const seen = new Map<string, EIP6963ProviderDetail>()
     function handler(event: Event) {
-      const detail = (event as EIP6963AnnounceProviderEvent)
-        .detail
-      if (!detail?.info?.rdns) return
+      // EIP-6963 dispatches the announce payload as a
+      // CustomEvent.detail. `event` arrives typed as the DOM
+      // base Event; `instanceof CustomEvent` is the
+      // control-flow branch that decides whether to parse the
+      // payload at all.
+      if (!(event instanceof CustomEvent)) return
+      const parsed = safeParse(
+        eip6963ProviderDetailSchema,
+        event.detail,
+      )
+      if (!parsed.success) return
+      const detail = parsed.output
       if (seen.has(detail.info.rdns)) return
       seen.set(detail.info.rdns, detail)
     }

@@ -103,17 +103,11 @@ export function from_blobs(_blobs: readonly Blob[]): Bytes {
   const total_data =
     DATA_BYTES_PER_BLOB * stream_parts.length
   const stream = new Uint8Array(total_data)
-  for (let i = 0; i < stream_parts.length; i += 1) {
-    stream.set(
-      stream_parts[i] as Uint8Array,
-      i * DATA_BYTES_PER_BLOB,
-    )
+  for (const [i, part] of stream_parts.entries()) {
+    stream.set(part, i * DATA_BYTES_PER_BLOB)
   }
-  const len =
-    ((stream[0] as number) << 24) |
-    ((stream[1] as number) << 16) |
-    ((stream[2] as number) << 8) |
-    (stream[3] as number)
+  const [b0 = 0, b1 = 0, b2 = 0, b3 = 0] = stream
+  const len = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3
   if (len > stream.length - HEADER_BYTES) {
     throw new Error(
       `from_blobs: declared length ${len} exceeds available payload ${stream.length - HEADER_BYTES}`,

@@ -14,11 +14,13 @@ import {
   object,
   optional,
   parse,
+  safeParse,
   string,
   unknown,
 } from "valibot"
 
 import type { Provider } from "./provider"
+import { requestArgumentsSchema } from "./provider"
 
 // Shape of an EIP-1193 ProviderRpcError as it comes back
 // from `provider.request` rejection. The runtime shape is
@@ -33,18 +35,6 @@ export const providerRpcErrorSchema = object({
 export type ProviderRpcErrorShape = InferOutput<
   typeof providerRpcErrorSchema
 >
-
-function is_provider_rpc_error(
-  _value: unknown,
-): _value is ProviderRpcErrorShape {
-  if (_value === null || typeof _value !== "object")
-    return false
-  const obj = _value as Record<string, unknown>
-  return (
-    typeof obj.code === "number" &&
-    typeof obj.message === "string"
-  )
-}
 
 // EIP-1193 USER_REJECTED_REQUEST. Mirrors
 // transport/src/signer.ts ERROR_CODE so the signer
@@ -66,7 +56,7 @@ export function create_injected_transport(
     try {
       const result = await _provider.request({
         method,
-        params: params as readonly unknown[] | object,
+        params,
       })
       return {
         jsonrpc: "2.0",
@@ -74,21 +64,12 @@ export function create_injected_transport(
         result,
       }
     } catch (error) {
-      if (is_provider_rpc_error(error)) {
-        // EIP-1193 RPC error codes are negative 32-bit
-        // ints (-32700 family) per JSON-RPC 2.0; the wallet
-        // namespace (4001, 4100, 4200, 4900, 4901) is also
-        // returned this way. Cast through unknown because
-        // the FailedResponse error code schema is a union
-        // of specific JSON-RPC literals.
+      const parsed = safeParse(providerRpcErrorSchema, error)
+      if (parsed.success) {
         return {
           jsonrpc: "2.0",
           id,
-          error: {
-            code: error.code as unknown as -32700,
-            message: error.message,
-            data: error.data,
-          },
+          error: parsed.output,
         }
       }
       throw error
@@ -111,21 +92,24 @@ export function create_injected_signer(
     const context = parse(SignContextSchema, _input)
     const signer: Signer = async (method, params) => {
       try {
-        const result = await _provider.request({
-          method,
-          params: params as readonly unknown[] | object,
-        })
+        const result = await _provider.request(
+          parse(requestArgumentsSchema, { method, params }),
+        )
         if (typeof result === "string") return result
         return JSON.stringify(result)
       } catch (error) {
+        const parsed = safeParse(
+          providerRpcErrorSchema,
+          error,
+        )
         if (
-          is_provider_rpc_error(error) &&
-          error.code === USER_REJECTED_REQUEST
+          parsed.success &&
+          parsed.output.code === USER_REJECTED_REQUEST
         ) {
           throw {
             code: USER_REJECTED_REQUEST,
             message:
-              error.message || "User rejected request",
+              parsed.output.message || "User rejected request",
           }
         }
         throw error

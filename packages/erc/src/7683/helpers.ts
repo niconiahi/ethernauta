@@ -12,6 +12,7 @@ import {
   number,
   object,
   optional,
+  parse,
 } from "valibot"
 
 import type { GaslessCrossChainOrder } from "./types"
@@ -47,7 +48,7 @@ export function address_to_bytes32(
   _address: Address,
 ): Hash32 {
   const hex = _address.toLowerCase().slice(2)
-  return `0x${hex.padStart(64, "0")}` as Hash32
+  return parse(hash32Schema, `0x${hex.padStart(64, "0")}`)
 }
 
 // Pack a uint256 nonce as hex. Use `crypto.getRandomValues`

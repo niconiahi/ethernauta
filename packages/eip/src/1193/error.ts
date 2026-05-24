@@ -28,10 +28,10 @@ export function provider_error(
   message: string,
   data?: unknown,
 ): ProviderRpcError {
-  const error = new Error(message) as ProviderRpcError
-  error.code = code
-  if (data !== undefined) error.data = data
-  return error
+  return Object.assign(
+    new Error(message),
+    data === undefined ? { code } : { code, data },
+  )
 }
 
 export function user_rejected(

@@ -21,7 +21,7 @@ import {
   Point,
   utils,
 } from "@noble/secp256k1"
-import { type InferOutput, number, object } from "valibot"
+import { type InferOutput, number, object, parse } from "valibot"
 
 export const SCHEME_1_ID = 1 as const
 
@@ -46,7 +46,7 @@ function bigint_to_32_bytes(value: bigint): Uint8Array {
 function point_to_address(point: Point): Address {
   const uncompressed = point.toBytes(false)
   const hash = keccak_256(uncompressed.slice(1))
-  return bytes_to_hex(hash.slice(-20)) as Address
+  return parse(addressSchema, bytes_to_hex(hash.slice(-20)))
 }
 
 export const stealthMetaAddressSchema = object({

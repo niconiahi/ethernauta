@@ -5,6 +5,13 @@ import type {
   ResolvedReader,
   Response,
 } from "@ethernauta/transport"
+import {
+  array,
+  object,
+  parse,
+  string,
+  unknown as unknownSchema,
+} from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { get_contract_events } from "./get-contract-events"
@@ -24,12 +31,19 @@ function fake_transport(_result: unknown): {
     const response: Response = {
       jsonrpc: "2.0",
       id: "test",
-      result: _result as never,
+      result: _result,
     }
     return response
   }
   return { http, captured }
 }
+
+const filterParamsSchema = array(
+  object({
+    address: string(),
+    topics: array(unknownSchema()),
+  }),
+)
 
 const CONTRACT =
   "0xcccccccccccccccccccccccccccccccccccccccc" as const
@@ -75,10 +89,7 @@ describe("get_contract_events", () => {
     expect(captured.call).toBeDefined()
     if (!captured.call) return
     expect(captured.call[0]).toBe("eth_getLogs")
-    const params = captured.call[1] as Array<{
-      address: string
-      topics: unknown[]
-    }>
+    const params = parse(filterParamsSchema, captured.call[1])
     expect(params[0]?.address).toBe(CONTRACT)
     expect(params[0]?.topics).toEqual([TRANSFER_TOPIC0])
 
@@ -103,9 +114,7 @@ describe("get_contract_events", () => {
       values: [FROM],
     })(resolved)
 
-    const params = captured.call?.[1] as Array<{
-      topics: unknown[]
-    }>
+    const params = parse(filterParamsSchema, captured.call?.[1])
     expect(params[0]?.topics).toEqual([
       TRANSFER_TOPIC0,
       FROM_PADDED,

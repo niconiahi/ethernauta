@@ -72,14 +72,12 @@ export function bit_reversal_permutation<T>(
       "bit_reversal_permutation: length must be a power of two",
     )
   }
-  const out = _arr.slice()
-  for (let i = 0; i < n; i += 1) {
-    const j = reverse_bits(i, bits)
-    if (j > i) {
-      const tmp = out[i] as T
-      out[i] = out[j] as T
-      out[j] = tmp
-    }
-  }
-  return out
+  // `_arr[reverse_bits(i, bits)]` is `T | undefined` under
+  // noUncheckedIndexedAccess, but reverse_bits(i, log2(n)) returns
+  // a value in [0, n), so the lookup is always defined. The `?? item`
+  // fallback is dead at runtime — it exists only to keep the result
+  // typed as `T[]` instead of `(T | undefined)[]`.
+  return _arr.map(
+    (item, i) => _arr[reverse_bits(i, bits)] ?? item,
+  )
 }

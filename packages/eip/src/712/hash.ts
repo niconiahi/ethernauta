@@ -3,8 +3,19 @@
 // where hashStruct(s) = keccak(typeHash || encodeData(s))
 // and typeHash = keccak(encodeType(typeOf(s))).
 
+import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
+import {
+  array,
+  parse,
+  record,
+  string,
+  unknown,
+} from "valibot"
 
 import type {
   TypedData,
@@ -31,9 +42,10 @@ function find_dependencies(
   found: Set<string>,
 ): void {
   if (found.has(primary)) return
-  if (!types[primary]) return
+  const fields = types[primary]
+  if (!fields) return
   found.add(primary)
-  for (const field of types[primary] as TypedDataField[]) {
+  for (const field of fields) {
     const base = field.type.replace(/(\[\d*\])+$/, "")
     if (types[base]) find_dependencies(base, types, found)
   }
@@ -49,7 +61,7 @@ export function encode_type(
   const sorted = [primary, ...[...found].sort()]
   return sorted
     .map((name) => {
-      const fields = (types[name] ?? []) as TypedDataField[]
+      const fields = types[name] ?? []
       return `${name}(${fields
         .map((f) => `${f.type} ${f.name}`)
         .join(",")})`
@@ -93,8 +105,8 @@ function encode_value(
 ): Uint8Array {
   const array_match = /(.*)\[(\d*)\]$/.exec(type)
   if (array_match) {
-    const base = array_match[1] as string
-    const arr = value as unknown[]
+    const base = parse(string(), array_match[1])
+    const arr = parse(array(unknown()), value)
     const parts = arr.map((v) =>
       encode_value(base, v, types),
     )
@@ -104,20 +116,20 @@ function encode_value(
     return hash_struct(
       type,
       types,
-      value as Record<string, unknown>,
+      parse(record(string(), unknown()), value),
     )
   }
   if (type === "string") {
     return keccak_256(
-      new TextEncoder().encode(value as string),
+      new TextEncoder().encode(parse(string(), value)),
     )
   }
   if (type === "bytes") {
-    return keccak_256(hex_to_bytes(value as string))
+    return keccak_256(hex_to_bytes(parse(bytesSchema, value)))
   }
   if (type === "address") {
     const out = new Uint8Array(32)
-    const bytes = hex_to_bytes(value as string)
+    const bytes = hex_to_bytes(parse(addressSchema, value))
     out.set(bytes, 12)
     return out
   }
@@ -129,7 +141,7 @@ function encode_value(
   const fixed_bytes = /^bytes(\d+)$/.exec(type)
   if (fixed_bytes) {
     const out = new Uint8Array(32)
-    const bytes = hex_to_bytes(value as string)
+    const bytes = hex_to_bytes(parse(bytesSchema, value))
     out.set(bytes, 0)
     return out
   }
@@ -150,7 +162,7 @@ export function encode_data(
       `712: type ${primary} not defined in types`,
     )
   const parts: Uint8Array[] = [hash_type(primary, types)]
-  for (const f of fields as TypedDataField[]) {
+  for (const f of fields) {
     parts.push(encode_value(f.type, message[f.name], types))
   }
   return concat(...parts)
@@ -187,13 +199,8 @@ function domain_fields(
 export function hash_domain(
   domain: TypedDataDomain,
 ): Uint8Array {
-  const fields = domain_fields(domain)
-  const types: TypedDataTypes = { EIP712Domain: fields }
-  return hash_struct(
-    "EIP712Domain",
-    types,
-    domain as unknown as Record<string, unknown>,
-  )
+  const types = { EIP712Domain: domain_fields(domain) }
+  return hash_struct("EIP712Domain", types, domain)
 }
 
 export function hash_typed_data(

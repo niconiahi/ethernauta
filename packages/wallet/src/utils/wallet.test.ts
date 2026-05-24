@@ -1,8 +1,11 @@
 import "fake-indexeddb/auto"
 import {
+  array,
   custom,
   type InferOutput,
+  number,
   object,
+  parse,
   record,
   string,
   unknown,
@@ -109,9 +112,12 @@ describe("init_accounts (first login)", () => {
     )
     expect(accounts.value.active_index).toBe(0)
     expect(master_unlocked()).toBe(true)
-    const persisted = store.accounts as {
-      list: { index: number; address: string }[]
-    }
+    const persisted = parse(
+      object({
+        list: array(object({ index: number(), address: string() })),
+      }),
+      store.accounts,
+    )
     expect(persisted.list).toHaveLength(1)
     expect(persisted.list[0]?.index).toBe(0)
   })

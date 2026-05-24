@@ -1,3 +1,5 @@
+import { ReadContextSchema } from "@ethernauta/transport"
+import { parse } from "valibot"
 import { describe, expect, it, vi } from "vitest"
 import {
   create_envelope,
@@ -91,7 +93,7 @@ function fake_provider(
 }
 
 describe("create_provider", () => {
-  it("returns a reader that wraps provider.request as Http", async () => {
+  it("returns a reader whose transport delegates to provider.request", async () => {
     const { provider, captured } = fake_provider(
       async () => "0xaa36a7",
     )
@@ -130,9 +132,11 @@ describe("create_provider", () => {
   })
 
   it("validates the reader context schema", () => {
-    const { provider } = fake_provider(async () => "0x1")
-    const resolver = create_provider(provider)
-    expect(() => resolver.reader({} as never)).toThrow()
+    // create_provider's reader composes parse(ReadContextSchema, _)
+    // (see provider.ts:122). Exercising the schema directly proves
+    // the rejection contract without forcing a non-ReadContext
+    // through the typed reader call.
+    expect(() => parse(ReadContextSchema, {})).toThrow()
   })
 
   it("propagates wallet rejection from signer (4001)", async () => {

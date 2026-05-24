@@ -16,23 +16,31 @@ import {
   type Bytes,
   bytesSchema,
   type Hash32,
+  hash32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
-import { type InferOutput, number, object } from "valibot"
+import {
+  type InferOutput,
+  number,
+  object,
+  parse,
+} from "valibot"
 
 const EVENT_SIGNATURE =
   "Announcement(uint256,address,address,bytes,bytes)"
 
-export const ANNOUNCEMENT_EVENT_TOPIC: Hash32 = (() => {
-  const hash = keccak_256(
-    new TextEncoder().encode(EVENT_SIGNATURE),
-  )
-  return bytes_to_hex(hash) as Hash32
-})()
+const EMPTY_BYTES = parse(bytesSchema, "0x")
+
+export const ANNOUNCEMENT_EVENT_TOPIC: Hash32 = parse(
+  hash32Schema,
+  bytes_to_hex(
+    keccak_256(new TextEncoder().encode(EVENT_SIGNATURE)),
+  ),
+)
 
 export const metadataSchema = object({
   view_tag: number(),
@@ -44,21 +52,21 @@ export function encode_metadata({
   view_tag,
   body,
 }: Metadata): Bytes {
-  const body_bytes = hex_to_bytes(body as `0x${string}`)
+  const body_bytes = hex_to_bytes(body)
   const out = new Uint8Array(1 + body_bytes.length)
   out[0] = view_tag & 0xff
   out.set(body_bytes, 1)
-  return bytes_to_hex(out) as Bytes
+  return parse(bytesSchema, bytes_to_hex(out))
 }
 
 export function decode_metadata(_bytes: Bytes): Metadata {
-  const buf = hex_to_bytes(_bytes as `0x${string}`)
+  const buf = hex_to_bytes(_bytes)
   if (buf.length === 0) {
-    return { view_tag: 0, body: "0x" as Bytes }
+    return { view_tag: 0, body: EMPTY_BYTES }
   }
   return {
     view_tag: buf[0] ?? 0,
-    body: bytes_to_hex(buf.slice(1)) as Bytes,
+    body: parse(bytesSchema, bytes_to_hex(buf.slice(1))),
   }
 }
 
