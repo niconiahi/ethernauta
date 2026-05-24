@@ -10,6 +10,7 @@ import {
   type Address,
   addressSchema,
   type Bytes,
+  bytes32Schema,
   bytesSchema,
 } from "@ethernauta/core"
 import {
@@ -18,10 +19,12 @@ import {
 } from "@ethernauta/utils"
 import {
   boolean,
+  custom,
   type InferOutput,
   object,
   optional,
   parse,
+  tupleWithRest,
 } from "valibot"
 import { callSchema as rpcCallSchema } from "./call"
 import type { Callable } from "./contract"
@@ -60,6 +63,34 @@ type MulticallOptions = InferOutput<
   typeof multicallOptionsSchema
 >
 
+// `Callable<unknown>` is a function-bearing DI contract (see
+// `./contract`), not data — the schema only needs to verify the
+// structural shape so that absent / wrong-shaped values (notably
+// `undefined` from an out-of-bounds index access) are rejected at
+// parse-time. The predicate must reject undefined so that an empty
+// input to `tupleWithRest` below actually fails parse instead of
+// silently passing the missing slot.
+const callableSchema = custom<Callable<unknown>>((v) => {
+  if (typeof v !== "object" || v === null) return false
+  return (
+    "chain_id" in v &&
+    "to" in v &&
+    "data" in v &&
+    "decode" in v &&
+    typeof v.decode === "function"
+  )
+})
+
+// Non-empty list of calls — `nonEmptyCallsSchema` produces
+// `[Callable<unknown>, ...Callable<unknown>[]]`, so the parsed value
+// destructures into a non-optional `first` (same pattern as
+// `tupleWithRest([chainSchema], chainSchema)` for `CHAINS` in
+// `packages/wallet/src/utils/chain.ts`).
+const nonEmptyCallsSchema = tupleWithRest(
+  [callableSchema],
+  callableSchema,
+)
+
 type ValuesOf<T extends readonly Callable<unknown>[]> = {
   [K in keyof T]: T[K] extends Callable<infer U> ? U : never
 }
@@ -90,18 +121,15 @@ export function create_multicall(_chains: ChainEntry[]) {
     _calls: readonly Callable<unknown>[],
     _options: MulticallOptions = {},
   ): Promise<unknown[]> {
-    if (_calls.length === 0) {
-      throw new Error(
-        "multicall: requires at least one call",
-      )
-    }
-    const chain_id = (_calls[0] as Callable<unknown>)
-      .chain_id
-    for (let i = 1; i < _calls.length; i++) {
-      const c = _calls[i] as Callable<unknown>
+    const [first, ...rest] = parse(
+      nonEmptyCallsSchema,
+      _calls,
+    )
+    const chain_id = first.chain_id
+    for (const [offset, c] of rest.entries()) {
       if (c.chain_id !== chain_id) {
         throw new Error(
-          `multicall: chain mismatch (index 0 = ${chain_id}, index ${i} = ${c.chain_id})`,
+          `multicall: chain mismatch (index 0 = ${chain_id}, index ${offset + 1} = ${c.chain_id})`,
         )
       }
     }
@@ -137,10 +165,12 @@ export function create_multicall(_chains: ChainEntry[]) {
     const result_hex = parse(bytesSchema, response.result)
     const results = decode_aggregate_result(result_hex)
     return _calls.map((c, i) => {
-      const r = results[i] as {
-        success: boolean
-        returnData: Bytes
-      }
+      // `parse` against the per-result Valibot schema turns the
+      // `results[i] | undefined` widening from
+      // `noUncheckedIndexedAccess` into a hard failure if the decode
+      // returned fewer entries than `_calls` — keeps the runtime
+      // contract aligned with the multicall ABI without an `as`.
+      const r = parse(resultSchema.schema, results[i])
       if (!r.success) {
         if (allow_failure) {
           return { success: false, value: undefined }
@@ -166,13 +196,8 @@ export function create_multicall(_chains: ChainEntry[]) {
 function decode_aggregate_result(
   _hex: Bytes,
 ): Array<{ success: boolean; returnData: Bytes }> {
+  const header_hex = parse(bytes32Schema, _hex.slice(0, 66))
+  const offset = BigInt(header_hex)
   const data = hex_to_bytes(_hex)
-  let offset = 0n
-  for (let i = 0; i < 32; i++) {
-    offset = (offset << 8n) | BigInt(data[i] as number)
-  }
-  return array(resultSchema).decode(
-    data,
-    Number(offset),
-  ) as Array<{ success: boolean; returnData: Bytes }>
+  return array(resultSchema).decode(data, Number(offset))
 }

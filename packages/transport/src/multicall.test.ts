@@ -41,9 +41,7 @@ describe("multicall", () => {
         transports: [fake_transport(() => {}, "0x")],
       },
     ])
-    await expect(multicall([])).rejects.toThrow(
-      /at least one call/,
-    )
+    await expect(multicall([])).rejects.toThrow()
   })
 
   it("rejects mismatched chain ids", async () => {
