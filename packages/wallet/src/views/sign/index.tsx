@@ -1,8 +1,9 @@
 import {
+  codec_for_type,
   decode_function_call,
   to_selector,
 } from "@ethernauta/abi"
-import type { Address } from "@ethernauta/core"
+import { addressSchema } from "@ethernauta/core"
 import { REGISTRY } from "@ethernauta/erc/registry"
 import { genericTransactionSchema } from "@ethernauta/eth"
 import type { FunctionSignature } from "@ethernauta/transport"
@@ -14,6 +15,7 @@ import {
   type InferOutput,
   literal,
   object,
+  optional,
   parse,
   pipe,
   readonly,
@@ -74,21 +76,22 @@ const decodeEntrySchema = object({
 })
 type DecodeEntry = InferOutput<typeof decodeEntrySchema>
 
+const txSummarySchema = object({
+  to: optional(string()),
+  value: optional(string()),
+  input: optional(string()),
+})
+type TxSummary = InferOutput<typeof txSummarySchema>
+
 function lookup_registry(
   selector: string,
 ): DecodeEntry | undefined {
-  const table = REGISTRY as Record<
-    string,
-    {
-      name: string
-      signature: string
-      types: readonly string[]
-      param_names: readonly string[]
+  for (const [sel, entry] of Object.entries(REGISTRY)) {
+    if (sel === selector) {
+      return { ...entry, source: "bundled" }
     }
-  >
-  const hit = table[selector]
-  if (!hit) return undefined
-  return { ...hit, source: "bundled" }
+  }
+  return undefined
 }
 
 function parse_signature(
@@ -139,9 +142,7 @@ function extract_ethernauta_function():
   | FunctionSignature
   | undefined {
   const raw = transaction_request.value.params
-  const candidate = Array.isArray(raw)
-    ? raw[0]
-    : (raw as Record<string, unknown>).transaction
+  const candidate = Array.isArray(raw) ? raw[0] : raw.transaction
   const result = safeParse(
     genericTransactionSchema,
     candidate,
@@ -159,6 +160,22 @@ function find_decode_entry(
     lookup_sidecar(selector, sidecar) ??
     lookup_registry(selector)
   )
+}
+
+function decode_with_entry(
+  entry: DecodeEntry,
+  hex: `0x${string}`,
+): unknown[] | undefined {
+  try {
+    const codecs = entry.types.map(codec_for_type)
+    const { args } = decode_function_call(codecs, hex)
+    return [...args]
+  } catch {
+    // codec_for_type rejects tuples / unsupported types, and
+    // decode_function_call throws on malformed calldata. Either
+    // path means we can't decode — fall through to raw-hex render.
+    return undefined
+  }
 }
 
 function DecodedCall({
@@ -219,13 +236,8 @@ function Field({
   if (looks_like_calldata(value)) {
     const entry = find_decode_entry(value)
     if (entry) {
-      try {
-        const { args } = decode_function_call(
-          [...entry.types] as unknown as Parameters<
-            typeof decode_function_call
-          >[0],
-          value,
-        )
+      const args = decode_with_entry(entry, value)
+      if (args) {
         return (
           <div className="flex flex-col gap-0.5 text-xs">
             <dt className="font-bold">{label}</dt>
@@ -233,13 +245,11 @@ function Field({
               <DecodedCall
                 hex={value}
                 entry={entry}
-                args={[...args] as unknown[]}
+                args={args}
               />
             </dd>
           </div>
         )
-      } catch {
-        // fall through to raw hex render
       }
     }
   }
@@ -300,25 +310,12 @@ function Params() {
   )
 }
 
-function extract_tx(): {
-  to?: string
-  value?: string
-  input?: string
-} | null {
+function extract_tx(): TxSummary | null {
   const raw = transaction_request.value.params
-  let tx: unknown
-  if (Array.isArray(raw)) tx = raw[0]
-  else if (raw && typeof raw === "object")
-    tx = (raw as Record<string, unknown>).transaction
-  if (!tx || typeof tx !== "object") return null
-  const obj = tx as Record<string, unknown>
-  return {
-    to: typeof obj.to === "string" ? obj.to : undefined,
-    value:
-      typeof obj.value === "string" ? obj.value : undefined,
-    input:
-      typeof obj.input === "string" ? obj.input : undefined,
-  }
+  const candidate = Array.isArray(raw) ? raw[0] : raw.transaction
+  const result = safeParse(txSummarySchema, candidate)
+  if (!result.success) return null
+  return result.output
 }
 
 function is_value_zero(value: string | undefined): boolean {
@@ -328,23 +325,16 @@ function is_value_zero(value: string | undefined): boolean {
 }
 
 function try_decode(input: string | undefined): {
+  hex: `0x${string}`
   entry: DecodeEntry
   args: unknown[]
 } | null {
   if (!input || !looks_like_calldata(input)) return null
   const entry = find_decode_entry(input)
   if (!entry) return null
-  try {
-    const { args } = decode_function_call(
-      [...entry.types] as unknown as Parameters<
-        typeof decode_function_call
-      >[0],
-      input,
-    )
-    return { entry, args: [...args] as unknown[] }
-  } catch {
-    return null
-  }
+  const args = decode_with_entry(entry, input)
+  if (!args) return null
+  return { hex: input, entry, args }
 }
 
 function SectionLabel({
@@ -430,7 +420,7 @@ function DecodedSign({
 
 export function Sign() {
   const tx = extract_tx()
-  const decoded = tx ? try_decode(tx.input) : null
+  const decoded = try_decode(tx?.input)
   return (
     <main className="flex flex-col gap-3 p-4 w-80 text-base">
       <header className="flex flex-col gap-1 text-center">
@@ -438,11 +428,11 @@ export function Sign() {
           You are about to sign
         </h1>
       </header>
-      {decoded && tx?.input ? (
+      {decoded ? (
         <DecodedSign
-          to={tx.to}
-          value={tx.value}
-          input={tx.input as `0x${string}`}
+          to={tx?.to}
+          value={tx?.value}
+          input={decoded.hex}
           entry={decoded.entry}
           args={decoded.args}
         />
@@ -467,8 +457,10 @@ export function Sign() {
       <div className="flex flex-col gap-2">
         <Button
           onClick={async () => {
-            const address = active_account.value
-              .address as Address
+            const address = parse(
+              addressSchema,
+              active_account.value.address,
+            )
             const key = active_account.value.key
             const { chain_id, reader } = get_reader(
               selected_chain.value,

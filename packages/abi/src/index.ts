@@ -1,6 +1,7 @@
 export * from "./abi"
 export * from "./abi-codec"
 export * from "./array"
+export * from "./codec-for-type"
 export * from "./decode-logs"
 export * from "./encoding"
 export * from "./leaves"
