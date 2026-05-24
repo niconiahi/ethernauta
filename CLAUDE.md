@@ -67,6 +67,7 @@ Match the task at hand against this table **before** you start planning. If a sk
 
 | Task | Skill | When |
 |---|---|---|
+| Write any line of TypeScript anywhere in this repo | `skills/no-violations/SKILL.md` | **Always.** No `as`, no redundant `:` annotation, no `@ts-*` / `biome-ignore` / `eslint-disable`, no per-path or per-rule exemptions in `biome.json`. Enforced by `scripts/no-escape-hatches.sh` against the committed baseline |
 | Declare any value-bearing type (function params, return values, messages, storage, signals) | `skills/conventions/SKILL.md` | **Always.** Non-negotiable rule: Valibot schemas first, types via `v.InferOutput`. Never `interface`, never hand-rolled `type X = { ... }` |
 | Need a primitive schema (address, bytes-N, hash32, uintN, …) | `skills/core/SKILL.md` | Before declaring any new schema. Most likely it already exists in `@ethernauta/core` |
 | Add or modify an EIP | `skills/eip/SKILL.md` | Adding a new `packages/eip/src/<n>/` folder, or changing one of `191`, `712`, `1102`, `1193`, `1271`, `2255`, `3085`, `3326`, `4337`, `4361`, `5792`, `6492`, `6963`, `7702` |
@@ -101,6 +102,7 @@ These bind regardless of task. They are surfaced here so they cannot be missed e
 9. **No new dependencies in `@ethernauta/utils`.** It must stay pure, dependency-free, side-effect-free. (`utils`)
 10. **The mnemonic and private key never leave the popup process.** Not over `postMessage`, not over `chrome.runtime`, not into a log. (`wallet`)
 11. **Anything implementing a named standard (EIP-N or ERC-N) lives in `packages/eip/src/<n>/` or `packages/erc/src/<n>/`.** No exceptions. Even small helpers — if their behavior is defined by a numbered standard, they belong in the matching standard folder, not scattered into `@ethernauta/abi`, `@ethernauta/utils`, or anywhere else. The folder name is the standard number; the `index.ts` carries the spec link comment and re-exports the public surface. (`eip`, `erc`)
+12. **No `as` type assertion, no redundant `:` annotation, no `@ts-*` / `biome-ignore` / `eslint-disable` ignore comments, no per-path or per-rule exemptions in `biome.json`.** Boundaries validate with Valibot `parse`; interiors infer. At every `parse(...)` call, use the narrowest available primitive in `@ethernauta/core` — if the right primitive is missing, add it instead of widening. Enforced by `scripts/no-escape-hatches.sh` against `scripts/no-escape-hatches.baseline.json` — the baseline only moves down. (`no-violations`)
 
 ## Workspace shape
 
