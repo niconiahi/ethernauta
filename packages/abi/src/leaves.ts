@@ -46,11 +46,7 @@ import {
   uint224Schema,
   uint256Schema,
 } from "@ethernauta/core"
-import {
-  bytes_to_hex,
-  hex_to_bytes,
-  invariant,
-} from "@ethernauta/utils"
+import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
 import {
   type BaseIssue,
   type BaseSchema,
@@ -60,32 +56,7 @@ import {
 } from "valibot"
 
 import type { AbiCodec } from "./abi-codec"
-
-function read_uint256(
-  _data: Uint8Array,
-  _pos: number,
-): bigint {
-  let value = 0n
-  for (let i = 0; i < 32; i++) {
-    const byte = _data[_pos + i]
-    invariant(
-      byte !== undefined,
-      "uint256 read out of bounds",
-    )
-    value = (value << 8n) | BigInt(byte)
-  }
-  return value
-}
-
-function write_uint256(_value: bigint): Uint8Array {
-  const result = new Uint8Array(32)
-  let v = _value
-  for (let i = 31; i >= 0; i--) {
-    result[i] = Number(v & 0xffn)
-    v >>= 8n
-  }
-  return result
-}
+import { read_uint256, write_uint256 } from "./uint256"
 
 function to_bigint(_value: string): bigint {
   return _value.startsWith("0x")

@@ -1,4 +1,3 @@
-import { invariant } from "@ethernauta/utils"
 import { parse, array as v_array } from "valibot"
 
 import type { AbiCodec, InferCodec } from "./abi-codec"
@@ -6,6 +5,7 @@ import {
   decode_sequence,
   encode_sequence,
 } from "./sequence"
+import { read_uint256, write_uint256 } from "./uint256"
 
 // Dynamic array of T. Always dynamic. Wire layout:
 //   - 32 bytes: array length
@@ -54,28 +54,3 @@ export type InferArrayElement<C> = C extends AbiCodec<
   ? InferCodec<AbiCodec<T>>
   : never
 
-function read_uint256(
-  _data: Uint8Array,
-  _pos: number,
-): bigint {
-  let value = 0n
-  for (let i = 0; i < 32; i++) {
-    const byte = _data[_pos + i]
-    invariant(
-      byte !== undefined,
-      "uint256 read out of bounds",
-    )
-    value = (value << 8n) | BigInt(byte)
-  }
-  return value
-}
-
-function write_uint256(_value: bigint): Uint8Array {
-  const result = new Uint8Array(32)
-  let v = _value
-  for (let i = 31; i >= 0; i--) {
-    result[i] = Number(v & 0xffn)
-    v >>= 8n
-  }
-  return result
-}

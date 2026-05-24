@@ -1,6 +1,5 @@
-import { invariant } from "@ethernauta/utils"
-
 import type { AbiCodec } from "./abi-codec"
+import { read_uint256, write_uint256 } from "./uint256"
 
 // Encode a positional sequence of typed values using the solidity
 // head/tail rule.
@@ -25,25 +24,21 @@ export function encode_sequence(
     )
   }
   const head_size = _codecs.length * 32
+  const encoded = _codecs.map((codec, i) => ({
+    dynamic: codec.is_dynamic,
+    bytes: codec.encode(_values[i]),
+  }))
   const heads: Uint8Array[] = []
   const tails: Uint8Array[] = []
-  for (const [i, codec] of _codecs.entries()) {
-    const value = _values[i]
-    if (codec.is_dynamic) {
-      heads.push(new Uint8Array(32))
-      tails.push(codec.encode(value))
-    } else {
-      heads.push(codec.encode(value))
-      tails.push(new Uint8Array(0))
-    }
-  }
   let offset = head_size
-  for (const [i, codec] of _codecs.entries()) {
-    if (codec.is_dynamic) {
-      heads[i] = write_uint256(BigInt(offset))
-      const tail = tails[i]
-      invariant(tail, "tail must exist at codec index")
-      offset += tail.length
+  for (const item of encoded) {
+    if (item.dynamic) {
+      heads.push(write_uint256(BigInt(offset)))
+      tails.push(item.bytes)
+      offset += item.bytes.length
+    } else {
+      heads.push(item.bytes)
+      tails.push(new Uint8Array(0))
     }
   }
   const total =
@@ -80,30 +75,4 @@ export function decode_sequence(
     }
   }
   return out
-}
-
-function read_uint256(
-  _data: Uint8Array,
-  _pos: number,
-): bigint {
-  let value = 0n
-  for (let i = 0; i < 32; i++) {
-    const byte = _data[_pos + i]
-    invariant(
-      byte !== undefined,
-      "uint256 read out of bounds",
-    )
-    value = (value << 8n) | BigInt(byte)
-  }
-  return value
-}
-
-function write_uint256(_value: bigint): Uint8Array {
-  const result = new Uint8Array(32)
-  let v = _value
-  for (let i = 31; i >= 0; i--) {
-    result[i] = Number(v & 0xffn)
-    v >>= 8n
-  }
-  return result
 }
