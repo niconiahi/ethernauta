@@ -195,28 +195,99 @@ use(pair[0], pair[1])
 Only when the value is *actually* a tuple. Forcing a variable-length
 array into a tuple schema to dodge `!` is itself a lie.
 
-**(b) Variable-length array — destructure and narrow with `invariant`.**
-Iterate (`for (const x of arr)`) or destructure and assert with
-`invariant` from `@ethernauta/utils`.
+**(b) Variable-length-but-non-empty input — encode the invariant in
+the schema.** Use `tupleWithRest([elementSchema], elementSchema)` so
+the parsed value's static type is `[T, ...T[]]` and indexing returns
+`T`, not `T | undefined`. For "at least N" prepend N copies of
+`elementSchema`.
 
 ```ts
-import { invariant } from "@ethernauta/utils"
+import { parse, tupleWithRest } from "valibot"
 
-// BAD
-const first = arr[0]!
+const nonEmptyCallsSchema = tupleWithRest(
+  [callableSchema],
+  callableSchema,
+)
 
-// GOOD
-const [first] = arr
-invariant(first, "expected at least one element")
-// `first` is T here, not T | undefined
+// BAD — array schema + invariant in the interior
+const calls = parse(array(callableSchema), raw)
+const [first] = calls
+invariant(first, "expected at least one call")
+
+// GOOD — non-emptiness lives in the schema; the type already says so
+const calls = parse(nonEmptyCallsSchema, raw)
+use(calls[0])  // T, not T | undefined
 ```
 
-`invariant(condition, message)` is typed `asserts condition`, so TS
-narrows after the call. Prefer it over a hand-rolled `if (!x) throw`
-so failure messages stay uniform. Tests that want `fixture[0]` should
-either declare the fixture as a tuple (a) or extract the element to a
-named `const` — only reach for `invariant` when the array genuinely
-arrives from a function call whose return shape is `T[]`.
+Iteration (`for (const x of arr)`) over a plain `T[]` is also fine
+when the algorithm tolerates an empty input. Both keep validation at
+the boundary and let inference handle the interior. See
+`packages/transport/src/multicall.ts` (commit `447a2e5f`) for the
+canonical worked example. See R0.4 for the broader ban on
+`invariant` / manual validation in production code.
+
+### R0.4 — Valibot is the only validator. No `invariant`, no manual checks, outside tests
+
+`invariant`, `if (!x) throw`, narrowing-only `typeof` / `Array.isArray` /
+`instanceof` guards, and hand-rolled type-guard functions whose only
+purpose is to validate a value are banned in production code. The
+validator is Valibot. 99% Valibot, 1% `invariant` in tests — that's
+the split.
+
+Why this is absolute:
+
+- Two validators = two sources of truth. A boundary `parse` and a
+  downstream `invariant` both claim to describe the same value;
+  schema changes don't propagate.
+- Manual narrowing produces no runtime documentation. The Valibot
+  schema IS the contract; an `invariant` is a TODO that compiled.
+- Performance is not the argument — `parse` is sub-microsecond at a
+  boundary crossed once per request.
+
+**Banned in `packages/*/src/**`:**
+
+- `invariant(...)` — was promoted under the previous R0.3(b); retired
+  in production. Migrate to a Valibot schema that encodes the
+  invariant in its type (`tupleWithRest`, `pipe(..., minLength(1))`,
+  `variant`, required-field tightenings, etc.).
+- `if (!x) throw new Error(...)` whose only purpose is downstream
+  narrowing.
+- `typeof` / `Array.isArray` / `instanceof` used as a narrowing step
+  on a value supposed to be validated upstream.
+- Hand-rolled `function isFoo(x): x is Foo` guards — use `safeParse`
+  against a schema.
+
+**Allowed:**
+
+- `invariant(...)` in `**/*.test.ts`. Tests assert truths about their
+  own fixtures; that's test bookkeeping, not data validation.
+- Control-flow `typeof` / `Array.isArray` / `instanceof` checks that
+  drive genuinely diverging branches (both arms do meaningful work).
+  If one arm is "throw" and the other is "happy path," it's a guard
+  pretending to be control flow — use a Valibot `variant` instead.
+- `safeParse` at boundaries where the caller branches on validity
+  rather than throws (e.g. optional UI decode paths).
+
+**Canonical replacement for "I need this value non-null here":**
+
+```ts
+// BAD — interior assertion
+const tx = parse(genericTransactionSchema, raw)
+invariant(tx.to, "eth_signTransaction requires a `to` address")
+use(tx.to)
+
+// GOOD — tighten the schema at the boundary
+const signableTransactionSchema = object({
+  ...genericTransactionSchema.entries,
+  to: addressSchema,  // required, narrow primitive
+})
+const tx = parse(signableTransactionSchema, raw)
+use(tx.to)  // Address, not Address | null | undefined
+```
+
+**Rule of thumb:** if you're about to write `invariant`, `!`, or
+`if (!x) throw` in production code, the question is *which schema is
+too loose?*, not *which assertion should I add?*.
 
 ## R1 — No `as` type assertion
 
