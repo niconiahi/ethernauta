@@ -14,7 +14,6 @@ export {
   user_rejected,
 } from "./error"
 export {
-  type AnyListener,
   create_emitter,
   type Emitter,
   type EthSubscription,

@@ -55,8 +55,6 @@ type Listener<E extends EventName> = (
   payload: EventMap[E],
 ) => void
 
-export type AnyListener = (payload: never) => void
-
 // Generic methods cannot be expressed as a Valibot schema (no
 // per-call type relation). Kept as an intersection-shaped type
 // alias — the "schema" is the dispatcher itself in create_emitter.
@@ -76,23 +74,22 @@ export type Emitter = Readonly<{
 }>
 
 export function create_emitter(): Emitter {
-  const listeners = new Map<EventName, Set<AnyListener>>()
+  const buckets: { [E in EventName]: Set<Listener<E>> } = {
+    connect: new Set(),
+    disconnect: new Set(),
+    chainChanged: new Set(),
+    accountsChanged: new Set(),
+    message: new Set(),
+  }
   return {
     on(event, listener) {
-      const existing = listeners.get(event)
-      if (existing) {
-        existing.add(listener)
-        return
-      }
-      listeners.set(event, new Set([listener]))
+      buckets[event].add(listener)
     },
     removeListener(event, listener) {
-      listeners.get(event)?.delete(listener)
+      buckets[event].delete(listener)
     },
     emit(event, payload) {
-      const set = listeners.get(event)
-      if (!set) return
-      for (const listener of set) {
+      for (const listener of buckets[event]) {
         listener(payload)
       }
     },
