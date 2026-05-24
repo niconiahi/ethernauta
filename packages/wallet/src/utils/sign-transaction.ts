@@ -7,6 +7,7 @@ import { eip155_11155111 } from "@ethernauta/chain"
 import {
   type Address,
   addressSchema,
+  uintSchema,
 } from "@ethernauta/core"
 import {
   eth_getTransactionCount,
@@ -21,12 +22,11 @@ import {
   array,
   bigint,
   custom,
-  hexadecimal,
   type InferOutput,
   object,
   parse,
-  pipe,
   string,
+  tuple,
 } from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
 import { sign_digest } from "./ecdsa"
@@ -138,40 +138,41 @@ function get_fields_from_transaction(
     case "eth_signTransaction": {
       const raw = Array.isArray(params)
         ? params[0]
-        : (params as Record<string, unknown>).transaction
+        : params.transaction
       const tx = parse(genericTransactionSchema, raw)
-      const value_hex =
-        (tx.value as `0x${string}` | undefined) ?? "0x0"
-      const input_hex =
-        (tx.input as `0x${string}` | undefined) ?? "0x"
+      invariant(
+        tx.to,
+        "eth_signTransaction requires a `to` address",
+      )
+      const value_hex = tx.value ?? "0x0"
+      const input_hex = tx.input ?? "0x"
       const data =
         input_hex === "0x"
           ? new Uint8Array([])
           : hex_to_bytes(input_hex)
       return {
-        to: tx.to as Address,
+        to: tx.to,
         value: hex_to_big(value_hex),
         data,
       }
     }
     case "transfer": {
-      const args = params as unknown[]
-      const to = parse(addressSchema, args[0])
-      const value = parse(
-        pipe(string(), hexadecimal()),
-        args[1],
-      ) as `0x${string}`
+      const [transfer_to, value_hex] = parse(
+        tuple([addressSchema, uintSchema]),
+        params,
+      )
       return {
-        to,
-        value: hex_to_big(value),
+        to: transfer_to,
+        value: hex_to_big(value_hex),
         data: new Uint8Array([]),
       }
     }
     case "safeMint": {
-      const args = params as unknown[]
       const contract = parse(addressSchema, to)
-      const nft_recipient = parse(addressSchema, args[0])
-      const uri = parse(string(), args[1])
+      const [nft_recipient, uri] = parse(
+        tuple([addressSchema, string()]),
+        params,
+      )
       return {
         to: contract,
         value: 0n,
