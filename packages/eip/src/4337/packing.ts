@@ -8,19 +8,33 @@ import type {
   Uint,
 } from "@ethernauta/core"
 import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uintSchema,
+} from "@ethernauta/core"
+import {
   bytes_to_hex,
+  bytes_to_uint,
   hex_to_bytes,
 } from "@ethernauta/utils"
+import { parse } from "valibot"
 
 import type {
   PackedUserOperation,
   UserOperation,
 } from "./types"
 
-const ZERO_BYTES32 =
-  "0x0000000000000000000000000000000000000000000000000000000000000000" as Bytes32
-const ZERO_ADDRESS =
-  "0x0000000000000000000000000000000000000000" as Address
+const ZERO_BYTES32 = parse(
+  bytes32Schema,
+  "0x0000000000000000000000000000000000000000000000000000000000000000",
+)
+const ZERO_ADDRESS = parse(
+  addressSchema,
+  "0x0000000000000000000000000000000000000000",
+)
+const EMPTY_BYTES = parse(bytesSchema, "0x")
+const ZERO_UINT = parse(uintSchema, "0x0")
 
 function pack_uint128(value: bigint): Uint8Array {
   if (value < 0n || value >= 1n << 128n) {
@@ -61,7 +75,7 @@ export function pack_account_gas_limits(
     pack_uint128(to_bigint(verificationGasLimit)),
     pack_uint128(to_bigint(callGasLimit)),
   )
-  return bytes_to_hex(packed) as Bytes32
+  return parse(bytes32Schema, bytes_to_hex(packed))
 }
 
 export function pack_gas_fees(
@@ -72,7 +86,7 @@ export function pack_gas_fees(
     pack_uint128(to_bigint(maxPriorityFeePerGas)),
     pack_uint128(to_bigint(maxFeePerGas)),
   )
-  return bytes_to_hex(packed) as Bytes32
+  return parse(bytes32Schema, bytes_to_hex(packed))
 }
 
 export function pack_init_code(
@@ -80,14 +94,14 @@ export function pack_init_code(
   factoryData?: Bytes,
 ): Bytes {
   if (!factory || factory === ZERO_ADDRESS) {
-    return "0x" as Bytes
+    return EMPTY_BYTES
   }
-  const data = factoryData ?? ("0x" as Bytes)
+  const data = factoryData ?? EMPTY_BYTES
   const bytes = concat(
     hex_to_bytes(factory),
     hex_to_bytes(data),
   )
-  return bytes_to_hex(bytes) as Bytes
+  return parse(bytesSchema, bytes_to_hex(bytes))
 }
 
 export function pack_paymaster_and_data(input: {
@@ -100,28 +114,28 @@ export function pack_paymaster_and_data(input: {
     !input.paymaster ||
     input.paymaster === ZERO_ADDRESS
   ) {
-    return "0x" as Bytes
+    return EMPTY_BYTES
   }
   const verification = pack_uint128(
     to_bigint(
-      input.paymasterVerificationGasLimit ??
-        ("0x0" as Uint),
+      input.paymasterVerificationGasLimit ?? ZERO_UINT,
     ),
   )
   const post_op = pack_uint128(
-    to_bigint(
-      input.paymasterPostOpGasLimit ?? ("0x0" as Uint),
+    to_bigint(input.paymasterPostOpGasLimit ?? ZERO_UINT),
+  )
+  const data = input.paymasterData ?? EMPTY_BYTES
+  return parse(
+    bytesSchema,
+    bytes_to_hex(
+      concat(
+        hex_to_bytes(input.paymaster),
+        verification,
+        post_op,
+        hex_to_bytes(data),
+      ),
     ),
   )
-  const data = input.paymasterData ?? ("0x" as Bytes)
-  return bytes_to_hex(
-    concat(
-      hex_to_bytes(input.paymaster),
-      verification,
-      post_op,
-      hex_to_bytes(data),
-    ),
-  ) as Bytes
 }
 
 export function pack_user_operation(
@@ -157,7 +171,7 @@ export function unpack_uint128_pair(packed: Bytes32): {
   lo: Uint
 } {
   if (packed === ZERO_BYTES32) {
-    return { hi: "0x0" as Uint, lo: "0x0" as Uint }
+    return { hi: ZERO_UINT, lo: ZERO_UINT }
   }
   const bytes = hex_to_bytes(packed)
   if (bytes.length !== 32) {
@@ -166,7 +180,10 @@ export function unpack_uint128_pair(packed: Bytes32): {
     )
   }
   return {
-    hi: bytes_to_hex(bytes.slice(0, 16)) as Uint,
-    lo: bytes_to_hex(bytes.slice(16, 32)) as Uint,
+    hi: parse(uintSchema, bytes_to_uint(bytes.slice(0, 16))),
+    lo: parse(
+      uintSchema,
+      bytes_to_uint(bytes.slice(16, 32)),
+    ),
   }
 }

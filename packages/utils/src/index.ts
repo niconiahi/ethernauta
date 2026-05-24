@@ -1,4 +1,5 @@
 export * from "./bytes-to-hex"
+export * from "./bytes-to-uint"
 export * from "./camel-to-kebab"
 export * from "./hex-to-bytes"
 export * from "./hex-to-number"
