@@ -6,7 +6,6 @@ import type {
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import { parse } from "valibot"
 
 const PARAM_CODECS = [] as const
 

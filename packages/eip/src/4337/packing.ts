@@ -180,7 +180,10 @@ export function unpack_uint128_pair(packed: Bytes32): {
     )
   }
   return {
-    hi: parse(uintSchema, bytes_to_uint(bytes.slice(0, 16))),
+    hi: parse(
+      uintSchema,
+      bytes_to_uint(bytes.slice(0, 16)),
+    ),
     lo: parse(
       uintSchema,
       bytes_to_uint(bytes.slice(16, 32)),

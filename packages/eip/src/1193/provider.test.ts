@@ -101,7 +101,7 @@ describe("create_provider", () => {
     })
     expect(context.chain_id).toBe("eip155:11155111")
     expect(transports).toHaveLength(1)
-    const response = await transports[0]!([
+    const response = await transports[0]?.([
       "eth_chainId",
       [],
     ])

@@ -26,9 +26,7 @@ import { to_selector } from "../encoding/encode"
 // `function_inputSchema`) is structurally assignable to
 // `AbiInput` — the recursive Valibot anchor whose tuple variant
 // carries `components: AbiInput[]`.
-function get_components(
-  input: AbiInput,
-): AbiInput[] {
+function get_components(input: AbiInput): AbiInput[] {
   const components = input.components
   invariant(
     Array.isArray(components),
