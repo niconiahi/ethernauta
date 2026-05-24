@@ -246,10 +246,10 @@ describe("create_router — unsupported", () => {
       SIGNABLE_METHODS,
       WALLET_INTERNAL_METHODS,
     ]
-    for (let i = 0; i < sets.length; i += 1) {
-      for (let j = i + 1; j < sets.length; j += 1) {
-        for (const method of sets[i]!) {
-          expect(sets[j]!.has(method)).toBe(false)
+    for (const [i, set_a] of sets.entries()) {
+      for (const set_b of sets.slice(i + 1)) {
+        for (const method of set_a) {
+          expect(set_b.has(method)).toBe(false)
         }
       }
     }

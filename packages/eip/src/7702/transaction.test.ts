@@ -8,6 +8,15 @@ import {
   type SetCodeTransactionUnsigned,
 } from "."
 
+const AUTH = {
+  chainId: "0x1",
+  address: "0x1234567890123456789012345678901234567890",
+  nonce: "0x0",
+  yParity: "0x0",
+  r: "0xabcd",
+  s: "0xef01",
+} as const
+
 const BASE: SetCodeTransactionUnsigned = {
   chainId: 1n,
   nonce: 0n,
@@ -18,16 +27,7 @@ const BASE: SetCodeTransactionUnsigned = {
   value: 0n,
   data: new Uint8Array([0xa9, 0x05, 0x9c, 0xbb]),
   accessList: [],
-  authorizationList: [
-    {
-      chainId: "0x1",
-      address: "0x1234567890123456789012345678901234567890",
-      nonce: "0x0",
-      yParity: "0x0",
-      r: "0xabcd",
-      s: "0xef01",
-    },
-  ],
+  authorizationList: [AUTH],
 }
 
 describe("transaction.ts", () => {
@@ -79,11 +79,7 @@ describe("transaction.ts", () => {
     const one = encode_set_code_unsigned(BASE).length
     const three = encode_set_code_unsigned({
       ...BASE,
-      authorizationList: [
-        BASE.authorizationList[0]!,
-        BASE.authorizationList[0]!,
-        BASE.authorizationList[0]!,
-      ],
+      authorizationList: [AUTH, AUTH, AUTH],
     }).length
     expect(three).toBeGreaterThan(one)
   })

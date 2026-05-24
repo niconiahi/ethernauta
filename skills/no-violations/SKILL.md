@@ -165,6 +165,59 @@ sentence, citing the specific TS limitation), the looser form is
 permitted as a temporary state with a `// TODO(R0.2): ...` comment
 naming the next-phase work that will tighten it.
 
+### R0.3 — No `!` non-null assertion; narrow with a real guard
+
+`x!` is a cast in disguise — it lies to TS about `undefined` / `null`
+without proving anything at runtime. Banned everywhere; tests get no
+exemption.
+
+The trigger is almost always `noUncheckedIndexedAccess` widening
+`arr[i]` to `T | undefined`. Two acceptable resolutions, picked by
+what the value actually is:
+
+**(a) Genuine fixed-length tuple — fix the schema.** If the value
+really is a pair / triple / fixed-N collection, declare it as a
+tuple schema. Indexing within bounds returns the element type, no
+guard needed.
+
+```ts
+// BAD
+const pairSchema = array(bytesSchema)
+const pair = parse(pairSchema, raw)
+use(pair[0]!, pair[1]!)
+
+// GOOD
+const pairSchema = tuple([bytesSchema, bytesSchema])
+const pair = parse(pairSchema, raw)
+use(pair[0], pair[1])
+```
+
+Only when the value is *actually* a tuple. Forcing a variable-length
+array into a tuple schema to dodge `!` is itself a lie.
+
+**(b) Variable-length array — destructure and narrow with `invariant`.**
+Iterate (`for (const x of arr)`) or destructure and assert with
+`invariant` from `@ethernauta/utils`.
+
+```ts
+import { invariant } from "@ethernauta/utils"
+
+// BAD
+const first = arr[0]!
+
+// GOOD
+const [first] = arr
+invariant(first, "expected at least one element")
+// `first` is T here, not T | undefined
+```
+
+`invariant(condition, message)` is typed `asserts condition`, so TS
+narrows after the call. Prefer it over a hand-rolled `if (!x) throw`
+so failure messages stay uniform. Tests that want `fixture[0]` should
+either declare the fixture as a tuple (a) or extract the element to a
+named `const` — only reach for `invariant` when the array genuinely
+arrives from a function call whose return shape is `T[]`.
+
 ## R1 — No `as` type assertion
 
 **Banned, all of them.** Including:

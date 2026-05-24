@@ -7,14 +7,16 @@ import {
   finalize_status,
 } from "./calls-status"
 
+const HASH_A =
+  "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899" as const
+const HASH_B =
+  "0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa" as const
+
 const BATCH: BatchRecord = {
   id: "0xbatch",
   chainId: "0xaa36a7",
   atomic: false,
-  transaction_hashes: [
-    "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899",
-    "0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
-  ],
+  transaction_hashes: [HASH_A, HASH_B],
 }
 
 function make_receipt(
@@ -57,14 +59,11 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report PENDING when at least one call is unmined", () => {
     const status = finalize_status(BATCH, [
       {
-        transaction_hash: BATCH.transaction_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[0]!,
-          "0x1",
-        ),
+        transaction_hash: HASH_A,
+        receipt: make_receipt(HASH_A, "0x1"),
       },
       {
-        transaction_hash: BATCH.transaction_hashes[1]!,
+        transaction_hash: HASH_B,
         receipt: null,
       },
     ])
@@ -75,18 +74,12 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report CONFIRMED when every call mined and succeeded", () => {
     const status = finalize_status(BATCH, [
       {
-        transaction_hash: BATCH.transaction_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[0]!,
-          "0x1",
-        ),
+        transaction_hash: HASH_A,
+        receipt: make_receipt(HASH_A, "0x1"),
       },
       {
-        transaction_hash: BATCH.transaction_hashes[1]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[1]!,
-          "0x1",
-        ),
+        transaction_hash: HASH_B,
+        receipt: make_receipt(HASH_B, "0x1"),
       },
     ])
     expect(status.status).toBe(CALLS_STATUS.CONFIRMED)
@@ -97,18 +90,12 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report REVERTED when every call reverted", () => {
     const status = finalize_status(BATCH, [
       {
-        transaction_hash: BATCH.transaction_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[0]!,
-          "0x0",
-        ),
+        transaction_hash: HASH_A,
+        receipt: make_receipt(HASH_A, "0x0"),
       },
       {
-        transaction_hash: BATCH.transaction_hashes[1]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[1]!,
-          "0x0",
-        ),
+        transaction_hash: HASH_B,
+        receipt: make_receipt(HASH_B, "0x0"),
       },
     ])
     expect(status.status).toBe(CALLS_STATUS.REVERTED)
@@ -117,18 +104,12 @@ describe("calls-status.ts — finalize_status", () => {
   it("should report PARTIALLY_REVERTED when some calls reverted", () => {
     const status = finalize_status(BATCH, [
       {
-        transaction_hash: BATCH.transaction_hashes[0]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[0]!,
-          "0x1",
-        ),
+        transaction_hash: HASH_A,
+        receipt: make_receipt(HASH_A, "0x1"),
       },
       {
-        transaction_hash: BATCH.transaction_hashes[1]!,
-        receipt: make_receipt(
-          BATCH.transaction_hashes[1]!,
-          "0x0",
-        ),
+        transaction_hash: HASH_B,
+        receipt: make_receipt(HASH_B, "0x0"),
       },
     ])
     expect(status.status).toBe(

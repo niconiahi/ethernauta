@@ -1,3 +1,4 @@
+import { invariant } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
 import {
   discover_providers,
@@ -47,7 +48,12 @@ describe("discover.ts", () => {
       ms: 30,
     })
     expect(providers).toHaveLength(1)
-    expect(providers[0]!.info.rdns).toBe("io.walleta")
+    const [first] = providers
+    invariant(
+      first,
+      "expected at least one announced provider",
+    )
+    expect(first.info.rdns).toBe("io.walleta")
   })
 
   it("should dedupe announcements by rdns", async () => {

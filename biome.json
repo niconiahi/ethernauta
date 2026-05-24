@@ -15,8 +15,7 @@
       "!**/.react-router/**",
       "!**/build/**",
       "!**/dist/**",
-      "!**/worker-configuration.d.ts",
-      "!**/packages/ens/src/data/**"
+      "!**/worker-configuration.d.ts"
     ],
     "actions": {
       "source": {
@@ -31,8 +30,7 @@
       "!**/.react-router/**",
       "!**/build/**",
       "!**/dist/**",
-      "!**/worker-configuration.d.ts",
-      "!**/packages/ens/src/data/**"
+      "!**/worker-configuration.d.ts"
     ],
     "enabled": true,
     "lineWidth": 60,
@@ -53,9 +51,7 @@
       "!**/.react-router/**",
       "!**/build/**",
       "!**/dist/**",
-      "!**/worker-configuration.d.ts",
-      "!**/src/chain/eip155",
-      "!**/packages/ens/src/data/**"
+      "!**/worker-configuration.d.ts"
     ],
     "rules": {
       "recommended": true,
@@ -84,16 +80,6 @@
     }
   },
   "overrides": [
-    {
-      "includes": ["**/*.test.ts", "**/*.test.tsx"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noNonNullAssertion": "off"
-          }
-        }
-      }
-    },
     {
       "includes": [
         "**/packages/abi/src/**",
