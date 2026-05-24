@@ -1,6 +1,11 @@
 // Vault utilities for secure mnemonic storage using IndexedDB
 // Based on MetaMask's approach: password + PBKDF2 + AES-GCM encryption
-import { type InferOutput, object, string } from "valibot"
+import {
+  type InferOutput,
+  object,
+  parse,
+  string,
+} from "valibot"
 
 export const vaultRecordSchema = object({
   salt: string(),
@@ -62,9 +67,8 @@ function open_database(): Promise<IDBDatabase> {
       DATABASE_CONFIG.name,
       DATABASE_CONFIG.version,
     )
-    request.onupgradeneeded = (event) => {
-      const database = (event.target as IDBOpenDBRequest)
-        .result
+    request.onupgradeneeded = () => {
+      const database = request.result
       if (
         !database.objectStoreNames.contains(
           DATABASE_CONFIG.store_name,
@@ -150,10 +154,15 @@ export async function get_vault(
       )
       const request = store.get(DATABASE_CONFIG.vault_key)
       request.onsuccess = () => {
-        const result = request.result as
-          | VaultRecord
-          | undefined
-        resolve(result)
+        if (request.result === undefined) {
+          resolve(undefined)
+          return
+        }
+        const vaultRecord = parse(
+          vaultRecordSchema,
+          request.result,
+        )
+        resolve(vaultRecord)
       }
       request.onerror = () =>
         reject(
