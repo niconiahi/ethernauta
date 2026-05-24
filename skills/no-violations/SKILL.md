@@ -268,6 +268,22 @@ Why this is absolute:
 - `safeParse` at boundaries where the caller branches on validity
   rather than throws (e.g. optional UI decode paths).
 
+**Allowed exceptions (the narrow B2 list — bootstrap preconditions):**
+
+The Phase 6 manual-validation purge closed out 26 production
+`invariant` sites; exactly one graduated to an explicit `if`-throw
+because the schema route doesn't apply:
+
+- `packages/wallet/src/entry.preact.tsx:7` — DOM `#app` root
+  precondition at MV3 popup mount. Asserts a structural fact about
+  the static `popup.html` the extension ships, not incoming data.
+  Pattern: `if (!root) throw new Error("...")` with a comment naming
+  the bootstrap precondition. The ratchet does not count `if`-throws
+  this shaped.
+
+New B2 sites need an entry here AND a comment in the code naming the
+precondition. If you can express it as a schema, do that instead.
+
 **Canonical replacement for "I need this value non-null here":**
 
 ```ts
