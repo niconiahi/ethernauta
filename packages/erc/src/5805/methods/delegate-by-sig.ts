@@ -68,15 +68,22 @@ export function delegateBySig(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+          parameters[4],
+          parameters[5],
+        ] as const)
+      : ([
           parameters.delegatee,
           parameters.nonce,
           parameters.expiry,
           parameters.v,
           parameters.r,
           parameters.s,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "delegateBySig",
       args: PARAM_CODECS,

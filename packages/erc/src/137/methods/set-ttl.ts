@@ -43,8 +43,8 @@ export function setTTL(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node, parameters.ttl]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.node, parameters.ttl] as const)
     const calldata = encode_function_call({
       name: "setTTL",
       args: PARAM_CODECS,

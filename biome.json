@@ -78,21 +78,5 @@
         "noUselessElse": "error"
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": [
-        "**/packages/abi/src/**",
-        "**/packages/eth/src/method/filter/get-contract-events.ts",
-        "**/packages/eip/src/1014/deploy-contract.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

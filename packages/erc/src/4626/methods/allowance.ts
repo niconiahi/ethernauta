@@ -35,8 +35,8 @@ export function allowance(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.owner, parameters.spender]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.owner, parameters.spender] as const)
     const calldata = encode_function_call({
       name: "allowance",
       args: PARAM_CODECS,

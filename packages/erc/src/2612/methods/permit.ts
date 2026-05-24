@@ -79,8 +79,16 @@ export function permit(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+          parameters[4],
+          parameters[5],
+          parameters[6],
+        ] as const)
+      : ([
           parameters.owner,
           parameters.spender,
           parameters.value,
@@ -88,7 +96,7 @@ export function permit(
           parameters.v,
           parameters.r,
           parameters.s,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "permit",
       args: PARAM_CODECS,

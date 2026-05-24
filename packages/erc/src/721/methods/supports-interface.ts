@@ -38,8 +38,8 @@ export function supportsInterface(_parameters: Parameters) {
   return (context: ContractContext): Callable<boolean> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.interfaceId]
+      ? ([parameters[0]] as const)
+      : ([parameters.interfaceId] as const)
     const calldata = encode_function_call({
       name: "supportsInterface",
       args: PARAM_CODECS,

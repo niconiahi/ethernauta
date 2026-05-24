@@ -38,8 +38,8 @@ export function uri(_parameters: Parameters) {
   return (context: ContractContext): Callable<string> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.id]
+      ? ([parameters[0]] as const)
+      : ([parameters.id] as const)
     const calldata = encode_function_call({
       name: "uri",
       args: PARAM_CODECS,

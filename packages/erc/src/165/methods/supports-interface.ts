@@ -1,16 +1,15 @@
+import type { Bytes } from "@ethernauta/core"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bool,
   bytes4,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Bytes } from "@ethernauta/core"
-import { bytes4Schema } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import {
   boolean,
@@ -19,6 +18,7 @@ import {
   tuple,
   union,
 } from "valibot"
+import { bytes4Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes4()] as const
 const OUTPUT_CODECS = [bool()] as const
@@ -38,8 +38,8 @@ export function supportsInterface(_parameters: Parameters) {
   return (context: ContractContext): Callable<boolean> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.interfaceId]
+      ? ([parameters[0]] as const)
+      : ([parameters.interfaceId] as const)
     const calldata = encode_function_call({
       name: "supportsInterface",
       args: PARAM_CODECS,

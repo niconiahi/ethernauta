@@ -147,8 +147,11 @@ export function resolveFor(_parameters: Parameters) {
   }> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.order, parameters.originFillerData]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([
+          parameters.order,
+          parameters.originFillerData,
+        ] as const)
     const calldata = encode_function_call({
       name: "resolveFor",
       args: PARAM_CODECS,

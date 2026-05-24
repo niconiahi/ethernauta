@@ -71,14 +71,20 @@ export function safeBatchTransferFrom(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+          parameters[4],
+        ] as const)
+      : ([
           parameters.from,
           parameters.to,
           parameters.ids,
           parameters.values,
           parameters.data,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "safeBatchTransferFrom",
       args: PARAM_CODECS,

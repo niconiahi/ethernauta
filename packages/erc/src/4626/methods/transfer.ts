@@ -43,8 +43,8 @@ export function transfer(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.to, parameters.value]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.to, parameters.value] as const)
     const calldata = encode_function_call({
       name: "transfer",
       args: PARAM_CODECS,

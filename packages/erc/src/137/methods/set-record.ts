@@ -60,13 +60,18 @@ export function setRecord(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+        ] as const)
+      : ([
           parameters.node,
           parameters.owner,
           parameters.resolver,
           parameters.ttl,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "setRecord",
       args: PARAM_CODECS,

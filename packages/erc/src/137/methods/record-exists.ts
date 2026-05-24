@@ -38,8 +38,8 @@ export function recordExists(_parameters: Parameters) {
   return (context: ContractContext): Callable<boolean> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node]
+      ? ([parameters[0]] as const)
+      : ([parameters.node] as const)
     const calldata = encode_function_call({
       name: "recordExists",
       args: PARAM_CODECS,

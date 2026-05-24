@@ -6,6 +6,7 @@ import type {
   Signable,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 
 const PARAM_CODECS = [] as const
 
@@ -23,7 +24,7 @@ export function unpause(): Signable<Bytes> {
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "unpause",
       args: PARAM_CODECS,

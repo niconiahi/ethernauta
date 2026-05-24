@@ -115,7 +115,7 @@ export function create_multicall(_chains: ChainEntry[]) {
           allowFailure: allow_failure,
           callData: c.data,
         })),
-      ] as never,
+      ] as const,
     })
     const transports = require_chain(_chains, chain_id)
     const rpc_call = parse(rpcCallSchema, [

@@ -1,4 +1,11 @@
-import { custom, parse } from "valibot"
+import { invariant } from "@ethernauta/utils"
+import {
+  custom,
+  parse,
+  record,
+  string,
+  unknown,
+} from "valibot"
 
 import type { AbiCodec, InferCodec } from "./abi-codec"
 import {
@@ -6,7 +13,7 @@ import {
   encode_sequence,
 } from "./sequence"
 
-type Fields = Record<string, AbiCodec<any>>
+type Fields = Record<string, AbiCodec<unknown>>
 
 type TupleValue<F extends Fields> = {
   [K in keyof F]: InferCodec<F[K]>
@@ -30,9 +37,14 @@ export function tuple<F extends Fields>(
   _fields: F,
 ): AbiCodec<TupleValue<F>> {
   const names = Object.keys(_fields)
-  const codecs = names.map(
-    (n) => _fields[n] as AbiCodec<unknown>,
-  )
+  const codecs = names.map((n) => {
+    const codec = _fields[n]
+    invariant(
+      codec,
+      `tuple: missing codec for field "${n}"`,
+    )
+    return codec
+  })
   const signature = `(${codecs.map((c) => c.signature).join(",")})`
   const is_dynamic = codecs.some((c) => c.is_dynamic)
 
@@ -43,16 +55,21 @@ export function tuple<F extends Fields>(
           `tuple ${signature}: expected ${names.length} positional values, got ${_input.length}`,
         )
       }
-      return _input.map((v, i) =>
-        parse((codecs[i] as AbiCodec<unknown>).schema, v),
-      )
+      return _input.map((v, i) => {
+        const codec = codecs[i]
+        invariant(
+          codec,
+          `tuple ${signature}: codec missing at index ${i}`,
+        )
+        return parse(codec.schema, v)
+      })
     }
     if (_input === null || typeof _input !== "object") {
       throw new Error(
         `tuple ${signature}: expected object or array, got ${typeof _input}`,
       )
     }
-    const obj = _input as Record<string, unknown>
+    const obj = parse(record(string(), unknown()), _input)
     const obj_keys = Object.keys(obj)
     for (const k of obj_keys) {
       if (!names.includes(k)) {
@@ -67,35 +84,39 @@ export function tuple<F extends Fields>(
           `tuple ${signature}: missing required key "${n}"`,
         )
       }
-      return parse(
-        (codecs[i] as AbiCodec<unknown>).schema,
-        obj[n],
+      const codec = codecs[i]
+      invariant(
+        codec,
+        `tuple ${signature}: codec missing at index ${i}`,
       )
+      return parse(codec.schema, obj[n])
     })
   }
+
+  const tupleSchema = custom<TupleValue<F>>((_input) => {
+    try {
+      normalize(_input)
+      return true
+    } catch {
+      return false
+    }
+  })
 
   return {
     signature,
     is_dynamic,
-    schema: custom<TupleValue<F>>((_input) => {
-      try {
-        normalize(_input)
-        return true
-      } catch {
-        return false
-      }
-    }),
-    encode: (_value) => {
+    schema: tupleSchema,
+    encode(_value) {
       const positional = normalize(_value)
       return encode_sequence(codecs, positional)
     },
-    decode: (_data, _pos) => {
+    decode(_data, _pos) {
       const values = decode_sequence(codecs, _data, _pos)
-      const out = {} as Record<string, unknown>
+      const out: Record<string, unknown> = {}
       names.forEach((n, i) => {
         out[n] = values[i]
       })
-      return out as TupleValue<F>
+      return parse(tupleSchema, out)
     },
   }
 }

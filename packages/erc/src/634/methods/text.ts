@@ -38,8 +38,8 @@ export function text(_parameters: Parameters) {
   return (context: ContractContext): Callable<string> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node, parameters.key]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.node, parameters.key] as const)
     const calldata = encode_function_call({
       name: "text",
       args: PARAM_CODECS,

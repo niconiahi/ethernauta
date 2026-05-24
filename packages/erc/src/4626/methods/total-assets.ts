@@ -22,7 +22,7 @@ export const TOTAL_ASSETS_SIGNATURE = {
 
 export function totalAssets() {
   return (context: ContractContext): Callable<Uint256> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "totalAssets",
       args: PARAM_CODECS,

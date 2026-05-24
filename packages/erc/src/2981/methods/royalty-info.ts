@@ -44,8 +44,11 @@ export function royaltyInfo(_parameters: Parameters) {
   ): Callable<[Address, Uint256]> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.tokenId, parameters.salePrice]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([
+          parameters.tokenId,
+          parameters.salePrice,
+        ] as const)
     const calldata = encode_function_call({
       name: "royaltyInfo",
       args: PARAM_CODECS,

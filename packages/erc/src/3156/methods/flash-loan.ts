@@ -60,13 +60,18 @@ export function flashLoan(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+        ] as const)
+      : ([
           parameters.receiver,
           parameters.token,
           parameters.amount,
           parameters.data,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "flashLoan",
       args: PARAM_CODECS,

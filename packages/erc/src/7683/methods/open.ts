@@ -64,8 +64,8 @@ export function open(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.order]
+      ? ([parameters[0]] as const)
+      : ([parameters.order] as const)
     const calldata = encode_function_call({
       name: "open",
       args: PARAM_CODECS,

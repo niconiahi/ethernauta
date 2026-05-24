@@ -47,12 +47,16 @@ export function fill(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+        ] as const)
+      : ([
           parameters.orderId,
           parameters.originData,
           parameters.fillerData,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "fill",
       args: PARAM_CODECS,

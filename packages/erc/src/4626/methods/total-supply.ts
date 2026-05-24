@@ -22,7 +22,7 @@ export const TOTAL_SUPPLY_SIGNATURE = {
 
 export function totalSupply() {
   return (context: ContractContext): Callable<Uint256> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "totalSupply",
       args: PARAM_CODECS,

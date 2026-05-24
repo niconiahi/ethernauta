@@ -64,14 +64,20 @@ export function safeTransferFrom(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+          parameters[4],
+        ] as const)
+      : ([
           parameters.from,
           parameters.to,
           parameters.id,
           parameters.value,
           parameters.data,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "safeTransferFrom",
       args: PARAM_CODECS,

@@ -401,13 +401,23 @@ function compose_values_extraction(
   inputs: FunctionInput[],
 ): string {
   if (inputs.length === 0) {
-    return "const values: unknown[] = []"
+    return "const values = [] as const"
   }
-  const by_name = inputs.map((i) => `parameters.${i.name}`)
+  const by_index = inputs
+    .map((_input, i) => `parameters[${i}]`)
+    .join(", ")
+  const by_name = inputs
+    .map((i) => `parameters.${i.name}`)
+    .join(", ")
+  // Each branch builds a fresh tuple via `as const` so TS infers the
+  // readonly per-position tuple type that lines up with the codec
+  // tuple's `Args` slot — without this, ternary widening collapses
+  // `[A, B] | [A, B]` into `(A | B)[]` and the strict generic call
+  // to `encode_function_call` rejects the loose array shape.
   return `const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [${by_name.join(", ")}]`
+      ? ([${by_index}] as const)
+      : ([${by_name}] as const)`
 }
 
 function compose_param_codecs_const(

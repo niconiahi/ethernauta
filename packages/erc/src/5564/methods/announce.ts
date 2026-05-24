@@ -65,13 +65,18 @@ export function announce(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+          parameters[3],
+        ] as const)
+      : ([
           parameters.schemeId,
           parameters.stealthAddress,
           parameters.ephemeralPubKey,
           parameters.metadata,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "announce",
       args: PARAM_CODECS,

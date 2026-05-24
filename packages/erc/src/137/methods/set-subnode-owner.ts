@@ -51,12 +51,16 @@ export function setSubnodeOwner(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+        ] as const)
+      : ([
           parameters.node,
           parameters.label,
           parameters.owner,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "setSubnodeOwner",
       args: PARAM_CODECS,

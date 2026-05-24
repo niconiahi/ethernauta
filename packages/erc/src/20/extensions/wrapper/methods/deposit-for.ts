@@ -43,8 +43,8 @@ export function depositFor(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.account, parameters.value]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.account, parameters.value] as const)
     const calldata = encode_function_call({
       name: "depositFor",
       args: PARAM_CODECS,

@@ -35,8 +35,8 @@ export function flashFee(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.token, parameters.amount]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.token, parameters.amount] as const)
     const calldata = encode_function_call({
       name: "flashFee",
       args: PARAM_CODECS,

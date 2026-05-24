@@ -43,8 +43,8 @@ export function setResolver(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node, parameters.resolver]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.node, parameters.resolver] as const)
     const calldata = encode_function_call({
       name: "setResolver",
       args: PARAM_CODECS,

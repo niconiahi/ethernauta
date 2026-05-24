@@ -89,12 +89,16 @@ export function openFor(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+        ] as const)
+      : ([
           parameters.order,
           parameters.signature,
           parameters.originFillerData,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "openFor",
       args: PARAM_CODECS,

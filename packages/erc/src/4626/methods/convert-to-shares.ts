@@ -31,8 +31,8 @@ export function convertToShares(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.assets]
+      ? ([parameters[0]] as const)
+      : ([parameters.assets] as const)
     const calldata = encode_function_call({
       name: "convertToShares",
       args: PARAM_CODECS,

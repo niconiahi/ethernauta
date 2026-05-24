@@ -23,8 +23,9 @@ import {
 import {
   bytes_to_hex,
   hex_to_bytes,
+  invariant,
 } from "@ethernauta/utils"
-import { boolean, string } from "valibot"
+import { boolean, parse, string } from "valibot"
 
 import type { AbiCodec } from "./abi-codec"
 
@@ -34,8 +35,12 @@ function read_uint256(
 ): bigint {
   let value = 0n
   for (let i = 0; i < 32; i++) {
-    value =
-      (value << 8n) | BigInt(_data[_pos + i] as number)
+    const byte = _data[_pos + i]
+    invariant(
+      byte !== undefined,
+      "uint256 read out of bounds",
+    )
+    value = (value << 8n) | BigInt(byte)
   }
   return value
 }
@@ -97,7 +102,7 @@ export function address(): AbiCodec<Address> {
     },
     decode: (_data, _pos) => {
       const slice = _data.slice(_pos + 12, _pos + 32)
-      return bytes_to_hex(slice) as Address
+      return bytes_to_hex(slice)
     },
   }
 }
@@ -159,7 +164,7 @@ export function bytes(): AbiCodec<Bytes> {
       const len = Number(read_uint256(_data, _pos))
       return bytes_to_hex(
         _data.slice(_pos + 32, _pos + 32 + len),
-      ) as Bytes
+      )
     },
   }
 }
@@ -198,9 +203,10 @@ function make_bytes_fixed<T extends `0x${string}`>(
       return out
     },
     decode: (_data, _pos) => {
-      return bytes_to_hex(
-        _data.slice(_pos, _pos + _size),
-      ) as T
+      return parse(
+        _schema,
+        bytes_to_hex(_data.slice(_pos, _pos + _size)),
+      )
     },
   }
 }
@@ -242,9 +248,10 @@ function make_uint(_signature: string): AbiCodec<Uint256> {
     schema: uint256Schema,
     encode: (_value) => write_uint256(to_bigint(_value)),
     decode: (_data, _pos) => {
-      return bytes_to_hex(
-        _data.slice(_pos, _pos + 32),
-      ) as Uint256
+      return parse(
+        uint256Schema,
+        bytes_to_hex(_data.slice(_pos, _pos + 32)),
+      )
     },
   }
 }

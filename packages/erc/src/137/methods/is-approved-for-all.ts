@@ -41,8 +41,8 @@ export function isApprovedForAll(_parameters: Parameters) {
   return (context: ContractContext): Callable<boolean> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.owner_, parameters.operator]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.owner_, parameters.operator] as const)
     const calldata = encode_function_call({
       name: "isApprovedForAll",
       args: PARAM_CODECS,

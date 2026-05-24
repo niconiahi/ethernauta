@@ -37,8 +37,8 @@ export function addr(_parameters: Parameters) {
   return (context: ContractContext): Callable<Bytes> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node, parameters.coinType]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.node, parameters.coinType] as const)
     const calldata = encode_function_call({
       name: "addr",
       args: PARAM_CODECS,

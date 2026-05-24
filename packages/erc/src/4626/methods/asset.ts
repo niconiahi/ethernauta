@@ -22,7 +22,7 @@ export const ASSET_SIGNATURE = {
 
 export function asset() {
   return (context: ContractContext): Callable<Address> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "asset",
       args: PARAM_CODECS,

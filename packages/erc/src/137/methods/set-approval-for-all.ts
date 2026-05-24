@@ -46,8 +46,11 @@ export function setApprovalForAll(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.operator, parameters.approved]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([
+          parameters.operator,
+          parameters.approved,
+        ] as const)
     const calldata = encode_function_call({
       name: "setApprovalForAll",
       args: PARAM_CODECS,

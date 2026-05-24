@@ -51,12 +51,16 @@ export function redeem(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+        ] as const)
+      : ([
           parameters.shares,
           parameters.receiver,
           parameters.owner,
-        ]
+        ] as const)
     const calldata = encode_function_call({
       name: "redeem",
       args: PARAM_CODECS,

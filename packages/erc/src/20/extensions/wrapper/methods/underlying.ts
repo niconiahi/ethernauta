@@ -22,7 +22,7 @@ export const UNDERLYING_SIGNATURE = {
 
 export function underlying() {
   return (context: ContractContext): Callable<Address> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "underlying",
       args: PARAM_CODECS,

@@ -65,7 +65,7 @@ function encode_execute(
     encode_function_call({
       name: "execute",
       args: EXECUTE_CODECS,
-      values: [target, value, data] as never,
+      values: [target, value, data] as const,
     }),
   )
 }

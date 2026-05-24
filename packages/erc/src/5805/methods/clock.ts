@@ -22,7 +22,7 @@ export const CLOCK_SIGNATURE = {
 
 export function clock() {
   return (context: ContractContext): Callable<Uint256> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "clock",
       args: PARAM_CODECS,

@@ -22,7 +22,7 @@ export const DOMAIN_SEPARATOR_SIGNATURE = {
 
 export function DOMAIN_SEPARATOR() {
   return (context: ContractContext): Callable<Bytes32> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "DOMAIN_SEPARATOR",
       args: PARAM_CODECS,

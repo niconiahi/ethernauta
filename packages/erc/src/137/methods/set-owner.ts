@@ -43,8 +43,8 @@ export function setOwner(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node, parameters.owner]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.node, parameters.owner] as const)
     const calldata = encode_function_call({
       name: "setOwner",
       args: PARAM_CODECS,

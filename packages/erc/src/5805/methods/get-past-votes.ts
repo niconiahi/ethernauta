@@ -38,8 +38,11 @@ export function getPastVotes(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.account, parameters.timepoint]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([
+          parameters.account,
+          parameters.timepoint,
+        ] as const)
     const calldata = encode_function_call({
       name: "getPastVotes",
       args: PARAM_CODECS,

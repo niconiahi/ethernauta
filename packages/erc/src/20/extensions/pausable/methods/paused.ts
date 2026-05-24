@@ -21,7 +21,7 @@ export const PAUSED_SIGNATURE = {
 
 export function paused() {
   return (context: ContractContext): Callable<boolean> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "paused",
       args: PARAM_CODECS,

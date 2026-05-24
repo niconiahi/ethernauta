@@ -22,7 +22,7 @@ export const CAP_SIGNATURE = {
 
 export function cap() {
   return (context: ContractContext): Callable<Uint256> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "cap",
       args: PARAM_CODECS,

@@ -21,7 +21,7 @@ export const NAME_SIGNATURE = {
 
 export function name() {
   return (context: ContractContext): Callable<string> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "name",
       args: PARAM_CODECS,

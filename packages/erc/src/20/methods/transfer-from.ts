@@ -51,8 +51,16 @@ export function transferFrom(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.from, parameters.to, parameters.value]
+      ? ([
+          parameters[0],
+          parameters[1],
+          parameters[2],
+        ] as const)
+      : ([
+          parameters.from,
+          parameters.to,
+          parameters.value,
+        ] as const)
     const calldata = encode_function_call({
       name: "transferFrom",
       args: PARAM_CODECS,

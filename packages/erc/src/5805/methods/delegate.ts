@@ -39,8 +39,8 @@ export function delegate(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.delegatee]
+      ? ([parameters[0]] as const)
+      : ([parameters.delegatee] as const)
     const calldata = encode_function_call({
       name: "delegate",
       args: PARAM_CODECS,

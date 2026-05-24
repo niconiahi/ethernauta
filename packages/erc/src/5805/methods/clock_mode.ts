@@ -21,7 +21,7 @@ export const CLOCK_MODE_SIGNATURE = {
 
 export function CLOCK_MODE() {
   return (context: ContractContext): Callable<string> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "CLOCK_MODE",
       args: PARAM_CODECS,

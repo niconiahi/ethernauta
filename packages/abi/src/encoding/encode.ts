@@ -16,7 +16,7 @@ export function to_selector(
 // tree. Never typed by hand.
 export function build_signature(
   _name: string,
-  _args: readonly AbiCodec<any>[],
+  _args: readonly AbiCodec<unknown>[],
 ): string {
   return `${_name}(${_args.map((a) => a.signature).join(",")})`
 }
@@ -24,37 +24,27 @@ export function build_signature(
 // 4-byte function selector derived from typed args.
 export function function_selector(
   _name: string,
-  _args: readonly AbiCodec<any>[],
+  _args: readonly AbiCodec<unknown>[],
 ): `0x${string}` {
   return bytes_to_hex(
     to_selector(build_signature(_name, _args)),
   )
 }
 
-// TODO(R0.2): this signature is the loose-intermediate form. The
-// strict form mandated by R0.2 is:
-//
-//   function encode_function_call<Args extends readonly unknown[]>(_input: {
-//     name: string
-//     args: { readonly [K in keyof Args]: AbiCodec<Args[K]> }
-//     values: Args
-//   }): Uint8Array
-//
-// Tightening it requires the C2 codegen-side work (Phase 5): the
-// `values` extraction in generated method files must produce a value
-// whose static type matches `Args` derived from PARAM_CODECS — today
-// the parametersSchema's union(tuple | object) yields a wider shape,
-// which is why this signature still accepts `readonly unknown[]`.
 // Encode a function call: 4-byte selector + ABI-encoded arguments.
 // `args` is the typed codec list; `values` is the runtime tuple whose
-// shape MUST match `args`. The previous mapped-tuple version was
-// always cast to `unknown[]` internally (decorative, not enforcing) —
-// the call-site `values as never` it forced was a worse outcome than
-// today's looser-but-honest signature.
-export function encode_function_call(_input: {
+// per-position type must match the corresponding codec's `T`. The
+// strict generic form (per R0.2) keys `values` to `args` through the
+// shared `Args` parameter — call sites do not need an `as` to bridge
+// the two. `NoInfer<Args>` keeps the inference site on the codec
+// tuple; otherwise literal hex values would drive Args to their
+// narrow literal type and the codecs would fail to match.
+export function encode_function_call<
+  Args extends readonly unknown[],
+>(_input: {
   name: string
-  args: readonly AbiCodec<any>[]
-  values: readonly unknown[]
+  args: { readonly [K in keyof Args]: AbiCodec<Args[K]> }
+  values: NoInfer<Args>
 }): Uint8Array {
   const { name, args, values } = _input
   const signature = build_signature(name, args)
@@ -66,17 +56,18 @@ export function encode_function_call(_input: {
   return out
 }
 
-// TODO(R0.2): same loose-intermediate form as `encode_function_call`
-// above. The strict form (`<Args>` plus mapped-tuple codecs) is the
-// target; today's `AbiCodec<any>[]` + `unknown[]` will tighten when
-// the C2 codegen-side work lands in Phase 5.
 // Build creation calldata for a deploy transaction: contract bytecode
 // concatenated with ABI-encoded constructor arguments. Pass an empty
-// `args`/`values` tuple for constructors with no arguments.
-export function encode_constructor_call(_input: {
+// `args`/`values` tuple for constructors with no arguments. Same
+// strict generic form as `encode_function_call` — `Args` ties the
+// codec list to the runtime tuple, and `NoInfer<Args>` keeps the
+// inference site on the codec tuple.
+export function encode_constructor_call<
+  Args extends readonly unknown[],
+>(_input: {
   bytecode: Uint8Array
-  args: readonly AbiCodec<any>[]
-  values: readonly unknown[]
+  args: { readonly [K in keyof Args]: AbiCodec<Args[K]> }
+  values: NoInfer<Args>
 }): Uint8Array {
   const { bytecode, args, values } = _input
   const body = encode_sequence(args, values)

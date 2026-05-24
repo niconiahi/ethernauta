@@ -38,8 +38,8 @@ export function tokenURI(_parameters: Parameters) {
   return (context: ContractContext): Callable<string> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.tokenId]
+      ? ([parameters[0]] as const)
+      : ([parameters.tokenId] as const)
     const calldata = encode_function_call({
       name: "tokenURI",
       args: PARAM_CODECS,

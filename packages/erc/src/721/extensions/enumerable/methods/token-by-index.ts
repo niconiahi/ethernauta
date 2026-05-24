@@ -31,8 +31,8 @@ export function tokenByIndex(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.index]
+      ? ([parameters[0]] as const)
+      : ([parameters.index] as const)
     const calldata = encode_function_call({
       name: "tokenByIndex",
       args: PARAM_CODECS,

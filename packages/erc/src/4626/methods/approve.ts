@@ -43,8 +43,8 @@ export function approve(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.spender, parameters.value]
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.spender, parameters.value] as const)
     const calldata = encode_function_call({
       name: "approve",
       args: PARAM_CODECS,

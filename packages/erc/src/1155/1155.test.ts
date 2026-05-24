@@ -77,7 +77,7 @@ describe("ERC-1155 balanceOfBatch — generated binding", () => {
     const response_bytes = encode_function_call({
       name: "_synthetic",
       args: [array(uint256())] as const,
-      values: [[...input_values]] as never,
+      values: [[...input_values]] as const,
     })
     // The Callable's decode takes the hex string for the response body
     // (without the 4-byte synthetic selector that encode_function_call prepends).

@@ -35,8 +35,8 @@ export function balanceOf(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.owner]
+      ? ([parameters[0]] as const)
+      : ([parameters.owner] as const)
     const calldata = encode_function_call({
       name: "balanceOf",
       args: PARAM_CODECS,

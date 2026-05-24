@@ -22,7 +22,7 @@ export const DECIMALS_SIGNATURE = {
 
 export function decimals() {
   return (context: ContractContext): Callable<Uint256> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "decimals",
       args: PARAM_CODECS,

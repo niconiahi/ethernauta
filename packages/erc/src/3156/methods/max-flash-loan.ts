@@ -35,8 +35,8 @@ export function maxFlashLoan(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.token]
+      ? ([parameters[0]] as const)
+      : ([parameters.token] as const)
     const calldata = encode_function_call({
       name: "maxFlashLoan",
       args: PARAM_CODECS,

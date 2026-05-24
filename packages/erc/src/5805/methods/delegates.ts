@@ -31,8 +31,8 @@ export function delegates(_parameters: Parameters) {
   return (context: ContractContext): Callable<Address> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.account]
+      ? ([parameters[0]] as const)
+      : ([parameters.account] as const)
     const calldata = encode_function_call({
       name: "delegates",
       args: PARAM_CODECS,

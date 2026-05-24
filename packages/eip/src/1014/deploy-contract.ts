@@ -14,12 +14,6 @@ import {
 } from "@ethernauta/utils"
 import { parse } from "valibot"
 
-type ValuesOf<Args extends readonly AbiCodec<any>[]> = {
-  [K in keyof Args]: Args[K] extends AbiCodec<infer T>
-    ? T
-    : never
-}
-
 // Deploy-time creation calldata is `bytecode ‖ abi(constructor_args)`.
 // The wallet fills nonce / gas / fees per the project invariant — the
 // caller must NOT set them. Omitting `to` is the contract for a
@@ -31,11 +25,11 @@ type ValuesOf<Args extends readonly AbiCodec<any>[]> = {
 // resolve the deployed address with `get_contract_address` /
 // `get_create2_address`).
 export function deploy_contract<
-  Args extends readonly AbiCodec<any>[],
+  Args extends readonly unknown[],
 >(_parameters: {
   bytecode: Bytes
-  args: Args
-  values: ValuesOf<Args>
+  args: { readonly [K in keyof Args]: AbiCodec<Args[K]> }
+  values: NoInfer<Args>
 }): Signable<Bytes> {
   return async ([signer, _context]: ResolvedSigner) => {
     const bytecode = hex_to_bytes(

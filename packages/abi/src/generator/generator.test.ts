@@ -180,7 +180,7 @@ describe("generator.ts", () => {
                   },
                   { name: "orderData", type: "bytes" },
                 ],
-              } as never,
+              },
             ],
             outputs: [],
             stateMutability: "nonpayable",
@@ -240,7 +240,7 @@ describe("generator.ts", () => {
                   },
                   { name: "orderData", type: "bytes" },
                 ],
-              } as never,
+              },
             ],
             outputs: [
               {
@@ -258,7 +258,7 @@ describe("generator.ts", () => {
                     ],
                   },
                 ],
-              } as never,
+              },
             ],
             stateMutability: "view",
           },
@@ -311,7 +311,7 @@ describe("generator.ts", () => {
                   },
                   { name: "orderData", type: "bytes" },
                 ],
-              } as never,
+              },
             ],
             outputs: [],
             stateMutability: "nonpayable",
@@ -341,10 +341,7 @@ describe("generator.ts", () => {
 
         const PARAM_CODECS = [abi_tuple({ fillDeadline: uint32(), orderDataType: bytes32(), orderData: bytes() })] as const
 
-        export const OPEN_SIGNATURE: {
-          signature: string
-          names: string[]
-        } = {
+        export const OPEN_SIGNATURE = {
           signature: "open((uint32,bytes32,bytes))",
           names: ["order"],
         }
@@ -361,12 +358,12 @@ describe("generator.ts", () => {
               throw new Error("contract Signable requires a 'to' on the signer resolver")
             const parameters = parse(parametersSchema, _parameters)
             const values = Array.isArray(parameters)
-              ? parameters
-              : [parameters.order]
+              ? ([parameters[0]] as const)
+              : ([parameters.order] as const)
             const calldata = encode_function_call({
               name: "open",
               args: PARAM_CODECS,
-              values: values as never,
+              values,
             })
             // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
             //               maxPriorityFeePerGas by querying the network
@@ -432,10 +429,7 @@ describe("generator.ts", () => {
         const PARAM_CODECS = [array(address()), array(uint256())] as const
         const OUTPUT_CODECS = [array(uint256())] as const
 
-        export const BALANCE_OF_BATCH_SIGNATURE: {
-          signature: string
-          names: string[]
-        } = {
+        export const BALANCE_OF_BATCH_SIGNATURE = {
           signature: "balanceOfBatch(address[],uint256[])",
           names: ["accounts", "ids"],
         }
@@ -450,12 +444,12 @@ describe("generator.ts", () => {
           return (context: ContractContext): Callable<Uint256[]> => {
             const parameters = parse(parametersSchema, _parameters)
             const values = Array.isArray(parameters)
-              ? parameters
-              : [parameters.accounts, parameters.ids]
+              ? ([parameters[0], parameters[1]] as const)
+              : ([parameters.accounts, parameters.ids] as const)
             const calldata = encode_function_call({
               name: "balanceOfBatch",
               args: PARAM_CODECS,
-              values: values as never,
+              values,
             })
             return {
               chain_id: context.chain_id,

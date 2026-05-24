@@ -21,7 +21,7 @@ export const SYMBOL_SIGNATURE = {
 
 export function symbol() {
   return (context: ContractContext): Callable<string> => {
-    const values: unknown[] = []
+    const values = [] as const
     const calldata = encode_function_call({
       name: "symbol",
       args: PARAM_CODECS,

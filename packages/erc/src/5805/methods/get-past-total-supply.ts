@@ -33,8 +33,8 @@ export function getPastTotalSupply(
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.timepoint]
+      ? ([parameters[0]] as const)
+      : ([parameters.timepoint] as const)
     const calldata = encode_function_call({
       name: "getPastTotalSupply",
       args: PARAM_CODECS,

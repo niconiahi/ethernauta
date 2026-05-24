@@ -39,8 +39,8 @@ export function burn(
       )
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.value]
+      ? ([parameters[0]] as const)
+      : ([parameters.value] as const)
     const calldata = encode_function_call({
       name: "burn",
       args: PARAM_CODECS,

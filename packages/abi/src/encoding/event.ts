@@ -91,7 +91,7 @@ export type EncodeEventTopicsInput = InferOutput<
 // Unlike function selectors, event topic0 is NOT truncated.
 export function event_topic_hash(
   _name: string,
-  _args: readonly AbiCodec<any>[],
+  _args: readonly AbiCodec<unknown>[],
 ): Hash32 {
   const sig = `${_name}(${_args.map((a) => a.signature).join(",")})`
   return parse(
@@ -116,7 +116,7 @@ function encode_indexed_topic(
   }
   if (_codec.signature === "string") {
     return keccak_256(
-      new TextEncoder().encode(_value as string),
+      new TextEncoder().encode(parse(string(), _value)),
     )
   }
   if (_codec.signature === "bytes") {
@@ -134,7 +134,7 @@ function encode_indexed_topic(
 // declaration order. A `null` (or a trailing-unspecified
 // position) becomes a wildcard.
 export function encode_event_topics<
-  Args extends readonly AbiCodec<any>[],
+  const Args extends readonly AbiCodec<unknown>[],
 >(
   _input: EncodeEventTopicsInput & { args: Args },
 ): EventTopics {
@@ -147,9 +147,9 @@ export function encode_event_topics<
     )
   }
   const indexed_codecs: AbiCodec<unknown>[] = []
-  for (let i = 0; i < args.length; i++) {
+  for (const [i, codec] of args.entries()) {
     if (indexed[i]) {
-      indexed_codecs.push(args[i] as AbiCodec<unknown>)
+      indexed_codecs.push(codec)
     }
   }
   // First build the per-indexed-arg topic list, then drop
@@ -157,13 +157,12 @@ export function encode_event_topics<
   // topic as "any", so emitting redundant nulls is at best
   // noise and at worst gets rejected by strict clients.
   const indexed_part: (Hash32 | null)[] = []
-  for (let i = 0; i < indexed_codecs.length; i++) {
+  for (const [i, codec] of indexed_codecs.entries()) {
     const v = values?.[i]
     if (v === null || v === undefined) {
       indexed_part.push(null)
       continue
     }
-    const codec = indexed_codecs[i] as AbiCodec<unknown>
     const topic = encode_indexed_topic(codec, v)
     indexed_part.push(
       parse(hash32Schema, bytes_to_hex(topic)),
@@ -189,7 +188,7 @@ export function encode_event_topics<
 // Caller is responsible for matching `topics[0]` to the right
 // event signature first (use `event_topic_hash`).
 export function decode_event_log<
-  Args extends readonly AbiCodec<any>[],
+  const Args extends readonly AbiCodec<unknown>[],
 >(
   _input: DecodeEventLogInput & {
     args: Args
@@ -207,9 +206,9 @@ export function decode_event_log<
   const indexed_topics = topics.slice(topic_offset)
 
   const non_indexed_codecs: AbiCodec<unknown>[] = []
-  for (let i = 0; i < args.length; i++) {
+  for (const [i, codec] of args.entries()) {
     if (!indexed[i]) {
-      non_indexed_codecs.push(args[i] as AbiCodec<unknown>)
+      non_indexed_codecs.push(codec)
     }
   }
   const data_bytes = hex_to_bytes(data)
@@ -221,9 +220,8 @@ export function decode_event_log<
   const out: unknown[] = []
   let topic_i = 0
   let data_i = 0
-  for (let i = 0; i < args.length; i++) {
+  for (const [i, codec] of args.entries()) {
     if (indexed[i]) {
-      const codec = args[i] as AbiCodec<unknown>
       const topic = indexed_topics[topic_i++]
       if (topic === undefined) {
         throw new Error(

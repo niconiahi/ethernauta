@@ -35,8 +35,8 @@ export function ttl(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
-      ? parameters
-      : [parameters.node]
+      ? ([parameters[0]] as const)
+      : ([parameters.node] as const)
     const calldata = encode_function_call({
       name: "ttl",
       args: PARAM_CODECS,
