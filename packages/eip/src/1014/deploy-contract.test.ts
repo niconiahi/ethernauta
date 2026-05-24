@@ -1,9 +1,11 @@
 import { address, uint256 } from "@ethernauta/abi"
-import type { Bytes } from "@ethernauta/core"
+import { bytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signer,
 } from "@ethernauta/transport"
+import { invariant } from "@ethernauta/utils"
+import { object, parse, string } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { deploy_contract } from "./deploy-contract"
@@ -23,7 +25,7 @@ describe("deploy_contract", () => {
       { chain_id: "eip155:1" },
     ]
 
-    const bytecode = "0x6080604052" as Bytes
+    const bytecode = parse(bytesSchema, "0x6080604052")
     const result = await deploy_contract({
       bytecode,
       args: [address(), uint256()] as const,
@@ -34,13 +36,20 @@ describe("deploy_contract", () => {
     })(resolved)
 
     expect(captured.method).toBe("eth_signTransaction")
-    expect(Array.isArray(captured.params)).toBe(true)
-    const tx = (
-      captured.params as Array<Record<string, unknown>>
-    )[0]
-    expect(tx).toBeDefined()
-    if (!tx) return
-    expect("to" in tx).toBe(false)
+    invariant(
+      Array.isArray(captured.params),
+      "expected array-form params",
+    )
+    const [raw_tx] = captured.params
+    invariant(
+      raw_tx && typeof raw_tx === "object",
+      "expected tx object as first param",
+    )
+    expect("to" in raw_tx).toBe(false)
+    const tx = parse(
+      object({ value: string(), input: string() }),
+      raw_tx,
+    )
     expect(tx.value).toBe("0x0")
     expect(tx.input).toBe(
       "0x6080604052" +
@@ -57,7 +66,7 @@ describe("deploy_contract", () => {
       { chain_id: "eip155:1" },
     ]
     const result = await deploy_contract({
-      bytecode: "0x6080604052" as Bytes,
+      bytecode: parse(bytesSchema, "0x6080604052"),
       args: [] as const,
       values: [],
     })(resolved)

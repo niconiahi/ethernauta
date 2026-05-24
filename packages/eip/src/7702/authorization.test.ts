@@ -1,6 +1,8 @@
 import { bytes_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
+  authorizationParameterSchema,
   build_authorization_message,
   hash_authorization,
   SET_CODE_MAGIC,
@@ -61,18 +63,18 @@ describe("authorization.ts", () => {
 
   it("should reject a malformed address via the schema", () => {
     expect(() =>
-      build_authorization_message({
+      parse(authorizationParameterSchema, {
         ...SAMPLE,
-        address: "0xnope" as `0x${string}`,
+        address: "0xnope",
       }),
     ).toThrow()
   })
 
   it("should reject a non-hex chainId via the schema", () => {
     expect(() =>
-      build_authorization_message({
+      parse(authorizationParameterSchema, {
         ...SAMPLE,
-        chainId: "1" as unknown as `0x${string}`,
+        chainId: "1",
       }),
     ).toThrow()
   })

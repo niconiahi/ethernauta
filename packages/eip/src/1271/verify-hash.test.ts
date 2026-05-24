@@ -1,7 +1,7 @@
-import type {
-  Address,
-  Bytes,
-  Hash32,
+import {
+  addressSchema,
+  bytes65Schema,
+  hash32Schema,
 } from "@ethernauta/core"
 // EOA path moved to @ethernauta/crypto/verify-message-deployed; this file
 // now only covers the on-chain `isValidSignature` branch.
@@ -17,6 +17,7 @@ import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { etc, sign } from "@noble/secp256k1"
+import { parse } from "valibot"
 import { describe, expect, it, vi } from "vitest"
 
 import { MAGIC_VALUE } from "./magic-value"
@@ -28,14 +29,13 @@ etc.hmacSha256Sync = (k, ...m) =>
 const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
-const CONTRACT_ADDRESS =
-  "0x000000000000000000000000000000000000c0de" as Address
+const CONTRACT_ADDRESS = parse(
+  addressSchema,
+  "0x000000000000000000000000000000000000c0de",
+)
 const CHAIN_ID = "eip155:1"
 
-function sign_to_hex(
-  digest: Uint8Array,
-  priv: Uint8Array,
-): Bytes {
+function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
   const sig = sign(digest, priv)
   const out = new Uint8Array(65)
   const r = sig.r.toString(16).padStart(64, "0")
@@ -48,7 +48,7 @@ function sign_to_hex(
     )
   }
   out[64] = 27 + sig.recovery
-  return bytes_to_hex(out) as Bytes
+  return parse(bytes65Schema, bytes_to_hex(out))
 }
 
 function resolved_with(transport: Http): ResolvedReader {
@@ -70,7 +70,7 @@ function err_response(message: string) {
 const DIGEST = keccak_256(
   new TextEncoder().encode("verify-hash"),
 )
-const HASH = bytes_to_hex(DIGEST) as Hash32
+const HASH = parse(hash32Schema, bytes_to_hex(DIGEST))
 
 describe("verify-hash.ts — contract path", () => {
   const wrong_signature = sign_to_hex(
@@ -82,19 +82,19 @@ describe("verify-hash.ts — contract path", () => {
     const padded_magic =
       `${MAGIC_VALUE}${"0".repeat(56)}` as const
     const transport = vi
-      .fn()
+      .fn<Http>()
       .mockResolvedValue(ok_response(padded_magic))
     const result = await verify_hash({
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport as unknown as Http))
+    })(resolved_with(transport))
     expect(result).toBe(true)
   })
 
   it("should return false when the contract returns a non-magic selector", async () => {
     const transport = vi
-      .fn()
+      .fn<Http>()
       .mockResolvedValue(
         ok_response(`0xffffffff${"0".repeat(56)}`),
       )
@@ -102,31 +102,31 @@ describe("verify-hash.ts — contract path", () => {
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport as unknown as Http))
+    })(resolved_with(transport))
     expect(result).toBe(false)
   })
 
   it("should return false (not throw) when the contract reverts", async () => {
     const transport = vi
-      .fn()
+      .fn<Http>()
       .mockResolvedValue(err_response("execution reverted"))
     const result = await verify_hash({
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport as unknown as Http))
+    })(resolved_with(transport))
     expect(result).toBe(false)
   })
 
   it("should return false (not throw) when every transport rejects", async () => {
     const transport = vi
-      .fn()
+      .fn<Http>()
       .mockRejectedValue(new Error("network down"))
     const result = await verify_hash({
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport as unknown as Http))
+    })(resolved_with(transport))
     expect(result).toBe(false)
   })
 })

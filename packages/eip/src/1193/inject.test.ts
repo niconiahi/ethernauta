@@ -1,4 +1,5 @@
-import type { Call } from "@ethernauta/transport"
+import { callSchema } from "@ethernauta/transport"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -34,10 +35,9 @@ describe("create_injected_transport", () => {
       request: async () => "0x1234",
     })
     const transport = create_injected_transport(provider)
-    const response = await transport([
-      "eth_chainId",
-      [],
-    ] as Call)
+    const response = await transport(
+      parse(callSchema, ["eth_chainId", []]),
+    )
     expect(captured.last?.method).toBe("eth_chainId")
     expect("result" in response && response.result).toBe(
       "0x1234",
@@ -51,10 +51,9 @@ describe("create_injected_transport", () => {
       },
     })
     const transport = create_injected_transport(provider)
-    const response = await transport([
-      "eth_call",
-      [],
-    ] as Call)
+    const response = await transport(
+      parse(callSchema, ["eth_call", []]),
+    )
     expect("error" in response).toBe(true)
     if (!("error" in response)) return
     expect(response.error.message).toBe("unauthorized")

@@ -3,10 +3,11 @@
 // stays tested in eip/1271/verify-hash.test.ts; this file owns
 // the eth_getCode branch.
 
-import type {
-  Address,
-  Bytes,
-  Hash32,
+import {
+  addressSchema,
+  bytes4Schema,
+  bytes65Schema,
+  hash32Schema,
 } from "@ethernauta/core"
 import { MAGIC_VALUE } from "@ethernauta/eip/1271"
 import type {
@@ -21,6 +22,7 @@ import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { etc, sign } from "@noble/secp256k1"
+import { parse } from "valibot"
 import { describe, expect, it, vi } from "vitest"
 
 import { verify_hash_deployed } from "./verify-hash-deployed"
@@ -31,18 +33,21 @@ etc.hmacSha256Sync = (k, ...m) =>
 const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
-const EOA_ADDRESS =
-  "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" as Address
-const CONTRACT_ADDRESS =
-  "0x000000000000000000000000000000000000c0de" as Address
-const OTHER_ADDRESS =
-  "0x1234567890123456789012345678901234567890" as Address
+const EOA_ADDRESS = parse(
+  addressSchema,
+  "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+)
+const CONTRACT_ADDRESS = parse(
+  addressSchema,
+  "0x000000000000000000000000000000000000c0de",
+)
+const OTHER_ADDRESS = parse(
+  addressSchema,
+  "0x1234567890123456789012345678901234567890",
+)
 const CHAIN_ID = "eip155:1"
 
-function sign_to_hex(
-  digest: Uint8Array,
-  priv: Uint8Array,
-): Bytes {
+function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
   const sig = sign(digest, priv)
   const out = new Uint8Array(65)
   const r = sig.r.toString(16).padStart(64, "0")
@@ -55,7 +60,7 @@ function sign_to_hex(
     )
   }
   out[64] = 27 + sig.recovery
-  return bytes_to_hex(out) as Bytes
+  return parse(bytes65Schema, bytes_to_hex(out))
 }
 
 function resolved_with(transport: Http): ResolvedReader {
@@ -69,41 +74,47 @@ function ok(result: unknown) {
 const DIGEST = keccak_256(
   new TextEncoder().encode("verify-hash-deployed"),
 )
-const HASH = bytes_to_hex(DIGEST) as Hash32
+const HASH = parse(hash32Schema, bytes_to_hex(DIGEST))
 const VALID_SIGNATURE = sign_to_hex(DIGEST, PRIVATE_KEY)
 
 describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
   it("returns true when the recovered address matches the target", async () => {
-    const transport = vi.fn().mockResolvedValue(ok("0x"))
+    const transport = vi
+      .fn<Http>()
+      .mockResolvedValue(ok("0x"))
     const result = await verify_hash_deployed(
       EOA_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport as unknown as Http),
+      resolved_with(transport),
     )
     expect(result).toBe(true)
     expect(transport).toHaveBeenCalledOnce()
   })
 
   it("returns false when the recovered address differs from the target", async () => {
-    const transport = vi.fn().mockResolvedValue(ok("0x"))
+    const transport = vi
+      .fn<Http>()
+      .mockResolvedValue(ok("0x"))
     const result = await verify_hash_deployed(
       OTHER_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport as unknown as Http),
+      resolved_with(transport),
     )
     expect(result).toBe(false)
     expect(transport).toHaveBeenCalledOnce()
   })
 
   it("returns false (not throws) when the signature is structurally invalid", async () => {
-    const transport = vi.fn().mockResolvedValue(ok("0x"))
+    const transport = vi
+      .fn<Http>()
+      .mockResolvedValue(ok("0x"))
     const result = await verify_hash_deployed(
       EOA_ADDRESS,
       HASH,
-      "0xdeadbeef" as Bytes,
-      resolved_with(transport as unknown as Http),
+      parse(bytes4Schema, "0xdeadbeef"),
+      resolved_with(transport),
     )
     expect(result).toBe(false)
   })
@@ -115,8 +126,8 @@ describe("verify_hash_deployed — contract branch (eth_getCode non-empty)", () 
     `${MAGIC_VALUE}${"0".repeat(56)}` as const
 
   it("returns true when the contract returns MAGIC_VALUE", async () => {
-    const transport = vi.fn(async (call) => {
-      const method = (call as [string])[0]
+    const transport = vi.fn<Http>(async (call) => {
+      const [method] = call
       if (method === "eth_getCode") return ok(code)
       if (method === "eth_call") return ok(padded_magic)
       throw new Error(`unexpected method ${method}`)
@@ -125,14 +136,14 @@ describe("verify_hash_deployed — contract branch (eth_getCode non-empty)", () 
       CONTRACT_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport as unknown as Http),
+      resolved_with(transport),
     )
     expect(result).toBe(true)
   })
 
   it("returns false when the contract returns a non-magic selector", async () => {
-    const transport = vi.fn(async (call) => {
-      const method = (call as [string])[0]
+    const transport = vi.fn<Http>(async (call) => {
+      const [method] = call
       if (method === "eth_getCode") return ok(code)
       if (method === "eth_call")
         return ok(`0xffffffff${"0".repeat(56)}`)
@@ -142,7 +153,7 @@ describe("verify_hash_deployed — contract branch (eth_getCode non-empty)", () 
       CONTRACT_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport as unknown as Http),
+      resolved_with(transport),
     )
     expect(result).toBe(false)
   })
@@ -151,13 +162,13 @@ describe("verify_hash_deployed — contract branch (eth_getCode non-empty)", () 
 describe("verify_hash_deployed — eth_getCode failure", () => {
   it("returns false (not throws) when eth_getCode rejects", async () => {
     const transport = vi
-      .fn()
+      .fn<Http>()
       .mockRejectedValue(new Error("network down"))
     const result = await verify_hash_deployed(
       EOA_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport as unknown as Http),
+      resolved_with(transport),
     )
     expect(result).toBe(false)
   })

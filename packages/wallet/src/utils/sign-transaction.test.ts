@@ -9,9 +9,8 @@ import {
   invariant,
   number_to_hex,
 } from "@ethernauta/utils"
-import type { RecoveredSignature } from "@noble/secp256k1"
+import { sign } from "@noble/secp256k1"
 import { HDKey } from "@scure/bip32"
-import type { Hex } from "viem"
 import { recoverTransactionAddress } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
@@ -172,11 +171,10 @@ describe("transaction.ts", () => {
     const unsigned_fields = new Array(9).fill(
       new Uint8Array([0x01]),
     )
-    const signature = {
-      r: 0x123n,
-      s: 0x456n,
-      recovery: 0,
-    } as RecoveredSignature
+    const signature = sign(
+      new Uint8Array(32).fill(0x01),
+      TEST_PRIVATE_KEY,
+    )
     const result = make_signed_fields(
       unsigned_fields,
       signature,
@@ -213,9 +211,7 @@ describe("transaction.ts", () => {
     const master_key = seed_to_master_key(seed)
     const private_key = derive_private_key(master_key)
     const private_key_hex = bytes_to_hex(private_key)
-    const account = privateKeyToAccount(
-      private_key_hex as Hex,
-    )
+    const account = privateKeyToAccount(private_key_hex)
     const viem_signed = await account.signTransaction({
       to: "0x515e9e0565fdddd4f8a9759744734154da453585",
       value: 1n,
@@ -258,9 +254,7 @@ describe("transaction.ts", () => {
       reader,
       sepolia_chain_id,
     )
-    const account = privateKeyToAccount(
-      private_key_hex as Hex,
-    )
+    const account = privateKeyToAccount(private_key_hex)
     const method = "transfer"
     const TARGET_ADDRESS =
       "0x515e9e0565fdddd4f8a9759744734154da453585"

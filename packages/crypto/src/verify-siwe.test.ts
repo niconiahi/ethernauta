@@ -1,4 +1,8 @@
-import type { Address, Bytes } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytes65Schema,
+  bytesSchema,
+} from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { build_siwe_message } from "@ethernauta/eip/4361"
 import type {
@@ -13,6 +17,7 @@ import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { etc, sign } from "@noble/secp256k1"
+import { parse } from "valibot"
 import { describe, expect, it, vi } from "vitest"
 import { verify_siwe_message } from "./verify-siwe"
 
@@ -22,18 +27,17 @@ etc.hmacSha256Sync = (k, ...m) =>
 const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
-const ADDRESS =
-  "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" as Address
+const ADDRESS = parse(
+  addressSchema,
+  "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+)
 const CHAIN_ID = "eip155:1"
 
 function resolved_with(transport: Http): ResolvedReader {
   return [[transport], { chain_id: CHAIN_ID }]
 }
 
-function personal_sign(
-  message: string,
-  priv: Uint8Array,
-): Bytes {
+function personal_sign(message: string, priv: Uint8Array) {
   const digest = keccak_256(build_personal_message(message))
   const sig = sign(digest, priv)
   const out = new Uint8Array(65)
@@ -47,7 +51,7 @@ function personal_sign(
     )
   }
   out[64] = 27 + sig.recovery
-  return bytes_to_hex(out) as Bytes
+  return parse(bytes65Schema, bytes_to_hex(out))
 }
 
 const NOW = new Date("2024-06-01T12:00:00Z")
@@ -69,7 +73,7 @@ describe("verify.ts — verify_siwe_message", () => {
   it("should accept a valid EOA SIWE flow (one eth_getCode call to detect EOA, then local ecrecover)", async () => {
     const message = build_siwe_message(valid_fields())
     const signature = personal_sign(message, PRIVATE_KEY)
-    const transport = vi.fn().mockResolvedValue({
+    const transport = vi.fn<Http>().mockResolvedValue({
       jsonrpc: "2.0" as const,
       id: 1,
       result: "0x",
@@ -85,7 +89,7 @@ describe("verify.ts — verify_siwe_message", () => {
         address: ADDRESS,
       },
       now: NOW,
-    })(resolved_with(transport as unknown as Http))
+    })(resolved_with(transport))
     expect(result).toEqual({
       ok: true,
       fields: valid_fields(),
@@ -104,7 +108,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: NOW,
-    })(resolved_with(vi.fn() as unknown as Http))
+    })(resolved_with(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "domain_mismatch",
@@ -122,7 +126,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "not-the-nonce",
       },
       now: NOW,
-    })(resolved_with(vi.fn() as unknown as Http))
+    })(resolved_with(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "nonce_mismatch",
@@ -140,7 +144,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: new Date("2024-06-01T14:00:00Z"),
-    })(resolved_with(vi.fn() as unknown as Http))
+    })(resolved_with(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "expired",
@@ -161,7 +165,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: NOW,
-    })(resolved_with(vi.fn() as unknown as Http))
+    })(resolved_with(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "not_yet_valid",
@@ -176,7 +180,7 @@ describe("verify.ts — verify_siwe_message", () => {
         "0x4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318",
       ),
     )
-    const transport = vi.fn().mockResolvedValue({
+    const transport = vi.fn<Http>().mockResolvedValue({
       jsonrpc: "2.0" as const,
       id: 1,
       error: {
@@ -192,7 +196,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: NOW,
-    })(resolved_with(transport as unknown as Http))
+    })(resolved_with(transport))
     expect(result).toEqual({
       ok: false,
       reason: "invalid_signature",
@@ -202,10 +206,10 @@ describe("verify.ts — verify_siwe_message", () => {
   it("should reject when the message is not SIWE-shaped", async () => {
     const result = await verify_siwe_message({
       message: "just hello",
-      signature: "0x00" as Bytes,
+      signature: parse(bytesSchema, "0x00"),
       expected: { domain: "example.com", nonce: "x" },
       now: NOW,
-    })(resolved_with(vi.fn() as unknown as Http))
+    })(resolved_with(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "malformed_message",
