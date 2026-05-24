@@ -13,6 +13,7 @@ import {
   bytes32Schema,
   bytesSchema,
 } from "@ethernauta/core"
+import { chainIdSchema } from "./chain/chain-id"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -63,22 +64,18 @@ type MulticallOptions = InferOutput<
   typeof multicallOptionsSchema
 >
 
-// `Callable<unknown>` is a function-bearing DI contract (see
-// `./contract`), not data — the schema only needs to verify the
-// structural shape so that absent / wrong-shaped values (notably
-// `undefined` from an out-of-bounds index access) are rejected at
-// parse-time. The predicate must reject undefined so that an empty
-// input to `tupleWithRest` below actually fails parse instead of
-// silently passing the missing slot.
-const callableSchema = custom<Callable<unknown>>((v) => {
-  if (typeof v !== "object" || v === null) return false
-  return (
-    "chain_id" in v &&
-    "to" in v &&
-    "data" in v &&
-    "decode" in v &&
-    typeof v.decode === "function"
-  )
+// Structural schema for `Callable<unknown>` (the function-bearing
+// DI contract from `./contract`). Each data field gets its narrowest
+// `@ethernauta/core` primitive; `decode` is a function so it falls
+// back to `custom<F>(typeof === "function")` — the only way to
+// validate a function value with Valibot.
+const callableSchema = object({
+  chain_id: chainIdSchema,
+  to: addressSchema,
+  data: bytesSchema,
+  decode: custom<(result: Bytes) => unknown>(
+    (v) => typeof v === "function",
+  ),
 })
 
 // Non-empty list of calls — `nonEmptyCallsSchema` produces
