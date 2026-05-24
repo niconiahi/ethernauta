@@ -298,7 +298,7 @@ function check_whole(
 // for the longest sequence ending at this node.
 // Recursive trie node — Valibot's `lazy()` would need a hand-rolled
 // type to break the inference cycle (same Valibot-docs pattern as
-// `tupleComponentSchema`). Kept as a type alias.
+// `abiInputSchema`). Kept as a type alias.
 type Node = {
   children: Map<number, Node>
   canonical: readonly number[] | null

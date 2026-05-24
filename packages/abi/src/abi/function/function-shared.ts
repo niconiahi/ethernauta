@@ -18,17 +18,20 @@ export const stateMutabilitySchema = union([
   literal("nonpayable"), // function accepts Ether
 ])
 
-// Components of a tuple-typed param can themselves be tuples (the
-// solidity struct-of-struct case — e.g. ERC-7683's ResolvedCrossChainOrder
-// has `tuple[]` fields whose components are `Output`/`FillInstruction`
-// structs). `lazy` lets the schema reference itself.
-export type TupleComponent = {
+// The recursive ABI input/output entry shape. A leaf carries
+// `{ name, type }`; a tuple variant carries `{ name, type: "tuple" |
+// "tuple[]", components: AbiInput[] }`. Used for function inputs /
+// outputs and event params alike — solidity struct-of-struct cases
+// (e.g. ERC-7683's ResolvedCrossChainOrder, whose `tuple[]` components
+// are themselves `Output` / `FillInstruction` structs) need this self-
+// reference. `lazy` lets the schema cycle through itself.
+export type AbiInput = {
   name: string
   type: string
-  components?: TupleComponent[]
+  components?: AbiInput[]
 }
-export const tupleComponentSchema: GenericSchema<TupleComponent> =
-  lazy(() =>
+export const abiInputSchema: GenericSchema<AbiInput> = lazy(
+  () =>
     variant("type", [
       object({
         name: string(),
@@ -37,14 +40,14 @@ export const tupleComponentSchema: GenericSchema<TupleComponent> =
       object({
         name: string(),
         type: union([literal("tuple"), literal("tuple[]")]),
-        components: array(tupleComponentSchema),
+        components: array(abiInputSchema),
       }),
     ]),
-  )
+)
 
 export const function_tupleSchema = object({
   ...tupleSchema.entries,
-  components: array(tupleComponentSchema),
+  components: array(abiInputSchema),
 })
 export const function_inputSchema = variant("type", [
   object({

@@ -346,7 +346,7 @@ contract — never `safeParse`.
    hand-rolled type to break the inference cycle
    (`GenericSchema<T>` where `T` is the recursive shape). This is the
    pattern Valibot's own docs prescribe. Current instances:
-   `packages/abi/src/abi/function/function-shared.ts:TupleComponent`
+   `packages/abi/src/abi/function/function-shared.ts:AbiInput`
    and `packages/ens/src/ensip-15/normalize.ts:Node`.
 2. **Declaration merging on global / built-in interfaces.** TypeScript
    requires the `interface` keyword for declaration merging. Current

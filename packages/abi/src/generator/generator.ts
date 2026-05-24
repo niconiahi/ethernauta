@@ -18,21 +18,18 @@ import {
 
 import type { FunctionInput } from "../abi"
 import type { Description } from "../abi/description"
-import type { TupleComponent } from "../abi/function/function-shared"
+import type { AbiInput } from "../abi/function/function-shared"
 import { to_selector } from "../encoding/encode"
 
 // A function input is either a leaf {name, type} or a tuple with
-// nested components. Structurally identical to `TupleComponent` once
-// we read it through `unknown` casts to reach the recursive shape that
-// `function_tupleSchema` only types one level deep.
-type InputLike = TupleComponent
-
+// nested components. `FunctionInput` (a discriminated union from
+// `function_inputSchema`) is structurally assignable to
+// `AbiInput` — the recursive Valibot anchor whose tuple variant
+// carries `components: AbiInput[]`.
 function get_components(
-  input: InputLike,
-): TupleComponent[] {
-  const components = (
-    input as unknown as { components?: TupleComponent[] }
-  ).components
+  input: AbiInput,
+): AbiInput[] {
+  const components = input.components
   invariant(
     Array.isArray(components),
     `expected components on input ${input.name} of type ${input.type}`,
@@ -40,7 +37,7 @@ function get_components(
   return components
 }
 
-function canonical_type(input: InputLike): string {
+function canonical_type(input: AbiInput): string {
   if (input.type === "tuple") {
     const inner = get_components(input)
       .map(canonical_type)
@@ -61,7 +58,7 @@ function canonical_signature(
   inputs: FunctionInput[],
 ): string {
   return `${name}(${inputs
-    .map((i) => canonical_type(i as InputLike))
+    .map((i) => canonical_type(i))
     .join(",")})`
 }
 
@@ -185,7 +182,7 @@ function merge_into(
     target.abi_builders.add(b)
 }
 
-function get_type_info(input: InputLike): Type_info {
+function get_type_info(input: AbiInput): Type_info {
   const type = input.type
 
   if (type === "tuple" || type === "tuple[]") {
@@ -512,12 +509,8 @@ function build_readable(
     outputs.length >= 1,
     `build_readable requires at least one output (${name} has 0)`,
   )
-  const input_infos = inputs.map((i) =>
-    get_type_info(i as InputLike),
-  )
-  const output_infos = outputs.map((o) =>
-    get_type_info(o as InputLike),
-  )
+  const input_infos = inputs.map((i) => get_type_info(i))
+  const output_infos = outputs.map((o) => get_type_info(o))
 
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
@@ -593,9 +586,7 @@ function build_signable(
     "build_signable requires a function description",
   )
   const { name, inputs } = description
-  const input_infos = inputs.map((i) =>
-    get_type_info(i as InputLike),
-  )
+  const input_infos = inputs.map((i) => get_type_info(i))
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
 
