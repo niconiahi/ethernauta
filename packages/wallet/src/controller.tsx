@@ -3,7 +3,7 @@ import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
 import { sendCallsParameterSchema } from "@ethernauta/eip/5792"
 import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { useEffect } from "preact/hooks"
-import { parse } from "valibot"
+import { parse, string, tuple } from "valibot"
 import {
   is_authenticated,
   validate_vault,
@@ -59,31 +59,27 @@ export function Controller() {
             return
           }
           if (request.method === "eth_signTypedData_v4") {
-            const params = request.params as [
-              string,
-              unknown,
-            ]
-            const typed_data = parse(
-              typedDataSchema,
-              params[1],
+            const [address, typed_data] = parse(
+              tuple([string(), typedDataSchema]),
+              request.params,
             )
             typed_data_request.value = {
               id: request.id,
-              address: params[0],
+              address,
               typed_data,
             }
             view.value = "sign-typed-data"
             return
           }
           if (request.method === "personal_sign") {
-            const params = request.params as [
-              string,
-              string,
-            ]
+            const [message, address] = parse(
+              tuple([string(), string()]),
+              request.params,
+            )
             personal_sign_request.value = {
               id: request.id,
-              message: params[0],
-              address: params[1],
+              message,
+              address,
             }
             view.value = "personal-sign"
             return
@@ -91,10 +87,9 @@ export function Controller() {
           if (
             request.method === "wallet_addEthereumChain"
           ) {
-            const params = request.params as [unknown]
-            const chain = parse(
-              addEthereumChainParameterSchema,
-              params[0],
+            const [chain] = parse(
+              tuple([addEthereumChainParameterSchema]),
+              request.params,
             )
             add_chain_request.value = {
               id: request.id,
@@ -104,10 +99,9 @@ export function Controller() {
             return
           }
           if (request.method === "wallet_sendCalls") {
-            const params = request.params as [unknown]
-            const parameter = parse(
-              sendCallsParameterSchema,
-              params[0],
+            const [parameter] = parse(
+              tuple([sendCallsParameterSchema]),
+              request.params,
             )
             send_calls_request.value = {
               id: request.id,
@@ -134,7 +128,7 @@ export function Controller() {
           transaction_request.value = {
             id: request.id,
             method: request.method,
-            params: request.params as unknown[],
+            params: request.params ?? [],
             to: request.to,
           }
           view.value = "sign"
