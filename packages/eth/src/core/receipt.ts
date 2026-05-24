@@ -3,8 +3,8 @@
 import {
   addressSchema,
   byteSchema,
-  bytes32Schema,
   bytes256Schema,
+  bytes32Schema,
   bytesSchema,
   hash32Schema,
   uintSchema,
@@ -16,6 +16,8 @@ import {
   nullable,
   object,
   optional,
+  picklist,
+  safeParse,
 } from "valibot"
 
 export const logSchema = object({
@@ -53,3 +55,24 @@ export const receiptInfoSchema = object({
 export type ReceiptInfo = InferOutput<
   typeof receiptInfoSchema
 >
+
+// Post-Byzantium tightening of `receiptInfoSchema`: `status` is
+// required and narrowed to `"0x0"` (reverted) or `"0x1"` (success)
+// per the spec. Use via `is_post_byzantium(receipt)` to discriminate
+// at the consumer boundary — the guard wraps a Valibot `safeParse`
+// so the schema remains the single source of truth (no parallel
+// hand-rolled predicate per R0.4).
+export const postByzantiumReceiptSchema = object({
+  ...receiptInfoSchema.entries,
+  status: picklist(["0x0", "0x1"]),
+})
+export type PostByzantiumReceiptInfo = InferOutput<
+  typeof postByzantiumReceiptSchema
+>
+
+export function is_post_byzantium(
+  _receipt: ReceiptInfo,
+): _receipt is PostByzantiumReceiptInfo {
+  return safeParse(postByzantiumReceiptSchema, _receipt)
+    .success
+}

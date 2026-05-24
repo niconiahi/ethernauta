@@ -1,6 +1,9 @@
 import type { Hash32 } from "@ethernauta/core"
-import { eth_getTransactionReceipt } from "@ethernauta/eth"
-import { hex_to_number, invariant } from "@ethernauta/utils"
+import {
+  eth_getTransactionReceipt,
+  is_post_byzantium,
+} from "@ethernauta/eth"
+import { hex_to_number } from "@ethernauta/utils"
 
 import type { Watchable } from "./tracker"
 import type {
@@ -33,12 +36,8 @@ export function watch_transaction(
         hash,
       ])([transports, context])
       if (!receipt) return
-      invariant(
-        receipt.status,
-        "status should exist as the transaction was created after Byzantium update",
-      )
-      const status = hex_to_number(receipt.status)
-      if (status === 1) {
+      if (!is_post_byzantium(receipt)) return
+      if (receipt.status === "0x1") {
         const transaction: MinedTransaction = {
           blockHash: receipt.blockHash,
           blockNumber: hex_to_number(receipt.blockNumber),
@@ -49,7 +48,7 @@ export function watch_transaction(
         await context.store.set(hash, transaction)
         callback(transaction)
         clearInterval(interval_id)
-      } else if (status === 0) {
+      } else {
         const transaction: RevertedTransaction = {
           blockHash: receipt.blockHash,
           blockNumber: hex_to_number(receipt.blockNumber),
