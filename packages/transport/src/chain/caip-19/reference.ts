@@ -8,5 +8,4 @@ function isReference(input: unknown): boolean {
   )
 }
 const referenceSchema = custom<string>(isReference)
-// eslint-disable-next-line no-unused-vars, unused-imports/no-unused-vars
 export type Reference = InferOutput<typeof referenceSchema>

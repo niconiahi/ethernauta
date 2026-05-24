@@ -8,7 +8,6 @@ function isNamespace(input: unknown): boolean {
   )
 }
 const caip19_namespaceSchema = custom<string>(isNamespace)
-// eslint-disable-next-line no-unused-vars, unused-imports/no-unused-vars
 export type caip19_Namespace = InferOutput<
   typeof caip19_namespaceSchema
 >

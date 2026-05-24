@@ -30,6 +30,7 @@ import type {
   EthernautaResponse,
   TransactionRejectedResponse,
 } from "../../utils/event"
+import { row_key } from "../../utils/row-key"
 import {
   get_nonce,
   sign_transaction,
@@ -192,8 +193,7 @@ function DecodedCall({
       <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
         {labels.map((label, i) => (
           <Field
-            // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
-            key={`${label}-${i}`}
+            key={row_key(label, args[i])}
             label={label}
             value={args[i]}
           />
@@ -262,8 +262,7 @@ function Field({
         <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
           {value.map((v, i) => (
             <Field
-              // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
-              key={`${label}-${i}`}
+              key={row_key(label, v)}
               label={String(i)}
               value={v}
             />
@@ -412,8 +411,7 @@ function DecodedSign({
         <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
           {labels.map((label, i) => (
             <Field
-              // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
-              key={`${label}-${i}`}
+              key={row_key(label, args[i])}
               label={label}
               value={args[i]}
             />

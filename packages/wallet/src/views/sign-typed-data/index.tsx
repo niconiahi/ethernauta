@@ -5,6 +5,7 @@ import type {
   SignTypedDataResponse,
   TransactionRejectedResponse,
 } from "../../utils/event"
+import { row_key } from "../../utils/row-key"
 import { sign_typed_data } from "../../utils/sign-typed-data"
 import { typed_data_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
@@ -52,8 +53,7 @@ function Field({
         <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
           {value.map((v, i) => (
             <Field
-              // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
-              key={`${label}-${i}`}
+              key={row_key(label, v)}
               label={String(i)}
               value={v}
             />

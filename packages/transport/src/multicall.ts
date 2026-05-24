@@ -70,19 +70,22 @@ type ResultsOf<T extends readonly Callable<unknown>[]> = {
     : never
 }
 
-export function create_multicall(_chains: ChainEntry[]): {
-  <T extends readonly Callable<unknown>[]>(
-    _calls: T,
-  ): Promise<ValuesOf<T>>
-  <T extends readonly Callable<unknown>[]>(
+export function create_multicall(_chains: ChainEntry[]) {
+  function multicall<
+    T extends readonly Callable<unknown>[],
+  >(_calls: T): Promise<ValuesOf<T>>
+  function multicall<
+    T extends readonly Callable<unknown>[],
+  >(
     _calls: T,
     _options: { allow_failure: true },
   ): Promise<ResultsOf<T>>
-  <T extends readonly Callable<unknown>[]>(
+  function multicall<
+    T extends readonly Callable<unknown>[],
+  >(
     _calls: T,
     _options: { allow_failure: false },
   ): Promise<ValuesOf<T>>
-} {
   async function multicall(
     _calls: readonly Callable<unknown>[],
     _options: MulticallOptions = {},
@@ -152,8 +155,7 @@ export function create_multicall(_chains: ChainEntry[]): {
         : value
     })
   }
-  // biome-ignore lint/suspicious/noExplicitAny: overload widening
-  return multicall as any
+  return multicall
 }
 
 // The `eth_call` return for `aggregate3((address,bool,bytes)[])` is a

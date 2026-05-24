@@ -6,6 +6,7 @@ import {
 } from "@ethernauta/transport"
 import {
   bytes_to_hex,
+  invariant,
   number_to_hex,
 } from "@ethernauta/utils"
 import type { RecoveredSignature } from "@noble/secp256k1"
@@ -314,15 +315,15 @@ describe("transaction.ts", () => {
       params,
     })
 
-    const signed_tx_hex = bytes_to_hex(
-      ethernauta_signed,
-    ) as Hex
-
-    // Recover sender address from signed transaction
+    const signed_hex = bytes_to_hex(ethernauta_signed)
+    invariant(
+      signed_hex.startsWith("0x02"),
+      "expected EIP-1559 type prefix on signed transaction",
+    )
+    const signed_tail = signed_hex.slice(4)
     const recovered_address =
       await recoverTransactionAddress({
-        // @ts-expect-error minor type differnces
-        serializedTransaction: signed_tx_hex,
+        serializedTransaction: `0x02${signed_tail}`,
       })
 
     console.log("Expected address:", expected_address)
@@ -336,14 +337,13 @@ describe("transaction.ts", () => {
   it("should recover correct address from actual console log transaction", async () => {
     // This is the exact signed transaction from your console log
     const actual_signed_tx =
-      "0x02f86e83aa36a78084773594008504a817c80082520894636c0fcd6da2207abfa80427b556695a4ad0af940180c001a0fa74e0e883841cf1919c0e5f93d819d62a30a49a1d501de04e2f52516b3083fda05ead6e9bc177a69962ec192130364d97ba7fc041cf2c74a0a3203c13136ddb47" as Hex
+      "0x02f86e83aa36a78084773594008504a817c80082520894636c0fcd6da2207abfa80427b556695a4ad0af940180c001a0fa74e0e883841cf1919c0e5f93d819d62a30a49a1d501de04e2f52516b3083fda05ead6e9bc177a69962ec192130364d97ba7fc041cf2c74a0a3203c13136ddb47"
 
     const expected_address =
       "0x515e9e0565fdddd4f8a9759744734154da453585"
 
     const recovered_address =
       await recoverTransactionAddress({
-        // @ts-expect-error minor type differnces
         serializedTransaction: actual_signed_tx,
       })
 

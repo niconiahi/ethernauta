@@ -1,8 +1,7 @@
+import { invariant } from "@ethernauta/utils"
 import { render } from "preact"
 import { Controller } from "./controller"
 
-render(
-  <Controller />,
-  // biome-ignore lint: the element exists
-  document.querySelector("#app")!,
-)
+const root = document.querySelector("#app")
+invariant(root, "expected #app root element to exist")
+render(<Controller />, root)

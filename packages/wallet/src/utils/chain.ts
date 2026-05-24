@@ -13,7 +13,9 @@ import {
   type InferOutput,
   number,
   object,
+  parse,
   string,
+  tupleWithRest,
 } from "valibot"
 
 export const chainSchema = object({
@@ -23,7 +25,14 @@ export const chainSchema = object({
 })
 export type Chain = InferOutput<typeof chainSchema>
 
-export const CHAINS: Chain[] = [
+// Non-empty tuple — `CHAINS[0]` types as `Chain` (not `Chain | undefined`)
+// so `selected_chain` can be initialised without a guard.
+const chainsSchema = tupleWithRest(
+  [chainSchema],
+  chainSchema,
+)
+
+export const CHAINS = parse(chainsSchema, [
   {
     id: eip155_11155111.chainId,
     name: eip155_11155111.name,
@@ -34,10 +43,9 @@ export const CHAINS: Chain[] = [
     name: eip155_1.name,
     rpc_url: "https://ethereum-rpc.publicnode.com",
   },
-]
+])
 
-// biome-ignore lint/style/noNonNullAssertion: module-level CHAINS array is statically non-empty
-export const selected_chain = signal<Chain>(CHAINS[0]!)
+export const selected_chain = signal<Chain>(CHAINS[0])
 
 const NAMESPACE = "eip155"
 
