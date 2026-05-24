@@ -11,6 +11,7 @@ import {
   boolean,
   type InferOutput,
   object,
+  parse,
   string,
 } from "valibot"
 
@@ -53,5 +54,8 @@ export async function get_batch(
 ): Promise<BatchRecord | undefined> {
   const key = compose_key(id)
   const result = await chrome.storage.session.get(key)
-  return result[key] as BatchRecord | undefined
+  const raw = result[key]
+  if (raw === undefined) return undefined
+  const batch_record = parse(batchRecordSchema, raw)
+  return batch_record
 }
