@@ -31,16 +31,26 @@ export function function_selector(
   )
 }
 
+// TODO(R0.2): this signature is the loose-intermediate form. The
+// strict form mandated by R0.2 is:
+//
+//   function encode_function_call<Args extends readonly unknown[]>(_input: {
+//     name: string
+//     args: { readonly [K in keyof Args]: AbiCodec<Args[K]> }
+//     values: Args
+//   }): Uint8Array
+//
+// Tightening it requires the C2 codegen-side work (Phase 5): the
+// `values` extraction in generated method files must produce a value
+// whose static type matches `Args` derived from PARAM_CODECS — today
+// the parametersSchema's union(tuple | object) yields a wider shape,
+// which is why this signature still accepts `readonly unknown[]`.
 // Encode a function call: 4-byte selector + ABI-encoded arguments.
 // `args` is the typed codec list; `values` is the runtime tuple whose
-// shape MUST match `args`. We accept `readonly unknown[]` rather than
-// a mapped tuple type derived from `args` because the previous mapped
-// type was always immediately widened to `unknown[]` internally — the
-// strict signature looked safe but was decorative, and the cast it
-// forced at every call site (`values as never`) was a worse outcome
-// than the looser-but-honest signature below. Callers (codegen + the
-// few hand-written sites in transport / wallet) build `values` from a
-// Valibot-parsed source whose shape matches `args` by construction.
+// shape MUST match `args`. The previous mapped-tuple version was
+// always cast to `unknown[]` internally (decorative, not enforcing) —
+// the call-site `values as never` it forced was a worse outcome than
+// today's looser-but-honest signature.
 export function encode_function_call(_input: {
   name: string
   args: readonly AbiCodec<any>[]
@@ -56,10 +66,13 @@ export function encode_function_call(_input: {
   return out
 }
 
+// TODO(R0.2): same loose-intermediate form as `encode_function_call`
+// above. The strict form (`<Args>` plus mapped-tuple codecs) is the
+// target; today's `AbiCodec<any>[]` + `unknown[]` will tighten when
+// the C2 codegen-side work lands in Phase 5.
 // Build creation calldata for a deploy transaction: contract bytecode
 // concatenated with ABI-encoded constructor arguments. Pass an empty
-// `args`/`values` tuple for constructors with no arguments. See the
-// comment on `encode_function_call` for why `values` is `unknown[]`.
+// `args`/`values` tuple for constructors with no arguments.
 export function encode_constructor_call(_input: {
   bytecode: Uint8Array
   args: readonly AbiCodec<any>[]

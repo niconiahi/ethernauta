@@ -81,6 +81,43 @@ count_eslint_disable() {
     | wc -l | tr -d ' '
 }
 
+count_any() {
+  # `any` in TS type positions: `: any`, `<any>`, `<any,`, `any[]`,
+  # `any |`, `as any`. Skips the JS `Promise.any(...)` method and
+  # incidental English uses in comments / strings. R0.2 in
+  # skills/no-violations/SKILL.md bans `any` except in the narrow
+  # allowed list.
+  grep -rnE ":\s*any\b|<any[>,]|\bany\[\]|\bany\s*\||\bas\s+any\b" packages/ \
+    --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
+    | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
+    | wc -l | tr -d ' '
+}
+
+count_never() {
+  # Raw `\bnever\b` outside line comments. R0.2 bans `never` except in
+  # the narrow allowed list (throw-only return, conditional-type
+  # bottom, exhaustive-switch default). The baseline therefore mixes
+  # legitimate uses with violations — the ratchet's job is to flag
+  # deltas; review every new occurrence and either fix it or bump the
+  # baseline with a one-line justification in the commit.
+  grep -rnE "\bnever\b" packages/ \
+    --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
+    | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
+    | wc -l | tr -d ' '
+}
+
+count_unknown() {
+  # Raw `\bunknown\b` outside line comments. Same R0.2 framing as
+  # `never`: legitimate uses (Valibot's `_raw: unknown`, JSON.parse
+  # output, conditional-type `extends unknown`) are mixed into the
+  # baseline; the ratchet enforces no-increase, and PRs that add a
+  # legit `unknown` justify the +1 in the commit.
+  grep -rnE "\bunknown\b" packages/ \
+    --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
+    | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
+    | wc -l | tr -d ' '
+}
+
 # ---- read baseline ----
 
 read_baseline() {
@@ -124,6 +161,9 @@ check "biome-ignore-all"  "$(count_biome_ignore_all)"  "biome_ignore_all"
 check "interface"         "$(count_interface)"         "interface"
 check "object type"       "$(count_object_type)"       "object_type"
 check "eslint-disable"    "$(count_eslint_disable)"    "eslint_disable"
+check "any"               "$(count_any)"               "any"
+check "never"             "$(count_never)"             "never"
+check "unknown"           "$(count_unknown)"           "unknown"
 
 echo
 if (( FAIL == 1 )); then

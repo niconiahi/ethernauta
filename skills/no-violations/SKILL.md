@@ -75,6 +75,96 @@ narrower primitive in `@ethernauta/core` that exactly matches this
 value's byte width / numeric range / enum membership?* If yes, use it.
 If no, add it.
 
+### R0.2 — No `any`, no `never`, no `unknown` unless it truly cannot be typed
+
+`any`, `never`, and `unknown` are escape hatches in the same family as
+`as`. They erase type information and let unsound code compile. They
+are banned **unless the value's type genuinely cannot be expressed
+strictly** — and "genuinely" means *I tried the strict form and it
+provably doesn't work*, not *the strict form would be annoying to
+write*.
+
+The bar is high. Almost always there is a strict form using:
+
+- **Generic type parameters.** `function f<T>(x: T): T` instead of
+  `function f(x: any): any`. If `T` is heterogeneous across positions,
+  use a generic tuple: `<Args extends readonly unknown[]>` plus a
+  mapped tuple over the positions.
+- **Variadic tuple types.** When you find yourself reaching for
+  `Foo<any>[]`, the right shape is usually
+  `{ readonly [K in keyof Args]: Foo<Args[K]> }` — a tuple of `Foo`s
+  whose element types vary per position.
+- **Discriminated unions.** Heterogeneous-but-finite shapes belong in
+  a `variant()` Valibot schema, not in a `unknown`-typed bag.
+- **`InferOutput<typeof xSchema>`.** The type of a parsed value comes
+  from its schema. If you're tempted to type a parsed value as
+  `unknown`, you parsed it wrong (or your schema is too loose).
+
+**Worked example** — heterogeneous codec lists:
+
+```ts
+// BAD — `any` everywhere; the mapped-tuple `ValuesOf<Args>` looks
+// strict but is decoratively cast to `unknown[]` internally, so the
+// strict signature was a lie
+function encode_function_call<
+  Args extends readonly AbiCodec<any>[],
+>(_input: {
+  name: string
+  args: Args
+  values: ValuesOf<Args>
+}): Uint8Array
+
+// BAD (loose intermediate) — honest about the looseness, no lie
+function encode_function_call(_input: {
+  name: string
+  args: readonly AbiCodec<any>[]
+  values: readonly unknown[]
+}): Uint8Array
+
+// GOOD — strict, no escape hatches anywhere
+function encode_function_call<
+  Args extends readonly unknown[],
+>(_input: {
+  name: string
+  args: { readonly [K in keyof Args]: AbiCodec<Args[K]> }
+  values: Args
+}): Uint8Array
+```
+
+**Allowed uses (the narrow list):**
+
+- `<T>` and other generic type parameters — these ARE the strict form.
+- `unknown` at a true open-world boundary that hasn't yet been
+  validated by Valibot: the input to a `parse(schema, raw)`, the
+  output of `JSON.parse`, an inbound `postMessage` payload, etc.
+  Once `parse` runs, the type is no longer `unknown`.
+- `never` in genuinely-impossible-branch positions: the default arm
+  of an exhaustive `switch`, the return type of a function that
+  always throws.
+- TS-language operators that happen to use the keyword: `extends never`
+  / `extends unknown` inside conditional type checks, `keyof never`
+  in standard TS idioms.
+
+**Banned uses (everything else):**
+
+- `any` as a parameter, return, generic constraint, or property type.
+  There is always a stricter alternative — find it.
+- `unknown[]` as a function parameter when the call site knows the
+  tuple shape (use variadic generics).
+- `never` to silence the compiler ("this won't happen, trust me"):
+  the compiler is telling you the type system can't prove your claim
+  — make the claim provable instead.
+- `Foo<any>[]` when `Foo<T>[]` plus a mapped-tuple generic would
+  express the actual relationship.
+
+**Rule of thumb:** before writing `any`, `never`, or `unknown` in any
+position other than the narrow allowed list, write the strict generic
+form first and try to make it compile. If it compiles, that's your
+code. If it provably can't compile (and you can articulate why in one
+sentence, citing the specific TS limitation), the looser form is
+permitted as a temporary state with a `// TODO(R0.2): ...` comment
+naming the next-phase work that will tighten it.
+
 ## R1 — No `as` type assertion
 
 **Banned, all of them.** Including:
