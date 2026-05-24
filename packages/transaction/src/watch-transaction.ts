@@ -2,6 +2,7 @@ import type { Hash32 } from "@ethernauta/core"
 import {
   eth_getTransactionReceipt,
   is_post_byzantium,
+  RECEIPT_STATUS,
 } from "@ethernauta/eth"
 import { hex_to_number } from "@ethernauta/utils"
 
@@ -37,7 +38,7 @@ export function watch_transaction(
       ])([transports, context])
       if (!receipt) return
       if (!is_post_byzantium(receipt)) return
-      if (receipt.status === "0x1") {
+      if (receipt.status === RECEIPT_STATUS.SUCCESS) {
         const transaction: MinedTransaction = {
           blockHash: receipt.blockHash,
           blockNumber: hex_to_number(receipt.blockNumber),
