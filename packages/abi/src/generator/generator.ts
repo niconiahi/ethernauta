@@ -295,11 +295,20 @@ function get_type_info(input: AbiInput): Type_info {
       const uint_match = /^uint(\d+)$/.exec(type)
       if (uint_match) {
         const bits = Number(uint_match[1])
-        if (bits >= 8 && bits <= 256 && bits % 8 === 0) {
+        const supported = new Set([
+          8, 16, 24, 32, 40, 48, 56, 64, 96, 128, 160, 192,
+          224, 256,
+        ])
+        if (supported.has(bits)) {
           return core_leaf(
-            "uint256Schema",
-            "Uint256",
+            `uint${bits}Schema`,
+            `Uint${bits}`,
             `uint${bits}`,
+          )
+        }
+        if (bits >= 8 && bits <= 256 && bits % 8 === 0) {
+          throw new Error(
+            `uint${bits} is a valid solidity type but has no corresponding schema in @ethernauta/core. Add packages/core/src/uint-${bits}.ts (mirror uint-8.ts) and packages/abi/src/leaves.ts:uint${bits}().`,
           )
         }
       }

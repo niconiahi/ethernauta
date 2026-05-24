@@ -17,7 +17,33 @@ import {
   bytesSchema,
   type Hash32,
   hash32Schema,
+  type Uint8,
+  type Uint16,
+  type Uint24,
+  type Uint32,
+  type Uint40,
+  type Uint48,
+  type Uint56,
+  type Uint64,
+  type Uint96,
+  type Uint128,
+  type Uint160,
+  type Uint192,
+  type Uint224,
   type Uint256,
+  uint8Schema,
+  uint16Schema,
+  uint24Schema,
+  uint32Schema,
+  uint40Schema,
+  uint48Schema,
+  uint56Schema,
+  uint64Schema,
+  uint96Schema,
+  uint128Schema,
+  uint160Schema,
+  uint192Schema,
+  uint224Schema,
   uint256Schema,
 } from "@ethernauta/core"
 import {
@@ -25,7 +51,13 @@ import {
   hex_to_bytes,
   invariant,
 } from "@ethernauta/utils"
-import { boolean, parse, string } from "valibot"
+import {
+  type BaseIssue,
+  type BaseSchema,
+  boolean,
+  parse,
+  string,
+} from "valibot"
 
 import type { AbiCodec } from "./abi-codec"
 
@@ -241,77 +273,80 @@ export function hash32(): AbiCodec<Hash32> {
 
 // ---------------------------------------------------------------- uintN
 
-function make_uint(_signature: string): AbiCodec<Uint256> {
+function make_uint<T extends `0x${string}`>(
+  _signature: string,
+  _schema: BaseSchema<unknown, T, BaseIssue<unknown>>,
+): AbiCodec<T> {
   return {
     signature: _signature,
     is_dynamic: false,
-    schema: uint256Schema,
+    schema: _schema,
     encode: (_value) => write_uint256(to_bigint(_value)),
     decode: (_data, _pos) => {
       return parse(
-        uint256Schema,
+        _schema,
         bytes_to_hex(_data.slice(_pos, _pos + 32)),
       )
     },
   }
 }
 
-export function uint8(): AbiCodec<Uint256> {
-  return make_uint("uint8")
+export function uint8(): AbiCodec<Uint8> {
+  return make_uint("uint8", uint8Schema)
 }
 
-export function uint16(): AbiCodec<Uint256> {
-  return make_uint("uint16")
+export function uint16(): AbiCodec<Uint16> {
+  return make_uint("uint16", uint16Schema)
 }
 
-export function uint24(): AbiCodec<Uint256> {
-  return make_uint("uint24")
+export function uint24(): AbiCodec<Uint24> {
+  return make_uint("uint24", uint24Schema)
 }
 
-export function uint32(): AbiCodec<Uint256> {
-  return make_uint("uint32")
+export function uint32(): AbiCodec<Uint32> {
+  return make_uint("uint32", uint32Schema)
 }
 
-export function uint40(): AbiCodec<Uint256> {
-  return make_uint("uint40")
+export function uint40(): AbiCodec<Uint40> {
+  return make_uint("uint40", uint40Schema)
 }
 
-export function uint48(): AbiCodec<Uint256> {
-  return make_uint("uint48")
+export function uint48(): AbiCodec<Uint48> {
+  return make_uint("uint48", uint48Schema)
 }
 
-export function uint56(): AbiCodec<Uint256> {
-  return make_uint("uint56")
+export function uint56(): AbiCodec<Uint56> {
+  return make_uint("uint56", uint56Schema)
 }
 
-export function uint64(): AbiCodec<Uint256> {
-  return make_uint("uint64")
+export function uint64(): AbiCodec<Uint64> {
+  return make_uint("uint64", uint64Schema)
 }
 
-export function uint96(): AbiCodec<Uint256> {
-  return make_uint("uint96")
+export function uint96(): AbiCodec<Uint96> {
+  return make_uint("uint96", uint96Schema)
 }
 
-export function uint128(): AbiCodec<Uint256> {
-  return make_uint("uint128")
+export function uint128(): AbiCodec<Uint128> {
+  return make_uint("uint128", uint128Schema)
 }
 
-export function uint160(): AbiCodec<Uint256> {
-  return make_uint("uint160")
+export function uint160(): AbiCodec<Uint160> {
+  return make_uint("uint160", uint160Schema)
 }
 
-export function uint192(): AbiCodec<Uint256> {
-  return make_uint("uint192")
+export function uint192(): AbiCodec<Uint192> {
+  return make_uint("uint192", uint192Schema)
 }
 
-export function uint224(): AbiCodec<Uint256> {
-  return make_uint("uint224")
+export function uint224(): AbiCodec<Uint224> {
+  return make_uint("uint224", uint224Schema)
 }
 
 export function uint256(): AbiCodec<Uint256> {
-  return make_uint("uint256")
+  return make_uint("uint256", uint256Schema)
 }
 
 export function uint(): AbiCodec<Uint256> {
-  return make_uint("uint256")
+  return make_uint("uint256", uint256Schema)
 }

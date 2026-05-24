@@ -1,24 +1,15 @@
+import type { Bytes } from "@ethernauta/core"
+import type { Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
   bool,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Bytes } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
-import {
-  boolean,
-  object,
-  parse,
-  tuple,
-  union,
-} from "valibot"
+import { boolean, object, parse, tuple, union } from "valibot"
+import { addressSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), address()] as const
 const OUTPUT_CODECS = [bool()] as const
@@ -30,10 +21,7 @@ export const IS_APPROVED_FOR_ALL_SIGNATURE = {
 
 const parametersSchema = union([
   tuple([addressSchema, addressSchema]),
-  object({
-    account: addressSchema,
-    operator: addressSchema,
-  }),
+  object({ account: addressSchema, operator: addressSchema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 

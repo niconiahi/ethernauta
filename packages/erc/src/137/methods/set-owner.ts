@@ -1,21 +1,15 @@
+import type { Bytes } from "@ethernauta/core"
+import { eth_signTransaction } from "@ethernauta/eth"
+import type { ResolvedSigner, Signable } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
   bytes32,
   encode_function_call,
 } from "@ethernauta/abi"
-import type { Bytes } from "@ethernauta/core"
-import {
-  addressSchema,
-  bytes32Schema,
-} from "@ethernauta/core"
-import { eth_signTransaction } from "@ethernauta/eth"
-import type {
-  ResolvedSigner,
-  Signable,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
+import { addressSchema, bytes32Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32(), address()] as const
 
@@ -30,17 +24,10 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function setOwner(
-  _parameters: Parameters,
-): Signable<Bytes> {
-  return async ([
-    signer,
-    context,
-  ]: ResolvedSigner): Promise<Bytes> => {
+export function setOwner(_parameters: Parameters): Signable<Bytes> {
+  return async ([signer, context]: ResolvedSigner): Promise<Bytes> => {
     if (!context.to)
-      throw new Error(
-        "contract Signable requires a 'to' on the signer resolver",
-      )
+      throw new Error("contract Signable requires a 'to' on the signer resolver")
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
@@ -54,15 +41,15 @@ export function setOwner(
     //               maxPriorityFeePerGas by querying the network
     //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
     //               Generator MUST leave these fields unset.
-    return eth_signTransaction([
-      {
+    return eth_signTransaction(
+      [{
         to: context.to,
         value: "0x0",
         input: bytes_to_hex(calldata),
         _ethernauta: {
           function: SET_OWNER_SIGNATURE,
         },
-      },
-    ])([signer, context])
+      }],
+    )([signer, context])
   }
 }

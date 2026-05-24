@@ -1,15 +1,13 @@
+import type { Bytes } from "@ethernauta/core"
+import type { Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
+  string_,
   decode_function_result,
   encode_function_call,
-  string_,
 } from "@ethernauta/abi"
-import type { Bytes } from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import { parse, string } from "valibot"
+
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [string_()] as const
@@ -18,6 +16,8 @@ export const SYMBOL_SIGNATURE = {
   signature: "symbol()",
   names: [],
 }
+
+
 
 export function symbol() {
   return (context: ContractContext): Callable<string> => {

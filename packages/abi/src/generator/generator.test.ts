@@ -204,10 +204,10 @@ describe("generator.ts", () => {
       )
       // parametersSchema uses valibot `object` for the struct schema.
       expect(file).toContain(
-        "tuple([object({ fillDeadline: uint256Schema, orderDataType: bytes32Schema, orderData: bytesSchema })])",
+        "tuple([object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema })])",
       )
       expect(file).toContain(
-        "object({ order: object({ fillDeadline: uint256Schema, orderDataType: bytes32Schema, orderData: bytesSchema }) })",
+        "object({ order: object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema }) })",
       )
       // Object form values extraction uses parameters.<name> by top-level input name.
       expect(file).toContain("[parameters.order]")
@@ -337,7 +337,7 @@ describe("generator.ts", () => {
         } from "@ethernauta/abi"
         import type { InferOutput } from "valibot"
         import { object, parse, tuple, union } from "valibot"
-        import { bytes32Schema, bytesSchema, uint256Schema } from "@ethernauta/core"
+        import { bytes32Schema, bytesSchema, uint32Schema } from "@ethernauta/core"
 
         const PARAM_CODECS = [abi_tuple({ fillDeadline: uint32(), orderDataType: bytes32(), orderData: bytes() })] as const
 
@@ -347,8 +347,8 @@ describe("generator.ts", () => {
         }
 
         const parametersSchema = union([
-          tuple([object({ fillDeadline: uint256Schema, orderDataType: bytes32Schema, orderData: bytesSchema })]),
-          object({ order: object({ fillDeadline: uint256Schema, orderDataType: bytes32Schema, orderData: bytesSchema }) }),
+          tuple([object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema })]),
+          object({ order: object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema }) }),
         ])
         type Parameters = InferOutput<typeof parametersSchema>
 

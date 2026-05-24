@@ -1,21 +1,16 @@
+import type { Bytes } from "@ethernauta/core"
+import type { Callable, ContractContext } from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
+  uint256,
   decode_function_result,
   encode_function_call,
-  uint256,
 } from "@ethernauta/abi"
-import type { Bytes, Uint256 } from "@ethernauta/core"
-import {
-  addressSchema,
-  uint256Schema,
-} from "@ethernauta/core"
-import type {
-  Callable,
-  ContractContext,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
+import type { Uint256 } from "@ethernauta/core"
+import { addressSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), uint256()] as const
 const OUTPUT_CODECS = [uint256()] as const
@@ -27,10 +22,7 @@ export const GET_PAST_VOTES_SIGNATURE = {
 
 const parametersSchema = union([
   tuple([addressSchema, uint256Schema]),
-  object({
-    account: addressSchema,
-    timepoint: uint256Schema,
-  }),
+  object({ account: addressSchema, timepoint: uint256Schema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
@@ -39,10 +31,7 @@ export function getPastVotes(_parameters: Parameters) {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
-      : ([
-          parameters.account,
-          parameters.timepoint,
-        ] as const)
+      : ([parameters.account, parameters.timepoint] as const)
     const calldata = encode_function_call({
       name: "getPastVotes",
       args: PARAM_CODECS,
