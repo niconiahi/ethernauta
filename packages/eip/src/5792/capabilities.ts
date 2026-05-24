@@ -2,6 +2,7 @@
 
 import {
   addressSchema,
+  bytesSchema,
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
@@ -29,7 +30,7 @@ export type Capabilities = InferOutput<
 
 export const sendCallsCallSchema = object({
   to: optional(addressSchema),
-  data: optional(string()),
+  data: optional(bytesSchema),
   value: optional(uintSchema),
   capabilities: optional(record(string(), unknown())),
 })

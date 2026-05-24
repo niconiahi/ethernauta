@@ -1,6 +1,9 @@
 // https://eips.ethereum.org/EIPS/eip-5792
 
-import type { Address } from "@ethernauta/core"
+import {
+  addressSchema,
+  type Hash32,
+} from "@ethernauta/core"
 import type { SendCallsResult } from "@ethernauta/eip/5792"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
@@ -8,6 +11,7 @@ import {
   hex_to_bytes,
 } from "@ethernauta/utils"
 import { useState } from "preact/hooks"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import {
   generate_batch_id,
@@ -152,14 +156,16 @@ export function SendCalls() {
               )
               const { chain_id, reader } = get_reader(chain)
               const { writer } = get_writer(chain)
-              const address = active_account.value
-                .address as Address
+              const address = parse(
+                addressSchema,
+                active_account.value.address,
+              )
               const start_nonce = await get_nonce(
                 address,
                 reader,
                 chain_id,
               )
-              const transaction_hashes: `0x${string}`[] = []
+              const transaction_hashes: Hash32[] = []
               for (const [
                 i,
                 call,
@@ -171,14 +177,12 @@ export function SendCalls() {
                     MAX_PRIORITY_FEE_PER_GAS,
                   max_fee_per_gas: MAX_FEE_PER_GAS,
                   gas_limit: GAS_LIMIT,
-                  to: (call.to ?? address) as Address,
+                  to: call.to ?? address,
                   value: call.value
                     ? hex_to_big(call.value)
                     : 0n,
                   data: call.data
-                    ? hex_to_bytes(
-                        call.data as `0x${string}`,
-                      )
+                    ? hex_to_bytes(call.data)
                     : new Uint8Array(),
                   access_list: [],
                 }
@@ -191,9 +195,7 @@ export function SendCalls() {
                   await eth_sendRawTransaction([
                     bytes_to_hex(raw),
                   ])(writer({ chain_id }))
-                transaction_hashes.push(
-                  transaction_hash as `0x${string}`,
-                )
+                transaction_hashes.push(transaction_hash)
               }
               const batch_id = generate_batch_id()
               await set_batch({
