@@ -118,6 +118,21 @@ count_unknown() {
     | wc -l | tr -d ' '
 }
 
+count_invariant_calls() {
+  # Production `invariant(` call sites per R0.4 — Valibot is the only
+  # validator. Excludes test files, the `invariant` definition itself
+  # in `@ethernauta/utils`, and comment lines. Phase 6 of the
+  # no-casts-no-annotations plan walks this counter to zero modulo a
+  # short documented B2 exception list (bootstrap preconditions like
+  # `entry.preact.tsx`'s `#app` root check).
+  grep -rnE "\binvariant\(" packages/ \
+    --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
+    | grep -vE "\.test\.ts:" \
+    | grep -vE "packages/utils/src/invariant\.ts:" \
+    | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
+    | wc -l | tr -d ' '
+}
+
 # ---- read baseline ----
 
 read_baseline() {
@@ -164,6 +179,7 @@ check "eslint-disable"    "$(count_eslint_disable)"    "eslint_disable"
 check "any"               "$(count_any)"               "any"
 check "never"             "$(count_never)"             "never"
 check "unknown"           "$(count_unknown)"           "unknown"
+check "invariant calls"   "$(count_invariant_calls)"   "invariant_calls"
 
 echo
 if (( FAIL == 1 )); then
