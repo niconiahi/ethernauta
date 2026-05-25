@@ -1,4 +1,5 @@
 import { address, uint256 } from "@ethernauta/abi"
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import type {
   Call,
   Http,
@@ -45,10 +46,14 @@ const filterParamsSchema = array(
   }),
 )
 
-const CONTRACT =
-  "0xcccccccccccccccccccccccccccccccccccccccc" as const
+const CONTRACT = parse(
+  addressSchema,
+  "0xcccccccccccccccccccccccccccccccccccccccc",
+)
 const FROM = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 const TO = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+const FROM_BLOCK = parse(uintSchema, "0x0")
+const TO_BLOCK = parse(uintSchema, "0x1")
 const TRANSFER_TOPIC0 =
   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 const FROM_PADDED =
@@ -82,8 +87,8 @@ describe("get_contract_events", () => {
       name: "Transfer",
       args: [address(), address(), uint256()] as const,
       indexed: [true, true, false],
-      fromBlock: "0x0",
-      toBlock: "0x1",
+      fromBlock: FROM_BLOCK,
+      toBlock: TO_BLOCK,
     })(resolved)
 
     expect(captured.call).toBeDefined()
@@ -109,8 +114,8 @@ describe("get_contract_events", () => {
       name: "Transfer",
       args: [address(), address(), uint256()] as const,
       indexed: [true, true, false],
-      fromBlock: "0x0",
-      toBlock: "0x1",
+      fromBlock: FROM_BLOCK,
+      toBlock: TO_BLOCK,
       values: [FROM],
     })(resolved)
 
