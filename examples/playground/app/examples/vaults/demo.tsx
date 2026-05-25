@@ -1,5 +1,9 @@
 import { eip155_1 } from "@ethernauta/chain"
 import {
+  addressSchema,
+  uint256Schema,
+} from "@ethernauta/core"
+import {
   decimals,
   symbol,
   totalSupply,
@@ -21,6 +25,7 @@ import {
   type InferOutput,
   number,
   object,
+  parse,
   string,
 } from "valibot"
 import { Button } from "../../components/button"
@@ -58,7 +63,10 @@ const multicall = create_multicall([
 // are vault-specific; we read them first via decimals().
 // For the "assets per share" display we normalise by share
 // decimals on the client.
-const ONE_SHARE = `0x${(10n ** 18n).toString(16)}` as const
+const ONE_SHARE = parse(
+  uint256Schema,
+  `0x${(10n ** 18n).toString(16)}`,
+)
 
 const vaultSnapshotSchema = object({
   label: string(),
@@ -90,7 +98,7 @@ export function VaultsDemo() {
       const calls = VAULTS.flatMap((v) => {
         const ctx = contract({
           chain_id: MAINNET_CHAIN_ID,
-          to: v.address,
+          to: parse(addressSchema, v.address),
         })
         return [
           symbol()(ctx),

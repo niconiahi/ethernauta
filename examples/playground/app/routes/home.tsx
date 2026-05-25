@@ -1,4 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain"
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import {
   eth_sendRawTransaction,
   eth_signTransaction,
@@ -17,6 +18,7 @@ import {
   http,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { useEffect, useRef, useState } from "react"
 import { Button, ButtonLink } from "../components/button"
 
@@ -162,8 +164,14 @@ export default function () {
                 const signed_transaction =
                   await eth_signTransaction([
                     {
-                      to: "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-                      value: number_to_hex(1),
+                      to: parse(
+                        addressSchema,
+                        "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+                      ),
+                      value: parse(
+                        uintSchema,
+                        number_to_hex(1),
+                      ),
                     },
                   ])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
                 const writable = eth_sendRawTransaction([

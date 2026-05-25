@@ -7,6 +7,15 @@ import {
   uint256,
 } from "@ethernauta/abi"
 import { eip155_11155111 } from "@ethernauta/chain"
+import {
+  type Address,
+  addressSchema,
+  type Bytes,
+  bytesSchema,
+  uintSchema,
+  type Uint256,
+  uint256Schema,
+} from "@ethernauta/core"
 import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
 import {
   create_signer,
@@ -15,6 +24,7 @@ import {
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
@@ -26,22 +36,35 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 
 // EIP-7702 expects the on-chain address as a uint256 hex of
 // the chain reference. Sepolia = 11155111 = 0xaa36a7.
-const SEPOLIA_CHAIN_REF_HEX =
-  `0x${eip155_11155111.chainId.toString(16)}` as const
+const SEPOLIA_CHAIN_REF_HEX = parse(
+  uintSchema,
+  `0x${eip155_11155111.chainId.toString(16)}`,
+)
 
 // contracts/src/BatchExecutor.sol deployed to Sepolia.
 // Source + forge tests are in the `contracts/` package;
 // re-deploy via `forge create` if you want your own copy.
-const BATCH_EXECUTOR =
-  "0x5AAC53e7b782CCD32A083F938AEbA843731323Ee" as const
+const BATCH_EXECUTOR = parse(
+  addressSchema,
+  "0x5AAC53e7b782CCD32A083F938AEbA843731323Ee",
+)
 
 // Two harmless target calls: send 0 wei with no calldata to
 // two distinct burn-friendly addresses. The point is to
 // prove the batch executes atomically — not to move value.
 const TARGETS = [
-  "0x1111111111111111111111111111111111111111" as const,
-  "0x2222222222222222222222222222222222222222" as const,
+  parse(
+    addressSchema,
+    "0x1111111111111111111111111111111111111111",
+  ),
+  parse(
+    addressSchema,
+    "0x2222222222222222222222222222222222222222",
+  ),
 ]
+
+const ZERO_VALUE = parse(uint256Schema, "0x0")
+const ZERO_DATA = parse(bytesSchema, "0x")
 
 const CHAINS = [
   {
@@ -62,17 +85,20 @@ const execute_args = [array(call_tuple)] as const
 
 function encode_execute(
   calls: Array<{
-    to: `0x${string}`
-    value: `0x${string}`
-    data: `0x${string}`
+    to: Address
+    value: Uint256
+    data: Bytes
   }>,
-): `0x${string}` {
-  return bytes_to_hex(
-    encode_function_call({
-      name: "execute",
-      args: execute_args,
-      values: [calls],
-    }),
+): Bytes {
+  return parse(
+    bytesSchema,
+    bytes_to_hex(
+      encode_function_call({
+        name: "execute",
+        args: execute_args,
+        values: [calls],
+      }),
+    ),
   )
 }
 
@@ -92,12 +118,12 @@ export function Delegate7702Demo() {
     try {
       const calls = TARGETS.map((to) => ({
         to,
-        value: "0x0" as const,
-        data: "0x" as const,
+        value: ZERO_VALUE,
+        data: ZERO_DATA,
       }))
       const calldata = encode_execute(calls)
       const hash = await wallet_sendSetCodeTransaction({
-        to: owner as `0x${string}`,
+        to: parse(addressSchema, owner),
         data: calldata,
         delegations: [
           {

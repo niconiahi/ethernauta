@@ -3,6 +3,7 @@
 // `wallet_sendCalls`, then polls `wallet_getCallsStatus`.
 // Works against any standards-compliant wallet.
 
+import { addressSchema } from "@ethernauta/core"
 import { create_injected_signer } from "@ethernauta/eip/1193"
 import {
   type CallsStatus,
@@ -12,6 +13,7 @@ import {
 } from "@ethernauta/eip/5792"
 import { use_provider_detail } from "@ethernauta/eip/6963/use-provider-detail"
 import { useEffect, useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
@@ -52,7 +54,7 @@ export function SendCallsStandard() {
       {
         version: "2.0.0",
         chainId: SEPOLIA_CHAIN_REF_HEX,
-        from: owner as `0x${string}`,
+        from: parse(addressSchema, owner),
         atomicRequired: false,
         calls: CALLS,
       },

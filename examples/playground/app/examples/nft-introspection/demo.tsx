@@ -1,4 +1,9 @@
 import { eip155_1 } from "@ethernauta/chain"
+import {
+  addressSchema,
+  bytes4Schema,
+  uint256Schema,
+} from "@ethernauta/core"
 import { supportsInterface } from "@ethernauta/erc/165"
 import {
   name,
@@ -20,6 +25,7 @@ import {
   type InferOutput,
   number,
   object,
+  parse,
   string,
 } from "valibot"
 import { Button } from "../../components/button"
@@ -79,17 +85,23 @@ export function NftIntrospectionDemo() {
     try {
       const ctx = contract({
         chain_id: MAINNET_CHAIN_ID,
-        to: BAYC,
+        to: parse(addressSchema, BAYC),
       })
       const start = performance.now()
       const results = await multicall([
         ...INTERFACES.map((i) =>
-          supportsInterface({ interfaceId: i.id })(ctx),
+          supportsInterface({
+            interfaceId: parse(bytes4Schema, i.id),
+          })(ctx),
         ),
         name()(ctx),
         totalSupply()(ctx),
-        ownerOf({ tokenId: "0x1" })(ctx),
-        tokenURI({ tokenId: "0x1" })(ctx),
+        ownerOf({ tokenId: parse(uint256Schema, "0x1") })(
+          ctx,
+        ),
+        tokenURI({ tokenId: parse(uint256Schema, "0x1") })(
+          ctx,
+        ),
       ] as never)
       const elapsed_ms = Math.round(
         performance.now() - start,

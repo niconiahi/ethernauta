@@ -6,6 +6,16 @@ import {
 } from "@ethernauta/abi"
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
+  type Address,
+  addressSchema,
+  type Bytes,
+  bytesSchema,
+  hash32Schema,
+  uintSchema,
+  type Uint256,
+  uint256Schema,
+} from "@ethernauta/core"
+import {
   ENTRY_POINT_V07_ADDRESS,
   eth_estimateUserOperationGas,
   eth_getUserOperationReceipt,
@@ -24,6 +34,7 @@ import {
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
@@ -33,8 +44,10 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
   reference: eip155_11155111.chainId,
 })
 
-const SEPOLIA_REF_HEX =
-  `0x${eip155_11155111.chainId.toString(16)}` as const
+const SEPOLIA_REF_HEX = parse(
+  uintSchema,
+  `0x${eip155_11155111.chainId.toString(16)}`,
+)
 
 const NODE_CHAINS = [
   {
@@ -57,16 +70,19 @@ const EXECUTE_CODECS = [
 ] as const
 
 function encode_execute(
-  target: `0x${string}`,
-  value: bigint,
-  data: `0x${string}`,
-): `0x${string}` {
-  return bytes_to_hex(
-    encode_function_call({
-      name: "execute",
-      args: EXECUTE_CODECS,
-      values: [target, value, data] as const,
-    }),
+  target: Address,
+  value: Uint256,
+  data: Bytes,
+): Bytes {
+  return parse(
+    bytesSchema,
+    bytes_to_hex(
+      encode_function_call({
+        name: "execute",
+        args: EXECUTE_CODECS,
+        values: [target, value, data] as const,
+      }),
+    ),
   )
 }
 
@@ -79,8 +95,21 @@ function shorten(
   return `${hex.slice(0, head)}…${hex.slice(-tail)}`
 }
 
-const ZERO_NONCE = "0x0" as const
-const ZERO_BYTES = "0x" as const
+const ZERO_NONCE = parse(uintSchema, "0x0")
+const ZERO_VALUE = parse(uint256Schema, "0x0")
+const ZERO_BYTES = parse(bytesSchema, "0x")
+const CALL_GAS_LIMIT = parse(uintSchema, "0x186a0") // 100k
+const VERIFICATION_GAS_LIMIT = parse(uintSchema, "0x186a0") // 100k
+const PRE_VERIFICATION_GAS = parse(uintSchema, "0xc350") // 50k
+const MAX_FEE_PER_GAS = parse(uintSchema, "0x6fc23ac00") // 30 gwei
+const MAX_PRIORITY_FEE_PER_GAS = parse(
+  uintSchema,
+  "0x77359400",
+) // 2 gwei
+const PLACEHOLDER_SIGNATURE = parse(
+  bytesSchema,
+  `0x${"00".repeat(65)}`,
+)
 
 export function UserOp4337Demo() {
   const session = use_session()
@@ -140,19 +169,19 @@ export function UserOp4337Demo() {
     set_user_op_hash(null)
     try {
       const draft: UserOperation = {
-        sender: sender as `0x${string}`,
+        sender: parse(addressSchema, sender),
         nonce: ZERO_NONCE,
         callData: encode_execute(
-          target as `0x${string}`,
-          0n,
+          parse(addressSchema, target),
+          ZERO_VALUE,
           ZERO_BYTES,
         ),
-        callGasLimit: "0x186a0", // 100k
-        verificationGasLimit: "0x186a0", // 100k
-        preVerificationGas: "0xc350", // 50k
-        maxFeePerGas: "0x6fc23ac00", // 30 gwei
-        maxPriorityFeePerGas: "0x77359400", // 2 gwei
-        signature: `0x${"00".repeat(65)}`,
+        callGasLimit: CALL_GAS_LIMIT,
+        verificationGasLimit: VERIFICATION_GAS_LIMIT,
+        preVerificationGas: PRE_VERIFICATION_GAS,
+        maxFeePerGas: MAX_FEE_PER_GAS,
+        maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
+        signature: PLACEHOLDER_SIGNATURE,
       }
       const hash = get_user_op_hash({
         op: draft,
@@ -163,7 +192,7 @@ export function UserOp4337Demo() {
       set_user_op_hash(hash)
       const signature = await sign_user_op({
         op: draft,
-        owner: owner as `0x${string}`,
+        owner: parse(addressSchema, owner),
         entryPoint: ENTRY_POINT_V07_ADDRESS,
         chainId: SEPOLIA_REF_HEX,
       })(signer({ chain_id: SEPOLIA_CHAIN_ID }))
@@ -242,7 +271,7 @@ export function UserOp4337Demo() {
     try {
       const reader = create_reader(bundler_chains())
       const receipt = await eth_getUserOperationReceipt(
-        user_op_hash as `0x${string}`,
+        parse(hash32Schema, user_op_hash),
       )(reader({ chain_id: SEPOLIA_CHAIN_ID }))
       if (receipt === null) {
         set_error("Receipt not yet available.")

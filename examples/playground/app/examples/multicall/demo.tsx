@@ -1,4 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain"
+import { addressSchema } from "@ethernauta/core"
 import {
   decimals,
   name,
@@ -18,6 +19,7 @@ import {
   type InferOutput,
   number,
   object,
+  parse,
   string,
 } from "valibot"
 import { Button } from "../../components/button"
@@ -61,7 +63,7 @@ export function MulticallDemo() {
     try {
       const ctx = contract({
         chain_id: SEPOLIA_CHAIN_ID,
-        to: WETH_SEPOLIA,
+        to: parse(addressSchema, WETH_SEPOLIA),
       })
       const start = performance.now()
       const [name_, symbol_, decimals_, supply_] =

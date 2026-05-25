@@ -1,6 +1,7 @@
 import { eip155_1 } from "@ethernauta/chain"
 import {
   addressSchema,
+  bytes32Schema,
   bytesSchema,
 } from "@ethernauta/core"
 import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
@@ -21,7 +22,12 @@ import {
   parse_unit,
 } from "@ethernauta/utils"
 import { useState } from "react"
-import { bigint, type InferOutput, object } from "valibot"
+import {
+  bigint,
+  type InferOutput,
+  object,
+  parse,
+} from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
@@ -32,12 +38,18 @@ const MAINNET_CHAIN_ID = encode_chain_id({
 })
 
 // USDC on mainnet — EIP-2612 permit support since v2.2.
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+const USDC = parse(
+  addressSchema,
+  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+)
 
 // Demo spender — Uniswap V2 Router. Picked because it's the
 // recognisable spender devs reach for first when explaining
 // "approve once, swap later" flows.
-const SPENDER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+const SPENDER = parse(
+  addressSchema,
+  "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+)
 
 const VALUE = parse_unit("100", 6)
 
@@ -58,7 +70,7 @@ const signedPermitSchema = object({
   value: bigint(),
   nonce: bigint(),
   deadline: bigint(),
-  domain_separator: bytesSchema,
+  domain_separator: bytes32Schema,
   signature: bytesSchema,
 })
 type SignedPermit = InferOutput<typeof signedPermitSchema>
@@ -80,15 +92,16 @@ export function PermitDemo() {
         chain_id: MAINNET_CHAIN_ID,
         to: USDC,
       })
+      const owner_address = parse(addressSchema, owner)
       const [domain_separator_hex, nonce_hex] =
         await multicall([
           DOMAIN_SEPARATOR()(ctx),
-          nonces({ owner: owner as `0x${string}` })(ctx),
+          nonces({ owner: owner_address })(ctx),
         ] as const)
       const nonce = BigInt(nonce_hex)
       const deadline = deadline_in(3600)
       const signature = await eth_signTypedData_v4([
-        owner as `0x${string}`,
+        owner_address,
         {
           domain: {
             name: "USD Coin",
@@ -107,7 +120,7 @@ export function PermitDemo() {
           },
           primaryType: "Permit",
           message: {
-            owner,
+            owner: owner_address,
             spender: SPENDER,
             value: VALUE,
             nonce,
@@ -116,7 +129,7 @@ export function PermitDemo() {
         },
       ])(signer({ chain_id: MAINNET_CHAIN_ID }))
       set_signed({
-        owner: owner as `0x${string}`,
+        owner: owner_address,
         spender: SPENDER,
         value: VALUE,
         nonce,

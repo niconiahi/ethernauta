@@ -1,4 +1,5 @@
 import { eip155_1 } from "@ethernauta/chain"
+import { addressSchema } from "@ethernauta/core"
 import {
   get_ens_address,
   get_ens_avatar,
@@ -15,6 +16,7 @@ import {
   type InferOutput,
   nullable,
   object,
+  parse,
   string,
 } from "valibot"
 import { Button } from "../../components/button"
@@ -104,7 +106,7 @@ export function Ens137Demo() {
     set_reverse(null)
     try {
       const resolved = await get_ens_name({
-        address: address as `0x${string}`,
+        address: parse(addressSchema, address),
       })(ctx)
       set_reverse({ name: resolved })
     } catch (e: unknown) {

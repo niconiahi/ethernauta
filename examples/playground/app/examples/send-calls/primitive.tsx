@@ -5,7 +5,7 @@
 // tracker's `wait_for_receipt`. The dapp owns the
 // lifecycle here — no `wallet_sendCalls` involved.
 
-import type { Address, Hash32 } from "@ethernauta/core"
+import { addressSchema, type Hash32 } from "@ethernauta/core"
 import { create_injected_signer } from "@ethernauta/eip/1193"
 import { use_provider_detail } from "@ethernauta/eip/6963/use-provider-detail"
 import {
@@ -20,6 +20,7 @@ import {
 import { create_writer } from "@ethernauta/transport"
 import { hex_to_number } from "@ethernauta/utils"
 import { useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
@@ -56,8 +57,8 @@ export function SendCallsPrimitive() {
     for (const [i, call] of CALLS.entries()) {
       const signed = await eth_signTransaction([
         {
-          from: owner as Address,
-          to: call.to as Address,
+          from: parse(addressSchema, owner),
+          to: call.to,
           value: call.value,
           input: call.data,
         },

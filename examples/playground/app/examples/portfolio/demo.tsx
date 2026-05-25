@@ -1,4 +1,5 @@
 import { eip155_1 } from "@ethernauta/chain"
+import { addressSchema } from "@ethernauta/core"
 import {
   balanceOf,
   decimals,
@@ -17,6 +18,7 @@ import {
   type InferOutput,
   number,
   object,
+  parse,
   string,
 } from "valibot"
 import { Button } from "../../components/button"
@@ -80,15 +82,16 @@ export function PortfolioDemo() {
     set_loading(true)
     set_error(null)
     try {
+      const owner = parse(addressSchema, OWNER)
       const calls = TOKENS.flatMap((t) => {
         const ctx = contract({
           chain_id: MAINNET_CHAIN_ID,
-          to: t.address,
+          to: parse(addressSchema, t.address),
         })
         return [
           symbol()(ctx),
           decimals()(ctx),
-          balanceOf({ account: OWNER })(ctx),
+          balanceOf({ account: owner })(ctx),
         ] as const
       })
       const start = performance.now()

@@ -1,5 +1,11 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
+import {
   address_to_bytes32,
   build_gasless_order,
   type GaslessCrossChainOrder,
@@ -12,6 +18,7 @@ import {
   http,
 } from "@ethernauta/transport"
 import { useState } from "react"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
@@ -21,18 +28,24 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
   reference: eip155_11155111.chainId,
 })
 
-const SEPOLIA_REF_HEX =
-  `0x${eip155_11155111.chainId.toString(16)}` as const
+const SEPOLIA_REF_HEX = parse(
+  uint256Schema,
+  `0x${eip155_11155111.chainId.toString(16)}`,
+)
 
 const OP_SEPOLIA_REF_HEX = "0xaa37dc" as const
 
 // Sepolia USDC (Circle's testnet deployment).
-const USDC_SEPOLIA =
-  "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238" as const
+const USDC_SEPOLIA = parse(
+  addressSchema,
+  "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+)
 
 // OP Sepolia USDC.
-const USDC_OP_SEPOLIA =
-  "0x5fd84259d66Cd46123540766Be93DFE6D43130D7" as const
+const USDC_OP_SEPOLIA = parse(
+  addressSchema,
+  "0x5fd84259d66Cd46123540766Be93DFE6D43130D7",
+)
 
 // Placeholder origin settler — the demo signs the order
 // against whichever address the user pastes. Replace with
@@ -55,7 +68,10 @@ const signer = create_signer(CHAINS)
 // magic value so they can multiplex orderData layouts. The
 // canonical 7683 ref impl uses keccak("ERC7683") — replace
 // with the type your settler expects.
-const ORDER_DATA_TYPE = `0x${"00".repeat(32)}` as const
+const ORDER_DATA_TYPE = parse(
+  bytes32Schema,
+  `0x${"00".repeat(32)}`,
+)
 
 function shorten(hex: string, head = 10, tail = 8): string {
   if (hex.length <= head + tail + 1) return hex
@@ -84,9 +100,11 @@ export function CrossChain7683Demo() {
     set_error(null)
     set_signature(null)
     try {
+      const settler_address = parse(addressSchema, settler)
+      const user_address = parse(addressSchema, user)
       const built = build_gasless_order({
-        originSettler: settler as `0x${string}`,
-        user: user as `0x${string}`,
+        originSettler: settler_address,
+        user: user_address,
         originChainId: SEPOLIA_REF_HEX,
         orderDataType: ORDER_DATA_TYPE,
         // Demo order data — most settlers expect an
@@ -95,7 +113,10 @@ export function CrossChain7683Demo() {
         // emit a sentinel here so the typed-data signature
         // is real but the on-chain submission won't succeed
         // until orderData matches the settler's schema.
-        orderData: `0x${USDC_SEPOLIA.slice(2).padStart(64, "0")}${USDC_OP_SEPOLIA.slice(2).padStart(64, "0")}${OP_SEPOLIA_REF_HEX.slice(2).padStart(64, "0")}`,
+        orderData: parse(
+          bytesSchema,
+          `0x${USDC_SEPOLIA.slice(2).padStart(64, "0")}${USDC_OP_SEPOLIA.slice(2).padStart(64, "0")}${OP_SEPOLIA_REF_HEX.slice(2).padStart(64, "0")}`,
+        ),
         window: {
           open_window_s: 60 * 5,
           fill_window_s: 60 * 30,
@@ -105,7 +126,7 @@ export function CrossChain7683Demo() {
         name: "ERC-7683 settler",
         version: "1",
         chainId: eip155_11155111.chainId,
-        verifyingContract: settler as `0x${string}`,
+        verifyingContract: settler_address,
       }
       const id = hash_gasless_order({
         order: built,
@@ -142,7 +163,9 @@ export function CrossChain7683Demo() {
           label="Recipient (bytes32)"
           value={
             user
-              ? address_to_bytes32(user as `0x${string}`)
+              ? address_to_bytes32(
+                  parse(addressSchema, user),
+                )
               : "(connect)"
           }
           mono

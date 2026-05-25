@@ -7,6 +7,7 @@ import { eip155_1 } from "@ethernauta/chain"
 import {
   addressSchema,
   type Uint256,
+  uintSchema,
 } from "@ethernauta/core"
 import {
   eth_blockNumber,
@@ -74,12 +75,15 @@ export function EventDecodingDemo() {
         uint256(),
       ] as readonly AbiCodec<unknown>[]
       const decoded = await get_contract_events({
-        address: USDC,
+        address: parse(addressSchema, USDC),
         name: "Transfer",
         args,
         indexed: [true, true, false],
-        fromBlock: `0x${from.toString(16)}`,
-        toBlock: `0x${to.toString(16)}`,
+        fromBlock: parse(
+          uintSchema,
+          `0x${from.toString(16)}`,
+        ),
+        toBlock: parse(uintSchema, `0x${to.toString(16)}`),
       })(ctx)
       set_range(`${from} → ${to}`)
       set_rows(
