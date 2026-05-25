@@ -78,7 +78,7 @@ export function finalize_status(
   const found = receipts.filter((r) => r.receipt !== null)
   const all_mined = found.length === receipts.length
   const status_code = compute_status_code(receipts)
-  const composed_receipts: CallsReceipt[] = found
+  const composed_receipts = found
     .map((r) => to_calls_receipt(r.receipt))
     .filter((r): r is CallsReceipt => r !== null)
   return {

@@ -38,7 +38,7 @@ import {
 // to the same address on every mainstream EVM chain). For chains where
 // it lives at a different address (zkSync Era, a few niche L2s), this
 // constant would need an override registry — out of v1 scope.
-const MULTICALL_ADDRESS: Address = parse(
+const MULTICALL_ADDRESS = parse(
   addressSchema,
   "0xcA11bde05977b3631167028862bE2a173976CA11",
 )

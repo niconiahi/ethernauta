@@ -331,7 +331,7 @@ function match_emoji(
   _cps: readonly number[],
   _pos: number,
 ): EmojiMatch | null {
-  let node: Node = EMOJI_ROOT
+  let node = EMOJI_ROOT
   let last_match: EmojiMatch | null = null
   let consumed = 0
   for (const cp of _cps.slice(_pos)) {

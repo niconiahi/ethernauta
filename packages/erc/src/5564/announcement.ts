@@ -15,7 +15,6 @@
 import {
   type Bytes,
   bytesSchema,
-  type Hash32,
   hash32Schema,
 } from "@ethernauta/core"
 import {
@@ -35,7 +34,7 @@ const EVENT_SIGNATURE =
 
 const EMPTY_BYTES = parse(bytesSchema, "0x")
 
-export const ANNOUNCEMENT_EVENT_TOPIC: Hash32 = parse(
+export const ANNOUNCEMENT_EVENT_TOPIC = parse(
   hash32Schema,
   bytes_to_hex(
     keccak_256(new TextEncoder().encode(EVENT_SIGNATURE)),
