@@ -133,13 +133,13 @@ const typeInfoSchema = object({
   core_types: set(string()),
   abi_builders: set(string()),
 })
-type Type_info = InferOutput<typeof typeInfoSchema>
+type TypeInfo = InferOutput<typeof typeInfoSchema>
 
 function valibot_leaf(
   valibot_name: string,
   ts_type: string,
   builder_name: string,
-): Type_info {
+): TypeInfo {
   return {
     param_schema: `${valibot_name}()`,
     param_type: ts_type,
@@ -157,7 +157,7 @@ function core_leaf(
   schema_name: string,
   ts_type: string,
   builder_name: string,
-): Type_info {
+): TypeInfo {
   return {
     param_schema: schema_name,
     param_type: ts_type,
@@ -172,8 +172,8 @@ function core_leaf(
 }
 
 function merge_into(
-  target: Type_info,
-  child: Type_info,
+  target: TypeInfo,
+  child: TypeInfo,
 ): void {
   for (const v of child.valibot_names)
     target.valibot_names.add(v)
@@ -184,7 +184,7 @@ function merge_into(
     target.abi_builders.add(b)
 }
 
-function get_type_info(input: AbiInput): Type_info {
+function get_type_info(input: AbiInput): TypeInfo {
   const type = input.type
 
   if (type === "tuple" || type === "tuple[]") {
@@ -216,7 +216,7 @@ function get_type_info(input: AbiInput): Type_info {
       .join(", ")
     const struct_builder = `abi_tuple({ ${builder_fields} })`
 
-    const info: Type_info = {
+    const info: TypeInfo = {
       param_schema: struct_schema,
       param_type: struct_type,
       decoded_schema: struct_schema,
@@ -252,7 +252,7 @@ function get_type_info(input: AbiInput): Type_info {
       name: input.name,
       type: inner_type,
     })
-    const info: Type_info = {
+    const info: TypeInfo = {
       param_schema: `v_array(${inner.param_schema})`,
       param_type: `${inner.param_type}[]`,
       decoded_schema: `v_array(${inner.decoded_schema})`,
@@ -386,7 +386,7 @@ function compose_abi_imports(
 
 function compose_parameters_block(
   inputs: FunctionInput[],
-  infos: Type_info[],
+  infos: TypeInfo[],
 ): string {
   if (inputs.length === 0) return ""
   const tuple_items = infos
@@ -429,14 +429,14 @@ function compose_values_extraction(
 }
 
 function compose_param_codecs_const(
-  infos: Type_info[],
+  infos: TypeInfo[],
 ): string {
   const builders = infos.map((i) => i.builder).join(", ")
   return `const PARAM_CODECS = [${builders}] as const`
 }
 
 function compose_output_codecs_const(
-  infos: Type_info[],
+  infos: TypeInfo[],
 ): string {
   const builders = infos.map((i) => i.builder).join(", ")
   return `const OUTPUT_CODECS = [${builders}] as const`
@@ -484,7 +484,7 @@ function empty_aggregate(): Aggregate {
 // contribute everything because the decoded type is the return type.
 function fold_input(
   target: Aggregate,
-  info: Type_info,
+  info: TypeInfo,
 ): void {
   for (const v of info.valibot_names)
     target.valibot_names.add(v)
@@ -496,7 +496,7 @@ function fold_input(
 
 function fold_output(
   target: Aggregate,
-  info: Type_info,
+  info: TypeInfo,
 ): void {
   for (const v of info.valibot_names)
     target.valibot_names.add(v)
