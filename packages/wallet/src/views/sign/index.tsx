@@ -142,7 +142,9 @@ function extract_ethernauta_function():
   | FunctionSignature
   | undefined {
   const raw = transaction_request.value.params
-  const candidate = Array.isArray(raw) ? raw[0] : raw.transaction
+  const candidate = Array.isArray(raw)
+    ? raw[0]
+    : raw.transaction
   const result = safeParse(
     genericTransactionSchema,
     candidate,
@@ -312,7 +314,9 @@ function Params() {
 
 function extract_tx(): TxSummary | null {
   const raw = transaction_request.value.params
-  const candidate = Array.isArray(raw) ? raw[0] : raw.transaction
+  const candidate = Array.isArray(raw)
+    ? raw[0]
+    : raw.transaction
   const result = safeParse(txSummarySchema, candidate)
   if (!result.success) return null
   return result.output

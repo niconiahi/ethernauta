@@ -1,9 +1,14 @@
 import { useState } from "preact/hooks"
 import { Button } from "../../components/button"
 import { set_timestamp } from "../../utils/authentication"
+import { route_request } from "../../utils/router"
+import { pending_request } from "../../utils/transaction"
 import { validate_password } from "../../utils/vault"
 import { view } from "../../utils/view"
-import { init_accounts } from "../../utils/wallet"
+import {
+  init_accounts,
+  restore_accounts,
+} from "../../utils/wallet"
 
 export function Password() {
   const [password, set_password] = useState("")
@@ -32,7 +37,14 @@ export function Password() {
             return
           }
           await set_timestamp()
+          await restore_accounts()
           await init_accounts(password)
+          const pending = pending_request.value
+          if (pending) {
+            pending_request.value = null
+            await route_request(pending)
+            return
+          }
           view.value = "wallet"
         }}
       >

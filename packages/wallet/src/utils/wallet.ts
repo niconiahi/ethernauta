@@ -1,5 +1,10 @@
+import {
+  HDKey,
+  mnemonic_to_seed,
+  private_key_to_address,
+  seed_to_master_key,
+} from "@ethernauta/crypto"
 import { computed, signal } from "@preact/signals"
-import { HDKey } from "@scure/bip32"
 import {
   array,
   custom,
@@ -12,11 +17,6 @@ import {
   parse,
   string,
 } from "valibot"
-import {
-  mnemonic_to_seed,
-  private_key_to_address,
-  seed_to_master_key,
-} from "./crypto"
 import { get_vault } from "./vault"
 
 const ACCOUNT_PATH = "m/44'/60'/0'/0"
@@ -90,7 +90,10 @@ export function get_active_account(): Account {
 
 function derive_at(master: HDKey, index: number): Account {
   const key = master.derive(`${ACCOUNT_PATH}/${index}`)
-  const private_key = parse(instance(Uint8Array), key.privateKey)
+  const private_key = parse(
+    instance(Uint8Array),
+    key.privateKey,
+  )
   const address = private_key_to_address(private_key)
   return { index, address, key }
 }
@@ -135,7 +138,10 @@ export async function restore_accounts(): Promise<void> {
 export async function init_accounts(
   password: string,
 ): Promise<void> {
-  const mnemonic = parse(string(), await get_vault(password))
+  const mnemonic = parse(
+    string(),
+    await get_vault(password),
+  )
   const seed = mnemonic_to_seed(mnemonic)
   const master = seed_to_master_key(seed)
   const current = accounts.value

@@ -1,3 +1,4 @@
+import { sign_typed_data } from "@ethernauta/crypto"
 import type { ComponentChildren } from "preact"
 import { Button } from "../../components/button"
 import { get_private_key } from "../../utils/crypto"
@@ -6,7 +7,6 @@ import type {
   TransactionRejectedResponse,
 } from "../../utils/event"
 import { row_key } from "../../utils/row-key"
-import { sign_typed_data } from "../../utils/sign-typed-data"
 import { typed_data_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
 

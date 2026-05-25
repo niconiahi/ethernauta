@@ -1,43 +1,11 @@
-import { addressSchema } from "@ethernauta/core"
-import { bytes_to_hex } from "@ethernauta/utils"
-import { keccak_256 } from "@noble/hashes/sha3"
-import { getPublicKey } from "@noble/secp256k1"
-import { HDKey } from "@scure/bip32"
-import {
-  mnemonicToSeedSync,
-  validateMnemonic,
-} from "@scure/bip39"
-import { wordlist } from "@scure/bip39/wordlists/english"
+// Wallet-internal helpers that are NOT general crypto
+// primitives. The actual primitives (BIP-39 mnemonic → seed,
+// BIP-32 master key, BIP-44 derivation, public-key → address)
+// live in `@ethernauta/crypto` and are imported by the
+// wallet from there.
+
+import type { HDKey } from "@ethernauta/crypto"
 import { instance, parse } from "valibot"
-
-export function mnemonic_to_seed(mnemonic: string) {
-  if (!validateMnemonic(mnemonic, wordlist)) {
-    throw new Error("Invalid mnemonic")
-  }
-  return mnemonicToSeedSync(mnemonic)
-}
-
-export function seed_to_master_key(seed: Uint8Array) {
-  return HDKey.fromMasterSeed(seed)
-}
-
-export function derive_private_key(
-  masterKey: HDKey,
-  path = "m/44'/60'/0'/0/0",
-) {
-  const child = masterKey.derive(path)
-  if (!child.privateKey)
-    throw new Error("No private key available")
-  return child.privateKey
-}
-
-export function private_key_to_address(
-  private_key: Uint8Array,
-) {
-  const publicKey = getPublicKey(private_key, false)
-  const hash = keccak_256(publicKey.slice(1))
-  return parse(addressSchema, bytes_to_hex(hash.slice(-20)))
-}
 
 export function get_private_key(key: HDKey): Uint8Array {
   return parse(instance(Uint8Array), key.privateKey)

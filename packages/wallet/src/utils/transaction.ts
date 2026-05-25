@@ -10,6 +10,7 @@ import {
   optional,
   string,
 } from "valibot"
+import type { EthernautaRequest } from "./event"
 
 export const TransactionSchema = object({
   id: string(),
@@ -80,3 +81,6 @@ export type SendCallsRequest = InferOutput<
 >
 export const send_calls_request =
   signal<SendCallsRequest | null>(null)
+
+export const pending_request =
+  signal<EthernautaRequest | null>(null)

@@ -114,7 +114,9 @@ describe("init_accounts (first login)", () => {
     expect(master_unlocked()).toBe(true)
     const persisted = parse(
       object({
-        list: array(object({ index: number(), address: string() })),
+        list: array(
+          object({ index: number(), address: string() }),
+        ),
       }),
       store.accounts,
     )

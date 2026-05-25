@@ -1,3 +1,4 @@
+import { personal_sign_message } from "@ethernauta/crypto"
 import {
   parse_siwe_message,
   type SiweMessage,
@@ -8,7 +9,6 @@ import type {
   PersonalSignResponse,
   TransactionRejectedResponse,
 } from "../../utils/event"
-import { personal_sign_message } from "../../utils/personal-sign"
 import { personal_sign_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
 

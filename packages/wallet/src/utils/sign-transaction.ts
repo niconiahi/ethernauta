@@ -9,15 +9,18 @@ import {
   addressSchema,
   uintSchema,
 } from "@ethernauta/core"
+import type {
+  HDKey,
+  RecoveredSignature,
+} from "@ethernauta/crypto"
+import { keccak_256, sign_digest } from "@ethernauta/crypto"
 import {
+  encode_rlp,
   eth_getTransactionCount,
   genericTransactionSchema,
 } from "@ethernauta/eth"
 import type { ChainId, Reader } from "@ethernauta/transport"
 import { hex_to_bytes } from "@ethernauta/utils"
-import { keccak_256 } from "@noble/hashes/sha3"
-import type { RecoveredSignature } from "@noble/secp256k1"
-import type { HDKey } from "@scure/bip32"
 import {
   array,
   bigint,
@@ -29,8 +32,6 @@ import {
   tuple,
 } from "valibot"
 import { get_private_key, hex_to_big } from "./crypto"
-import { sign_digest } from "./ecdsa"
-import { encode } from "./rlp"
 import type { Transaction } from "./transaction"
 
 export const accessListItemSchema = object({
@@ -350,5 +351,5 @@ export function make_unsigned_fields(
 }
 
 export function encode_fields(fields: Field[]) {
-  return encode(fields)
+  return encode_rlp(fields)
 }

@@ -1,25 +1,13 @@
-import { typedDataSchema } from "@ethernauta/eip/712"
-import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
-import { sendCallsParameterSchema } from "@ethernauta/eip/5792"
-import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { useEffect } from "preact/hooks"
-import { parse, string, tuple } from "valibot"
+import { parse } from "valibot"
 import {
   is_authenticated,
   validate_vault,
 } from "./utils/authentication"
 import { EthernautaRequestSchema } from "./utils/event"
-import {
-  add_chain_request,
-  connection_request,
-  personal_sign_request,
-  send_calls_request,
-  set_code_request,
-  transaction_request,
-  typed_data_request,
-} from "./utils/transaction"
+import { route_request } from "./utils/router"
+import { pending_request } from "./utils/transaction"
 import { view } from "./utils/view"
-import { restore_accounts } from "./utils/wallet"
 import { AddChain } from "./views/add-chain/index"
 import { AuthorizeDelegation } from "./views/authorize-delegation/index"
 import { Connect } from "./views/connect/index"
@@ -46,93 +34,18 @@ export function Controller() {
           message,
         )
         if (
-          request.type ===
+          request.type !==
           "ETHERNAUTA_REQUEST_SIGN_TRANSACTION"
         ) {
-          const authenticated = await is_authenticated()
-          await validate_vault()
-          if (!authenticated) return
-          await restore_accounts()
-          if (request.method === "eth_requestAccounts") {
-            connection_request.value = { id: request.id }
-            view.value = "connect"
-            return
-          }
-          if (request.method === "eth_signTypedData_v4") {
-            const [address, typed_data] = parse(
-              tuple([string(), typedDataSchema]),
-              request.params,
-            )
-            typed_data_request.value = {
-              id: request.id,
-              address,
-              typed_data,
-            }
-            view.value = "sign-typed-data"
-            return
-          }
-          if (request.method === "personal_sign") {
-            const [message, address] = parse(
-              tuple([string(), string()]),
-              request.params,
-            )
-            personal_sign_request.value = {
-              id: request.id,
-              message,
-              address,
-            }
-            view.value = "personal-sign"
-            return
-          }
-          if (
-            request.method === "wallet_addEthereumChain"
-          ) {
-            const [chain] = parse(
-              tuple([addEthereumChainParameterSchema]),
-              request.params,
-            )
-            add_chain_request.value = {
-              id: request.id,
-              chain,
-            }
-            view.value = "add-chain"
-            return
-          }
-          if (request.method === "wallet_sendCalls") {
-            const [parameter] = parse(
-              tuple([sendCallsParameterSchema]),
-              request.params,
-            )
-            send_calls_request.value = {
-              id: request.id,
-              parameter,
-            }
-            view.value = "send-calls"
-            return
-          }
-          if (
-            request.method ===
-            "wallet_sendSetCodeTransaction"
-          ) {
-            const parameters = parse(
-              sendSetCodeTransactionParametersSchema,
-              request.params,
-            )
-            set_code_request.value = {
-              id: request.id,
-              parameters,
-            }
-            view.value = "authorize-delegation"
-            return
-          }
-          transaction_request.value = {
-            id: request.id,
-            method: request.method,
-            params: request.params ?? [],
-            to: request.to,
-          }
-          view.value = "sign"
+          return
         }
+        const authenticated = await is_authenticated()
+        if (!authenticated) {
+          pending_request.value = request
+          await validate_vault()
+          return
+        }
+        await route_request(request)
       },
     )
   }, [])

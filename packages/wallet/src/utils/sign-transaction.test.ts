@@ -1,6 +1,15 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import { addressSchema } from "@ethernauta/core"
 import {
+  derive_private_key,
+  HDKey,
+  mnemonic_to_seed,
+  private_key_to_address,
+  seed_to_master_key,
+  sign_digest,
+} from "@ethernauta/crypto"
+import { encode_rlp } from "@ethernauta/eth"
+import {
   create_reader,
   encode_chain_id,
   http,
@@ -10,21 +19,12 @@ import {
   invariant,
   number_to_hex,
 } from "@ethernauta/utils"
-import { parse } from "valibot"
 import { sign } from "@noble/secp256k1"
-import { HDKey } from "@scure/bip32"
+import { parse } from "valibot"
 import { recoverTransactionAddress } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { sepolia } from "viem/chains"
 import { describe, expect, it } from "vitest"
-import {
-  derive_private_key,
-  mnemonic_to_seed,
-  private_key_to_address,
-  seed_to_master_key,
-} from "./crypto"
-import { sign_digest } from "./ecdsa"
-import { encode } from "./rlp"
 import {
   big_to_bytes,
   compose_y_parity,
@@ -209,8 +209,8 @@ describe("transaction.ts", () => {
     ]
     const result = encode_fields(fields)
     expect(result).toBeInstanceOf(Uint8Array)
-    // should be equivalent to encode(fields)
-    const expected = encode(fields)
+    // should be equivalent to encode_rlp(fields)
+    const expected = encode_rlp(fields)
     expect(result).toEqual(expected)
   })
 

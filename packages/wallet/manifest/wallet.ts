@@ -1,9 +1,9 @@
 import { addressesSchema } from "@ethernauta/core"
 import {
-  create_envelope,
+  create_provider,
   ERROR_CODE,
   invalid_params,
-  type ProviderInternal,
+  type Provider,
   type RequestArguments,
 } from "@ethernauta/eip/1193"
 import { addEthereumChainParametersSchema } from "@ethernauta/eip/3085"
@@ -107,56 +107,65 @@ function postmessage_and_wait(
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const id = crypto.randomUUID()
-    window.addEventListener("message", function handler(event) {
-      const parsed = safeParse(
-        EthernautaResponseSchema,
-        event.data,
-      )
-      if (!parsed.success) return
-      const data = parsed.output
-      if (data.id !== id) return
-      window.removeEventListener("message", handler)
-      if (
-        data.type === "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
-      ) {
-        reject({
-          code: ERROR_CODE.USER_REJECTED_REQUEST,
-          message: "User rejected request",
-        })
-        return
-      }
-      if (
-        data.type ===
-        "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-      ) {
-        reject({
-          code: ERROR_CODE.USER_REJECTED_REQUEST,
-          message: "Extension closed",
-        })
-        return
-      }
-      if (
-        data.type === "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA" ||
-        data.type === "ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"
-      ) {
-        resolve(data.signature)
-        return
-      }
-      if (data.type === "ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED") {
-        resolve(null)
-        return
-      }
-      const payload = data.signed_transaction
-      if (args.method === "eth_requestAccounts") {
-        try {
-          resolve(JSON.parse(payload))
-        } catch {
-          resolve(payload)
+    window.addEventListener(
+      "message",
+      function handler(event) {
+        const parsed = safeParse(
+          EthernautaResponseSchema,
+          event.data,
+        )
+        if (!parsed.success) return
+        const data = parsed.output
+        if (data.id !== id) return
+        window.removeEventListener("message", handler)
+        if (
+          data.type ===
+          "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
+        ) {
+          reject({
+            code: ERROR_CODE.USER_REJECTED_REQUEST,
+            message: "User rejected request",
+          })
+          return
         }
-        return
-      }
-      resolve(payload)
-    })
+        if (
+          data.type ===
+          "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
+        ) {
+          reject({
+            code: ERROR_CODE.USER_REJECTED_REQUEST,
+            message: "Extension closed",
+          })
+          return
+        }
+        if (
+          data.type ===
+            "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA" ||
+          data.type ===
+            "ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"
+        ) {
+          resolve(data.signature)
+          return
+        }
+        if (
+          data.type ===
+          "ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED"
+        ) {
+          resolve(null)
+          return
+        }
+        const payload = data.signed_transaction
+        if (args.method === "eth_requestAccounts") {
+          try {
+            resolve(JSON.parse(payload))
+          } catch {
+            resolve(payload)
+          }
+          return
+        }
+        resolve(payload)
+      },
+    )
     const request = parse(SignTransactionRequestSchema, {
       type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
       id,
@@ -207,7 +216,7 @@ const handle_request = create_router({
   read_calls_status: (id) => compose_calls_status(id),
 })
 
-const provider: ProviderInternal = create_envelope({
+const provider: Provider = create_provider({
   request: handle_request,
 })
 
@@ -219,12 +228,16 @@ window.addEventListener("message", (event) => {
   )
   if (!notification.success) return
   const note = notification.output
-  if (note.type === "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED") {
+  if (
+    note.type === "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"
+  ) {
     if (!known_chains.has(note.chainId)) return
     set_active_chain(note.chainId)
     return
   }
-  if (note.type === "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED") {
+  if (
+    note.type === "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"
+  ) {
     set_accounts(note.accounts)
     return
   }
