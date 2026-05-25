@@ -25,7 +25,7 @@
     "dev": "tsdown --watch",
     "generate": "ethernauta registry --in src --out src/registry/registry.generated.ts && biome format --write src/registry/registry.generated.ts",
     "prebuild": "pnpm run generate",
-    "build": "tsdown && biome format --write dist",
+    "build": "tsdown",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",

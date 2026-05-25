@@ -45,9 +45,9 @@ import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import {
+  type _Function,
   type Description,
   DescriptionSchema,
-  type _Function,
 } from "@ethernauta/abi"
 import {
   emit_file_basename_for,
@@ -68,7 +68,9 @@ export const INTERFACE_DECL_RE = /^interface\s+\w/m
 export const CONTRACT_DECL_RE = /^contract\s+\w/m
 
 const classificationSchema = picklist(["interface", "skip"])
-export type Classification = InferOutput<typeof classificationSchema>
+export type Classification = InferOutput<
+  typeof classificationSchema
+>
 
 const routeSchema = object({
   source_file: string(),
@@ -113,7 +115,9 @@ export function signature_key(fn: _Function): string {
   return `${fn.name}(${param_types})`
 }
 
-export function parse_spec_link(source: string): string | null {
+export function parse_spec_link(
+  source: string,
+): string | null {
   const match = SPEC_LINK_RE.exec(source)
   if (!match) return null
   return match[1] ?? null
@@ -154,20 +158,20 @@ export function classify_source(
   if (has_interface && has_contract) {
     throw new Error(
       `${filename}.sol declares both an \`interface\` and a \`contract\`. ` +
-        `Split into separate files so each one is routable or skippable on its own.`,
+        "Split into separate files so each one is routable or skippable on its own.",
     )
   }
   if (has_interface && !starts_with_i) {
     throw new Error(
       `${filename}.sol declares an interface but its basename does not start ` +
-        `with \`I\`. Rename the file (and the interface) to follow the Solidity convention.`,
+        "with \`I\`. Rename the file (and the interface) to follow the Solidity convention.",
     )
   }
   if (has_contract && starts_with_i) {
     throw new Error(
       `${filename}.sol's basename starts with \`I\` (interface convention) but ` +
-        `the file declares a \`contract\`. Either rename to drop the \`I\` prefix ` +
-        `or restructure the file as an interface.`,
+        "the file declares a \`contract\`. Either rename to drop the \`I\` prefix " +
+        "or restructure the file as an interface.",
     )
   }
   if (!has_interface) return "skip"
@@ -207,12 +211,13 @@ export function route_for(
   //      - starts with `I` only → strip the `I` → suffix.
   //      - Empty suffix → host route; non-empty → extension route.
   const source = read_source(paths.contracts_dir, filename)
-  if (classify_source(filename, source) === "skip") return null
+  if (classify_source(filename, source) === "skip")
+    return null
   const host_number = parse_spec_link(source)
   if (!host_number) {
     throw new Error(
       `${filename}.sol declares an interface but has no ` +
-        `\`// https://eips.ethereum.org/EIPS/eip-<N>\` header.`,
+        "\`// https://eips.ethereum.org/EIPS/eip-<N>\` header.",
     )
   }
   const suffix = derive_suffix(filename, host_number)
@@ -224,7 +229,12 @@ export function route_for(
         pascal_to_kebab(suffix),
       )
     : join(paths.erc_src, host_number)
-  return { source_file: filename, host_number, suffix, out_dir }
+  return {
+    source_file: filename,
+    host_number,
+    suffix,
+    out_dir,
+  }
 }
 
 export function read_artifact_abi(
@@ -252,12 +262,15 @@ export function read_artifact_abi(
   )
   const functions: _Function[] = []
   for (const description of artifact.abi) {
-    if (description.type === "function") functions.push(description)
+    if (description.type === "function")
+      functions.push(description)
   }
   return { abi: artifact.abi, functions }
 }
 
-export function discover_sibling_modules(dir: string): string[] {
+export function discover_sibling_modules(
+  dir: string,
+): string[] {
   // Hand-written sibling .ts files at a host folder root (non-test,
   // non-directory). These are spec content the autogen can't produce —
   // e.g. erc/137 keeps `namehash.ts`, `registry.ts`, `get-ens-resolver.ts`,
@@ -266,7 +279,9 @@ export function discover_sibling_modules(dir: string): string[] {
   // `extensions/` is exported through the host barrel.
   if (!existsSync(dir)) return []
   const names: string[] = []
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+  for (const entry of readdirSync(dir, {
+    withFileTypes: true,
+  })) {
     if (!entry.isFile()) continue
     if (!entry.name.endsWith(".ts")) continue
     if (entry.name.endsWith(".test.ts")) continue
@@ -278,7 +293,9 @@ export function discover_sibling_modules(dir: string): string[] {
   return names.sort()
 }
 
-export function run_forge_build(contracts_dir: string): void {
+export function run_forge_build(
+  contracts_dir: string,
+): void {
   console.log("→ forge build")
   execFileSync("forge", ["build"], {
     cwd: contracts_dir,
@@ -304,7 +321,8 @@ export function regenerate(input?: {
     if (!quiet) console.log(msg)
   }
 
-  if (!input?.skip_forge_build) run_forge_build(contracts_dir)
+  if (!input?.skip_forge_build)
+    run_forge_build(contracts_dir)
 
   const sources = readdirSync(join(contracts_dir, "src"))
     .filter((f) => f.endsWith(".sol"))
@@ -340,7 +358,8 @@ export function regenerate(input?: {
     route: Route,
     host_set: Set<string> | null,
   ): void {
-    const { source_file, out_dir, host_number, suffix } = route
+    const { source_file, out_dir, host_number, suffix } =
+      route
     mkdirSync(out_dir, { recursive: true })
 
     // Each route writes exactly one ABI file (named after the source
@@ -426,21 +445,27 @@ export function regenerate(input?: {
   // modules. Extension folders just re-export their methods.
   for (const route of hosts) {
     const { host_number, out_dir } = route
-    const extensions_for_host = host_extensions.get(host_number) ?? []
+    const extensions_for_host =
+      host_extensions.get(host_number) ?? []
     const lines: string[] = [
       `// https://eips.ethereum.org/EIPS/eip-${host_number}`,
       "",
       `export * from "./methods"`,
     ]
-    for (const { kebab } of extensions_for_host.sort((a, b) =>
-      a.kebab < b.kebab ? -1 : 1,
+    for (const { kebab } of extensions_for_host.sort(
+      (a, b) => (a.kebab < b.kebab ? -1 : 1),
     )) {
       lines.push(`export * from "./extensions/${kebab}"`)
     }
-    for (const basename of discover_sibling_modules(out_dir)) {
+    for (const basename of discover_sibling_modules(
+      out_dir,
+    )) {
       lines.push(`export * from "./${basename}"`)
     }
-    writeFileSync(join(out_dir, "index.ts"), `${lines.join("\n")}\n`)
+    writeFileSync(
+      join(out_dir, "index.ts"),
+      `${lines.join("\n")}\n`,
+    )
   }
   for (const route of extensions) {
     const { out_dir } = route
@@ -456,18 +481,25 @@ export function regenerate(input?: {
   // their top-level `index.ts` regenerated so the extension barrel + any
   // hand-written sibling modules are re-exported, and any stale
   // `methods/` folder from a previous host-as-.sol layout is wiped.
-  const explicit_host_numbers = new Set(hosts.map((r) => r.host_number))
+  const explicit_host_numbers = new Set(
+    hosts.map((r) => r.host_number),
+  )
   const implicit_host_numbers: string[] = []
   for (const n of host_extensions.keys()) {
-    if (!explicit_host_numbers.has(n)) implicit_host_numbers.push(n)
+    if (!explicit_host_numbers.has(n))
+      implicit_host_numbers.push(n)
   }
   implicit_host_numbers.sort()
   for (const host_number of implicit_host_numbers) {
     const out_dir = join(erc_src, host_number)
-    const extensions_for_host = host_extensions.get(host_number) ?? []
+    const extensions_for_host =
+      host_extensions.get(host_number) ?? []
     const stale_methods = join(out_dir, "methods")
     if (existsSync(stale_methods)) {
-      rmSync(stale_methods, { recursive: true, force: true })
+      rmSync(stale_methods, {
+        recursive: true,
+        force: true,
+      })
     }
     // Implicit hosts never own an ABI of their own — extensions write
     // theirs inside `extensions/<kebab>/`. Anything matching `*.abi.json`
@@ -483,15 +515,20 @@ export function regenerate(input?: {
       `// https://eips.ethereum.org/EIPS/eip-${host_number}`,
       "",
     ]
-    for (const { kebab } of extensions_for_host.sort((a, b) =>
-      a.kebab < b.kebab ? -1 : 1,
+    for (const { kebab } of extensions_for_host.sort(
+      (a, b) => (a.kebab < b.kebab ? -1 : 1),
     )) {
       lines.push(`export * from "./extensions/${kebab}"`)
     }
-    for (const basename of discover_sibling_modules(out_dir)) {
+    for (const basename of discover_sibling_modules(
+      out_dir,
+    )) {
       lines.push(`export * from "./${basename}"`)
     }
-    writeFileSync(join(out_dir, "index.ts"), `${lines.join("\n")}\n`)
+    writeFileSync(
+      join(out_dir, "index.ts"),
+      `${lines.join("\n")}\n`,
+    )
     const rel = out_dir.startsWith(repo_root)
       ? out_dir.slice(repo_root.length + 1)
       : out_dir

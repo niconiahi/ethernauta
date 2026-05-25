@@ -5,13 +5,11 @@
     "inputs": [
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [],
@@ -23,15 +21,13 @@
     "inputs": [
       {
         "name": "owner",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "outputs": [
       {
         "name": "balance",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -42,15 +38,13 @@
     "inputs": [
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "operator",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "stateMutability": "view"
@@ -61,20 +55,17 @@
     "inputs": [
       {
         "name": "owner",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "operator",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "view"
@@ -86,8 +77,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "string",
-        "internalType": "string"
+        "type": "string"
       }
     ],
     "stateMutability": "view"
@@ -98,15 +88,13 @@
     "inputs": [
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "owner",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "stateMutability": "view"
@@ -117,18 +105,15 @@
     "inputs": [
       {
         "name": "from",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [],
@@ -140,23 +125,19 @@
     "inputs": [
       {
         "name": "from",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [],
@@ -168,13 +149,11 @@
     "inputs": [
       {
         "name": "operator",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "approved",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "outputs": [],
@@ -186,15 +165,13 @@
     "inputs": [
       {
         "name": "interfaceId",
-        "type": "bytes4",
-        "internalType": "bytes4"
+        "type": "bytes4"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "view"
@@ -206,8 +183,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "string",
-        "internalType": "string"
+        "type": "string"
       }
     ],
     "stateMutability": "view"
@@ -218,15 +194,13 @@
     "inputs": [
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "string",
-        "internalType": "string"
+        "type": "string"
       }
     ],
     "stateMutability": "view"
@@ -237,18 +211,15 @@
     "inputs": [
       {
         "name": "from",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "tokenId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [],
@@ -261,20 +232,17 @@
       {
         "name": "owner",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "approved",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "tokenId",
         "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
+        "indexed": true
       }
     ],
     "anonymous": false
@@ -286,20 +254,17 @@
       {
         "name": "owner",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "operator",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "approved",
         "type": "bool",
-        "indexed": false,
-        "internalType": "bool"
+        "indexed": false
       }
     ],
     "anonymous": false
@@ -311,20 +276,17 @@
       {
         "name": "from",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "to",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "tokenId",
         "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
+        "indexed": true
       }
     ],
     "anonymous": false

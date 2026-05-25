@@ -1,14 +1,16 @@
-import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import {
-  uint48,
   decode_function_result,
   encode_function_call,
+  uint48,
 } from "@ethernauta/abi"
-import { parse } from "valibot"
-import type { Uint48 } from "@ethernauta/core"
+import type { Bytes, Uint48 } from "@ethernauta/core"
 import { bytesSchema, uint48Schema } from "@ethernauta/core"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
+import { bytes_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint48()] as const
@@ -17,8 +19,6 @@ export const CLOCK_SIGNATURE = {
   signature: "clock()",
   names: [],
 }
-
-
 
 export function clock() {
   return (context: ContractContext): Callable<Uint48> => {

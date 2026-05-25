@@ -44,7 +44,9 @@ describe("announcement.ts — metadata round-trip", () => {
   })
 
   it("should treat empty metadata as zero view tag", () => {
-    const decoded = decode_metadata(parse(bytesSchema, "0x"))
+    const decoded = decode_metadata(
+      parse(bytesSchema, "0x"),
+    )
     expect(decoded.view_tag).toBe(0)
     expect(decoded.body).toBe("0x")
   })

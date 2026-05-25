@@ -1,6 +1,9 @@
 // https://docs.ens.domains/ensip/1
 
-import { type Bytes32, bytes32Schema } from "@ethernauta/core"
+import {
+  type Bytes32,
+  bytes32Schema,
+} from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { parse } from "valibot"

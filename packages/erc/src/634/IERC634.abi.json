@@ -5,20 +5,17 @@
     "inputs": [
       {
         "name": "node",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "type": "bytes32"
       },
       {
         "name": "key",
-        "type": "string",
-        "internalType": "string"
+        "type": "string"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "string",
-        "internalType": "string"
+        "type": "string"
       }
     ],
     "stateMutability": "view"
@@ -30,26 +27,22 @@
       {
         "name": "node",
         "type": "bytes32",
-        "indexed": true,
-        "internalType": "bytes32"
+        "indexed": true
       },
       {
         "name": "indexedKey",
         "type": "string",
-        "indexed": true,
-        "internalType": "string"
+        "indexed": true
       },
       {
         "name": "key",
         "type": "string",
-        "indexed": false,
-        "internalType": "string"
+        "indexed": false
       },
       {
         "name": "value",
         "type": "string",
-        "indexed": false,
-        "internalType": "string"
+        "indexed": false
       }
     ],
     "anonymous": false

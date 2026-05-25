@@ -6,8 +6,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "string",
-        "internalType": "string"
+        "type": "string"
       }
     ],
     "stateMutability": "view"
@@ -19,8 +18,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint48",
-        "internalType": "uint48"
+        "type": "uint48"
       }
     ],
     "stateMutability": "view"

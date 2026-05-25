@@ -478,6 +478,12 @@ export const REGISTRY = {
     types: ["uint256", "address", "address"],
     param_names: ["shares", "receiver", "owner"],
   },
+  "0xbc1c58d1": {
+    name: "contenthash",
+    signature: "contenthash(bytes32)",
+    types: ["bytes32"],
+    param_names: ["node"],
+  },
   "0xc3cda520": {
     name: "delegateBySig",
     signature:

@@ -5,20 +5,17 @@
     "inputs": [
       {
         "name": "owner",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "spender",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -29,20 +26,17 @@
     "inputs": [
       {
         "name": "spender",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "value",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable"
@@ -53,15 +47,13 @@
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -72,20 +64,17 @@
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "value",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable"
@@ -97,8 +86,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -109,20 +97,17 @@
     "inputs": [
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "value",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable"
@@ -133,25 +118,21 @@
     "inputs": [
       {
         "name": "from",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "value",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable"
@@ -163,8 +144,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "stateMutability": "view"
@@ -175,20 +155,17 @@
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "value",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable"
@@ -200,20 +177,17 @@
       {
         "name": "owner",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "spender",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "value",
         "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "indexed": false
       }
     ],
     "anonymous": false
@@ -225,20 +199,17 @@
       {
         "name": "from",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "to",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "value",
         "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "indexed": false
       }
     ],
     "anonymous": false

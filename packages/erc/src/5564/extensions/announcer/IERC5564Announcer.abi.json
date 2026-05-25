@@ -5,23 +5,19 @@
     "inputs": [
       {
         "name": "schemeId",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "stealthAddress",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "ephemeralPubKey",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       },
       {
         "name": "metadata",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [],
@@ -34,32 +30,27 @@
       {
         "name": "schemeId",
         "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
+        "indexed": true
       },
       {
         "name": "stealthAddress",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "caller",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "ephemeralPubKey",
         "type": "bytes",
-        "indexed": false,
-        "internalType": "bytes"
+        "indexed": false
       },
       {
         "name": "metadata",
         "type": "bytes",
-        "indexed": false,
-        "internalType": "bytes"
+        "indexed": false
       }
     ],
     "anonymous": false

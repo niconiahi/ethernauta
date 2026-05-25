@@ -5,35 +5,29 @@
     "inputs": [
       {
         "name": "initiator",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "token",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "fee",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "nonpayable"

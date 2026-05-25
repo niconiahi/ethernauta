@@ -21,7 +21,12 @@ import {
   Point,
   utils,
 } from "@noble/secp256k1"
-import { type InferOutput, number, object, parse } from "valibot"
+import {
+  type InferOutput,
+  number,
+  object,
+  parse,
+} from "valibot"
 
 export const SCHEME_1_ID = 1 as const
 

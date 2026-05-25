@@ -5,20 +5,17 @@
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "id",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -29,20 +26,17 @@
     "inputs": [
       {
         "name": "accounts",
-        "type": "address[]",
-        "internalType": "address[]"
+        "type": "address[]"
       },
       {
         "name": "ids",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint256[]"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view"
@@ -53,20 +47,17 @@
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "operator",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "view"
@@ -77,28 +68,23 @@
     "inputs": [
       {
         "name": "from",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "ids",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint256[]"
       },
       {
         "name": "values",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
+        "type": "uint256[]"
       },
       {
         "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [],
@@ -110,28 +96,23 @@
     "inputs": [
       {
         "name": "from",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "to",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "id",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "value",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [],
@@ -143,13 +124,11 @@
     "inputs": [
       {
         "name": "operator",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "approved",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "outputs": [],
@@ -161,15 +140,13 @@
     "inputs": [
       {
         "name": "interfaceId",
-        "type": "bytes4",
-        "internalType": "bytes4"
+        "type": "bytes4"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "view"
@@ -181,20 +158,17 @@
       {
         "name": "account",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "operator",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "approved",
         "type": "bool",
-        "indexed": false,
-        "internalType": "bool"
+        "indexed": false
       }
     ],
     "anonymous": false
@@ -206,32 +180,27 @@
       {
         "name": "operator",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "from",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "to",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "ids",
         "type": "uint256[]",
-        "indexed": false,
-        "internalType": "uint256[]"
+        "indexed": false
       },
       {
         "name": "values",
         "type": "uint256[]",
-        "indexed": false,
-        "internalType": "uint256[]"
+        "indexed": false
       }
     ],
     "anonymous": false
@@ -243,32 +212,27 @@
       {
         "name": "operator",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "from",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "to",
         "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "indexed": true
       },
       {
         "name": "id",
         "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "indexed": false
       },
       {
         "name": "value",
         "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "indexed": false
       }
     ],
     "anonymous": false
@@ -280,14 +244,12 @@
       {
         "name": "value",
         "type": "string",
-        "indexed": false,
-        "internalType": "string"
+        "indexed": false
       },
       {
         "name": "id",
         "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
+        "indexed": true
       }
     ],
     "anonymous": false

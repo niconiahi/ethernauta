@@ -6,10 +6,10 @@ import {
   type Bytes32,
   bytes32Schema,
   bytesSchema,
-  type Uint256,
-  uint256Schema,
   type Uint32,
+  type Uint256,
   uint32Schema,
+  uint256Schema,
 } from "@ethernauta/core"
 import {
   type InferOutput,
@@ -39,8 +39,14 @@ export function compute_deadlines(
   const open = now_s + window.open_window_s
   const fill = now_s + window.fill_window_s
   return {
-    openDeadline: parse(uint32Schema, `0x${open.toString(16)}`),
-    fillDeadline: parse(uint32Schema, `0x${fill.toString(16)}`),
+    openDeadline: parse(
+      uint32Schema,
+      `0x${open.toString(16)}`,
+    ),
+    fillDeadline: parse(
+      uint32Schema,
+      `0x${fill.toString(16)}`,
+    ),
   }
 }
 

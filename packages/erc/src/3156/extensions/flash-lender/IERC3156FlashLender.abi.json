@@ -5,20 +5,17 @@
     "inputs": [
       {
         "name": "token",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -29,30 +26,25 @@
     "inputs": [
       {
         "name": "receiver",
-        "type": "address",
-        "internalType": "contract IERC3156FlashBorrower"
+        "type": "address"
       },
       {
         "name": "token",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       },
       {
         "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
         "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable"
@@ -63,15 +55,13 @@
     "inputs": [
       {
         "name": "token",
-        "type": "address",
-        "internalType": "address"
+        "type": "address"
       }
     ],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view"

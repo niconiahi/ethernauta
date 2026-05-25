@@ -3,8 +3,8 @@ import {
   addressSchema,
   bytes32Schema,
   bytesSchema,
-  uint256Schema,
   uint32Schema,
+  uint256Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,

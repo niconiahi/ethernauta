@@ -2,8 +2,8 @@ import {
   addressSchema,
   bytes32Schema,
   bytesSchema,
-  uint256Schema,
   uint32Schema,
+  uint256Schema,
 } from "@ethernauta/core"
 import { encode_type } from "@ethernauta/eip/712"
 import { parse } from "valibot"

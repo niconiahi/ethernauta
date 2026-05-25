@@ -5,18 +5,15 @@
     "inputs": [
       {
         "name": "orderId",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "type": "bytes32"
       },
       {
         "name": "originData",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       },
       {
         "name": "fillerData",
-        "type": "bytes",
-        "internalType": "bytes"
+        "type": "bytes"
       }
     ],
     "outputs": [],

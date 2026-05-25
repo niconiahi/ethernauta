@@ -9,9 +9,18 @@ import {
 } from "node:fs"
 import { tmpdir } from "node:os"
 import { dirname, join } from "node:path"
-import { DescriptionSchema, functionSchema } from "@ethernauta/abi"
+import {
+  DescriptionSchema,
+  functionSchema,
+} from "@ethernauta/abi"
 import { array, parse } from "valibot"
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from "vitest"
 
 import {
   classify_file,
@@ -73,10 +82,14 @@ describe("signature_key", () => {
   })
 
   it("computes a zero-input signature", () => {
-    expect(signature_key(total_supply)).toBe("totalSupply()")
+    expect(signature_key(total_supply)).toBe(
+      "totalSupply()",
+    )
   })
   it("computes a single-input signature", () => {
-    expect(signature_key(balance_of)).toBe("balanceOf(address)")
+    expect(signature_key(balance_of)).toBe(
+      "balanceOf(address)",
+    )
   })
   it("computes a multi-input signature with mixed types", () => {
     expect(signature_key(transfer_from)).toBe(
@@ -98,7 +111,9 @@ describe("derive_suffix", () => {
   ])(
     "derive_suffix(%s, %s) → %s",
     (filename, host_number, expected) => {
-      expect(derive_suffix(filename, host_number)).toBe(expected)
+      expect(derive_suffix(filename, host_number)).toBe(
+        expected,
+      )
     },
   )
 })
@@ -151,12 +166,14 @@ describe("parse_spec_link", () => {
   })
 
   it("tolerates trailing whitespace after the URL", () => {
-    const src = "// https://eips.ethereum.org/EIPS/eip-721   \n"
+    const src =
+      "// https://eips.ethereum.org/EIPS/eip-721   \n"
     expect(parse_spec_link(src)).toBe("721")
   })
 
   it("does NOT match a non-numeric eip identifier", () => {
-    const src = "// https://eips.ethereum.org/EIPS/eip-xyz\n"
+    const src =
+      "// https://eips.ethereum.org/EIPS/eip-xyz\n"
     expect(parse_spec_link(src)).toBeNull()
   })
 
@@ -195,15 +212,22 @@ describe("classify_source", () => {
   })
 
   it("throws when both interface and contract are declared", () => {
-    const src = ["interface IFoo {}", "contract FooImpl {}"].join("\n")
+    const src = [
+      "interface IFoo {}",
+      "contract FooImpl {}",
+    ].join("\n")
     expect(() => classify_source("IFoo", src)).toThrow(
       /declares both an `interface` and a `contract`/,
     )
   })
 
   it("skips a .sol file with no top-level declaration", () => {
-    expect(classify_source("Foo", "// just a comment\n")).toBe("skip")
-    expect(classify_source("IFoo", "// just a comment\n")).toBe("skip")
+    expect(
+      classify_source("Foo", "// just a comment\n"),
+    ).toBe("skip")
+    expect(
+      classify_source("IFoo", "// just a comment\n"),
+    ).toBe("skip")
   })
 
   it("skips an IFoo.sol that only declares structs (no interface or contract)", () => {
@@ -218,7 +242,10 @@ describe("classify_source", () => {
 
 type FixtureFiles = Record<string, string>
 
-function write_files(root: string, files: FixtureFiles): void {
+function write_files(
+  root: string,
+  files: FixtureFiles,
+): void {
   for (const [rel, content] of Object.entries(files)) {
     const full = join(root, rel)
     mkdirSync(dirname(full), { recursive: true })
@@ -290,7 +317,11 @@ const IERC20_ABI = JSON.stringify(
         inputs: [
           { name: "from", type: "address", indexed: true },
           { name: "to", type: "address", indexed: true },
-          { name: "value", type: "uint256", indexed: false },
+          {
+            name: "value",
+            type: "uint256",
+            indexed: false,
+          },
         ],
         anonymous: false,
       },
@@ -385,17 +416,21 @@ describe("classify_file (filesystem)", () => {
   })
 
   it("returns 'interface' for a valid I-prefixed interface", () => {
-    write_files(root, { "contracts/src/IFoo.sol": "interface IFoo {}" })
-    expect(classify_file(join(root, "contracts"), "IFoo")).toBe(
-      "interface",
-    )
+    write_files(root, {
+      "contracts/src/IFoo.sol": "interface IFoo {}",
+    })
+    expect(
+      classify_file(join(root, "contracts"), "IFoo"),
+    ).toBe("interface")
   })
 
   it("returns 'skip' for a non-prefixed contract file", () => {
     write_files(root, {
       "contracts/src/Foo.sol": "contract Foo {}",
     })
-    expect(classify_file(join(root, "contracts"), "Foo")).toBe("skip")
+    expect(
+      classify_file(join(root, "contracts"), "Foo"),
+    ).toBe("skip")
   })
 
   it("throws when an I-prefixed file declares a contract", () => {
@@ -422,7 +457,9 @@ describe("route_for", () => {
   })
 
   it("routes IERC20 as a host", () => {
-    write_files(root, { "contracts/src/IERC20.sol": IERC20_SRC })
+    write_files(root, {
+      "contracts/src/IERC20.sol": IERC20_SRC,
+    })
     const paths = make_paths(root)
     expect(route_for(paths, "IERC20")).toEqual({
       source_file: "IERC20",
@@ -434,14 +471,20 @@ describe("route_for", () => {
 
   it("routes IERC20Burnable as an extension under 20/extensions/burnable", () => {
     write_files(root, {
-      "contracts/src/IERC20Burnable.sol": IERC20_BURNABLE_SRC,
+      "contracts/src/IERC20Burnable.sol":
+        IERC20_BURNABLE_SRC,
     })
     const paths = make_paths(root)
     expect(route_for(paths, "IERC20Burnable")).toEqual({
       source_file: "IERC20Burnable",
       host_number: "20",
       suffix: "Burnable",
-      out_dir: join(paths.erc_src, "20", "extensions", "burnable"),
+      out_dir: join(
+        paths.erc_src,
+        "20",
+        "extensions",
+        "burnable",
+      ),
     })
   })
 
@@ -459,7 +502,12 @@ describe("route_for", () => {
     const route = route_for(paths, "IERC1155MetadataURI")
     expect(route?.suffix).toBe("MetadataURI")
     expect(route?.out_dir).toBe(
-      join(paths.erc_src, "1155", "extensions", "metadata-uri"),
+      join(
+        paths.erc_src,
+        "1155",
+        "extensions",
+        "metadata-uri",
+      ),
     )
   })
 
@@ -474,8 +522,15 @@ describe("route_for", () => {
       "contracts/src/IOriginSettler.sol": src,
     })
     const paths = make_paths(root)
-    expect(route_for(paths, "IOriginSettler")?.out_dir).toBe(
-      join(paths.erc_src, "7683", "extensions", "origin-settler"),
+    expect(
+      route_for(paths, "IOriginSettler")?.out_dir,
+    ).toBe(
+      join(
+        paths.erc_src,
+        "7683",
+        "extensions",
+        "origin-settler",
+      ),
     )
   })
 
@@ -483,16 +538,18 @@ describe("route_for", () => {
     write_files(root, {
       "contracts/src/BatchExecutor.sol": BATCH_EXECUTOR_SRC,
     })
-    expect(route_for(make_paths(root), "BatchExecutor")).toBeNull()
+    expect(
+      route_for(make_paths(root), "BatchExecutor"),
+    ).toBeNull()
   })
 
   it("throws when an interface file has no spec link", () => {
     write_files(root, {
       "contracts/src/IFoo.sol": "interface IFoo {}",
     })
-    expect(() => route_for(make_paths(root), "IFoo")).toThrow(
-      /IFoo\.sol declares an interface but has no/,
-    )
+    expect(() =>
+      route_for(make_paths(root), "IFoo"),
+    ).toThrow(/IFoo\.sol declares an interface but has no/)
   })
 })
 
@@ -510,7 +567,9 @@ describe("discover_sibling_modules", () => {
   })
 
   it("returns [] for a non-existent directory", () => {
-    expect(discover_sibling_modules(join(root, "nope"))).toEqual([])
+    expect(
+      discover_sibling_modules(join(root, "nope")),
+    ).toEqual([])
   })
 
   it("returns only non-test .ts files, excluding index.ts, sorted", () => {
@@ -549,7 +608,11 @@ describe("read_artifact_abi", () => {
 
   it("throws with the resolved path when the artifact is missing", () => {
     expect(() =>
-      read_artifact_abi(join(root, "out"), "IERC20", "IERC20"),
+      read_artifact_abi(
+        join(root, "out"),
+        "IERC20",
+        "IERC20",
+      ),
     ).toThrow(
       /forge artifact not found: .+\/out\/IERC20\.sol\/IERC20\.json/,
     )
@@ -578,15 +641,22 @@ describe("read_artifact_abi", () => {
 // regenerate — integration tests against a fully-built fixture tree.
 // -----------------------------------------------------------------------------
 
-function snapshot_tree(root: string): Record<string, string> {
+function snapshot_tree(
+  root: string,
+): Record<string, string> {
   const out: Record<string, string> = {}
   function walk(dir: string, prefix: string): void {
     if (!existsSync(dir)) return
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      const rel = prefix ? `${prefix}/${entry.name}` : entry.name
+    for (const entry of readdirSync(dir, {
+      withFileTypes: true,
+    })) {
+      const rel = prefix
+        ? `${prefix}/${entry.name}`
+        : entry.name
       const full = join(dir, entry.name)
       if (entry.isDirectory()) walk(full, rel)
-      else if (entry.isFile()) out[rel] = readFileSync(full, "utf8")
+      else if (entry.isFile())
+        out[rel] = readFileSync(full, "utf8")
     }
   }
   walk(root, "")
@@ -605,28 +675,35 @@ describe("regenerate (integration)", () => {
   it("composes the expected host + extension tree (IERC20 + IERC20Burnable)", () => {
     write_files(root, {
       "contracts/src/IERC20.sol": IERC20_SRC,
-      "contracts/src/IERC20Burnable.sol": IERC20_BURNABLE_SRC,
+      "contracts/src/IERC20Burnable.sol":
+        IERC20_BURNABLE_SRC,
       "contracts/out/IERC20.sol/IERC20.json": IERC20_ABI,
       "contracts/out/IERC20Burnable.sol/IERC20Burnable.json":
         IERC20_BURNABLE_ABI,
     })
     const paths = make_paths(root)
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
 
     const host_dir = join(paths.erc_src, "20")
     const ext_dir = join(host_dir, "extensions", "burnable")
     expect(existsSync(host_dir)).toBe(true)
     expect(existsSync(ext_dir)).toBe(true)
-    expect(existsSync(join(host_dir, "IERC20.abi.json"))).toBe(true)
+    expect(
+      existsSync(join(host_dir, "IERC20.abi.json")),
+    ).toBe(true)
     expect(
       existsSync(join(ext_dir, "IERC20Burnable.abi.json")),
     ).toBe(true)
-    expect(existsSync(join(host_dir, "methods", "index.ts"))).toBe(
-      true,
-    )
-    expect(existsSync(join(ext_dir, "methods", "index.ts"))).toBe(
-      true,
-    )
+    expect(
+      existsSync(join(host_dir, "methods", "index.ts")),
+    ).toBe(true)
+    expect(
+      existsSync(join(ext_dir, "methods", "index.ts")),
+    ).toBe(true)
 
     const host_index = readFileSync(
       join(host_dir, "index.ts"),
@@ -635,7 +712,9 @@ describe("regenerate (integration)", () => {
     expect(host_index).toContain(
       "// https://eips.ethereum.org/EIPS/eip-20",
     )
-    expect(host_index).toContain(`export * from "./methods"`)
+    expect(host_index).toContain(
+      `export * from "./methods"`,
+    )
     expect(host_index).toContain(
       `export * from "./extensions/burnable"`,
     )
@@ -648,10 +727,14 @@ describe("regenerate (integration)", () => {
 
     // Burnable's `totalSupply` is inherited from IERC20 — should be
     // subtracted from the extension's method list.
-    const burnable_methods = readdirSync(join(ext_dir, "methods"))
+    const burnable_methods = readdirSync(
+      join(ext_dir, "methods"),
+    )
     expect(burnable_methods).toContain("index.ts")
     expect(
-      burnable_methods.some((f) => f.startsWith("total-supply")),
+      burnable_methods.some((f) =>
+        f.startsWith("total-supply"),
+      ),
     ).toBe(false)
     expect(
       burnable_methods.some((f) => f.startsWith("burn")),
@@ -661,34 +744,50 @@ describe("regenerate (integration)", () => {
   it("is byte-identical on a second run (idempotent)", () => {
     write_files(root, {
       "contracts/src/IERC20.sol": IERC20_SRC,
-      "contracts/src/IERC20Burnable.sol": IERC20_BURNABLE_SRC,
+      "contracts/src/IERC20Burnable.sol":
+        IERC20_BURNABLE_SRC,
       "contracts/out/IERC20.sol/IERC20.json": IERC20_ABI,
       "contracts/out/IERC20Burnable.sol/IERC20Burnable.json":
         IERC20_BURNABLE_ABI,
     })
     const paths = make_paths(root)
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
     const first = snapshot_tree(paths.erc_src)
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
     const second = snapshot_tree(paths.erc_src)
     expect(second).toEqual(first)
   })
 
   it("processes an implicit-host case (no host .sol, only extensions)", () => {
     write_files(root, {
-      "contracts/src/IERC5564Announcer.sol": IERC5564_ANNOUNCER_SRC,
+      "contracts/src/IERC5564Announcer.sol":
+        IERC5564_ANNOUNCER_SRC,
       "contracts/out/IERC5564Announcer.sol/IERC5564Announcer.json":
         IERC5564_ANNOUNCER_ABI,
     })
     const paths = make_paths(root)
     // Pre-existing sibling module the host index.ts should re-export.
-    mkdirSync(join(paths.erc_src, "5564"), { recursive: true })
+    mkdirSync(join(paths.erc_src, "5564"), {
+      recursive: true,
+    })
     writeFileSync(
       join(paths.erc_src, "5564", "scheme-1.ts"),
       "export const SCHEME_ID = 1\n",
     )
 
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
 
     const host_index = readFileSync(
       join(paths.erc_src, "5564", "index.ts"),
@@ -698,30 +797,38 @@ describe("regenerate (integration)", () => {
       "// https://eips.ethereum.org/EIPS/eip-5564",
     )
     // Implicit host has no `./methods` re-export.
-    expect(host_index).not.toContain(`export * from "./methods"`)
+    expect(host_index).not.toContain(
+      `export * from "./methods"`,
+    )
     expect(host_index).toContain(
       `export * from "./extensions/announcer"`,
     )
-    expect(host_index).toContain(`export * from "./scheme-1"`)
+    expect(host_index).toContain(
+      `export * from "./scheme-1"`,
+    )
   })
 
   it("wipes a stale methods/ folder at an implicit host", () => {
     write_files(root, {
-      "contracts/src/IERC5564Announcer.sol": IERC5564_ANNOUNCER_SRC,
+      "contracts/src/IERC5564Announcer.sol":
+        IERC5564_ANNOUNCER_SRC,
       "contracts/out/IERC5564Announcer.sol/IERC5564Announcer.json":
         IERC5564_ANNOUNCER_ABI,
       // Stale from a previous host-as-.sol layout.
       "packages/erc/src/5564/methods/old.ts": "// stale\n",
-      "packages/erc/src/5564/methods/index.ts":
-        `export * from "./old"\n`,
+      "packages/erc/src/5564/methods/index.ts": `export * from "./old"\n`,
       "packages/erc/src/5564/IERC5564.abi.json": "[]\n",
     })
     const paths = make_paths(root)
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
 
-    expect(existsSync(join(paths.erc_src, "5564", "methods"))).toBe(
-      false,
-    )
+    expect(
+      existsSync(join(paths.erc_src, "5564", "methods")),
+    ).toBe(false)
     expect(
       existsSync(
         join(paths.erc_src, "5564", "IERC5564.abi.json"),
@@ -737,13 +844,21 @@ describe("regenerate (integration)", () => {
       "packages/erc/src/20/IERCOld.abi.json": "[]\n",
     })
     const paths = make_paths(root)
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
 
     expect(
-      existsSync(join(paths.erc_src, "20", "IERCOld.abi.json")),
+      existsSync(
+        join(paths.erc_src, "20", "IERCOld.abi.json"),
+      ),
     ).toBe(false)
     expect(
-      existsSync(join(paths.erc_src, "20", "IERC20.abi.json")),
+      existsSync(
+        join(paths.erc_src, "20", "IERC20.abi.json"),
+      ),
     ).toBe(true)
   })
 
@@ -751,10 +866,15 @@ describe("regenerate (integration)", () => {
     write_files(root, {
       "contracts/src/IERC20.sol": IERC20_SRC,
       "contracts/out/IERC20.sol/IERC20.json": IERC20_ABI,
-      "packages/erc/src/20/helper.ts": "export const x = 1\n",
+      "packages/erc/src/20/helper.ts":
+        "export const x = 1\n",
     })
     const paths = make_paths(root)
-    regenerate({ paths, skip_forge_build: true, quiet: true })
+    regenerate({
+      paths,
+      skip_forge_build: true,
+      quiet: true,
+    })
 
     const host_index = readFileSync(
       join(paths.erc_src, "20", "index.ts"),
@@ -784,8 +904,14 @@ describe("regenerate (hard-failure paths)", () => {
     })
     const paths = make_paths(root)
     expect(() =>
-      regenerate({ paths, skip_forge_build: true, quiet: true }),
-    ).toThrow(/forge artifact not found:.+IERC20\.sol\/IERC20\.json/)
+      regenerate({
+        paths,
+        skip_forge_build: true,
+        quiet: true,
+      }),
+    ).toThrow(
+      /forge artifact not found:.+IERC20\.sol\/IERC20\.json/,
+    )
   })
 
   it("throws when an I-prefixed file declares a contract (classify_file)", () => {
@@ -798,7 +924,11 @@ describe("regenerate (hard-failure paths)", () => {
     })
     const paths = make_paths(root)
     expect(() =>
-      regenerate({ paths, skip_forge_build: true, quiet: true }),
+      regenerate({
+        paths,
+        skip_forge_build: true,
+        quiet: true,
+      }),
     ).toThrow(/IFoo\.sol's basename starts with `I`/)
   })
 
@@ -811,7 +941,11 @@ describe("regenerate (hard-failure paths)", () => {
     })
     const paths = make_paths(root)
     expect(() =>
-      regenerate({ paths, skip_forge_build: true, quiet: true }),
+      regenerate({
+        paths,
+        skip_forge_build: true,
+        quiet: true,
+      }),
     ).toThrow(/IFoo\.sol declares an interface but has no/)
   })
 })
