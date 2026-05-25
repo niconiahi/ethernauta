@@ -26,19 +26,22 @@ import {
 } from "@ethernauta/core"
 import { personal_sign } from "@ethernauta/eip/191"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
-import {
-  create_injected_signer,
-  type Provider,
-} from "@ethernauta/eip/1193"
+import { type Provider } from "@ethernauta/eip/1193"
 import { build_siwe_message } from "@ethernauta/eip/4361"
 import {
   ANNOUNCE_EVENT,
+  clear_provider_detail,
   type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
   REQUEST_EVENT,
+  set_provider_detail,
+  web_storage,
 } from "@ethernauta/eip/6963"
-import { PICKED_PROVIDER_RDNS_KEY } from "@ethernauta/eip/6963/use-provider-detail"
-import { encode_chain_id } from "@ethernauta/transport"
+import {
+  create_injected_signer,
+  encode_chain_id,
+} from "@ethernauta/transport"
+import { PROVIDER_STORE_KEY } from "../lib/provider-store"
 import { useEffect, useRef, useState } from "react"
 import { useRevalidator } from "react-router"
 import { parse } from "valibot"
@@ -186,10 +189,11 @@ export function ConnectWalletButton({
         }
         throw new Error(reason)
       }
-      window.localStorage.setItem(
-        PICKED_PROVIDER_RDNS_KEY,
-        detail.info.rdns,
-      )
+      set_provider_detail({
+        store: web_storage(window.localStorage),
+        key: PROVIDER_STORE_KEY,
+        provider_detail: detail,
+      })
       set_open(false)
       revalidator.revalidate()
     } catch (e) {
@@ -205,9 +209,10 @@ export function ConnectWalletButton({
       await fetch("/api/auth/siwe/logout", {
         method: "POST",
       })
-      window.localStorage.removeItem(
-        PICKED_PROVIDER_RDNS_KEY,
-      )
+      clear_provider_detail({
+        store: web_storage(window.localStorage),
+        key: PROVIDER_STORE_KEY,
+      })
       set_open(false)
       revalidator.revalidate()
     } finally {

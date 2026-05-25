@@ -1,30 +1,25 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
 import { SendCallsDemo } from "../../examples/send-calls/demo"
+import demoSource from "../../examples/send-calls/demo.tsx?raw"
 
 # ERC-5792 — batched calls via `wallet_sendCalls`
 
-End-to-end ERC-5792 flow on Sepolia, shown both ways:
-
-- **Left (the standard way).** The dapp asks the
-  user-picked EIP-1193 wallet to send a batch via
-  `wallet_sendCalls`, then polls
-  `wallet_getCallsStatus(id)`. Works against any
-  standards-compliant wallet — Ethernauta, MetaMask, Rabby,
-  anyone announcing EIP-6963.
-- **Right (the primitive way).** The dapp asks the wallet
-  to sign each call individually with
-  `eth_signTransaction`, broadcasts each signed payload
-  through a writer pointed at a public RPC, and polls the
-  receipts itself via a reader. No `wallet_sendCalls`
-  involved — the dapp owns the lifecycle, and no
-  third-party service is involved either side of the
-  signature.
+End-to-end ERC-5792 flow on Sepolia. The dapp asks the
+user-picked EIP-1193 wallet to send a batch via
+`wallet_sendCalls`, then polls `wallet_getCallsStatus(id)`.
+Works against any standards-compliant wallet — Ethernauta,
+MetaMask, Rabby, anyone announcing EIP-6963.
 
 <SendCallsDemo />
 
 <GithubLink path="examples/playground/app/examples/send-calls/demo.tsx" />
 
-## What's happening on the left (standard)
+## The code
+
+<DemoSource source={demoSource} />
+
+## What's happening
 
 1. The dapp calls `wallet_getCapabilities()`. The wallet
    declares per-chain capabilities — here it reports
@@ -46,26 +41,7 @@ End-to-end ERC-5792 flow on Sepolia, shown both ways:
 The dapp never has to track individual transactions — the
 wallet is the source of truth for "did this batch succeed".
 
-## What's happening on the right (primitives)
-
-1. For each call, the dapp calls `eth_signTransaction`
-   against the picked wallet. The wallet computes nonce /
-   gas, signs, and returns the RLP-encoded bytes — it does
-   **not** broadcast.
-2. The dapp calls `eth_sendRawTransaction` through a
-   `create_writer(CHAINS)` writer that points at a public
-   Sepolia RPC. The wallet is not involved at this step.
-3. The dapp polls `eth_getTransactionReceipt` through a
-   `create_reader(CHAINS)` reader, also against the public
-   RPC. When the receipt is non-null, the dapp updates UI.
-4. Repeat for the next call.
-
-This path is what M3 calls path 2 — the wallet signs, the
-dapp drives. It works the same against any wallet that
-implements `eth_signTransaction` (and against a local
-managed-key signer that exposes the same JSON-RPC method).
-
-## Status codes (left only)
+## Status codes
 
 | Code | Meaning |
 |------|---------|

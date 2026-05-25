@@ -12,9 +12,9 @@ import {
   addressSchema,
   type Bytes,
   bytesSchema,
-  uintSchema,
   type Uint256,
   uint256Schema,
+  uintSchema,
 } from "@ethernauta/core"
 import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
 import {

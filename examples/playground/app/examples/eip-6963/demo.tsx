@@ -1,12 +1,12 @@
 import {
   ANNOUNCE_EVENT,
+  clear_provider_detail,
   type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
-  forget_picked_provider,
+  get_provider_detail,
   REQUEST_EVENT,
-  remember_picked_provider,
-  restore_picked_provider,
-  type Storage,
+  set_provider_detail,
+  type Store,
 } from "@ethernauta/eip/6963"
 import { useEffect, useState } from "react"
 import { Button } from "../../components/button"
@@ -14,7 +14,7 @@ import { Button } from "../../components/button"
 const PICKED_KEY =
   "ethernauta-playground:eip-6963:picked-wallet"
 
-const local_storage: Storage = {
+const local_store: Store = {
   get: (key) => window.localStorage.getItem(key),
   set: (key, value) =>
     window.localStorage.setItem(key, value),
@@ -66,36 +66,33 @@ export function Eip6963Demo() {
   // confirming the matching wallet still announces.
   useEffect(() => {
     ;(async () => {
-      const stored = local_storage.get(PICKED_KEY)
+      const stored = local_store.get(PICKED_KEY)
       if (!stored) return
       set_picked_rdns(stored)
-      const provider = await restore_picked_provider({
-        storage: local_storage,
+      const provider_detail = await get_provider_detail({
+        store: local_store,
         key: PICKED_KEY,
         ms: 200,
       })
-      if (!provider) return
-      const detail = providers.find(
-        (p) => p.info.rdns === stored,
-      )
-      if (detail) set_restored_name(detail.info.name)
+      if (!provider_detail) return
+      set_restored_name(provider_detail.info.name)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [providers.find])
+  }, [])
 
-  function pick(detail: EIP6963ProviderDetail) {
-    remember_picked_provider({
-      storage: local_storage,
+  function pick(provider_detail: EIP6963ProviderDetail) {
+    set_provider_detail({
+      store: local_store,
       key: PICKED_KEY,
-      rdns: detail.info.rdns,
+      provider_detail,
     })
-    set_picked_rdns(detail.info.rdns)
-    set_restored_name(detail.info.name)
+    set_picked_rdns(provider_detail.info.rdns)
+    set_restored_name(provider_detail.info.name)
   }
 
   function forget() {
-    forget_picked_provider({
-      storage: local_storage,
+    clear_provider_detail({
+      store: local_store,
       key: PICKED_KEY,
     })
     set_picked_rdns(null)
@@ -118,9 +115,9 @@ export function Eip6963Demo() {
         <code>eip6963:announceProvider</code>; a dapp
         dispatches <code>eip6963:requestProvider</code> to
         nudge late ones. Pick a wallet to persist its rdns
-        via <code>remember_picked_provider</code>; a reload
+        via <code>set_provider_detail</code>; a reload
         rehydrates it through{" "}
-        <code>restore_picked_provider</code> without the
+        <code>get_provider_detail</code> without the
         user picking again.
       </p>
       <div style={{ display: "flex", gap: 8 }}>

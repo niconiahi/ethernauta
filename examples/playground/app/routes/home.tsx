@@ -18,8 +18,8 @@ import {
   http,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/utils"
-import { parse } from "valibot"
 import { useEffect, useRef, useState } from "react"
+import { parse } from "valibot"
 import { Button, ButtonLink } from "../components/button"
 
 const NAMESPACE = {

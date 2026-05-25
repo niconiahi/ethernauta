@@ -3,36 +3,41 @@ import { NavLink, Outlet } from "react-router"
 
 import { MDX_COMPONENTS } from "../components/mdx"
 
-const EXAMPLES = [
-  { to: "/examples/multicall", title: "Multicall" },
-  { to: "/examples/portfolio", title: "Portfolio" },
+const ERC_EXAMPLES = [
+  { to: "/examples/portfolio", title: "ERC-20 portfolio" },
   {
     to: "/examples/nft-introspection",
-    title: "NFT introspection",
+    title: "ERC-165 introspection",
   },
   { to: "/examples/vaults", title: "ERC-4626 vaults" },
-  { to: "/examples/permit", title: "Permit signing" },
   {
-    to: "/examples/delegate-7702",
-    title: "EIP-7702 batched calls",
-  },
-  {
-    to: "/examples/send-calls",
-    title: "ERC-5792 send calls",
+    to: "/examples/permit",
+    title: "ERC-2612 permit signing",
   },
   {
     to: "/examples/cross-chain-7683",
     title: "ERC-7683 cross-chain intents",
   },
   {
-    to: "/examples/user-op-4337",
-    title: "ERC-4337 user operation",
-  },
-  {
     to: "/examples/stealth-5564",
     title: "ERC-5564 stealth addresses",
   },
   { to: "/examples/ens-137", title: "ERC-137 ENS" },
+] as const
+
+const EIP_EXAMPLES = [
+  {
+    to: "/examples/delegate-7702",
+    title: "EIP-7702 batched calls",
+  },
+  {
+    to: "/examples/send-calls",
+    title: "EIP-5792 send calls",
+  },
+  {
+    to: "/examples/user-op-4337",
+    title: "EIP-4337 user operation",
+  },
   {
     to: "/examples/verify-1271",
     title: "EIP-1271 verify",
@@ -40,10 +45,6 @@ const EXAMPLES = [
   {
     to: "/examples/verify-6492",
     title: "EIP-6492 wrap",
-  },
-  {
-    to: "/examples/event-decoding",
-    title: "Event decoding",
   },
   {
     to: "/examples/deploy-contract",
@@ -57,6 +58,20 @@ const EXAMPLES = [
     to: "/examples/eip-1193",
     title: "EIP-1193 provider",
   },
+] as const
+
+const UTILITY_EXAMPLES = [
+  { to: "/examples/multicall", title: "Multicall" },
+  {
+    to: "/examples/event-decoding",
+    title: "Event decoding",
+  },
+] as const
+
+const SECTIONS = [
+  { heading: "Utilities", items: UTILITY_EXAMPLES },
+  { heading: "ERCs", items: ERC_EXAMPLES },
+  { heading: "EIPs", items: EIP_EXAMPLES },
 ] as const
 
 export default function ExamplesLayout() {
@@ -75,43 +90,50 @@ export default function ExamplesLayout() {
           background: "#fff",
         }}
       >
-        <h2
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: "#1a1a1a",
-            margin: "0 0 12px",
-          }}
-        >
-          Examples
-        </h2>
-        <nav
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          {EXAMPLES.map((e) => (
-            <NavLink
-              key={e.to}
-              to={e.to}
-              style={({ isActive }) => ({
-                padding: "8px 12px",
-                borderRadius: 6,
+        {SECTIONS.map((section, i) => (
+          <div
+            key={section.heading}
+            style={{ marginTop: i === 0 ? 0 : 24 }}
+          >
+            <h2
+              style={{
                 fontSize: 14,
-                fontWeight: 500,
-                textDecoration: "none",
-                color: isActive ? "#fff" : "#1a1a1a",
-                background: isActive
-                  ? "#FF5005"
-                  : "transparent",
-              })}
+                fontWeight: 700,
+                color: "#1a1a1a",
+                margin: "0 0 12px",
+              }}
             >
-              {e.title}
-            </NavLink>
-          ))}
-        </nav>
+              {section.heading}
+            </h2>
+            <nav
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
+              {section.items.map((e) => (
+                <NavLink
+                  key={e.to}
+                  to={e.to}
+                  style={({ isActive }) => ({
+                    padding: "8px 12px",
+                    borderRadius: 6,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    textDecoration: "none",
+                    color: isActive ? "#fff" : "#1a1a1a",
+                    background: isActive
+                      ? "#FF5005"
+                      : "transparent",
+                  })}
+                >
+                  {e.title}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+        ))}
       </aside>
       <main style={{ padding: "48px 64px" }}>
         <MDXProvider components={MDX_COMPONENTS}>

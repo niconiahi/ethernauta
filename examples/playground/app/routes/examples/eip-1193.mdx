@@ -13,16 +13,25 @@ source — an EIP-6963 announce, `window.ethereum`, a test
 mock — that lifts it into the same `method(args)(transport)`
 shape used everywhere else in the library.
 
-- **`use_provider_detail()`** — React hook that runs the
-  EIP-6963 discovery dance (announce/request) and rehydrates
-  the user's previously-picked wallet from `localStorage`.
-  Returns the live `Provider` or `null` while no wallet is
-  picked.
-- **`create_provider(provider)`** — returns a factory with
-  `.signer({ chain_id })` for `Signable<T>` methods (sign,
-  send, request accounts) and `.reader({ chain_id })` for
-  `Readable<T>` methods (eth_call, eth_getBalance, …) that
-  routes through the wallet's selected RPC.
+- **`useProviderDetail({ key })`** — React hook that runs
+  the EIP-6963 announce dance and rehydrates the user's
+  previously-picked wallet from a caller-owned storage key.
+  Returns the live `EIP6963ProviderDetail` (`info` +
+  `provider`) or `null` while no wallet is picked. Use this
+  when you also need the raw 1193 provider (for
+  `watch_accounts` / `watch_chain`, or to read `info.name`
+  / `info.icon`).
+- **`useProvider({ key })`** — convenience composition of
+  `useProviderDetail` + `create_provider`: returns a
+  ready `{ provider_detail, reader, signer }` so callers
+  that only need the resolver pair skip the `create_provider`
+  step. `null` until the announce dance resolves.
+- **`create_provider(provider)`** — wraps any 1193 provider
+  into a factory with `.signer({ chain_id })` for
+  `Signable<T>` methods and `.reader({ chain_id })` for
+  `Readable<T>` methods. Same call shape as
+  `create_signer(CHAINS)` / `create_reader(CHAINS)` — only
+  the transport-construction line differs.
 - **`watch_accounts` / `watch_chain`** — typed wrappers
   over `provider.on("accountsChanged" | "chainChanged", …)`
   that validate the payload before invoking the handler.
@@ -33,29 +42,45 @@ shape used everywhere else in the library.
 
 ## The code
 
-```ts
-import { eth_getBalance } from "@ethernauta/eth"
+```tsx
+import {
+  eth_chainId,
+  eth_getBalance,
+} from "@ethernauta/eth"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
-  create_provider,
   watch_accounts,
   watch_chain,
 } from "@ethernauta/eip/1193"
-import { use_provider_detail } from "@ethernauta/eip/6963/use-provider-detail"
-import { encode_chain_id } from "@ethernauta/transport"
+import { useProviderDetail } from "@ethernauta/react"
+import {
+  create_provider,
+  encode_chain_id,
+} from "@ethernauta/transport"
 
-// The hook owns the entire 6963 dance: announce/request,
-// rdns persistence, restoration from localStorage. Returns
-// `null` until a wallet has been picked.
-const provider_detail = use_provider_detail()
+// The injected provider routes everything through the
+// wallet's selected chain, so the resolver context is just
+// a well-formed CAIP-2 id to bootstrap the first read.
+const DISCOVERY_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: 1,
+})
+
+// `useProviderDetail` runs the 6963 announce dance and
+// rehydrates the persisted wallet. `null` until resolved.
+const provider_detail = useProviderDetail({
+  key: "my-app:picked-rdns",
+})
 if (!provider_detail) return <Picker />
 
 // One factory call. Same provider, both shapes.
-const provider = create_provider(provider_detail)
+const provider = create_provider(provider_detail.provider)
 
-const current_hex = (await provider_detail.request({
-  method: "eth_chainId",
-})) as string
+// Readable: ask the wallet which chain it's on. Same
+// `method(args)(resolver)` shape as every other read.
+const current_hex = await eth_chainId()(
+  provider.reader({ chain_id: DISCOVERY_CHAIN_ID }),
+)
 const chain_id = encode_chain_id({
   namespace: "eip155",
   reference: Number.parseInt(current_hex, 16),
@@ -70,15 +95,18 @@ const accounts = await eth_requestAccounts()(
 // selected RPC. The method doesn't know it's going through
 // a wallet — the resolver shape is the same as a public-RPC
 // reader.
-const balance = await eth_getBalance({ address: accounts[0] })(
-  provider.reader({ chain_id }),
-)
+const [first] = accounts
+if (first) {
+  const balance = await eth_getBalance({ address: first })(
+    provider.reader({ chain_id }),
+  )
+}
 
 // Reactively watch updates from the injected provider.
-watch_accounts(provider_detail, (next) => {
+watch_accounts(provider_detail.provider, (next) => {
   // re-render with `next`
 })
-watch_chain(provider_detail, (next) => {
+watch_chain(provider_detail.provider, (next) => {
   // re-render with `next` (hex chain id)
 })
 ```
@@ -102,7 +130,7 @@ const balance = await eth_getBalance({ address })(
 )
 ```
 
-`create_provider(wallet).reader({ chain_id })` and
+`create_provider(provider).reader({ chain_id })` and
 `create_reader(CHAINS)({ chain_id })` produce structurally
 the same `ResolvedReader`. The method doesn't know which one
 it's running against — that's the point.

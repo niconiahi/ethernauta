@@ -11,9 +11,9 @@ import {
   type Bytes,
   bytesSchema,
   hash32Schema,
-  uintSchema,
   type Uint256,
   uint256Schema,
+  uintSchema,
 } from "@ethernauta/core"
 import {
   ENTRY_POINT_V07_ADDRESS,

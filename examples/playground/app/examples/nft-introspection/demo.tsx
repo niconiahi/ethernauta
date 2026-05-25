@@ -17,7 +17,7 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   array,
   bigint,
@@ -79,7 +79,7 @@ export function NftIntrospectionDemo() {
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
-  async function run() {
+  const run = useCallback(async () => {
     set_loading(true)
     set_error(null)
     try {
@@ -127,11 +127,10 @@ export function NftIntrospectionDemo() {
     } finally {
       set_loading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     run()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   }, [run])
 
   return (

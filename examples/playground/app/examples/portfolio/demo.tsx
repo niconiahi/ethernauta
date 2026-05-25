@@ -12,7 +12,7 @@ import {
   http,
 } from "@ethernauta/transport"
 import { hex_to_number } from "@ethernauta/utils"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   bigint,
   type InferOutput,
@@ -78,7 +78,7 @@ export function PortfolioDemo() {
     number | null
   >(null)
 
-  async function run() {
+  const run = useCallback(async () => {
     set_loading(true)
     set_error(null)
     try {
@@ -120,11 +120,10 @@ export function PortfolioDemo() {
     } finally {
       set_loading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     run()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   }, [run])
 
   return (

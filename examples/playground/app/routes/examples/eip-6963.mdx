@@ -11,14 +11,15 @@ The Provider object cannot be serialized — only the `rdns`
 identifier can. Persistence is *re-discovery keyed by the
 persisted identifier*: store rdns on pick, re-issue the
 announce request on the next page load, match the
-announcement, recover the live Provider.
+announcement, recover the live detail.
 
-- **`remember_picked_provider({ storage, key, rdns })`** —
-  persists the user's choice.
-- **`restore_picked_provider({ storage, key, target?, ms? })`** —
+- **`set_provider_detail({ store, key, provider_detail })`** —
+  persists the user's choice (writes only `detail.info.rdns`).
+- **`get_provider_detail({ store, key, target?, ms? })`** —
   re-runs the 6963 handshake, filters by rdns, returns
-  `Provider | null` (null if the wallet uninstalled).
-- **`forget_picked_provider({ storage, key })`** — clears
+  `EIP6963ProviderDetail | null` (null if the wallet
+  uninstalled).
+- **`clear_provider_detail({ store, key })`** — clears
   the persisted selection.
 
 <Eip6963Demo />
@@ -30,22 +31,19 @@ announcement, recover the live Provider.
 ```ts
 import {
   ANNOUNCE_EVENT,
+  clear_provider_detail,
   type EIP6963AnnounceProviderEvent,
   type EIP6963ProviderDetail,
-  forget_picked_provider,
-  remember_picked_provider,
+  get_provider_detail,
   REQUEST_EVENT,
-  restore_picked_provider,
-  type Storage,
+  set_provider_detail,
+  type Store,
+  web_storage,
 } from "@ethernauta/eip/6963"
 
 const PICKED_KEY = "ethernauta:picked-wallet"
 
-const local_storage: Storage = {
-  get: (key) => window.localStorage.getItem(key),
-  set: (key, value) => window.localStorage.setItem(key, value),
-  remove: (key) => window.localStorage.removeItem(key),
-}
+const store: Store = web_storage(window.localStorage)
 
 // 1. Continuous listen — every announce lands in the list.
 const providers: EIP6963ProviderDetail[] = []
@@ -59,33 +57,33 @@ window.dispatchEvent(new Event(REQUEST_EVENT))
 // 2. On user pick, persist the rdns. Nothing else is
 //    written — the live Provider stays in memory, the
 //    identifier is what survives reloads.
-function pick(detail: EIP6963ProviderDetail) {
-  remember_picked_provider({
-    storage: local_storage,
+function pick(provider_detail: EIP6963ProviderDetail) {
+  set_provider_detail({
+    store,
     key: PICKED_KEY,
-    rdns: detail.info.rdns,
+    provider_detail,
   })
 }
 
 // 3. On a later page load, rehydrate by re-issuing the
 //    6963 handshake and filtering by the stored rdns.
-const provider = await restore_picked_provider({
-  storage: local_storage,
+const provider_detail = await get_provider_detail({
+  store,
   key: PICKED_KEY,
   ms: 200,
 })
-// provider is null when the wallet is no longer installed.
+// provider_detail is null when the wallet is no longer installed.
 
 // 4. Clear the persisted selection on disconnect / wallet
 //    uninstalled / user request.
-forget_picked_provider({
-  storage: local_storage,
+clear_provider_detail({
+  store,
   key: PICKED_KEY,
 })
 ```
 
-The `Storage` shape is `{ get, set, remove }` — synchronous
+The `Store` shape is `{ get, set, remove }` — synchronous
 get/set/remove returning `string | null`. `window.localStorage`
-fits directly with the tiny adapter above; in a Chrome MV3
-background a `chrome.storage.local`-backed wrapper works too;
-in tests, an in-memory `Map`-backed shim works.
+fits via the `web_storage` adapter; in a Chrome MV3 background
+a `chrome.storage.local`-backed wrapper works too; in tests, an
+in-memory `Map`-backed shim works.

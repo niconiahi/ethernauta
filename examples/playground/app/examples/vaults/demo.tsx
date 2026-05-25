@@ -19,7 +19,7 @@ import {
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   bigint,
   type InferOutput,
@@ -91,7 +91,7 @@ export function VaultsDemo() {
     number | null
   >(null)
 
-  async function run() {
+  const run = useCallback(async () => {
     set_loading(true)
     set_error(null)
     try {
@@ -144,11 +144,10 @@ export function VaultsDemo() {
     } finally {
       set_loading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     run()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   }, [run])
 
   return (

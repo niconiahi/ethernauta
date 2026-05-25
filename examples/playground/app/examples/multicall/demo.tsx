@@ -13,7 +13,7 @@ import {
   http,
 } from "@ethernauta/transport"
 import { hex_to_number } from "@ethernauta/utils"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   bigint,
   type InferOutput,
@@ -57,7 +57,7 @@ export function MulticallDemo() {
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 
-  async function run() {
+  const run = useCallback(async () => {
     set_loading(true)
     set_error(null)
     try {
@@ -90,11 +90,10 @@ export function MulticallDemo() {
     } finally {
       set_loading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     run()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   }, [run])
 
   return (
