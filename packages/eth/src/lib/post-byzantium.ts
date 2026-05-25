@@ -13,7 +13,13 @@
 // magic-string compare, no `hex_to_number` round-trip.
 
 import type { InferOutput } from "valibot"
-import { brand, object, picklist, pipe, safeParse } from "valibot"
+import {
+  brand,
+  object,
+  picklist,
+  pipe,
+  safeParse,
+} from "valibot"
 import type { ReceiptInfo } from "../core/receipt"
 import { receiptInfoSchema } from "../core/receipt"
 

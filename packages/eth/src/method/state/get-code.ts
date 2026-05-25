@@ -13,13 +13,11 @@ import { object, parse, tuple, union } from "valibot"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
 
 const parametersSchema = union([
-  tuple([addressSchema]),
   tuple([addressSchema, blockNumberOrTagOrHashSchema]),
   object({
     address: addressSchema,
     blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
   }),
-  object({ address: addressSchema }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 /**

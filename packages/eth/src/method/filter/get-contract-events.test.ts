@@ -94,7 +94,10 @@ describe("get_contract_events", () => {
     expect(captured.call).toBeDefined()
     if (!captured.call) return
     expect(captured.call[0]).toBe("eth_getLogs")
-    const params = parse(filterParamsSchema, captured.call[1])
+    const params = parse(
+      filterParamsSchema,
+      captured.call[1],
+    )
     expect(params[0]?.address).toBe(CONTRACT)
     expect(params[0]?.topics).toEqual([TRANSFER_TOPIC0])
 
@@ -119,7 +122,10 @@ describe("get_contract_events", () => {
       values: [FROM],
     })(resolved)
 
-    const params = parse(filterParamsSchema, captured.call?.[1])
+    const params = parse(
+      filterParamsSchema,
+      captured.call?.[1],
+    )
     expect(params[0]?.topics).toEqual([
       TRANSFER_TOPIC0,
       FROM_PADDED,
