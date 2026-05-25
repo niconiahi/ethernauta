@@ -105,7 +105,7 @@ export function address(): AbiCodec<Address> {
     },
     decode: (_data, _pos) => {
       const slice = _data.slice(_pos + 12, _pos + 32)
-      return bytes_to_hex(slice)
+      return parse(addressSchema, bytes_to_hex(slice))
     },
   }
 }
@@ -165,8 +165,11 @@ export function bytes(): AbiCodec<Bytes> {
     },
     decode: (_data, _pos) => {
       const len = Number(read_uint256(_data, _pos))
-      return bytes_to_hex(
-        _data.slice(_pos + 32, _pos + 32 + len),
+      return parse(
+        bytesSchema,
+        bytes_to_hex(
+          _data.slice(_pos + 32, _pos + 32 + len),
+        ),
       )
     },
   }

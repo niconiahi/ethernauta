@@ -8,6 +8,7 @@ import {
   bigint,
   literal,
   object,
+  parse,
   string,
   union,
 } from "valibot"
@@ -34,7 +35,7 @@ export type RevertReason = InferOutput<
 export function decode_revert_reason(
   _data: Bytes | undefined | null,
 ): RevertReason {
-  if (!_data || _data === "0x") return { kind: "empty" }
+  if (!_data || _data.length === 2) return { kind: "empty" }
   const bytes = hex_to_bytes(_data)
   if (bytes.length < 4) return { kind: "empty" }
   const selector_hex = bytes_to_hex(bytes.slice(0, 4))
@@ -49,7 +50,7 @@ export function decode_revert_reason(
   }
   return {
     kind: "custom",
-    selector: selector_hex,
-    data: bytes_to_hex(payload),
+    selector: parse(bytesSchema, selector_hex),
+    data: parse(bytesSchema, bytes_to_hex(payload)),
   }
 }

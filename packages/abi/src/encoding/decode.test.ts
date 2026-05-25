@@ -1,4 +1,11 @@
+import {
+  addressSchema,
+  bytesSchema,
+  uint8Schema,
+  uint256Schema,
+} from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -6,6 +13,7 @@ import {
   bool,
   bytes,
   string_,
+  uint8,
   uint256,
 } from "../leaves"
 import {
@@ -78,16 +86,19 @@ describe("decode.ts", () => {
     it("should round-trip mixed static + dynamic", () => {
       const calldata = encode_function_call({
         name: "mixed",
-        args: [address(), string_(), uint256()] as const,
+        args: [address(), string_(), uint8()] as const,
         values: [
-          "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          parse(
+            addressSchema,
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          ),
           "hi",
-          "0x2a",
+          parse(uint8Schema, "0x2a"),
         ],
       })
       const hex = strip_selector(calldata)
       const [a, s, u] = decode_function_result(
-        [address(), string_(), uint256()] as const,
+        [address(), string_(), uint8()] as const,
         hex,
       )
       expect(a).toBe(
@@ -100,9 +111,11 @@ describe("decode.ts", () => {
 
   describe("decode_function_call", () => {
     it("should round-trip transfer(address,uint256)", () => {
-      const to =
-        "0x636c0fcd6da2207abfa80427b556695a4ad0af94" as const
-      const value = "0xde0b6b3a7640000" as const
+      const to = parse(
+        addressSchema,
+        "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+      )
+      const value = parse(uint256Schema, "0xde0b6b3a7640000")
       const calldata = encode_function_call({
         name: "transfer",
         args: [address(), uint256()] as const,
@@ -118,12 +131,16 @@ describe("decode.ts", () => {
     })
 
     it("should round-trip a signature with bytes", () => {
-      const from =
-        "0x636c0fcd6da2207abfa80427b556695a4ad0af94" as const
-      const to =
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" as const
-      const token_id = "0x7" as const
-      const data = "0xdeadbeef" as const
+      const from = parse(
+        addressSchema,
+        "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+      )
+      const to = parse(
+        addressSchema,
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      )
+      const token_id = parse(uint256Schema, "0x7")
+      const data = parse(bytesSchema, "0xdeadbeef")
       const calldata = encode_function_call({
         name: "safeTransferFrom",
         args: [

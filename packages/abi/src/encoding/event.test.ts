@@ -1,6 +1,16 @@
+import {
+  bytes32Schema,
+  bytesSchema,
+} from "@ethernauta/core"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { address, string_, uint256 } from "../leaves"
+import {
+  address,
+  string_,
+  uint8,
+  uint256,
+} from "../leaves"
 import {
   decode_event_log,
   encode_event_topics,
@@ -114,11 +124,23 @@ describe("decode_event_log", () => {
       args: [address(), address(), uint256()],
       indexed: [true, true, false],
       topics: [
-        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-        "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "0x000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        parse(
+          bytes32Schema,
+          "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        ),
+        parse(
+          bytes32Schema,
+          "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ),
+        parse(
+          bytes32Schema,
+          "0x000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ),
       ],
-      data: "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+      data: parse(
+        bytesSchema,
+        "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+      ),
     })
     expect(result.name).toBe("Transfer")
     expect(result.args).toEqual([
@@ -129,15 +151,20 @@ describe("decode_event_log", () => {
   })
 
   it("returns the topic hash for indexed reference types", () => {
-    const string_hash =
-      "0x1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8"
-    const topic0 = event_topic_hash("Note", [string_()])
+    const string_hash = parse(
+      bytes32Schema,
+      "0x1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8",
+    )
+    const topic0 = parse(
+      bytes32Schema,
+      event_topic_hash("Note", [string_()]),
+    )
     const result = decode_event_log({
       name: "Note",
       args: [string_()],
       indexed: [true],
       topics: [topic0, string_hash],
-      data: "0x",
+      data: parse(bytesSchema, "0x"),
     })
     expect(result.args).toEqual([string_hash])
   })
@@ -145,12 +172,18 @@ describe("decode_event_log", () => {
   it("supports anonymous events (no topic0)", () => {
     const result = decode_event_log({
       name: "Anon",
-      args: [address(), uint256()],
+      args: [address(), uint8()],
       indexed: [true, false],
       topics: [
-        "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        parse(
+          bytes32Schema,
+          "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        ),
       ],
-      data: "0x000000000000000000000000000000000000000000000000000000000000002a",
+      data: parse(
+        bytesSchema,
+        "0x000000000000000000000000000000000000000000000000000000000000002a",
+      ),
       anonymous: true,
     })
     expect(result.args).toEqual([

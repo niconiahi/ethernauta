@@ -1,6 +1,17 @@
+import {
+  addressSchema,
+  uint64Schema,
+  uint256Schema,
+} from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import { address, string_, uint256 } from "../leaves"
+import {
+  address,
+  string_,
+  uint64,
+  uint256,
+} from "../leaves"
 import {
   build_signature,
   encode_constructor_call,
@@ -53,7 +64,10 @@ describe("encode.ts", () => {
         name: "safeMint",
         args: [address(), string_()] as const,
         values: [
-          "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          parse(
+            addressSchema,
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          ),
           "hello",
         ],
       })
@@ -98,10 +112,13 @@ describe("encode.ts", () => {
       const bytecode = from_hex("6080604052")
       const result = encode_constructor_call({
         bytecode,
-        args: [address(), uint256()] as const,
+        args: [address(), uint64()] as const,
         values: [
-          "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-          "0xde0b6b3a7640000",
+          parse(
+            addressSchema,
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          ),
+          parse(uint64Schema, "0xde0b6b3a7640000"),
         ],
       })
       expect(result).toHaveLength(bytecode.length + 64)
@@ -117,8 +134,11 @@ describe("encode.ts", () => {
         name: "transfer",
         args: [address(), uint256()] as const,
         values: [
-          "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-          "0xde0b6b3a7640000", // 1e18 as hex
+          parse(
+            addressSchema,
+            "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+          ),
+          parse(uint256Schema, "0xde0b6b3a7640000"), // 1e18 as hex
         ],
       })
       expect(bytes_to_hex(result).slice(0, 10)).toBe(
