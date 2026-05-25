@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground run dev",
     "test": "pnpm --recursive run test:unit",
-    "build": "pnpm --recursive --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' run build",
+    "build": "pnpm --filter @ethernauta/cli run build && pnpm --recursive --filter '!@ethernauta/cli' --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' run build",
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "lint:ratchet": "bash scripts/no-escape-hatches.sh",

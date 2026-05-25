@@ -65,6 +65,9 @@ importers:
       '@ethernauta/eth':
         specifier: workspace:*
         version: link:../../packages/eth
+      '@ethernauta/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       '@ethernauta/transaction':
         specifier: workspace:*
         version: link:../../packages/transaction
@@ -241,6 +244,12 @@ importers:
       '@noble/secp256k1':
         specifier: ^2.3.0
         version: 2.3.0
+      '@scure/bip32':
+        specifier: 1.7.0
+        version: 1.7.0
+      '@scure/bip39':
+        specifier: 1.6.0
+        version: 1.6.0
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
@@ -276,12 +285,6 @@ importers:
       '@ethernauta/abi':
         specifier: workspace:*
         version: link:../abi
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.14
-      react:
-        specifier: ^19.0.0
-        version: 19.2.6
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)
@@ -382,6 +385,25 @@ importers:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)
 
+  packages/react:
+    dependencies:
+      '@ethernauta/eip':
+        specifier: workspace:*
+        version: link:../eip
+      '@ethernauta/transport':
+        specifier: workspace:*
+        version: link:../transport
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      tsdown:
+        specifier: ^0.13.3
+        version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)
+
   packages/transaction:
     dependencies:
       '@ethernauta/core':
@@ -412,6 +434,9 @@ importers:
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core
+      '@ethernauta/eip':
+        specifier: workspace:*
+        version: link:../eip
       '@ethernauta/utils':
         specifier: workspace:*
         version: link:../utils
@@ -425,12 +450,6 @@ importers:
 
   packages/utils:
     dependencies:
-      '@ethernauta/chain':
-        specifier: workspace:*
-        version: link:../chain
-      '@ethernauta/transport':
-        specifier: workspace:*
-        version: link:../transport
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
@@ -453,6 +472,9 @@ importers:
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core
+      '@ethernauta/crypto':
+        specifier: workspace:*
+        version: link:../crypto
       '@ethernauta/eip':
         specifier: workspace:*
         version: link:../eip
@@ -471,12 +493,6 @@ importers:
       '@preact/signals':
         specifier: ^2.2.1
         version: 2.9.0(preact@10.26.9)
-      '@scure/bip32':
-        specifier: 1.7.0
-        version: 1.7.0
-      '@scure/bip39':
-        specifier: 1.6.0
-        version: 1.6.0
       preact:
         specifier: 10.26.9
         version: 10.26.9
