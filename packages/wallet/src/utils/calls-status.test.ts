@@ -1,5 +1,9 @@
+import { hash32Schema, uintSchema } from "@ethernauta/core"
 import { CALLS_STATUS } from "@ethernauta/eip/5792"
-import type { ReceiptInfo } from "@ethernauta/eth"
+import {
+  type ReceiptInfo,
+  receiptInfoSchema,
+} from "@ethernauta/eth"
 import { object, parse, string } from "valibot"
 import { describe, expect, it } from "vitest"
 import type { BatchRecord } from "./calls-registry"
@@ -8,14 +12,19 @@ import {
   finalize_status,
 } from "./calls-status"
 
-const HASH_A =
-  "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899" as const
-const HASH_B =
-  "0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa" as const
+const HASH_A = parse(
+  hash32Schema,
+  "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899",
+)
+const HASH_B = parse(
+  hash32Schema,
+  "0x99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
+)
+const SEPOLIA_CHAIN_ID = parse(uintSchema, "0xaa36a7")
 
 const BATCH: BatchRecord = {
   id: "0xbatch",
-  chainId: "0xaa36a7",
+  chainId: SEPOLIA_CHAIN_ID,
   atomic: false,
   transaction_hashes: [HASH_A, HASH_B],
 }
@@ -24,7 +33,7 @@ function make_receipt(
   transaction_hash: `0x${string}`,
   status: "0x0" | "0x1",
 ): ReceiptInfo {
-  return {
+  return parse(receiptInfoSchema, {
     blockHash:
       "0xdb9a5f2320c0a10d28bfa1c563a1bbf592665e9b5d0bf41f4a9a4a64bb1a8b22",
     blockNumber: "0x1",
@@ -32,14 +41,14 @@ function make_receipt(
     cumulativeGasUsed: "0x5208",
     gasUsed: "0x5208",
     logs: [],
-    logsBloom: `0x${"0".repeat(512)}` as `0x${string}`,
+    logsBloom: `0x${"0".repeat(512)}`,
     transactionHash: transaction_hash,
     transactionIndex: "0x0",
     effectiveGasPrice: "0x1",
     to: "0x1111111111111111111111111111111111111111",
     contractAddress: null,
     status,
-  }
+  })
 }
 
 describe("calls-status.ts — compose_capabilities", () => {

@@ -1,4 +1,9 @@
 import {
+  addressSchema,
+  bytesSchema,
+  uintSchema,
+} from "@ethernauta/core"
+import {
   sign_authorization,
   sign_set_code_transaction,
 } from "@ethernauta/eip/7702"
@@ -7,6 +12,7 @@ import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { Button } from "../../components/button"
 import {
   get_reader,
@@ -31,6 +37,7 @@ import { active_account } from "../../utils/wallet"
 const MAX_PRIORITY_FEE_PER_GAS = 2_000_000_000n
 const MAX_FEE_PER_GAS = 30_000_000_000n
 const GAS_LIMIT = 1_000_000n
+const ZERO_UINT = parse(uintSchema, "0x0")
 
 export function AuthorizeDelegation() {
   const req = set_code_request.value
@@ -76,7 +83,7 @@ export function AuthorizeDelegation() {
         <p className="font-mono text-xs break-all">
           {params.to}
         </p>
-        {params.value && params.value !== "0x0" && (
+        {params.value && params.value !== ZERO_UINT && (
           <p className="font-mono text-xs">
             value: {params.value}
           </p>
@@ -105,7 +112,10 @@ export function AuthorizeDelegation() {
               selected_chain.value,
             )
             const nonce = await get_nonce(
-              active_account.value.address as `0x${string}`,
+              parse(
+                addressSchema,
+                active_account.value.address,
+              ),
               reader,
               chain_id,
             )
@@ -119,8 +129,9 @@ export function AuthorizeDelegation() {
                   {
                     chainId: delegation.chainId,
                     address: delegation.address,
-                    nonce: big_to_hex(
-                      nonce + BigInt(i + 1),
+                    nonce: parse(
+                      uintSchema,
+                      big_to_hex(nonce + BigInt(i + 1)),
                     ),
                   },
                   private_key,
@@ -148,7 +159,7 @@ export function AuthorizeDelegation() {
             )
             const transaction_hash =
               await eth_sendRawTransaction([
-                bytes_to_hex(raw),
+                parse(bytesSchema, bytes_to_hex(raw)),
               ])(writer({ chain_id }))
             const response: SignTransactionResponse = {
               id: req.id,

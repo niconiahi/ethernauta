@@ -1,3 +1,4 @@
+import { addressSchema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { getPublicKey } from "@noble/secp256k1"
@@ -35,9 +36,7 @@ export function private_key_to_address(
 ) {
   const publicKey = getPublicKey(private_key, false)
   const hash = keccak_256(publicKey.slice(1))
-  return bytes_to_hex(
-    hash.slice(-20),
-  ) satisfies `0x${string}`
+  return parse(addressSchema, bytes_to_hex(hash.slice(-20)))
 }
 
 export function get_private_key(key: HDKey): Uint8Array {

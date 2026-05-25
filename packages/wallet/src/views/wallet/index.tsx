@@ -1,5 +1,7 @@
+import { addressSchema } from "@ethernauta/core"
 import { format_unit } from "@ethernauta/utils"
 import { useEffect } from "preact/hooks"
+import { parse } from "valibot"
 import { balance, fetch_balance } from "../../utils/balance"
 import {
   get_chain_id,
@@ -9,8 +11,10 @@ import { view } from "../../utils/view"
 import { active_account } from "../../utils/wallet"
 
 export function Wallet() {
-  const address = active_account.value
-    .address as `0x${string}`
+  const address = parse(
+    addressSchema,
+    active_account.value.address,
+  )
   useEffect(() => {
     async function run() {
       const _balance = await fetch_balance(address)

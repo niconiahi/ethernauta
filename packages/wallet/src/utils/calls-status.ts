@@ -6,13 +6,23 @@
 // import them via vite-tsconfig-paths.
 
 import {
+  type Hash32,
+  type Uint,
+  uintSchema,
+} from "@ethernauta/core"
+import {
   CALLS_STATUS,
   type CallsReceipt,
   type CallsStatus,
   type CallsStatusCode,
   type Capabilities,
 } from "@ethernauta/eip/5792"
-import { eth_getTransactionReceipt } from "@ethernauta/eth"
+import {
+  eth_getTransactionReceipt,
+  RECEIPT_STATUS,
+} from "@ethernauta/eth"
+import { number_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 import {
   type BatchRecord,
   get_batch,
@@ -20,16 +30,23 @@ import {
 import { CHAINS, get_chain, get_reader } from "./chain"
 
 const CALLS_STATUS_VERSION = "2.0.0"
+const STATUS_SUCCESS = parse(
+  uintSchema,
+  RECEIPT_STATUS.SUCCESS,
+)
+const STATUS_REVERTED = parse(
+  uintSchema,
+  RECEIPT_STATUS.REVERTED,
+)
 
-function to_chain_ref(chain_id_hex: `0x${string}`): number {
+function to_chain_ref(chain_id_hex: Uint): number {
   return Number.parseInt(chain_id_hex.slice(2), 16)
 }
 
 export function compose_capabilities(): Capabilities {
   const capabilities: Capabilities = {}
   for (const chain of CHAINS) {
-    const key =
-      `0x${chain.id.toString(16)}` as `0x${string}`
+    const key = parse(uintSchema, number_to_hex(chain.id))
     capabilities[key] = {
       atomic: { status: "unsupported" },
     }
@@ -67,7 +84,7 @@ export async function compose_calls_status(
 export function finalize_status(
   batch: BatchRecord,
   receipts: Array<{
-    transaction_hash: `0x${string}`
+    transaction_hash: Hash32
     receipt: Awaited<
       ReturnType<
         ReturnType<typeof eth_getTransactionReceipt>
@@ -106,7 +123,7 @@ function compute_status_code(
   for (const { receipt } of receipts) {
     if (receipt === null) continue
     mined += 1
-    if (receipt.status === "0x1") succeeded += 1
+    if (receipt.status === STATUS_SUCCESS) succeeded += 1
     else reverted += 1
   }
   if (mined < receipts.length) return CALLS_STATUS.PENDING
@@ -127,7 +144,7 @@ function to_calls_receipt(
       topics: log.topics,
       data: log.data,
     })),
-    status: (receipt.status ?? "0x0") as `0x${string}`,
+    status: receipt.status ?? STATUS_REVERTED,
     blockHash: receipt.blockHash,
     blockNumber: receipt.blockNumber,
     gasUsed: receipt.gasUsed,

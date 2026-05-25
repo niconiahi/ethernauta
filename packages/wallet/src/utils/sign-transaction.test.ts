@@ -1,4 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain"
+import { addressSchema } from "@ethernauta/core"
 import {
   create_reader,
   encode_chain_id,
@@ -9,6 +10,7 @@ import {
   invariant,
   number_to_hex,
 } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { sign } from "@noble/secp256k1"
 import { HDKey } from "@scure/bip32"
 import { recoverTransactionAddress } from "viem"
@@ -70,13 +72,22 @@ const TEST_PRIVATE_KEY = new Uint8Array([
   0x5c, 0x6f, 0x3c, 0x03, 0x0c,
 ])
 
+const TEST_TO_ADDRESS = parse(
+  addressSchema,
+  "0x742d35Cc6635C0532925a3b8D83C2D2d88Ca7c38",
+)
+const TARGET_ADDRESS = parse(
+  addressSchema,
+  "0x515e9e0565fdddd4f8a9759744734154da453585",
+)
+
 const TEST_TRANSACTION: Eip1559TransactionUnsigned = {
   chain_id: 1n,
   nonce: 42n,
   max_priority_fee_per_gas: 2000000000n,
   max_fee_per_gas: 20000000000n,
   gas_limit: 21000n,
-  to: "0x742d35Cc6635C0532925a3b8D83C2D2d88Ca7c38",
+  to: TEST_TO_ADDRESS,
   value: 1000000000000000000n,
   data: new Uint8Array(),
   access_list: [],
@@ -149,8 +160,7 @@ describe("transaction.ts", () => {
   it("should encode access list with one item", () => {
     const access_list = [
       {
-        address:
-          "0x742d35Cc6635C0532925a3b8D83C2D2d88Ca7c38" as const,
+        address: TEST_TO_ADDRESS,
         storage_keys: [
           "0x0000000000000000000000000000000000000000000000000000000000000001",
         ],
@@ -223,7 +233,7 @@ describe("transaction.ts", () => {
     const private_key_hex = bytes_to_hex(private_key)
     const account = privateKeyToAccount(private_key_hex)
     const viem_signed = await account.signTransaction({
-      to: "0x515e9e0565fdddd4f8a9759744734154da453585",
+      to: TARGET_ADDRESS,
       value: 1n,
       nonce: 0,
       gas: 21000n,
@@ -233,7 +243,7 @@ describe("transaction.ts", () => {
       maxPriorityFeePerGas: 2000000000n,
     })
     const debug_transaction: Eip1559TransactionUnsigned = {
-      to: "0x515e9e0565fdddd4f8a9759744734154da453585",
+      to: TARGET_ADDRESS,
       data: new Uint8Array(),
       value: 1n,
       nonce: 0n,

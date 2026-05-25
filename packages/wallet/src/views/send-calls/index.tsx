@@ -2,7 +2,9 @@
 
 import {
   addressSchema,
+  bytesSchema,
   type Hash32,
+  uintSchema,
 } from "@ethernauta/core"
 import type { SendCallsResult } from "@ethernauta/eip/5792"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
@@ -45,6 +47,8 @@ import { active_account } from "../../utils/wallet"
 const MAX_PRIORITY_FEE_PER_GAS = 2_000_000_000n
 const MAX_FEE_PER_GAS = 30_000_000_000n
 const GAS_LIMIT = 500_000n
+const ZERO_UINT = parse(uintSchema, "0x0")
+const EMPTY_BYTES = parse(bytesSchema, "0x")
 
 export function SendCalls() {
   const req = send_calls_request.value
@@ -100,12 +104,12 @@ export function SendCalls() {
               <span className="font-mono break-all">
                 to: {call.to ?? "(self)"}
               </span>
-              {call.value && call.value !== "0x0" && (
+              {call.value && call.value !== ZERO_UINT && (
                 <span className="font-mono">
                   value: {call.value}
                 </span>
               )}
-              {call.data && call.data !== "0x" && (
+              {call.data && call.data !== EMPTY_BYTES && (
                 <details className="opacity-70">
                   <summary className="cursor-pointer">
                     calldata
@@ -193,7 +197,7 @@ export function SendCalls() {
                   )
                 const transaction_hash =
                   await eth_sendRawTransaction([
-                    bytes_to_hex(raw),
+                    parse(bytesSchema, bytes_to_hex(raw)),
                   ])(writer({ chain_id }))
                 transaction_hashes.push(transaction_hash)
               }

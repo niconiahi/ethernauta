@@ -99,7 +99,7 @@ export function compose_y_parity(
 }
 
 export async function get_nonce(
-  address: `0x${string}`,
+  address: Address,
   reader: Reader,
   chain_id: ChainId,
 ): Promise<bigint> {
