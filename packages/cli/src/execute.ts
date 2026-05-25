@@ -14,10 +14,7 @@ import {
   emit_name_for,
   generate,
 } from "@ethernauta/abi/generator"
-import {
-  type Bytes4,
-  bytes4Schema,
-} from "@ethernauta/core"
+import { type Bytes4, bytes4Schema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   array,
@@ -28,7 +25,10 @@ import {
 } from "valibot"
 
 function selector_hex(signature: string): Bytes4 {
-  return parse(bytes4Schema, bytes_to_hex(to_selector(signature)))
+  return parse(
+    bytes4Schema,
+    bytes_to_hex(to_selector(signature)),
+  )
 }
 
 function parse_flags(args: string[]) {
