@@ -344,32 +344,82 @@ Don't store mixed types in one bucket. One typed Set/Map per shape.
 Dispatch by event name in `on`/`emit`. See `packages/eip/src/1193/events.ts`
 for the worked example.
 
-## R2 — No redundant `:` type annotation
+## R2 — No redundant `:` annotation on initialized variables
 
-**Banned:**
+**Scope clarification (Phase 7 rescope, 2026-05-24):** R2 targets only
+variable declarations. Function return-type annotations are part of
+the signature contract — they document the shape callers consume and
+keep error messages legible — so they are **not** banned. The original
+"return-type if TS can infer" wording is retired.
 
-- Return-type annotations on functions that can infer (`function x(): T {`
-  when TS infers the same `T`)
-- Variable annotations on initialized declarations (`const x: T = expr`
-  when TS infers the same `T`)
-- Annotations on `const`-initialized exports (`export const X: T = {...}`)
+**Banned:** variable annotations whose `T` is what TS would already
+infer from the right-hand side. Two recurring shapes:
 
-**Allowed (because TS cannot infer them):**
+- `const x: Foo = make_foo()` when `make_foo()` already returns `Foo`.
+- `const X: T = parse(tSchema, raw)` when `parse(tSchema, ...)` already
+  returns `T` (the canonical case — the parse contract IS the type).
 
-- Function and method parameters — TS cannot infer these from the body.
-  But the parameter type should be `Parameters` / `Schema-derived` /
-  a structural shape from a Valibot `InferOutput`, never a hand-rolled
-  `interface` or `type X = { ... }`.
-- Generic constraints (`<T extends Foo>`).
-- Function-typed property declarations in record shapes where the
+The narrow test: would deleting the `: T` change anything TS sees?
+If no, the annotation was noise.
+
+**Allowed (and frequently the right call):** `const x: T = { ... }` /
+`const x: T = (() => { ... })()` where the right-hand side is an
+author-constructed literal or IIFE. The annotation is doing real
+work — pinning the literal's shape at the construction site so a
+typo on a field name fails at the declaration line rather than
+deeper inside the function. This is **compile-time shape assertion**,
+not runtime validation. R0 / R0.4's "Valibot is the only validator"
+rule is about untrusted runtime data flowing through boundaries
+(postMessage receive, RPC response, JSON.parse, user input) — it
+does not apply to literals the author writes inline. Don't force
+those through `parse(...)`; the schema is already enforced by TS at
+the assignment.
+
+Worked examples that stay as `: T` annotations:
+- `const response: TransactionRejectedResponse = { ... }` in wallet
+  view handlers (outbound postMessage payload, locally constructed).
+- `const tx: Eip1559TransactionUnsigned = { ... }` in
+  `send-calls/index.tsx` (locally constructed before encoding).
+- `const REGISTRY_BY_CHAIN: Record<string, Address> = { ... }` (an
+  authored constant; the annotation widens the literal for arbitrary-
+  key lookup).
+
+**Allowed (TS literally cannot infer, or removing the annotation
+breaks the algorithm):**
+
+- **Declarations without an initializer.** `let recovery: number` /
+  `let code: Bytes` — there is nothing to infer from.
+- **Empty-seed mutation patterns.** `const out: number[] = []` /
+  `let buf: number[] = []` — without the annotation TS infers
+  `never[]` and the first `push` fails. If you'd rather avoid the
+  seed, refactor to `Array.from` / `map` / `reduce` — but the
+  annotation is allowed for the imperative form.
+- **Nullable mutation seeds.** `let maker: Set<Group> | null = null`
+  — TS would infer `null` and refuse subsequent assignment.
+- **Narrowing the inferred type to a wider read-only contract.**
+  `const IGNORED_SET: ReadonlySet<number> = new Set(IGNORED)` —
+  the annotation enforces that downstream code can't mutate. Leave
+  as-is, or prefer `const X = new Set(...) satisfies ReadonlySet<number>`
+  if the contract should validate without widening the displayed
+  type.
+- **Function and method parameters.** TS can't infer parameter types
+  from the body. Parameter type comes from `InferOutput<typeof xSchema>`
+  or a structural primitive — never a hand-rolled `interface` /
+  `type X = { ... }`.
+- **Generic constraints** (`<T extends Foo>`).
+- **Function-typed property declarations in record shapes** where the
   contract IS the type (e.g. the `decode` field of `Callable<T>`).
-- Inner arrow return-type annotations where it pins the public surface
-  and TS cannot infer the right return shape (rare; the generator's
-  `Callable<T>` arrow is the example we agreed to keep).
+- **Function return-type annotations** — kept as the signature
+  contract regardless of inference. `Readable<T>` / `Writable<T>` /
+  `Signable<T>` / `Callable<T>` factory returns and the inner async
+  function's `Promise<T>` annotation are the documented monorepo
+  pattern. Removing them would technically not change what TS sees,
+  but it would erase the documented surface and clutter error
+  messages with the structural expansion.
 
-**Rule of thumb:** if removing the annotation changes nothing TS sees,
-the annotation was noise. Delete it. This is R0 in operational form —
-TS already knew, you were just repeating yourself.
+**Rule of thumb:** if removing the annotation changes nothing TS sees
+**and** the declaration is a `const`/`let`/`var` with an initializer
+that isn't an empty seed, the annotation was noise. Delete it.
 
 ## R3 — No ignore comments, no exemptions
 
