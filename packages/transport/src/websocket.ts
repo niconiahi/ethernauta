@@ -216,28 +216,28 @@ export function websocket(url: string): WebsocketTransport {
     call: send_call,
     subscribe: async (call, on_notification) => {
       const client_id = next_id()
-      const sub: Subscription = {
+      const subscription: Subscription = {
         call,
         on_notification,
         server_id: null,
       }
-      subscriptions.set(client_id, sub)
+      subscriptions.set(client_id, subscription)
       try {
         const ws = await open()
-        await raw_subscribe(ws, client_id, sub)
+        await raw_subscribe(ws, client_id, subscription)
       } catch (error) {
         subscriptions.delete(client_id)
         throw error
       }
       return async () => {
-        const s = subscriptions.get(client_id)
-        if (!s) return
+        const subscription = subscriptions.get(client_id)
+        if (!subscription) return
         subscriptions.delete(client_id)
-        if (s.server_id) {
-          server_to_client.delete(s.server_id)
+        if (subscription.server_id) {
+          server_to_client.delete(subscription.server_id)
           await send_call([
             "eth_unsubscribe",
-            [s.server_id],
+            [subscription.server_id],
           ]).catch(() => undefined)
         }
       }
