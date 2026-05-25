@@ -118,6 +118,15 @@ count_unknown() {
     | wc -l | tr -d ' '
 }
 
+count_redundant_annotations() {
+  # Variable declarations whose `: T` annotation is mutually-assignable-
+  # equal to TypeScript's inference of the initializer (R2). Computed via
+  # the TS compiler API in scripts/find-redundant-annotations.mjs; see
+  # that file for the skip rules (no-init, empty-seed, null-seed, object/
+  # array literal, IIFE, bare arrow / function expression, any-poisoning).
+  node "${REPO_ROOT}/scripts/find-redundant-annotations.mjs" --count
+}
+
 count_invariant_calls() {
   # Production `invariant(` call sites per R0.4 — Valibot is the only
   # validator. Excludes test files, the `invariant` definition itself
@@ -180,6 +189,7 @@ check "any"               "$(count_any)"               "any"
 check "never"             "$(count_never)"             "never"
 check "unknown"           "$(count_unknown)"           "unknown"
 check "invariant calls"   "$(count_invariant_calls)"   "invariant_calls"
+check "redundant : annot" "$(count_redundant_annotations)" "redundant_annotations"
 
 echo
 if (( FAIL == 1 )); then

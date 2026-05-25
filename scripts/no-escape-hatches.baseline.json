@@ -10,5 +10,6 @@
   "any": 0,
   "never": 8,
   "unknown": 199,
-  "invariant_calls": 0
+  "invariant_calls": 0,
+  "redundant_annotations": 0
 }
