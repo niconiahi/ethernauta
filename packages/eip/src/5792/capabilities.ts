@@ -2,6 +2,7 @@
 
 import {
   addressSchema,
+  bytes32Schema,
   bytesSchema,
   hash32Schema,
   uintSchema,
@@ -84,8 +85,8 @@ export const CALLS_STATUS = {
 
 export const callsReceiptLogSchema = object({
   address: addressSchema,
-  topics: array(hash32Schema),
-  data: string(),
+  topics: array(bytes32Schema),
+  data: bytesSchema,
 })
 export type CallsReceiptLog = InferOutput<
   typeof callsReceiptLogSchema
