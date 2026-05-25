@@ -155,10 +155,7 @@ describe("decode_event_log", () => {
       bytes32Schema,
       "0x1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8",
     )
-    const topic0 = parse(
-      bytes32Schema,
-      event_topic_hash("Note", [string_()]),
-    )
+    const topic0 = event_topic_hash("Note", [string_()])
     const result = decode_event_log({
       name: "Note",
       args: [string_()],

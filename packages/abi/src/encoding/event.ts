@@ -1,8 +1,7 @@
 import {
+  type Bytes32,
   bytes32Schema,
   bytesSchema,
-  type Hash32,
-  hash32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -35,9 +34,13 @@ export const eventLogSchema = object({
 export type EventLog = InferOutput<typeof eventLogSchema>
 
 // Topic list returned by encode_event_topics — suitable for
-// eth_getLogs `topics`. `null` is a wildcard slot.
+// eth_getLogs `topics`. `null` is a wildcard slot. Topics carry
+// 32-byte wire values: topic0 is a keccak hash of the signature,
+// but topic1..N are the head-encoding of indexed static values
+// (raw, not hashes). Bytes32 is the type that covers both shapes;
+// Hash32 would be wrong for non-hash topics.
 export const eventTopicsSchema = array(
-  nullable(hash32Schema),
+  nullable(bytes32Schema),
 )
 export type EventTopics = InferOutput<
   typeof eventTopicsSchema
@@ -89,13 +92,17 @@ export type EncodeEventTopicsInput = InferOutput<
 
 // Full 32-byte keccak256 of the canonical event signature.
 // Unlike function selectors, event topic0 is NOT truncated.
+// Returns Bytes32 — semantically a hash, but it lives in the
+// `topics` slot whose wire type is Bytes32 (see eventTopicsSchema
+// rationale above); typing it as Bytes32 lets it flow directly
+// into topic positions without re-parsing.
 export function event_topic_hash(
   _name: string,
   _args: readonly AbiCodec<unknown>[],
-): Hash32 {
+): Bytes32 {
   const sig = `${_name}(${_args.map((a) => a.signature).join(",")})`
   return parse(
-    hash32Schema,
+    bytes32Schema,
     bytes_to_hex(keccak_256(new TextEncoder().encode(sig))),
   )
 }
@@ -156,7 +163,7 @@ export function encode_event_topics<
   // trailing wildcards — eth_getLogs treats a missing trailing
   // topic as "any", so emitting redundant nulls is at best
   // noise and at worst gets rejected by strict clients.
-  const indexed_part: (Hash32 | null)[] = []
+  const indexed_part: (Bytes32 | null)[] = []
   for (const [i, codec] of indexed_codecs.entries()) {
     const v = values?.[i]
     if (v === null || v === undefined) {
@@ -165,7 +172,7 @@ export function encode_event_topics<
     }
     const topic = encode_indexed_topic(codec, v)
     indexed_part.push(
-      parse(hash32Schema, bytes_to_hex(topic)),
+      parse(bytes32Schema, bytes_to_hex(topic)),
     )
   }
   while (
