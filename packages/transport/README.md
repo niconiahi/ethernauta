@@ -28,9 +28,14 @@ All four factories take the same `chains` array shape — each entry is `{ chain
 - [abi](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
 - [chain](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
 - [cli](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
+- [core](https://github.com/niconiahi/ethernauta/tree/main/packages/core) [[NPM](https://www.npmjs.com/package/@ethernauta/core)]
+- [crypto](https://github.com/niconiahi/ethernauta/tree/main/packages/crypto) [[NPM](https://www.npmjs.com/package/@ethernauta/crypto)]
 - [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
+- [ens](https://github.com/niconiahi/ethernauta/tree/main/packages/ens) [[NPM](https://www.npmjs.com/package/@ethernauta/ens)]
 - [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
 - [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
+- [react](https://github.com/niconiahi/ethernauta/tree/main/packages/react) [[NPM](https://www.npmjs.com/package/@ethernauta/react)]
+- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
 - [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
@@ -127,21 +132,3 @@ const _function: FunctionSidecar = {
 }
 ```
 
-## Files to pay attention
-
-- [call.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/call.ts)
-- [http.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/http.ts)
-- [json-rpc.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/json-rpc.ts)
-- [reader.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/reader.ts)
-- [writer.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/writer.ts)
-- [signer.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/signer.ts)
-- [contract.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/contract.ts)
-- [require-chain.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/require-chain.ts)
-
-### chain
-
-- [chain/encode-chain-id.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/chain/encode-chain-id.ts)
-- [chain/decode-chain-id.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/transport/src/chain/decode-chain-id.ts)
-- [chain/caip-2](https://github.com/niconiahi/ethernauta/tree/main/packages/transport/src/chain/caip-2)
-- [chain/caip-10](https://github.com/niconiahi/ethernauta/tree/main/packages/transport/src/chain/caip-10)
-- [chain/caip-19](https://github.com/niconiahi/ethernauta/tree/main/packages/transport/src/chain/caip-19)

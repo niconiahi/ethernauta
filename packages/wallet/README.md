@@ -11,9 +11,14 @@ Add to Chrome from the [Chrome Web Store listing](https://chromewebstore.google.
 - [abi](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
 - [chain](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
 - [cli](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
+- [core](https://github.com/niconiahi/ethernauta/tree/main/packages/core) [[NPM](https://www.npmjs.com/package/@ethernauta/core)]
+- [crypto](https://github.com/niconiahi/ethernauta/tree/main/packages/crypto) [[NPM](https://www.npmjs.com/package/@ethernauta/crypto)]
 - [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
+- [ens](https://github.com/niconiahi/ethernauta/tree/main/packages/ens) [[NPM](https://www.npmjs.com/package/@ethernauta/ens)]
 - [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
 - [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
+- [react](https://github.com/niconiahi/ethernauta/tree/main/packages/react) [[NPM](https://www.npmjs.com/package/@ethernauta/react)]
+- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
 - [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
@@ -84,13 +89,3 @@ type FunctionSidecar = {
 
 The wallet **verifies** `keccak256(signature)[0:4] === input[0:4]` before showing anything. `names` is display-only — the wallet never trusts it for authorization decisions. If the keccak check fails, the sidecar is dropped and the wallet falls back to displaying the raw call data.
 
-## Files to pay attention
-
-- [controller.tsx](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/src/controller.tsx) — popup entry, message handling, view routing
-- [utils/vault.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/src/utils/vault.ts) — encrypted mnemonic storage
-- [utils/crypto.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/src/utils/crypto.ts) — mnemonic → seed → key → address
-- [utils/sign-transaction.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/src/utils/sign-transaction.ts) — EIP-1559 transaction signing
-- [utils/authentication.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/src/utils/authentication.ts) — 5-minute session timeout
-- [utils/event.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/src/utils/event.ts) — request / response envelope schemas
-- [manifest/extension.entry.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/manifest/extension.entry.ts) — background service worker
-- [public/manifest.json](https://github.com/niconiahi/ethernauta/blob/main/packages/wallet/public/manifest.json) — Chrome extension manifest v3

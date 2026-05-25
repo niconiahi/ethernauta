@@ -6,18 +6,34 @@ This module ships implementations of Ethereum Improvement Proposals that aren't 
 
 ## Currently supports
 
+- [x] [EIP-191](https://eips.ethereum.org/EIPS/eip-191) — `personal_sign` signed data standard
+- [x] [EIP-712](https://eips.ethereum.org/EIPS/eip-712) — typed structured data signing
 - [x] [EIP-1102](https://eips.ethereum.org/EIPS/eip-1102) — `eth_requestAccounts` against the wallet
 - [x] [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) — Ethereum provider interface
+- [x] [EIP-1271](https://eips.ethereum.org/EIPS/eip-1271) — smart-contract signature verification
+- [x] [EIP-2255](https://eips.ethereum.org/EIPS/eip-2255) — wallet permissions
+- [x] [EIP-3085](https://eips.ethereum.org/EIPS/eip-3085) — `wallet_addEthereumChain`
+- [x] [EIP-3326](https://eips.ethereum.org/EIPS/eip-3326) — `wallet_switchEthereumChain`
+- [x] [EIP-4337](https://eips.ethereum.org/EIPS/eip-4337) — account abstraction primitives
+- [x] [EIP-4361](https://eips.ethereum.org/EIPS/eip-4361) — Sign-In with Ethereum (SIWE)
+- [x] [EIP-5792](https://eips.ethereum.org/EIPS/eip-5792) — `wallet_sendCalls` / `wallet_getCallsStatus`
+- [x] [EIP-6492](https://eips.ethereum.org/EIPS/eip-6492) — signatures for predeploy contracts
 - [x] [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963) — multi-injected provider discovery
+- [x] [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) — set-code transactions for EOAs
 
 ## Modules
 
 - [abi](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
 - [chain](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
 - [cli](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
+- [core](https://github.com/niconiahi/ethernauta/tree/main/packages/core) [[NPM](https://www.npmjs.com/package/@ethernauta/core)]
+- [crypto](https://github.com/niconiahi/ethernauta/tree/main/packages/crypto) [[NPM](https://www.npmjs.com/package/@ethernauta/crypto)]
 - [eip](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) [[NPM](https://www.npmjs.com/package/@ethernauta/eip)]
+- [ens](https://github.com/niconiahi/ethernauta/tree/main/packages/ens) [[NPM](https://www.npmjs.com/package/@ethernauta/ens)]
 - [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
 - [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
+- [react](https://github.com/niconiahi/ethernauta/tree/main/packages/react) [[NPM](https://www.npmjs.com/package/@ethernauta/react)]
+- [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
 - [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
@@ -79,8 +95,3 @@ window.dispatchEvent(new Event(REQUEST_EVENT))
 
 The package exports the event-name constants (`ANNOUNCE_EVENT`, `REQUEST_EVENT`) and the typed event interfaces (`EIP6963ProviderInfo`, `EIP6963ProviderDetail`, `EIP6963AnnounceProviderEvent`, `EIP6963RequestProviderEvent`).
 
-## Files to pay attention
-
-- [1102/method/eth_requestAccounts.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eip/src/1102/method/eth_requestAccounts.ts)
-- [1193/index.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eip/src/1193/index.ts)
-- [6963/index.ts](https://github.com/niconiahi/ethernauta/blob/main/packages/eip/src/6963/index.ts)
