@@ -305,6 +305,85 @@ use(tx.to)  // Address, not Address | null | undefined
 `if (!x) throw` in production code, the question is *which schema is
 too loose?*, not *which assertion should I add?*.
 
+### R0.5 — Core primitives are nominally branded; cross the brand only through `parse`
+
+Every hex primitive in `@ethernauta/core` (`addressSchema`,
+`bytesSchema`, `bytes4Schema`, `bytes32Schema`, `hash32Schema`,
+`uintSchema`, `uint8Schema`, …, `uint256Schema`, etc.) is wrapped in
+`brand("<Name>")`. The output type is **nominally distinct** —
+`Address`, `Bytes32`, `Hash32`, `Uint256` are all `` `0x${string}` ``
+structurally, but TypeScript treats them as different types. A
+`Uint256`-flavored hex passed where an `Address` is expected fails at
+compile time, not just at runtime.
+
+This means **every hex literal, every `bytes_to_hex(...)` output,
+every `\`0x${n.toString(16)}\`` template, and every raw
+`` `0x${string}` `` value coming from an unbranded source MUST route
+through `parse(<schema>, ...)` before it can be stored in a branded
+position.** Direct assignment of a raw template-literal hex into a
+branded slot is a type error; "fixing" it with `as Address` is the
+violation R1 already bans.
+
+```ts
+// BAD — raw template literal feeds a branded position; only way this
+// compiled before R0.5 was an `as Address` cast (banned by R1)
+const VITALIK = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+const name = await get_ens_name({ address: VITALIK })(ctx)
+
+// BAD — `bytes_to_hex` returns raw `0x${string}`; the brand is missing
+const raw = encode_eip155_transaction_unsigned(tx, key)
+await eth_sendRawTransaction([bytes_to_hex(raw)])(writer(ctx))
+
+// BAD — masking the brand mismatch with `as`
+const status = (receipt.status ?? "0x0") as `0x${string}`
+
+// GOOD — parse at the boundary; the brand attaches in one step
+const VITALIK = parse(
+  addressSchema,
+  "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+)
+
+const raw = encode_eip155_transaction_unsigned(tx, key)
+await eth_sendRawTransaction([
+  parse(bytesSchema, bytes_to_hex(raw)),
+])(writer(ctx))
+
+// Hoist branded sentinels at module scope so equality compares are
+// brand-to-brand, not brand-to-raw-literal
+const STATUS_SUCCESS = parse(uintSchema, RECEIPT_STATUS.SUCCESS)
+const STATUS_REVERTED = parse(uintSchema, RECEIPT_STATUS.REVERTED)
+
+if (receipt.status === STATUS_SUCCESS) succeeded += 1
+else reverted += 1
+```
+
+Two corollaries that the cascade surfaces:
+
+- **Equality compares between a branded value and a bare hex literal
+  fail with `TS2367: ... have no overlap`.** That's the brand working
+  as designed — the literal isn't branded, so the comparison cannot be
+  meaningful. Fix by hoisting a branded constant (`const ZERO_UINT =
+  parse(uintSchema, "0x0")`) and compare against that, not by widening
+  the value side back to the raw template literal.
+- **Helpers that previously returned raw `` `0x${string}` `` (e.g.
+  `private_key_to_address`, `compute_deadlines`, internal selector
+  builders) should return the branded type and validate with `parse`
+  on the way out.** Their callers already expected a branded value;
+  pushing the `parse` to the helper is what the boundary principle
+  asks for.
+
+**Brand mismatches that surface during a cascade are real bugs, not
+ergonomics issues.** Phase 8's cascade flushed out the `Hash32` /
+`Bytes32` confusion in event-log topics (topic0 is a hash, topic1..N
+are head-encodings of indexed static values), an `eth_newFilter`
+return type incorrectly tagged `Bytes` instead of `Uint`, a 7683
+deadline field typed `uint256` against an ABI signature of `uint32`,
+a `personal_sign` return type that papered over the wallet/dapp
+boundary with an `as` cast, and a calls-registry storing
+`Hash32`-shaped transaction hashes in `Bytes`-typed slots. Each one
+ships as its own fix commit; the brand catches a class of bug that
+runtime `parse` alone cannot.
+
 ## R1 — No `as` type assertion
 
 **Banned, all of them.** Including:
