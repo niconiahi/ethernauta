@@ -37,7 +37,9 @@ describe("generator.ts", () => {
       expect(file).toContain("args: PARAM_CODECS")
       expect(file).toContain("chain_id: context.chain_id")
       expect(file).toContain("to: context.to")
-      expect(file).toContain("data: bytes_to_hex(calldata)")
+      expect(file).toContain(
+        "data: parse(bytesSchema, bytes_to_hex(calldata))",
+      )
       expect(file).toContain("decode_function_result")
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
@@ -337,7 +339,7 @@ describe("generator.ts", () => {
         } from "@ethernauta/abi"
         import type { InferOutput } from "valibot"
         import { object, parse, tuple, union } from "valibot"
-        import { bytes32Schema, bytesSchema, uint32Schema } from "@ethernauta/core"
+        import { bytes32Schema, bytesSchema, uint32Schema, uintSchema } from "@ethernauta/core"
 
         const PARAM_CODECS = [abi_tuple({ fillDeadline: uint32(), orderDataType: bytes32(), orderData: bytes() })] as const
 
@@ -372,8 +374,8 @@ describe("generator.ts", () => {
             return eth_signTransaction(
               [{
                 to: context.to,
-                value: "0x0",
-                input: bytes_to_hex(calldata),
+                value: parse(uintSchema, "0x0"),
+                input: parse(bytesSchema, bytes_to_hex(calldata)),
                 _ethernauta: {
                   function: OPEN_SIGNATURE,
                 },
@@ -424,7 +426,7 @@ describe("generator.ts", () => {
         import type { InferOutput } from "valibot"
         import { object, parse, tuple, union, array as v_array } from "valibot"
         import type { Uint256 } from "@ethernauta/core"
-        import { addressSchema, uint256Schema } from "@ethernauta/core"
+        import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
 
         const PARAM_CODECS = [array(address()), array(uint256())] as const
         const OUTPUT_CODECS = [array(uint256())] as const
@@ -454,7 +456,7 @@ describe("generator.ts", () => {
             return {
               chain_id: context.chain_id,
               to: context.to,
-              data: bytes_to_hex(calldata),
+              data: parse(bytesSchema, bytes_to_hex(calldata)),
               decode: (result: Bytes): Uint256[] => {
                 const [decoded] = decode_function_result(
                   OUTPUT_CODECS,

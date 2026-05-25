@@ -71,17 +71,21 @@ export function parse_stealth_meta_address(
     )
   }
   return {
-    spending_public_key:
-      `0x${stripped.slice(0, 66)}` as `0x${string}`,
-    viewing_public_key:
-      `0x${stripped.slice(66, 132)}` as `0x${string}`,
+    spending_public_key: parse(
+      bytesSchema,
+      `0x${stripped.slice(0, 66)}`,
+    ),
+    viewing_public_key: parse(
+      bytesSchema,
+      `0x${stripped.slice(66, 132)}`,
+    ),
   }
 }
 
 export function format_stealth_meta_address(
   meta: StealthMetaAddress,
 ): `0x${string}` {
-  return `0x${meta.spending_public_key.slice(2)}${meta.viewing_public_key.slice(2)}` as `0x${string}`
+  return `0x${meta.spending_public_key.slice(2)}${meta.viewing_public_key.slice(2)}`
 }
 
 export function derive_meta_address(input: {
@@ -89,12 +93,18 @@ export function derive_meta_address(input: {
   viewing_private_key: Uint8Array
 }): StealthMetaAddress {
   return {
-    spending_public_key: bytes_to_hex(
-      getPublicKey(input.spending_private_key, true),
-    ) as `0x${string}`,
-    viewing_public_key: bytes_to_hex(
-      getPublicKey(input.viewing_private_key, true),
-    ) as `0x${string}`,
+    spending_public_key: parse(
+      bytesSchema,
+      bytes_to_hex(
+        getPublicKey(input.spending_private_key, true),
+      ),
+    ),
+    viewing_public_key: parse(
+      bytesSchema,
+      bytes_to_hex(
+        getPublicKey(input.viewing_private_key, true),
+      ),
+    ),
   }
 }
 
@@ -137,9 +147,10 @@ export function generate_stealth_address({
   )
   return {
     stealth_address: point_to_address(stealth_point),
-    ephemeral_public_key: bytes_to_hex(
-      ephemeral_public_key,
-    ) as `0x${string}`,
+    ephemeral_public_key: parse(
+      bytesSchema,
+      bytes_to_hex(ephemeral_public_key),
+    ),
     view_tag,
   }
 }

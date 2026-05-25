@@ -13,7 +13,7 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { addressSchema, bytes32Schema, bytesSchema, uint256Schema, uint32Schema } from "@ethernauta/core"
+import { addressSchema, bytes32Schema, bytesSchema, uint256Schema, uint32Schema, uintSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [abi_tuple({ originSettler: address(), user: address(), nonce: uint256(), originChainId: uint256(), openDeadline: uint32(), fillDeadline: uint32(), orderDataType: bytes32(), orderData: bytes() }), bytes(), bytes()] as const
 
@@ -48,8 +48,8 @@ export function openFor(_parameters: Parameters): Signable<Bytes> {
     return eth_signTransaction(
       [{
         to: context.to,
-        value: "0x0",
-        input: bytes_to_hex(calldata),
+        value: parse(uintSchema, "0x0"),
+        input: parse(bytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: OPEN_FOR_SIGNATURE,
         },

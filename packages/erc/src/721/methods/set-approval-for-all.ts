@@ -9,7 +9,7 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { boolean, object, parse, tuple, union } from "valibot"
-import { addressSchema } from "@ethernauta/core"
+import { addressSchema, bytesSchema, uintSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), bool()] as const
 
@@ -44,8 +44,8 @@ export function setApprovalForAll(_parameters: Parameters): Signable<Bytes> {
     return eth_signTransaction(
       [{
         to: context.to,
-        value: "0x0",
-        input: bytes_to_hex(calldata),
+        value: parse(uintSchema, "0x0"),
+        input: parse(bytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: SET_APPROVAL_FOR_ALL_SIGNATURE,
         },

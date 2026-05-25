@@ -1,4 +1,12 @@
+import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uint256Schema,
+  uint32Schema,
+} from "@ethernauta/core"
 import { encode_type } from "@ethernauta/eip/712"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -27,22 +35,32 @@ describe("typed-data.ts — make_gasless_order_typed_data", () => {
   it("should produce typed data with primaryType and proper domain", () => {
     const td = make_gasless_order_typed_data({
       order: {
-        originSettler:
+        originSettler: parse(
+          addressSchema,
           "0x1111111111111111111111111111111111111111",
-        user: "0x2222222222222222222222222222222222222222",
-        nonce: "0x1",
-        originChainId: "0xaa36a7",
-        openDeadline: "0x6800",
-        fillDeadline: "0x6800",
-        orderDataType: `0x${"00".repeat(32)}`,
-        orderData: "0x",
+        ),
+        user: parse(
+          addressSchema,
+          "0x2222222222222222222222222222222222222222",
+        ),
+        nonce: parse(uint256Schema, "0x1"),
+        originChainId: parse(uint256Schema, "0xaa36a7"),
+        openDeadline: parse(uint32Schema, "0x6800"),
+        fillDeadline: parse(uint32Schema, "0x6800"),
+        orderDataType: parse(
+          bytes32Schema,
+          `0x${"00".repeat(32)}`,
+        ),
+        orderData: parse(bytesSchema, "0x"),
       },
       domain: {
         name: "Test Settler",
         version: "1",
         chainId: 11155111,
-        verifyingContract:
+        verifyingContract: parse(
+          addressSchema,
           "0x1111111111111111111111111111111111111111",
+        ),
       },
     })
     expect(td.primaryType).toBe(GASLESS_PRIMARY_TYPE)

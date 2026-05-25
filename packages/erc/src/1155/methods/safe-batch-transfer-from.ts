@@ -11,7 +11,7 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union, array as v_array } from "valibot"
-import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
+import { addressSchema, bytesSchema, uint256Schema, uintSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), address(), array(uint256()), array(uint256()), bytes()] as const
 
@@ -46,8 +46,8 @@ export function safeBatchTransferFrom(_parameters: Parameters): Signable<Bytes> 
     return eth_signTransaction(
       [{
         to: context.to,
-        value: "0x0",
-        input: bytes_to_hex(calldata),
+        value: parse(uintSchema, "0x0"),
+        input: parse(bytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: SAFE_BATCH_TRANSFER_FROM_SIGNATURE,
         },

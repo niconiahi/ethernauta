@@ -525,6 +525,9 @@ function build_readable(
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
   for (const info of output_infos) fold_output(agg, info)
+  // Callable.data is bytesSchema-branded; the template wraps the
+  // bytes_to_hex(calldata) emit in parse(bytesSchema, …).
+  agg.core_schemas.add("bytesSchema")
 
   const is_tuple = output_infos.length > 1
   const return_type = is_tuple
@@ -577,7 +580,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): ${return_type} => {
         ${decode_body}
       },
@@ -595,6 +598,13 @@ function build_signable(
   const input_infos = inputs.map((i) => get_type_info(i))
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
+  // The emitted eth_signTransaction payload routes its `value` and
+  // `input` fields through parse(uintSchema, "0x0") and
+  // parse(bytesSchema, bytes_to_hex(...)) — Signable<Bytes> requires
+  // the brand on `data`, genericTransactionSchema requires brands on
+  // both fields.
+  agg.core_schemas.add("bytesSchema")
+  agg.core_schemas.add("uintSchema")
 
   return `import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
@@ -627,8 +637,8 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     return eth_signTransaction(
       [{
         to: context.to,
-        value: "0x0",
-        input: bytes_to_hex(calldata),
+        value: parse(uintSchema, "0x0"),
+        input: parse(bytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: ${signature_const_name(emit_name)},
         },

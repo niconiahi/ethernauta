@@ -8,7 +8,7 @@ import {
 } from "@ethernauta/abi"
 import { parse } from "valibot"
 import type { Address } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
+import { addressSchema, bytesSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [address()] as const
@@ -31,7 +31,7 @@ export function asset() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Address => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

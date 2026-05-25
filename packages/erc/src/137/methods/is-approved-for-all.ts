@@ -9,7 +9,7 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { boolean, object, parse, tuple, union } from "valibot"
-import { addressSchema } from "@ethernauta/core"
+import { addressSchema, bytesSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), address()] as const
 const OUTPUT_CODECS = [bool()] as const
@@ -39,7 +39,7 @@ export function isApprovedForAll(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): boolean => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

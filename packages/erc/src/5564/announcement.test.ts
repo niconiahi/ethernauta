@@ -1,3 +1,5 @@
+import { bytesSchema } from "@ethernauta/core"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -27,20 +29,22 @@ describe("announcement.ts — metadata round-trip", () => {
   it("should encode view tag as the first byte and preserve the body", () => {
     const encoded = encode_metadata({
       view_tag: 0x42,
-      body: "0xdeadbeef",
+      body: parse(bytesSchema, "0xdeadbeef"),
     })
     expect(encoded.startsWith("0x42")).toBe(true)
     expect(encoded.endsWith("deadbeef")).toBe(true)
   })
 
   it("should decode back to the same view tag and body", () => {
-    const decoded = decode_metadata("0x42deadbeef")
+    const decoded = decode_metadata(
+      parse(bytesSchema, "0x42deadbeef"),
+    )
     expect(decoded.view_tag).toBe(0x42)
     expect(decoded.body).toBe("0xdeadbeef")
   })
 
   it("should treat empty metadata as zero view tag", () => {
-    const decoded = decode_metadata("0x")
+    const decoded = decode_metadata(parse(bytesSchema, "0x"))
     expect(decoded.view_tag).toBe(0)
     expect(decoded.body).toBe("0x")
   })

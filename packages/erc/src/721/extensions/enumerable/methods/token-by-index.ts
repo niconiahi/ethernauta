@@ -9,7 +9,7 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
-import { uint256Schema } from "@ethernauta/core"
+import { bytesSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256()] as const
 const OUTPUT_CODECS = [uint256()] as const
@@ -39,7 +39,7 @@ export function tokenByIndex(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

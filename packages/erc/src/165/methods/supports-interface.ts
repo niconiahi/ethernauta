@@ -18,7 +18,7 @@ import {
   tuple,
   union,
 } from "valibot"
-import { bytes4Schema } from "@ethernauta/core"
+import { bytes4Schema, bytesSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes4()] as const
 const OUTPUT_CODECS = [bool()] as const
@@ -48,7 +48,7 @@ export function supportsInterface(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): boolean => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

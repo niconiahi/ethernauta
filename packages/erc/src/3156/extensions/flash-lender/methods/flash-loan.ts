@@ -10,7 +10,7 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
+import { addressSchema, bytesSchema, uint256Schema, uintSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), address(), uint256(), bytes()] as const
 
@@ -45,8 +45,8 @@ export function flashLoan(_parameters: Parameters): Signable<Bytes> {
     return eth_signTransaction(
       [{
         to: context.to,
-        value: "0x0",
-        input: bytes_to_hex(calldata),
+        value: parse(uintSchema, "0x0"),
+        input: parse(bytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: FLASH_LOAN_SIGNATURE,
         },

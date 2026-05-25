@@ -8,7 +8,7 @@ import {
 } from "@ethernauta/abi"
 import { parse } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
-import { uint256Schema } from "@ethernauta/core"
+import { bytesSchema, uint256Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint256()] as const
@@ -31,7 +31,7 @@ export function totalAssets() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

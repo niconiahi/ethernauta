@@ -40,7 +40,7 @@ export function addr(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Bytes => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

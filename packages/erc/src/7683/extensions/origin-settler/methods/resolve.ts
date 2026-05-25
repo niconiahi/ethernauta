@@ -46,7 +46,7 @@ export function resolve(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): { user: Address; originChainId: Uint256; openDeadline: Uint32; fillDeadline: Uint32; orderId: Bytes32; maxSpent: { token: Bytes32; amount: Uint256; recipient: Bytes32; chainId: Uint256 }[]; minReceived: { token: Bytes32; amount: Uint256; recipient: Bytes32; chainId: Uint256 }[]; fillInstructions: { destinationChainId: Uint64; destinationSettler: Bytes32; originData: Bytes }[] } => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

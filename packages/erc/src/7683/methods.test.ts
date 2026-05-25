@@ -1,8 +1,16 @@
 import { to_selector } from "@ethernauta/abi"
 import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uint256Schema,
+  uint32Schema,
+} from "@ethernauta/core"
+import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -26,24 +34,39 @@ import {
   resolveFor,
 } from "./extensions/origin-settler/methods/resolve-for"
 
+const CONTRACT = parse(
+  addressSchema,
+  "0x3333333333333333333333333333333333333333",
+)
+const FILL_DEADLINE = parse(uint32Schema, "0x65b3b3b3")
+const ORDER_DATA_TYPE = parse(
+  bytes32Schema,
+  "0x0000000000000000000000000000000000000000000000000000000000000001",
+)
+const ORDER_DATA = parse(bytesSchema, "0xdeadbeef")
+const EMPTY_BYTES = parse(bytesSchema, "0x")
+
 const ORDER = {
-  fillDeadline: "0x65b3b3b3" as const,
-  orderDataType:
-    "0x0000000000000000000000000000000000000000000000000000000000000001" as const,
-  orderData: "0xdeadbeef" as const,
+  fillDeadline: FILL_DEADLINE,
+  orderDataType: ORDER_DATA_TYPE,
+  orderData: ORDER_DATA,
 }
 
 const GASLESS_ORDER = {
-  originSettler:
-    "0x1111111111111111111111111111111111111111" as const,
-  user: "0x2222222222222222222222222222222222222222" as const,
-  nonce: "0x1" as const,
-  originChainId: "0x1" as const,
-  openDeadline: "0x65b3b3b3" as const,
-  fillDeadline: "0x65b3b3b3" as const,
-  orderDataType:
-    "0x0000000000000000000000000000000000000000000000000000000000000001" as const,
-  orderData: "0xdeadbeef" as const,
+  originSettler: parse(
+    addressSchema,
+    "0x1111111111111111111111111111111111111111",
+  ),
+  user: parse(
+    addressSchema,
+    "0x2222222222222222222222222222222222222222",
+  ),
+  nonce: parse(uint256Schema, "0x1"),
+  originChainId: parse(uint256Schema, "0x1"),
+  openDeadline: parse(uint32Schema, "0x65b3b3b3"),
+  fillDeadline: FILL_DEADLINE,
+  orderDataType: ORDER_DATA_TYPE,
+  orderData: ORDER_DATA,
 }
 
 describe("ERC-7683 generated bindings — canonical signatures", () => {
@@ -96,8 +119,8 @@ describe("ERC-7683 resolve(tuple) — calldata selector matches canonical signat
     // serialize to the same canonical form as the exported SIGNATURE
     // constant, otherwise the on-chain method dispatch fails.
     const call = resolve({ order: ORDER })({
-      chain_id: 1,
-      to: "0x3333333333333333333333333333333333333333",
+      chain_id: "eip155:1",
+      to: CONTRACT,
     })
     const expected_selector = bytes_to_hex(
       to_selector(RESOLVE_SIGNATURE.signature),
@@ -118,10 +141,10 @@ describe("ERC-7683 — calldata encoding smoke tests", () => {
   it("resolveFor accepts a gasless order + originFillerData", () => {
     const call = resolveFor({
       order: GASLESS_ORDER,
-      originFillerData: "0x",
+      originFillerData: EMPTY_BYTES,
     })({
-      chain_id: 1,
-      to: "0x3333333333333333333333333333333333333333",
+      chain_id: "eip155:1",
+      to: CONTRACT,
     })
     expect(call.data.startsWith("0x")).toBe(true)
     expect(
@@ -135,10 +158,12 @@ describe("ERC-7683 — calldata encoding smoke tests", () => {
 
   it("fill returns a Signable (function), not a Callable", () => {
     const signable = fill({
-      orderId:
+      orderId: parse(
+        bytes32Schema,
         "0x0000000000000000000000000000000000000000000000000000000000000001",
-      originData: "0x",
-      fillerData: "0x",
+      ),
+      originData: EMPTY_BYTES,
+      fillerData: EMPTY_BYTES,
     })
     expect(typeof signable).toBe("function")
   })
@@ -151,8 +176,8 @@ describe("ERC-7683 — calldata encoding smoke tests", () => {
   it("openFor returns a Signable accepting GaslessCrossChainOrder + bytes + bytes", () => {
     const signable = openFor({
       order: GASLESS_ORDER,
-      signature: "0x",
-      originFillerData: "0x",
+      signature: EMPTY_BYTES,
+      originFillerData: EMPTY_BYTES,
     })
     expect(typeof signable).toBe("function")
   })

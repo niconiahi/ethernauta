@@ -3,9 +3,13 @@
 import {
   type Address,
   addressSchema,
+  type Bytes32,
+  bytes32Schema,
   bytesSchema,
-  type Hash32,
-  hash32Schema,
+  type Uint256,
+  uint256Schema,
+  type Uint32,
+  uint32Schema,
 } from "@ethernauta/core"
 import {
   type InferOutput,
@@ -29,14 +33,14 @@ export function compute_deadlines(
   window: DeadlineWindow,
   now_s: number = Math.floor(Date.now() / 1000),
 ): {
-  openDeadline: `0x${string}`
-  fillDeadline: `0x${string}`
+  openDeadline: Uint32
+  fillDeadline: Uint32
 } {
   const open = now_s + window.open_window_s
   const fill = now_s + window.fill_window_s
   return {
-    openDeadline: `0x${open.toString(16)}`,
-    fillDeadline: `0x${fill.toString(16)}`,
+    openDeadline: parse(uint32Schema, `0x${open.toString(16)}`),
+    fillDeadline: parse(uint32Schema, `0x${fill.toString(16)}`),
   }
 }
 
@@ -46,22 +50,22 @@ export function compute_deadlines(
 // can address into the same struct.
 export function address_to_bytes32(
   _address: Address,
-): Hash32 {
+): Bytes32 {
   const hex = _address.toLowerCase().slice(2)
-  return parse(hash32Schema, `0x${hex.padStart(64, "0")}`)
+  return parse(bytes32Schema, `0x${hex.padStart(64, "0")}`)
 }
 
 // Pack a uint256 nonce as hex. Use `crypto.getRandomValues`
 // for client-side uniqueness — settlers use the (user, nonce)
 // pair to detect replays.
-export function random_nonce(): `0x${string}` {
+export function random_nonce(): Uint256 {
   const bytes = new Uint8Array(32)
   crypto.getRandomValues(bytes)
   let hex = "0x"
   for (const byte of bytes) {
     hex += byte.toString(16).padStart(2, "0")
   }
-  return hex as `0x${string}`
+  return parse(uint256Schema, hex)
 }
 
 // Strip leading zeros from a hex string except for `0x0`.
@@ -72,17 +76,17 @@ export function strip_hex_zeros(
   hex: `0x${string}`,
 ): `0x${string}` {
   const stripped = hex.slice(2).replace(/^0+/, "")
-  return `0x${stripped === "" ? "0" : stripped}` as `0x${string}`
+  return `0x${stripped === "" ? "0" : stripped}`
 }
 
 export const gaslessOrderBuilderSchema = object({
   originSettler: addressSchema,
   user: addressSchema,
-  originChainId: bytesSchema,
-  orderDataType: hash32Schema,
+  originChainId: uint256Schema,
+  orderDataType: bytes32Schema,
   orderData: bytesSchema,
   window: deadlineWindowSchema,
-  nonce: optional(bytesSchema),
+  nonce: optional(uint256Schema),
 })
 export type GaslessOrderBuilder = InferOutput<
   typeof gaslessOrderBuilderSchema

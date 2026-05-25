@@ -9,7 +9,7 @@ import {
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { object, parse, string, tuple, union } from "valibot"
-import { bytes32Schema } from "@ethernauta/core"
+import { bytes32Schema, bytesSchema } from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32(), string_()] as const
 const OUTPUT_CODECS = [string_()] as const
@@ -39,7 +39,7 @@ export function text(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: bytes_to_hex(calldata),
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): string => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
