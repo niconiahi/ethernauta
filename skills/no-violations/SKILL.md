@@ -599,11 +599,19 @@ is broken.
 
 ## The ratchet
 
-`scripts/no-escape-hatches.sh` reads the seven counters
-(`as` / `ts-ignore` / `biome-ignore` line / `biome-ignore-all` /
-`interface` / `object type` / `eslint-disable`) from the workspace and
-compares them to `scripts/no-escape-hatches.baseline.json`. Any counter
-above its baseline fails the script.
+`scripts/no-escape-hatches.sh` reads twelve counters from the workspace
+and enforces them against `scripts/no-escape-hatches.baseline.json`.
+Phase 10 (the lock-the-door step) locks ten of them at **HARD ZERO**:
+
+`as` / `ts-ignore` / `biome-ignore` line / `biome-ignore-all` /
+`interface` / `object_type` / `eslint-disable` / `any` /
+`invariant_calls` / `redundant_annotations`
+
+Any non-zero on those counters fails CI. The remaining two —
+`never` and `unknown` — stay on **NO-INCREASE** semantics because their
+baselines mix legitimate R0.2 uses with violations: the ratchet allows
+drops, rejects rises, and intentional bumps land in the same commit
+with a one-line `_<counter>_bump_<date>_<reason>` key in the JSON.
 
 Run it locally:
 
@@ -611,5 +619,46 @@ Run it locally:
 bash scripts/no-escape-hatches.sh
 ```
 
-When a phase lands and a counter genuinely drops, **lower the
-baseline** in the same commit. The baseline only ever moves down.
+### Allow-violation markers
+
+A small audited set of lines is allowed to violate R1 / R4 because the
+rule's narrow exception list applies (R1 mapped-tuple boundary in
+`decode_function_result`, R4 recursive Valibot anchors, R4 declaration
+merging on `globalThis.Window`). Mark each such line by placing
+`// allow-violation: <tag>` on the line **immediately above** the
+violation:
+
+```ts
+// allow-violation: R4-recursive-schema
+type Node = {
+  children: Map<number, Node>
+  canonical: readonly number[] | null
+}
+```
+
+The ratchet's `filter-allowed-violations.py` strips marked occurrences
+before counting. The check is intentionally narrow — only the (N-1)th
+line is inspected — so the mechanism stays mechanically obvious and
+hard to abuse. Two-plus-lines-above markers do nothing; same-line
+trailing markers do nothing.
+
+Use the canonical tags (one per exception class):
+
+- `R1-mapped-tuple` — irreducible `as DecodedOf<Args>` at a bytes→tuple
+  boundary that the TS type system can't accumulate through (`.entries()`
+  on a heterogeneous codec sequence)
+- `R4-recursive-schema` — hand-rolled type that anchors a Valibot
+  `lazy()` self-reference per the Valibot docs pattern
+- `R4-decl-merging` — `interface X` whose job is to augment a built-in
+  global (e.g. `globalThis.Window`)
+
+Adding a new tag without first extending this list and the matching
+"Allowed exceptions" block under R1 / R4 / R0.2 / R0.4 is a violation
+of the rule itself. The marker is a flag for an exception, not an
+escape hatch.
+
+### Lowering baselines
+
+When a `never` / `unknown` reduction lands, **lower the baseline** in
+the same commit. The hard-zero counters are already at the floor — no
+lowering applies.

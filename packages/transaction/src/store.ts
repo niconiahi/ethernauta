@@ -20,6 +20,7 @@ export type Store = Readonly<{
 }>
 
 declare global {
+  // allow-violation: R4-decl-merging
   interface Window {
     transactions?: Map<Hash32, Transaction>
   }

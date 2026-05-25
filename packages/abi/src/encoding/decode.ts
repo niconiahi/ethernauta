@@ -28,7 +28,9 @@ export function decode_function_result<
   const Args extends readonly AbiCodec<unknown>[],
 >(_args: Args, _hex: `0x${string}`): DecodedOf<Args> {
   const data = hex_to_bytes(_hex)
-  return decode_sequence(_args, data, 0) as DecodedOf<Args>
+  const decoded = decode_sequence(_args, data, 0)
+  // allow-violation: R1-mapped-tuple
+  return decoded as DecodedOf<Args>
 }
 
 // Decode a complete calldata (selector + args).
@@ -49,10 +51,8 @@ export function decode_function_call<
   }
   const selector = bytes_to_hex(data.slice(0, 4))
   const body = data.slice(4)
-  const args = decode_sequence(
-    _args,
-    body,
-    0,
-  ) as DecodedOf<Args>
+  const decoded = decode_sequence(_args, body, 0)
+  // allow-violation: R1-mapped-tuple
+  const args = decoded as DecodedOf<Args>
   return { selector, args }
 }

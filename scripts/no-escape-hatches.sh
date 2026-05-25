@@ -2,13 +2,25 @@
 #
 # Ratchet for the no-casts-no-annotations-no-ignores cleanup.
 #
-# Reads seven counters from packages/ and compares them to the values
-# in scripts/no-escape-hatches.baseline.json. Any counter ABOVE its
-# baseline fails the script with a non-zero exit code. Counters AT or
-# BELOW their baseline pass.
+# Reads twelve counters from packages/ and enforces them against
+# scripts/no-escape-hatches.baseline.json. Phase 10 (lock the door)
+# locks ten counters at HARD ZERO:
 #
-# When a phase lands a real reduction, update the baseline JSON in the
-# SAME commit so subsequent runs hold the new floor.
+#   as, ts_ignore, biome_ignore_line, biome_ignore_all, interface,
+#   object_type, eslint_disable, any, invariant_calls, redundant_annotations
+#
+# Any non-zero on those fails CI. The two remaining counters (`never`,
+# `unknown`) mix legitimate uses (per R0.2's allowed list) with
+# violations and so stay on NO-INCREASE semantics: rises above the
+# baseline fail, drops are allowed.
+#
+# A small, audited set of lines is allowed to violate R1 / R4 because
+# the rule's narrow exception list applies (recursive Valibot schema
+# anchors, declaration merging on built-in globals, irreducible mapped-
+# tuple boundary in `decode_function_result`). Mark those lines with a
+# `// allow-violation: <tag>` comment IMMEDIATELY ABOVE the violation.
+# The ratchet strips marked occurrences before counting. New marks must
+# match an exception in `skills/no-violations/SKILL.md`.
 #
 # See skills/no-violations/SKILL.md for the substantive rules.
 
@@ -24,6 +36,24 @@ if [[ ! -f "${BASELINE_FILE}" ]]; then
   exit 2
 fi
 
+# ---- allow-violation filter ----
+
+# Strips lines whose preceding line carries `allow-violation:`. Input
+# and output are `file:lineno:content` records (the canonical grep -n
+# format). The Python implementation lives in
+# `scripts/filter-allowed-violations.py` so the heredoc does not collide
+# with piped stdin.
+filter_allowed() {
+  python3 "${REPO_ROOT}/scripts/filter-allowed-violations.py"
+}
+
+# Wraps a grep pipeline through filter_allowed and counts the surviving
+# lines. `grep -c ''` counts lines; the `|| true` keeps empty input from
+# tripping `set -e` (grep exits 1 when it matches nothing).
+count_filtered() {
+  filter_allowed | { grep -c '' || true; }
+}
+
 # ---- counters ----
 
 count_as() {
@@ -38,13 +68,13 @@ count_as() {
     | grep -vE "\bas\s+(const|keyof|typeof)\b" \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
     | grep -vE "^[^:]+:[0-9]+:\s*import\s|^[^:]+:[0-9]+:\s*export\s.*\bfrom\b" \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_ts_ignore() {
   grep -rnE "@ts-(ignore|expect-error|nocheck)" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_biome_ignore_line() {
@@ -52,7 +82,8 @@ count_biome_ignore_line() {
   # subtract those to get the true line-level count.
   local raw all
   raw=$(grep -rnE "^\s*//\s*biome-ignore\b" packages/ \
-    --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null | wc -l | tr -d ' ')
+    --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
+    | count_filtered)
   all=$(count_biome_ignore_all)
   echo $((raw - all))
 }
@@ -60,25 +91,25 @@ count_biome_ignore_line() {
 count_biome_ignore_all() {
   grep -rnE "biome-ignore-all" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_interface() {
   grep -rnE "^\s*(export\s+)?interface\s+\w" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_object_type() {
   grep -rnE "^\s*(export\s+)?type\s+\w+\s*=\s*\{" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_eslint_disable() {
   grep -rnE "eslint-disable" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_any() {
@@ -90,32 +121,32 @@ count_any() {
   grep -rnE ":\s*any\b|<any[>,]|\bany\[\]|\bany\s*\||\bas\s+any\b" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_never() {
   # Raw `\bnever\b` outside line comments. R0.2 bans `never` except in
   # the narrow allowed list (throw-only return, conditional-type
   # bottom, exhaustive-switch default). The baseline therefore mixes
-  # legitimate uses with violations — the ratchet's job is to flag
-  # deltas; review every new occurrence and either fix it or bump the
-  # baseline with a one-line justification in the commit.
+  # legitimate uses with violations — Phase 10 keeps this counter on
+  # NO-INCREASE semantics, not hard-zero. Review every new occurrence
+  # and either fix it or bump the baseline with a one-line justification.
   grep -rnE "\bnever\b" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_unknown() {
   # Raw `\bunknown\b` outside line comments. Same R0.2 framing as
   # `never`: legitimate uses (Valibot's `_raw: unknown`, JSON.parse
   # output, conditional-type `extends unknown`) are mixed into the
-  # baseline; the ratchet enforces no-increase, and PRs that add a
-  # legit `unknown` justify the +1 in the commit.
+  # baseline; Phase 10 keeps this counter on NO-INCREASE semantics.
+  # PRs that add a legit `unknown` justify the +1 in the commit.
   grep -rnE "\bunknown\b" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 count_redundant_annotations() {
@@ -130,16 +161,14 @@ count_redundant_annotations() {
 count_invariant_calls() {
   # Production `invariant(` call sites per R0.4 — Valibot is the only
   # validator. Excludes test files, the `invariant` definition itself
-  # in `@ethernauta/utils`, and comment lines. Phase 6 of the
-  # no-casts-no-annotations plan walks this counter to zero modulo a
-  # short documented B2 exception list (bootstrap preconditions like
-  # `entry.preact.tsx`'s `#app` root check).
+  # in `@ethernauta/utils`, and comment lines. Phase 6 walked this
+  # counter to zero; Phase 10 locks it at hard zero.
   grep -rnE "\binvariant\(" packages/ \
     --include="*.ts" --include="*.tsx" --exclude-dir=dist --exclude="*.d.ts" 2>/dev/null \
     | grep -vE "\.test\.ts:" \
     | grep -vE "packages/utils/src/invariant\.ts:" \
     | grep -vE "^[^:]+:[0-9]+:\s*(//|\*|/\*)" \
-    | wc -l | tr -d ' '
+    | count_filtered
 }
 
 # ---- read baseline ----
@@ -153,7 +182,25 @@ read_baseline() {
 
 FAIL=0
 
-check() {
+# Hard-zero check: any non-zero current fails.
+check_zero() {
+  local label="$1"
+  local current="$2"
+
+  local status
+  if (( current > 0 )); then
+    status="FAIL"
+    FAIL=1
+  else
+    status="ok  "
+  fi
+
+  printf "  %s  %-22s current=%-6s policy=hard-zero\n" \
+    "${status}" "${label}" "${current}"
+}
+
+# No-increase check: current must be ≤ baseline.
+check_no_increase() {
   local label="$1"
   local current="$2"
   local key="$3"
@@ -170,7 +217,7 @@ check() {
     status="ok  "
   fi
 
-  printf "  %s  %-22s current=%-6s baseline=%-6s\n" \
+  printf "  %s  %-22s current=%-6s baseline=%-6s policy=no-increase\n" \
     "${status}" "${label}" "${current}" "${baseline}"
 }
 
@@ -178,25 +225,30 @@ echo "no-escape-hatches ratchet"
 echo "  baseline: ${BASELINE_FILE}"
 echo
 
-check "as"                "$(count_as)"                "as"
-check "ts-ignore"         "$(count_ts_ignore)"         "ts_ignore"
-check "biome-ignore line" "$(count_biome_ignore_line)" "biome_ignore_line"
-check "biome-ignore-all"  "$(count_biome_ignore_all)"  "biome_ignore_all"
-check "interface"         "$(count_interface)"         "interface"
-check "object type"       "$(count_object_type)"       "object_type"
-check "eslint-disable"    "$(count_eslint_disable)"    "eslint_disable"
-check "any"               "$(count_any)"               "any"
-check "never"             "$(count_never)"             "never"
-check "unknown"           "$(count_unknown)"           "unknown"
-check "invariant calls"   "$(count_invariant_calls)"   "invariant_calls"
-check "redundant : annot" "$(count_redundant_annotations)" "redundant_annotations"
+check_zero        "as"                "$(count_as)"
+check_zero        "ts-ignore"         "$(count_ts_ignore)"
+check_zero        "biome-ignore line" "$(count_biome_ignore_line)"
+check_zero        "biome-ignore-all"  "$(count_biome_ignore_all)"
+check_zero        "interface"         "$(count_interface)"
+check_zero        "object type"       "$(count_object_type)"
+check_zero        "eslint-disable"    "$(count_eslint_disable)"
+check_zero        "any"               "$(count_any)"
+check_zero        "invariant calls"   "$(count_invariant_calls)"
+check_zero        "redundant : annot" "$(count_redundant_annotations)"
+check_no_increase "never"             "$(count_never)"   "never"
+check_no_increase "unknown"           "$(count_unknown)" "unknown"
 
 echo
 if (( FAIL == 1 )); then
-  echo "ratchet: at least one counter rose above baseline." >&2
-  echo "  fix the new violation or, if the rise is intentional," >&2
-  echo "  justify it before raising the baseline (raising is" >&2
-  echo "  almost always wrong — the baseline only moves DOWN)." >&2
+  echo "ratchet: at least one counter is in violation." >&2
+  echo "  hard-zero counters must stay at 0 — fix the new" >&2
+  echo "  occurrence or, if it is genuinely an R1/R4/R0.2/R0.4" >&2
+  echo "  documented exception, mark it with" >&2
+  echo "  '// allow-violation: <tag>' on the line above per" >&2
+  echo "  skills/no-violations/SKILL.md." >&2
+  echo "  no-increase counters (never / unknown) must stay ≤ baseline;" >&2
+  echo "  legit additions go in a separate commit with a justification" >&2
+  echo "  in the baseline JSON's adjacent _comment key." >&2
   exit 1
 fi
 

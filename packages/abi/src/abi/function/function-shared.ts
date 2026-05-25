@@ -25,6 +25,7 @@ export const stateMutabilitySchema = union([
 // (e.g. ERC-7683's ResolvedCrossChainOrder, whose `tuple[]` components
 // are themselves `Output` / `FillInstruction` structs) need this self-
 // reference. `lazy` lets the schema cycle through itself.
+// allow-violation: R4-recursive-schema
 export type AbiInput = {
   name: string
   type: string
