@@ -6,6 +6,7 @@
 // or UI concerns — drop them straight into a wallet view, a
 // CLI signer, or a test harness.
 
+import { uintSchema } from "@ethernauta/core"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -14,6 +15,7 @@ import {
   type RecoveredSignature,
   sign,
 } from "@noble/secp256k1"
+import { parse } from "valibot"
 import {
   type AuthorizationParameter,
   type AuthorizationSigned,
@@ -60,9 +62,9 @@ export function sign_authorization(
     chainId: auth.chainId,
     address: auth.address,
     nonce: auth.nonce,
-    yParity: big_to_hex(BigInt(signature.recovery)),
-    r: big_to_hex(signature.r),
-    s: big_to_hex(signature.s),
+    yParity: parse(uintSchema, big_to_hex(BigInt(signature.recovery))),
+    r: parse(uintSchema, big_to_hex(signature.r)),
+    s: parse(uintSchema, big_to_hex(signature.s)),
   }
 }
 

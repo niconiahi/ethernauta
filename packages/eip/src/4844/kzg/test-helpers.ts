@@ -9,11 +9,13 @@ import {
 } from "node:fs"
 import { join } from "node:path"
 
+import { bytesSchema } from "@ethernauta/core"
 import {
   array,
   type InferOutput,
   nullable,
   object,
+  parse,
   record,
   string,
   union,
@@ -42,10 +44,10 @@ export function load_kzg_from_txt(_path: string): Kzg {
   const setup: TrustedSetup = {
     g1_lagrange: lines
       .slice(g1_start, g1_start + g1_count)
-      .map((h) => `0x${h}` as `0x${string}`),
+      .map((h) => parse(bytesSchema, `0x${h}`)),
     g2_monomial: lines
       .slice(g2_start, g2_start + g2_count)
-      .map((h) => `0x${h}` as `0x${string}`),
+      .map((h) => parse(bytesSchema, `0x${h}`)),
   }
   return init_kzg(setup)
 }

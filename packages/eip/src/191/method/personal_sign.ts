@@ -4,20 +4,22 @@
 // parameter is the message (hex or utf8), the second is the
 // signer address.
 
+import { type Bytes, bytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
+import { parse } from "valibot"
 
 export function personal_sign(
   _parameters: [string, string],
-): Signable<`0x${string}`> {
+): Signable<Bytes> {
   return async ([signer]: ResolvedSigner) => {
     const [message, address] = _parameters
     const signature = await signer("personal_sign", [
       message,
       address,
     ])
-    return signature as `0x${string}`
+    return parse(bytesSchema, signature)
   }
 }

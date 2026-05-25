@@ -10,7 +10,7 @@
 // The user brings their own setup (e.g. the canonical mainnet one from
 // `ethereum/c-kzg-4844`). This keeps @ethernauta lean — same pattern
 // viem uses for `setupKzg`.
-import { type Bytes, bytesSchema } from "@ethernauta/core"
+import { bytesSchema } from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { bls12_381 } from "@noble/curves/bls12-381"
 import {
@@ -97,7 +97,7 @@ export function init_kzg(_setup: TrustedSetup): Kzg {
   return { g1_lagrange, g2_monomial }
 }
 
-function parse_g1(_hex: Bytes): G1Point {
+function parse_g1(_hex: `0x${string}`): G1Point {
   const bytes = hex_to_bytes(_hex)
   if (bytes.length !== BYTES_PER_COMMITMENT) {
     throw new Error(
@@ -107,7 +107,7 @@ function parse_g1(_hex: Bytes): G1Point {
   return bls12_381.G1.Point.fromBytes(bytes)
 }
 
-function parse_g2(_hex: Bytes): G2Point {
+function parse_g2(_hex: `0x${string}`): G2Point {
   const bytes = hex_to_bytes(_hex)
   if (bytes.length !== 96) {
     throw new Error(
@@ -120,7 +120,7 @@ function parse_g2(_hex: Bytes): G2Point {
 // Tiny helper used by the commit / verify code to parse a 48-byte
 // commitment or proof off the wire.
 export function parse_commitment_or_proof(
-  _hex: Bytes,
+  _hex: `0x${string}`,
 ): G1Point {
   return parse_g1(_hex)
 }
