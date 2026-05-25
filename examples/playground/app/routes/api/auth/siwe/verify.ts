@@ -22,10 +22,8 @@
 //      client lands signed-in on the next navigation.
 
 import { bytesSchema } from "@ethernauta/core"
-import {
-  parse_siwe_message,
-  verify_siwe_message,
-} from "@ethernauta/eip/4361"
+import { verify_siwe_message } from "@ethernauta/crypto"
+import { parse_siwe_message } from "@ethernauta/eip/4361"
 import { encode_chain_id } from "@ethernauta/transport"
 import { object, parse, string } from "valibot"
 import { reader } from "../../../../lib/auth/reader.server"
