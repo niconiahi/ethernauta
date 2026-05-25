@@ -6,8 +6,13 @@ import { watch_accounts, watch_chain } from "./watch"
 
 function fake_provider(): {
   provider: Provider
-  emit: <E extends EventName>(event: E, payload: EventMap[E]) => void
-  buckets: { [E in EventName]: Set<(payload: EventMap[E]) => void> }
+  emit: <E extends EventName>(
+    event: E,
+    payload: EventMap[E],
+  ) => void
+  buckets: {
+    [E in EventName]: Set<(payload: EventMap[E]) => void>
+  }
 } {
   const buckets: {
     [E in EventName]: Set<(payload: EventMap[E]) => void>
@@ -17,6 +22,12 @@ function fake_provider(): {
     chainChanged: new Set(),
     accountsChanged: new Set(),
     message: new Set(),
+  }
+  function emit<E extends EventName>(
+    event: E,
+    payload: EventMap[E],
+  ) {
+    for (const listener of buckets[event]) listener(payload)
   }
   const provider: Provider = {
     async request() {
@@ -28,12 +39,7 @@ function fake_provider(): {
     removeListener(event, listener) {
       buckets[event].delete(listener)
     },
-  }
-  function emit<E extends EventName>(
-    event: E,
-    payload: EventMap[E],
-  ) {
-    for (const listener of buckets[event]) listener(payload)
+    emit,
   }
   return { provider, emit, buckets }
 }

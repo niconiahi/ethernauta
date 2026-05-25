@@ -50,7 +50,10 @@ suite("EF KZG vectors — compute_blob_kzg_proof", () => {
         return
       }
       const blob = parse(blobSchema, input.blob)
-      const commitment = parse(bytes48Schema, input.commitment)
+      const commitment = parse(
+        bytes48Schema,
+        input.commitment,
+      )
       const got = compute_blob_kzg_proof(
         kzg,
         blob,

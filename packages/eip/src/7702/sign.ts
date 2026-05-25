@@ -62,7 +62,10 @@ export function sign_authorization(
     chainId: auth.chainId,
     address: auth.address,
     nonce: auth.nonce,
-    yParity: parse(uintSchema, big_to_hex(BigInt(signature.recovery))),
+    yParity: parse(
+      uintSchema,
+      big_to_hex(BigInt(signature.recovery)),
+    ),
     r: parse(uintSchema, big_to_hex(signature.r)),
     s: parse(uintSchema, big_to_hex(signature.s)),
   }

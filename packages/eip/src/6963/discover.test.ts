@@ -1,19 +1,21 @@
 import { invariant } from "@ethernauta/utils"
 import { describe, expect, it } from "vitest"
 import {
+  clear_provider_detail,
   discover_providers,
-  forget_picked_provider,
-  type Provider,
+  type EIP6963ProviderDetail,
+  get_provider_detail,
   pick_provider,
-  remember_picked_provider,
-  restore_picked_provider,
-  type Storage,
+  type Provider,
+  set_provider_detail,
+  type Store,
 } from "."
 
 const STUB_PROVIDER: Provider = {
   request: async () => null,
   on: () => {},
   removeListener: () => {},
+  emit: () => {},
 }
 
 function build_target(): EventTarget {
@@ -177,7 +179,7 @@ describe("discover.ts", () => {
   })
 })
 
-function make_storage(): Storage {
+function make_store(): Store {
   const map = new Map<string, string>()
   return {
     get(key) {
@@ -192,51 +194,74 @@ function make_storage(): Storage {
   }
 }
 
+function provider_detail_for(
+  rdns: string,
+  provider: Provider,
+): EIP6963ProviderDetail {
+  return {
+    info: {
+      uuid: "u",
+      name: "fake",
+      icon: "data:,",
+      rdns,
+    },
+    provider,
+  }
+}
+
 describe("persistence helpers", () => {
-  it("remember and forget round-trip through storage", () => {
-    const storage = make_storage()
-    remember_picked_provider({
-      storage,
+  it("set and clear round-trip through the store", () => {
+    const store = make_store()
+    set_provider_detail({
+      store,
       key: "wallet",
-      rdns: "com.ethernauta.wallet",
+      provider_detail: provider_detail_for(
+        "com.ethernauta.wallet",
+        STUB_PROVIDER,
+      ),
     })
-    expect(storage.get("wallet")).toBe(
+    expect(store.get("wallet")).toBe(
       "com.ethernauta.wallet",
     )
-    forget_picked_provider({ storage, key: "wallet" })
-    expect(storage.get("wallet")).toBeNull()
+    clear_provider_detail({ store, key: "wallet" })
+    expect(store.get("wallet")).toBeNull()
   })
 
-  it("restore returns null when no rdns is persisted", async () => {
+  it("get returns null when no rdns is persisted", async () => {
     const target = build_target()
-    const storage = make_storage()
-    const provider = await restore_picked_provider({
-      storage,
+    const store = make_store()
+    const provider_detail = await get_provider_detail({
+      store,
       key: "wallet",
       target,
       ms: 20,
     })
-    expect(provider).toBeNull()
+    expect(provider_detail).toBeNull()
   })
 
-  it("restore rehydrates the live Provider matching the persisted rdns", async () => {
+  it("get rehydrates the full provider_detail matching the persisted rdns", async () => {
     const target = build_target()
-    const storage = make_storage()
-    remember_picked_provider({
-      storage,
-      key: "wallet",
-      rdns: "com.ethernauta.wallet",
-    })
+    const store = make_store()
     const ETHERNAUTA: Provider = {
       request: async () => "ethernauta",
       on: () => {},
       removeListener: () => {},
+      emit: () => {},
     }
     const OTHER: Provider = {
       request: async () => "other",
       on: () => {},
       removeListener: () => {},
+      emit: () => {},
     }
+    set_provider_detail({
+      store,
+      key: "wallet",
+      provider_detail: provider_detail_for(
+        "com.ethernauta.wallet",
+        ETHERNAUTA,
+      ),
+    })
     target.addEventListener(
       "eip6963:requestProvider",
       () => {
@@ -268,29 +293,35 @@ describe("persistence helpers", () => {
         )
       },
     )
-    const provider = await restore_picked_provider({
-      storage,
+    const provider_detail = await get_provider_detail({
+      store,
       key: "wallet",
       target,
       ms: 30,
     })
-    expect(provider).toBe(ETHERNAUTA)
+    expect(provider_detail?.provider).toBe(ETHERNAUTA)
+    expect(provider_detail?.info.rdns).toBe(
+      "com.ethernauta.wallet",
+    )
   })
 
-  it("restore returns null when the persisted wallet did not announce", async () => {
+  it("get returns null when the persisted wallet did not announce", async () => {
     const target = build_target()
-    const storage = make_storage()
-    remember_picked_provider({
-      storage,
+    const store = make_store()
+    set_provider_detail({
+      store,
       key: "wallet",
-      rdns: "com.ethernauta.wallet",
+      provider_detail: provider_detail_for(
+        "com.ethernauta.wallet",
+        STUB_PROVIDER,
+      ),
     })
-    const provider = await restore_picked_provider({
-      storage,
+    const provider_detail = await get_provider_detail({
+      store,
       key: "wallet",
       target,
       ms: 20,
     })
-    expect(provider).toBeNull()
+    expect(provider_detail).toBeNull()
   })
 })

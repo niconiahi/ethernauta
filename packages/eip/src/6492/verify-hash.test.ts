@@ -27,10 +27,7 @@ const HASH = parse(
   hash32Schema,
   "0x88cd2108bf28cb88ce6b8e54bd9f4f99c1d1a3a3c5b8b1d3b3e4b8b2c4e6a7a8",
 )
-const SIGNATURE = parse(
-  bytesSchema,
-  `0x${"ab".repeat(65)}`,
-)
+const SIGNATURE = parse(bytesSchema, `0x${"ab".repeat(65)}`)
 const CHAIN_ID = "eip155:1"
 
 function resolved_with(transport: Http): ResolvedReader {

@@ -6,7 +6,10 @@ import type {
 } from "@ethernauta/transport"
 import { array, parse } from "valibot"
 
-import { type Permission, permissionSchema } from "../permission"
+import {
+  type Permission,
+  permissionSchema,
+} from "../permission"
 
 export function wallet_getPermissions(): Signable<
   Permission[]
@@ -16,6 +19,9 @@ export function wallet_getPermissions(): Signable<
       "wallet_getPermissions",
       undefined,
     )
-    return parse(array(permissionSchema), JSON.parse(result))
+    return parse(
+      array(permissionSchema),
+      JSON.parse(result),
+    )
   }
 }

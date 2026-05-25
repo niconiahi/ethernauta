@@ -1,31 +1,18 @@
 // https://eips.ethereum.org/EIPS/eip-1193
 
-import type {
-  ReadContext,
-  ResolvedReader,
-  ResolvedSigner,
-  SignContext,
-} from "@ethernauta/transport"
-import { ReadContextSchema } from "@ethernauta/transport"
 import {
   custom,
   type InferOutput,
   object,
   optional,
-  parse,
   string,
 } from "valibot"
 
 import {
   create_emitter,
-  type Emitter,
   type EventMap,
   type EventName,
 } from "./events"
-import {
-  create_injected_signer,
-  create_injected_transport,
-} from "./inject"
 
 export const requestArgumentsSchema = object({
   method: string(),
@@ -57,11 +44,11 @@ export type Provider = Readonly<{
     event: E,
     listener: (payload: EventMap[E]) => void,
   ) => void
+  emit: <E extends EventName>(
+    event: E,
+    payload: EventMap[E],
+  ) => void
 }>
-
-export type ProviderInternal = Provider & {
-  emit: Emitter["emit"]
-}
 
 export const createProviderOptionsSchema = object({
   request: custom<SignableHandler>(
@@ -81,49 +68,14 @@ export type CreateProviderOptions = InferOutput<
 // permission shape, capability advertisement) lives
 // outside this function. See packages/wallet/src/utils/
 // dispatch.ts for Ethernauta's router.
-export function create_envelope(
+export function create_provider(
   options: CreateProviderOptions,
-): ProviderInternal {
+): Provider {
   const emitter = create_emitter()
   return {
     request: options.request,
     on: emitter.on,
     removeListener: emitter.removeListener,
     emit: emitter.emit,
-  }
-}
-
-// Wrap an EIP-1193 provider (an EIP-6963 announce result,
-// window.ethereum, a test mock) into a single Ethernauta
-// factory exposing both reader and signer resolvers. The
-// wallet picks the RPC for the active chain, so no CHAINS
-// list is needed; if the wallet fails to serve a method,
-// that surfaces as the wallet's error.
-//
-//   const provider = create_provider(eip1193)
-//   eth_getBalance(addr)(provider.reader({ chain_id }))
-//   eth_sendTransaction(tx)(provider.signer({ chain_id }))
-export const providerResolverSchema = object({
-  reader: custom<(context: ReadContext) => ResolvedReader>(
-    (value) => typeof value === "function",
-  ),
-  signer: custom<(context: SignContext) => ResolvedSigner>(
-    (value) => typeof value === "function",
-  ),
-})
-export type ProviderResolver = InferOutput<
-  typeof providerResolverSchema
->
-
-export function create_provider(
-  provider: Provider,
-): ProviderResolver {
-  const http = create_injected_transport(provider)
-  const signer_factory = create_injected_signer(provider)
-  return {
-    reader: (context: ReadContext): ResolvedReader => {
-      return [[http], parse(ReadContextSchema, context)]
-    },
-    signer: signer_factory,
   }
 }

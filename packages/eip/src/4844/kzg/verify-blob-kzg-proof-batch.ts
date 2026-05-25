@@ -77,7 +77,10 @@ export function verify_blob_kzg_proof_batch(
   // above already proved cannot happen).
   const cases = _blobs.map((b, i) => {
     const blob = parse(blobSchema, b)
-    const commitment = parse(kzgCommitmentSchema, _commitments[i])
+    const commitment = parse(
+      kzgCommitmentSchema,
+      _commitments[i],
+    )
     const proof = parse(kzgProofSchema, _proofs[i])
     const blob_bytes = hex_to_bytes(blob)
     const polynomial = new Array<bigint>(
@@ -98,7 +101,8 @@ export function verify_blob_kzg_proof_batch(
     )
     return {
       commitment,
-      commitment_point: parse_commitment_or_proof(commitment),
+      commitment_point:
+        parse_commitment_or_proof(commitment),
       proof,
       proof_point: parse_commitment_or_proof(proof),
       z,

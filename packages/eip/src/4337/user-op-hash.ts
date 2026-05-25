@@ -100,7 +100,10 @@ export function inner_user_op_hash(
     bytes32_to_32(op.gasFees),
     keccak_bytes(op.paymasterAndData),
   )
-  return parse(hash32Schema, bytes_to_hex(keccak_256(encoded)))
+  return parse(
+    hash32Schema,
+    bytes_to_hex(keccak_256(encoded)),
+  )
 }
 
 export function get_user_op_hash({
@@ -120,5 +123,8 @@ export function get_user_op_hash({
     address_to_32(entryPoint),
     uint_to_32(chainId),
   )
-  return parse(hash32Schema, bytes_to_hex(keccak_256(encoded)))
+  return parse(
+    hash32Schema,
+    bytes_to_hex(keccak_256(encoded)),
+  )
 }

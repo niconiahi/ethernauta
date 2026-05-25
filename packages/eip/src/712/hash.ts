@@ -125,7 +125,9 @@ function encode_value(
     )
   }
   if (type === "bytes") {
-    return keccak_256(hex_to_bytes(parse(bytesSchema, value)))
+    return keccak_256(
+      hex_to_bytes(parse(bytesSchema, value)),
+    )
   }
   if (type === "address") {
     const out = new Uint8Array(32)

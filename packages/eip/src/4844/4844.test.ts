@@ -1,4 +1,7 @@
-import { bytes48Schema, bytesSchema } from "@ethernauta/core"
+import {
+  bytes48Schema,
+  bytesSchema,
+} from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { sha256 } from "@noble/hashes/sha2"
 import { parse } from "valibot"

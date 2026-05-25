@@ -50,7 +50,10 @@ describe("packing.ts — pack_account_gas_limits", () => {
   it("should reject values exceeding uint128", () => {
     expect(() =>
       pack_account_gas_limits(
-        parse(uintSchema, "0x100000000000000000000000000000000"),
+        parse(
+          uintSchema,
+          "0x100000000000000000000000000000000",
+        ),
         parse(uintSchema, "0x0"),
       ),
     ).toThrow()
@@ -85,7 +88,10 @@ describe("packing.ts — pack_init_code", () => {
 
   it("should concat factory + factoryData", () => {
     expect(
-      pack_init_code(FACTORY, parse(bytesSchema, "0xdeadbeef")),
+      pack_init_code(
+        FACTORY,
+        parse(bytesSchema, "0xdeadbeef"),
+      ),
     ).toBe(`${FACTORY}deadbeef`.toLowerCase())
   })
 })
@@ -100,7 +106,10 @@ describe("packing.ts — pack_paymaster_and_data", () => {
   it("should concat paymaster + gas limits + data", () => {
     const packed = pack_paymaster_and_data({
       paymaster: PAYMASTER,
-      paymasterVerificationGasLimit: parse(uintSchema, "0x10"),
+      paymasterVerificationGasLimit: parse(
+        uintSchema,
+        "0x10",
+      ),
       paymasterPostOpGasLimit: parse(uintSchema, "0x20"),
       paymasterData: parse(bytesSchema, "0xab"),
     })

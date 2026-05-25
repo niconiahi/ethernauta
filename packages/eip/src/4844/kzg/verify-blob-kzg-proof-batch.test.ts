@@ -45,7 +45,10 @@ suite(
         const { input, output } = parse_kzg_yaml(c.path)
         if (output === null) {
           expect(() => {
-            const blobs = parse(array(blobSchema), input.blobs)
+            const blobs = parse(
+              array(blobSchema),
+              input.blobs,
+            )
             const commitments = parse(
               array(kzgCommitmentSchema),
               input.commitments,

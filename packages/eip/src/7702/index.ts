@@ -12,6 +12,7 @@ export {
   SET_CODE_MAGIC,
   SET_CODE_TX_TYPE,
 } from "./authorization"
+export { is_delegation_designator } from "./designator"
 export {
   type DelegationIntent,
   delegationIntentSchema,

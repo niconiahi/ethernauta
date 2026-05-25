@@ -141,87 +141,113 @@ export async function pick_provider(
  * Function-bearing DI contract — kept as an intersection-shaped
  * alias because Valibot cannot type per-call argument relations.
  */
-export type Storage = Readonly<{
+export type Store = Readonly<{
   get: (_key: string) => string | null
   set: (_key: string, _value: string) => void
   remove: (_key: string) => void
 }>
 
-export const rememberPickedProviderOptionsSchema = object({
-  storage: custom<Storage>(
+/**
+ * Adapt a DOM-shaped storage (window.localStorage,
+ * window.sessionStorage, or any object that implements the
+ * standard Web Storage interface) into the Ethernauta
+ * `Store` shape.
+ */
+export function web_storage(
+  backing: globalThis.Storage,
+): Store {
+  return {
+    get(key) {
+      return backing.getItem(key)
+    },
+    set(key, value) {
+      backing.setItem(key, value)
+    },
+    remove(key) {
+      backing.removeItem(key)
+    },
+  }
+}
+
+export const setProviderDetailOptionsSchema = object({
+  store: custom<Store>(
     (value) => value != null && typeof value === "object",
   ),
   key: string(),
-  rdns: string(),
+  provider_detail: eip6963ProviderDetailSchema,
 })
-export type RememberPickedProviderOptions = InferOutput<
-  typeof rememberPickedProviderOptionsSchema
+export type SetProviderDetailOptions = InferOutput<
+  typeof setProviderDetailOptionsSchema
 >
 
 /**
- * Persist the user-picked wallet identifier (rdns) so a
- * later page load can rehydrate the matching live
- * Provider via `restore_picked_provider`. The Provider
- * object itself is never serialized — only the rdns key.
+ * Persist the user-picked wallet identifier so a later page
+ * load can rehydrate the matching live `EIP6963ProviderDetail`
+ * via `get_provider_detail`. The Provider object itself is
+ * never serialized — only the rdns is written.
  */
-export function remember_picked_provider(
-  options: RememberPickedProviderOptions,
+export function set_provider_detail(
+  options: SetProviderDetailOptions,
 ): void {
-  options.storage.set(options.key, options.rdns)
+  options.store.set(
+    options.key,
+    options.provider_detail.info.rdns,
+  )
 }
 
-export const forgetPickedProviderOptionsSchema = object({
-  storage: custom<Storage>(
+export const clearProviderDetailOptionsSchema = object({
+  store: custom<Store>(
     (value) => value != null && typeof value === "object",
   ),
   key: string(),
 })
-export type ForgetPickedProviderOptions = InferOutput<
-  typeof forgetPickedProviderOptionsSchema
+export type ClearProviderDetailOptions = InferOutput<
+  typeof clearProviderDetailOptionsSchema
 >
 
 /**
  * Clear a previously-persisted picked-wallet selection.
- * Use on disconnect, or after `restore_picked_provider`
+ * Use on disconnect, or after `get_provider_detail`
  * resolves to null (wallet uninstalled).
  */
-export function forget_picked_provider(
-  options: ForgetPickedProviderOptions,
+export function clear_provider_detail(
+  options: ClearProviderDetailOptions,
 ): void {
-  options.storage.remove(options.key)
+  options.store.remove(options.key)
 }
 
-export const restorePickedProviderOptionsSchema = object({
-  storage: custom<Storage>(
+export const getProviderDetailOptionsSchema = object({
+  store: custom<Store>(
     (value) => value != null && typeof value === "object",
   ),
   key: string(),
   target: optional(instance(EventTarget)),
   ms: optional(number()),
 })
-export type RestorePickedProviderOptions = InferOutput<
-  typeof restorePickedProviderOptionsSchema
+export type GetProviderDetailOptions = InferOutput<
+  typeof getProviderDetailOptionsSchema
 >
 
 /**
- * Rehydrate a Provider from a previously-persisted rdns by
- * re-issuing the EIP-6963 announce request and filtering
- * by rdns. Returns `null` when either no rdns is persisted
- * or the matching wallet did not announce within `ms`
- * (uninstalled, disabled, slow to initialize).
+ * Rehydrate a full `EIP6963ProviderDetail` from a
+ * previously-persisted rdns by re-issuing the EIP-6963
+ * announce request and filtering by rdns. Returns `null`
+ * when either no rdns is persisted or the matching wallet
+ * did not announce within `ms` (uninstalled, disabled, slow
+ * to initialize).
  *
  * Pattern:
  *   read rdns → request announce → match by rdns
- *             → Provider rehydrated
+ *             → detail rehydrated
  */
-export async function restore_picked_provider(
-  options: RestorePickedProviderOptions,
-): Promise<Provider | null> {
-  const rdns = options.storage.get(options.key)
+export async function get_provider_detail(
+  options: GetProviderDetailOptions,
+): Promise<EIP6963ProviderDetail | null> {
+  const rdns = options.store.get(options.key)
   if (!rdns) return null
-  const detail = await pick_provider(rdns, {
+  const provider_detail = await pick_provider(rdns, {
     target: options.target,
     ms: options.ms,
   })
-  return detail?.provider ?? null
+  return provider_detail ?? null
 }

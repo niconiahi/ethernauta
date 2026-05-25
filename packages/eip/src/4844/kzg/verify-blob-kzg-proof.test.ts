@@ -49,7 +49,12 @@ suite("EF KZG vectors — verify_blob_kzg_proof", () => {
             input.commitment,
           )
           const proof = parse(kzgProofSchema, input.proof)
-          verify_blob_kzg_proof(kzg, blob, commitment, proof)
+          verify_blob_kzg_proof(
+            kzg,
+            blob,
+            commitment,
+            proof,
+          )
         }).toThrow()
         return
       }

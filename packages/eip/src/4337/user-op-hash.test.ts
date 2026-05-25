@@ -14,7 +14,10 @@ import {
   inner_user_op_hash,
 } from "./user-op-hash"
 
-const ZERO_HEX_64 = parse(bytes32Schema, `0x${"00".repeat(32)}`)
+const ZERO_HEX_64 = parse(
+  bytes32Schema,
+  `0x${"00".repeat(32)}`,
+)
 const ZERO_UINT = parse(uintSchema, "0x0")
 const ONE_UINT = parse(uintSchema, "0x1")
 const SEPOLIA_CHAIN_ID = parse(uintSchema, "0xaa36a7")

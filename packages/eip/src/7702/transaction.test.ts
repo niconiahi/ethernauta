@@ -2,7 +2,6 @@ import { addressSchema, uintSchema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import type { AuthorizationSigned } from "./authorization"
 import {
   encode_set_code_signed,
   encode_set_code_unsigned,
@@ -10,6 +9,7 @@ import {
   type SetCodeTransactionSigned,
   type SetCodeTransactionUnsigned,
 } from "."
+import type { AuthorizationSigned } from "./authorization"
 
 const AUTH: AuthorizationSigned = {
   chainId: parse(uintSchema, "0x1"),

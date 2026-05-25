@@ -20,6 +20,9 @@ export function wallet_requestPermissions(
       "wallet_requestPermissions",
       _parameters,
     )
-    return parse(array(permissionSchema), JSON.parse(result))
+    return parse(
+      array(permissionSchema),
+      JSON.parse(result),
+    )
   }
 }

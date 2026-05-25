@@ -5,7 +5,10 @@ import { bytes32Schema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { kzgCommitmentSchema, kzgProofSchema } from "../schemas"
+import {
+  kzgCommitmentSchema,
+  kzgProofSchema,
+} from "../schemas"
 import {
   list_kzg_cases,
   load_kzg_from_txt,
