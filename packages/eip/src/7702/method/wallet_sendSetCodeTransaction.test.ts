@@ -1,3 +1,8 @@
+import {
+  addressSchema,
+  bytesSchema,
+  uintSchema,
+} from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signer,
@@ -9,19 +14,23 @@ import {
   wallet_sendSetCodeTransaction,
 } from "./wallet_sendSetCodeTransaction"
 
-const BATCH_EXECUTOR =
-  "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845" as const
-const EOA =
-  "0x1234567890123456789012345678901234567890" as const
+const BATCH_EXECUTOR = parse(
+  addressSchema,
+  "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+)
+const EOA = parse(
+  addressSchema,
+  "0x1234567890123456789012345678901234567890",
+)
 const TX_HASH =
-  "0xdb9a5f2320c0a10d28bfa1c563a1bbf592665e9e02a86fe7a8a7d2c0e2c5f6b1" as const
+  "0xdb9a5f2320c0a10d28bfa1c563a1bbf592665e9e02a86fe7a8a7d2c0e2c5f6b1"
 
 const VALID = {
   to: EOA,
-  data: "0x" as const,
+  data: parse(bytesSchema, "0x"),
   delegations: [
     {
-      chainId: "0xaa36a7" as const,
+      chainId: parse(uintSchema, "0xaa36a7"),
       address: BATCH_EXECUTOR,
     },
   ],

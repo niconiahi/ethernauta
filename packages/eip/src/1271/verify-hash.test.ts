@@ -1,6 +1,6 @@
 import {
   addressSchema,
-  bytes65Schema,
+  bytesSchema,
   hash32Schema,
 } from "@ethernauta/core"
 // EOA path moved to @ethernauta/crypto/verify-message-deployed; this file
@@ -48,7 +48,7 @@ function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytes65Schema, bytes_to_hex(out))
+  return parse(bytesSchema, bytes_to_hex(out))
 }
 
 function resolved_with(transport: Http): ResolvedReader {

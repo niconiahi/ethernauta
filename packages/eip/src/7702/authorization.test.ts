@@ -1,18 +1,22 @@
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
+  type AuthorizationParameter,
   authorizationParameterSchema,
   build_authorization_message,
   hash_authorization,
   SET_CODE_MAGIC,
 } from "./authorization"
 
-const SAMPLE = {
-  chainId: "0x1" as const,
-  address:
-    "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845" as const,
-  nonce: "0x0" as const,
+const SAMPLE: AuthorizationParameter = {
+  chainId: parse(uintSchema, "0x1"),
+  address: parse(
+    addressSchema,
+    "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+  ),
+  nonce: parse(uintSchema, "0x0"),
 }
 
 describe("authorization.ts", () => {
@@ -35,8 +39,10 @@ describe("authorization.ts", () => {
     const other = bytes_to_hex(
       build_authorization_message({
         ...SAMPLE,
-        address:
+        address: parse(
+          addressSchema,
           "0x1234567890123456789012345678901234567890",
+        ),
       }),
     )
     const base = bytes_to_hex(
@@ -48,7 +54,7 @@ describe("authorization.ts", () => {
   it("should encode chainId 0 as the wildcard empty byte string", () => {
     const msg = build_authorization_message({
       ...SAMPLE,
-      chainId: "0x0",
+      chainId: parse(uintSchema, "0x0"),
     })
     // After 0x05 magic + rlp list header, the chain_id
     // appears as 0x80 (empty string = zero).

@@ -1,5 +1,9 @@
 import { address, uint256 } from "@ethernauta/abi"
-import { bytesSchema } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signer,
@@ -30,8 +34,11 @@ describe("deploy_contract", () => {
       bytecode,
       args: [address(), uint256()] as const,
       values: [
-        "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-        "0xde0b6b3a7640000",
+        parse(
+          addressSchema,
+          "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
+        ),
+        parse(uint256Schema, "0xde0b6b3a7640000"),
       ],
     })(resolved)
 

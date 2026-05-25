@@ -1,14 +1,20 @@
+import { addressSchema } from "@ethernauta/core"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { build_siwe_message } from "./build"
 import { parse_siwe_message } from "./parse"
 
+const ADDRESS = parse(
+  addressSchema,
+  "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+)
+
 describe("build.ts — build_siwe_message", () => {
   it("should render a full message that round-trips through parse", () => {
     const fields = {
       domain: "example.com",
-      address:
-        "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845" as const,
+      address: ADDRESS,
       statement:
         "I accept the ExampleApp Terms of Service: https://example.com/tos",
       uri: "https://example.com/login",
@@ -30,7 +36,7 @@ describe("build.ts — build_siwe_message", () => {
   it("should omit statement and optional fields when undefined", () => {
     const rendered = build_siwe_message({
       domain: "example.com",
-      address: "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+      address: ADDRESS,
       uri: "https://example.com",
       version: "1",
       chainId: "1",

@@ -1,8 +1,10 @@
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
 import { getPublicKey } from "@noble/secp256k1"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import type { AuthorizationParameter } from "./authorization"
 import { SET_CODE_TX_TYPE } from "./authorization"
@@ -18,9 +20,12 @@ const PRIVATE_KEY = hex_to_bytes(
 )
 
 const AUTH: AuthorizationParameter = {
-  chainId: "0xaa36a7",
-  address: "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
-  nonce: "0x5",
+  chainId: parse(uintSchema, "0xaa36a7"),
+  address: parse(
+    addressSchema,
+    "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+  ),
+  nonce: parse(uintSchema, "0x5"),
 }
 
 const TX: SetCodeTransactionUnsigned = {
@@ -29,7 +34,10 @@ const TX: SetCodeTransactionUnsigned = {
   maxPriorityFeePerGas: 2_000_000_000n,
   maxFeePerGas: 30_000_000_000n,
   gasLimit: 1_000_000n,
-  to: "0x1234567890123456789012345678901234567890",
+  to: parse(
+    addressSchema,
+    "0x1234567890123456789012345678901234567890",
+  ),
   value: 0n,
   data: new Uint8Array([0xa9, 0x05, 0x9c, 0xbb]),
   accessList: [],

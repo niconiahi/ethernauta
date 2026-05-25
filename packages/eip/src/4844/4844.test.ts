@@ -1,5 +1,7 @@
+import { bytes48Schema, bytesSchema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { sha256 } from "@noble/hashes/sha2"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
   fake_exponential,
@@ -14,14 +16,14 @@ import { from_blobs, to_blobs } from "./to-blobs"
 
 describe("to_blobs / from_blobs", () => {
   it("round-trips empty input", () => {
-    const data = "0x" as const
+    const data = parse(bytesSchema, "0x")
     const blobs = to_blobs(data)
     expect(blobs).toHaveLength(1)
     expect(from_blobs(blobs)).toBe(data)
   })
 
   it("round-trips short input", () => {
-    const data = "0xdeadbeef" as const
+    const data = parse(bytesSchema, "0xdeadbeef")
     const blobs = to_blobs(data)
     expect(blobs).toHaveLength(1)
     expect(from_blobs(blobs)).toBe(data)
@@ -31,7 +33,10 @@ describe("to_blobs / from_blobs", () => {
     // 31 bytes per field element * 4096 elements = 126_976 bytes
     // minus the 4-byte length header = 126_972 bytes fit in one blob.
     const payload = new Uint8Array(126_972).fill(0xab)
-    const data = `0x${"ab".repeat(payload.length)}` as const
+    const data = parse(
+      bytesSchema,
+      `0x${"ab".repeat(payload.length)}`,
+    )
     const blobs = to_blobs(data)
     expect(blobs).toHaveLength(1)
     expect(from_blobs(blobs)).toBe(data)
@@ -39,7 +44,10 @@ describe("to_blobs / from_blobs", () => {
 
   it("round-trips data that spills into a second blob", () => {
     const payload = new Uint8Array(200_000).fill(0x7f)
-    const data = `0x${"7f".repeat(payload.length)}` as const
+    const data = parse(
+      bytesSchema,
+      `0x${"7f".repeat(payload.length)}`,
+    )
     const blobs = to_blobs(data)
     expect(blobs.length).toBeGreaterThan(1)
     expect(from_blobs(blobs)).toBe(data)
@@ -48,7 +56,10 @@ describe("to_blobs / from_blobs", () => {
 
 describe("commitment_to_versioned_hash", () => {
   it("prefixes sha256(commitment) with 0x01", () => {
-    const commitment = `0x${"00".repeat(48)}` as const
+    const commitment = parse(
+      bytes48Schema,
+      `0x${"00".repeat(48)}`,
+    )
     const expected = sha256(new Uint8Array(48))
     expected[0] = 0x01
     expect(commitment_to_versioned_hash(commitment)).toBe(

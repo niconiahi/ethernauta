@@ -1,4 +1,5 @@
 import { ReadContextSchema } from "@ethernauta/transport"
+import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it, vi } from "vitest"
 import {
@@ -103,10 +104,9 @@ describe("create_provider", () => {
     })
     expect(context.chain_id).toBe("eip155:11155111")
     expect(transports).toHaveLength(1)
-    const response = await transports[0]?.([
-      "eth_chainId",
-      [],
-    ])
+    const [transport] = transports
+    invariant(transport, "expected one transport")
+    const response = await transport(["eth_chainId", []])
     expect(captured.last?.method).toBe("eth_chainId")
     expect("result" in response && response.result).toBe(
       "0xaa36a7",

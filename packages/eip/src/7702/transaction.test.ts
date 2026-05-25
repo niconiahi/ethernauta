@@ -1,5 +1,8 @@
+import { addressSchema, uintSchema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
+import type { AuthorizationSigned } from "./authorization"
 import {
   encode_set_code_signed,
   encode_set_code_unsigned,
@@ -8,14 +11,17 @@ import {
   type SetCodeTransactionUnsigned,
 } from "."
 
-const AUTH = {
-  chainId: "0x1",
-  address: "0x1234567890123456789012345678901234567890",
-  nonce: "0x0",
-  yParity: "0x0",
-  r: "0xabcd",
-  s: "0xef01",
-} as const
+const AUTH: AuthorizationSigned = {
+  chainId: parse(uintSchema, "0x1"),
+  address: parse(
+    addressSchema,
+    "0x1234567890123456789012345678901234567890",
+  ),
+  nonce: parse(uintSchema, "0x0"),
+  yParity: parse(uintSchema, "0x0"),
+  r: parse(uintSchema, "0xabcd"),
+  s: parse(uintSchema, "0xef01"),
+}
 
 const BASE: SetCodeTransactionUnsigned = {
   chainId: 1n,
@@ -23,7 +29,10 @@ const BASE: SetCodeTransactionUnsigned = {
   maxPriorityFeePerGas: 1_000_000_000n,
   maxFeePerGas: 30_000_000_000n,
   gasLimit: 100_000n,
-  to: "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+  to: parse(
+    addressSchema,
+    "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
+  ),
   value: 0n,
   data: new Uint8Array([0xa9, 0x05, 0x9c, 0xbb]),
   accessList: [],

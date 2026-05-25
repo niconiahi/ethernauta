@@ -1,3 +1,10 @@
+import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uintSchema,
+} from "@ethernauta/core"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { ENTRY_POINT_V07_ADDRESS } from "./constants"
@@ -7,18 +14,25 @@ import {
   inner_user_op_hash,
 } from "./user-op-hash"
 
-const ZERO_HEX_64 = `0x${"00".repeat(32)}` as const
+const ZERO_HEX_64 = parse(bytes32Schema, `0x${"00".repeat(32)}`)
+const ZERO_UINT = parse(uintSchema, "0x0")
+const ONE_UINT = parse(uintSchema, "0x1")
+const SEPOLIA_CHAIN_ID = parse(uintSchema, "0xaa36a7")
+const EMPTY_BYTES = parse(bytesSchema, "0x")
 
 const EMPTY_OP: UserOperation = {
-  sender: "0x0000000000000000000000000000000000000001",
-  nonce: "0x0",
-  callData: "0x",
-  callGasLimit: "0x0",
-  verificationGasLimit: "0x0",
-  preVerificationGas: "0x0",
-  maxFeePerGas: "0x0",
-  maxPriorityFeePerGas: "0x0",
-  signature: "0x",
+  sender: parse(
+    addressSchema,
+    "0x0000000000000000000000000000000000000001",
+  ),
+  nonce: ZERO_UINT,
+  callData: EMPTY_BYTES,
+  callGasLimit: ZERO_UINT,
+  verificationGasLimit: ZERO_UINT,
+  preVerificationGas: ZERO_UINT,
+  maxFeePerGas: ZERO_UINT,
+  maxPriorityFeePerGas: ZERO_UINT,
+  signature: EMPTY_BYTES,
 }
 
 describe("user-op-hash.ts — get_user_op_hash", () => {
@@ -26,7 +40,7 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
     const hash = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0xaa36a7",
+      chainId: SEPOLIA_CHAIN_ID,
     })
     expect(hash).toMatch(/^0x[0-9a-f]{64}$/)
   })
@@ -35,12 +49,12 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
     const a = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0x1",
+      chainId: ONE_UINT,
     })
     const b = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0x1",
+      chainId: ONE_UINT,
     })
     expect(a).toBe(b)
   })
@@ -49,12 +63,12 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
     const sepolia = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0xaa36a7",
+      chainId: SEPOLIA_CHAIN_ID,
     })
     const mainnet = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0x1",
+      chainId: ONE_UINT,
     })
     expect(sepolia).not.toBe(mainnet)
   })
@@ -63,12 +77,12 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
     const zero = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0x1",
+      chainId: ONE_UINT,
     })
     const one = get_user_op_hash({
-      op: { ...EMPTY_OP, nonce: "0x1" },
+      op: { ...EMPTY_OP, nonce: ONE_UINT },
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0x1",
+      chainId: ONE_UINT,
     })
     expect(zero).not.toBe(one)
   })
@@ -77,13 +91,15 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
     const a = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: ENTRY_POINT_V07_ADDRESS,
-      chainId: "0x1",
+      chainId: ONE_UINT,
     })
     const b = get_user_op_hash({
       op: EMPTY_OP,
-      entryPoint:
+      entryPoint: parse(
+        addressSchema,
         "0x000000000000000000000000000000000000DEAD",
-      chainId: "0x1",
+      ),
+      chainId: ONE_UINT,
     })
     expect(a).not.toBe(b)
   })
@@ -92,15 +108,18 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
 describe("user-op-hash.ts — inner_user_op_hash", () => {
   it("should hash a fully zero packed op deterministically", () => {
     const inner = inner_user_op_hash({
-      sender: "0x0000000000000000000000000000000000000000",
-      nonce: "0x0",
-      initCode: "0x",
-      callData: "0x",
+      sender: parse(
+        addressSchema,
+        "0x0000000000000000000000000000000000000000",
+      ),
+      nonce: ZERO_UINT,
+      initCode: EMPTY_BYTES,
+      callData: EMPTY_BYTES,
       accountGasLimits: ZERO_HEX_64,
-      preVerificationGas: "0x0",
+      preVerificationGas: ZERO_UINT,
       gasFees: ZERO_HEX_64,
-      paymasterAndData: "0x",
-      signature: "0x",
+      paymasterAndData: EMPTY_BYTES,
+      signature: EMPTY_BYTES,
     })
     expect(inner).toMatch(/^0x[0-9a-f]{64}$/)
   })

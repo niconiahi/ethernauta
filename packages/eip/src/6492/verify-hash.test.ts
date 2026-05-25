@@ -1,6 +1,6 @@
 import {
   addressSchema,
-  bytes65Schema,
+  bytesSchema,
   hash32Schema,
 } from "@ethernauta/core"
 import type {
@@ -28,7 +28,7 @@ const HASH = parse(
   "0x88cd2108bf28cb88ce6b8e54bd9f4f99c1d1a3a3c5b8b1d3b3e4b8b2c4e6a7a8",
 )
 const SIGNATURE = parse(
-  bytes65Schema,
+  bytesSchema,
   `0x${"ab".repeat(65)}`,
 )
 const CHAIN_ID = "eip155:1"

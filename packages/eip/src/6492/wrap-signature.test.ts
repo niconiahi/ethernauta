@@ -1,6 +1,5 @@
 import {
   addressSchema,
-  bytes65Schema,
   bytesSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
@@ -20,7 +19,7 @@ const FACTORY_DATA = parse(
   "0xdeadbeefcafef00d00000000000000000000000000000000000000000000000000000000000000aa",
 )
 const SIGNATURE_INNER = parse(
-  bytes65Schema,
+  bytesSchema,
   "0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ff",
 )
 
@@ -73,7 +72,7 @@ describe("wrap-signature.ts", () => {
 
 describe("is-wrapped-signature.ts", () => {
   it("should reject a plain 65-byte signature", () => {
-    const raw = parse(bytes65Schema, `0x${"11".repeat(65)}`)
+    const raw = parse(bytesSchema, `0x${"11".repeat(65)}`)
     expect(is_wrapped_signature(raw)).toBe(false)
   })
 
@@ -96,7 +95,7 @@ describe("unwrap-signature.ts", () => {
   it("should return null on a non-wrapped signature", () => {
     expect(
       unwrap_signature(
-        parse(bytes65Schema, `0x${"22".repeat(65)}`),
+        parse(bytesSchema, `0x${"22".repeat(65)}`),
       ),
     ).toBeNull()
   })

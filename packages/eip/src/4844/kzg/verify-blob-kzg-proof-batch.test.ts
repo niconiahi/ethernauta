@@ -1,8 +1,14 @@
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 
+import { array, parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
+import {
+  blobSchema,
+  kzgCommitmentSchema,
+  kzgProofSchema,
+} from "../schemas"
 import {
   list_kzg_cases,
   load_kzg_from_txt,
@@ -37,21 +43,35 @@ suite(
     for (const c of cases) {
       it(c.name, () => {
         const { input, output } = parse_kzg_yaml(c.path)
-        const blobs = input.blobs as `0x${string}`[]
-        const commitments =
-          input.commitments as `0x${string}`[]
-        const proofs = input.proofs as `0x${string}`[]
         if (output === null) {
-          expect(() =>
+          expect(() => {
+            const blobs = parse(array(blobSchema), input.blobs)
+            const commitments = parse(
+              array(kzgCommitmentSchema),
+              input.commitments,
+            )
+            const proofs = parse(
+              array(kzgProofSchema),
+              input.proofs,
+            )
             verify_blob_kzg_proof_batch(
               kzg,
               blobs,
               commitments,
               proofs,
-            ),
-          ).toThrow()
+            )
+          }).toThrow()
           return
         }
+        const blobs = parse(array(blobSchema), input.blobs)
+        const commitments = parse(
+          array(kzgCommitmentSchema),
+          input.commitments,
+        )
+        const proofs = parse(
+          array(kzgProofSchema),
+          input.proofs,
+        )
         const expected = (output as string) === "true"
         expect(
           verify_blob_kzg_proof_batch(
