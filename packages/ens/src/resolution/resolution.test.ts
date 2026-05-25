@@ -1,9 +1,11 @@
 import { eip155_1 } from "@ethernauta/chain"
+import { addressSchema } from "@ethernauta/core"
 import {
   create_reader,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { get_ens_address } from "./get-ens-address"
@@ -21,8 +23,10 @@ const MAINNET_RPC_URLS = [
   "https://eth-mainnet.public.blastapi.io",
 ]
 
-const VITALIK_ADDRESS =
-  "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+const VITALIK_ADDRESS = parse(
+  addressSchema,
+  "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+)
 
 const reader = create_reader([
   {
