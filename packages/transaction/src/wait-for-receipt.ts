@@ -1,4 +1,4 @@
-import { hash32Schema } from "@ethernauta/core"
+import { type Hash32, hash32Schema } from "@ethernauta/core"
 import {
   eth_blockNumber,
   eth_getTransactionReceipt,
@@ -98,7 +98,7 @@ export function wait_for_receipt(
 }
 
 function normalize(_parameters: Parameters): {
-  hash: `0x${string}`
+  hash: Hash32
   options: Options
 } {
   if (Array.isArray(_parameters)) {
