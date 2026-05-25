@@ -1,5 +1,5 @@
 import type { InferOutput } from "valibot"
-import { custom } from "valibot"
+import { brand, custom, pipe } from "valibot"
 
 function isUint256(input: unknown): boolean {
   return (
@@ -7,8 +7,8 @@ function isUint256(input: unknown): boolean {
     /^0x[0-9a-f]{1,64}$/.test(input)
   )
 }
-export const uint256Schema = custom<`0x${string}`>(
-  isUint256,
-  "uint256",
+export const uint256Schema = pipe(
+  custom<`0x${string}`>(isUint256, "uint256"),
+  brand("Uint256"),
 )
 export type Uint256 = InferOutput<typeof uint256Schema>

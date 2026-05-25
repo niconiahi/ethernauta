@@ -1,5 +1,5 @@
 import type { InferOutput } from "valibot"
-import { custom } from "valibot"
+import { brand, custom, pipe } from "valibot"
 
 function isUint(input: unknown): boolean {
   return (
@@ -7,5 +7,8 @@ function isUint(input: unknown): boolean {
     /^0x([1-9a-f]+[0-9a-f]*|0)$/.test(input)
   )
 }
-export const uintSchema = custom<`0x${string}`>(isUint, "uint")
+export const uintSchema = pipe(
+  custom<`0x${string}`>(isUint, "uint"),
+  brand("Uint"),
+)
 export type Uint = InferOutput<typeof uintSchema>

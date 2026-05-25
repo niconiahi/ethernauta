@@ -1,5 +1,5 @@
 import type { InferOutput } from "valibot"
-import { custom } from "valibot"
+import { brand, custom, pipe } from "valibot"
 
 function isBytes4(input: unknown): boolean {
   return (
@@ -7,5 +7,8 @@ function isBytes4(input: unknown): boolean {
     /^0x[0-9a-f]{8}$/.test(input)
   )
 }
-export const bytes4Schema = custom<`0x${string}`>(isBytes4)
+export const bytes4Schema = pipe(
+  custom<`0x${string}`>(isBytes4),
+  brand("Bytes4"),
+)
 export type Bytes4 = InferOutput<typeof bytes4Schema>
