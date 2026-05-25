@@ -5,8 +5,7 @@
 
 import {
   addressSchema,
-  bytes4Schema,
-  bytes65Schema,
+  bytesSchema,
   hash32Schema,
 } from "@ethernauta/core"
 import { MAGIC_VALUE } from "@ethernauta/eip/1271"
@@ -60,7 +59,7 @@ function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytes65Schema, bytes_to_hex(out))
+  return parse(bytesSchema, bytes_to_hex(out))
 }
 
 function resolved_with(transport: Http): ResolvedReader {
@@ -113,7 +112,7 @@ describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
     const result = await verify_hash_deployed(
       EOA_ADDRESS,
       HASH,
-      parse(bytes4Schema, "0xdeadbeef"),
+      parse(bytesSchema, "0xdeadbeef"),
       resolved_with(transport),
     )
     expect(result).toBe(false)

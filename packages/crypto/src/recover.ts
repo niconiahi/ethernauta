@@ -7,14 +7,14 @@
 // `verify_typed_data_deployed`, which compose recover with the
 // `isValidSignature` call.
 
-import type {
-  Address,
-  Bytes,
-  Hash32,
-} from "@ethernauta/core"
 import {
+  type Address,
   addressSchema,
-  bytesSchema,
+  type Bytes64,
+  bytes64Schema,
+  type Bytes65,
+  bytes65Schema,
+  type Hash32,
   hash32Schema,
 } from "@ethernauta/core"
 import {
@@ -23,13 +23,18 @@ import {
 } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { Signature } from "@noble/secp256k1"
-import { parse } from "valibot"
+import { parse, union } from "valibot"
 
-function parse_signature(_signature: Bytes): {
+export const recoverSignatureSchema = union([
+  bytes64Schema,
+  bytes65Schema,
+])
+
+function parse_signature(_signature: Bytes64 | Bytes65): {
   compact: Uint8Array
   recovery: number
 } {
-  const signature = parse(bytesSchema, _signature)
+  const signature = parse(recoverSignatureSchema, _signature)
   const bytes = hex_to_bytes(signature)
   if (bytes.length === 65) {
     const v = bytes[64] as number
@@ -42,22 +47,17 @@ function parse_signature(_signature: Bytes): {
       )
     return { compact: bytes.slice(0, 64), recovery }
   }
-  if (bytes.length === 64) {
-    const compact = new Uint8Array(64)
-    compact.set(bytes)
-    const top = compact[32] as number
-    const recovery = (top & 0x80) >> 7
-    compact[32] = top & 0x7f
-    return { compact, recovery }
-  }
-  throw new Error(
-    `invalid signature length: ${bytes.length} (expected 64 or 65)`,
-  )
+  const compact = new Uint8Array(64)
+  compact.set(bytes)
+  const top = compact[32] as number
+  const recovery = (top & 0x80) >> 7
+  compact[32] = top & 0x7f
+  return { compact, recovery }
 }
 
 export function recover_address(
   _hash: Hash32,
-  _signature: Bytes,
+  _signature: Bytes64 | Bytes65,
 ): Address {
   const hash = parse(hash32Schema, _hash)
   const { compact, recovery } = parse_signature(_signature)

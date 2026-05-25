@@ -9,16 +9,23 @@
 // error) rather than throwing — matches the "anything that isn't a
 // match is false" semantics callers expect from a verifier.
 
-import type {
-  Address,
-  Bytes,
-  Hash32,
+import {
+  type Address,
+  type Bytes,
+  bytesSchema,
+  type Hash32,
 } from "@ethernauta/core"
 import { verify_hash } from "@ethernauta/eip/1271"
 import { eth_getCode } from "@ethernauta/eth"
 import type { ResolvedReader } from "@ethernauta/transport"
+import { parse, safeParse } from "valibot"
 
-import { recover_address } from "./recover"
+import {
+  recover_address,
+  recoverSignatureSchema,
+} from "./recover"
+
+const EMPTY_BYTES = parse(bytesSchema, "0x")
 
 export async function verify_hash_deployed(
   address: Address,
@@ -32,9 +39,14 @@ export async function verify_hash_deployed(
   } catch {
     return false
   }
-  if (code === "0x") {
+  if (code === EMPTY_BYTES) {
+    const eoa_sig = safeParse(
+      recoverSignatureSchema,
+      signature,
+    )
+    if (!eoa_sig.success) return false
     try {
-      const recovered = recover_address(hash, signature)
+      const recovered = recover_address(hash, eoa_sig.output)
       return (
         recovered.toLowerCase() === address.toLowerCase()
       )

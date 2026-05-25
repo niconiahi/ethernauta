@@ -1,6 +1,5 @@
 import {
   addressSchema,
-  bytes65Schema,
   bytesSchema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
@@ -51,7 +50,7 @@ function personal_sign(message: string, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytes65Schema, bytes_to_hex(out))
+  return parse(bytesSchema, bytes_to_hex(out))
 }
 
 const NOW = new Date("2024-06-01T12:00:00Z")
