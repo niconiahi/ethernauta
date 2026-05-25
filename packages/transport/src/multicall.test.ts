@@ -1,4 +1,9 @@
-import { bytesSchema } from "@ethernauta/core"
+import {
+  type Address,
+  addressSchema,
+  type Bytes,
+  bytesSchema,
+} from "@ethernauta/core"
 import { object, parse, string, tuple } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -8,7 +13,7 @@ import { create_multicall } from "./multicall"
 
 function fake_transport(
   _capture: (_payload: unknown) => void,
-  _result: `0x${string}`,
+  _result: Bytes,
 ) {
   return async (_call: unknown): Promise<Response> => {
     _capture(_call)
@@ -21,8 +26,8 @@ function fake_transport(
 }
 
 function make_callable<T>(
-  _to: `0x${string}`,
-  _data: `0x${string}`,
+  _to: Address,
+  _data: Bytes,
   _decoded: T,
 ): Callable<T> {
   return {
@@ -33,12 +38,23 @@ function make_callable<T>(
   }
 }
 
+const EMPTY_BYTES = parse(bytesSchema, "0x")
+const ADDRESS_1 = parse(
+  addressSchema,
+  "0x0000000000000000000000000000000000000001",
+)
+const ADDRESS_2 = parse(
+  addressSchema,
+  "0x0000000000000000000000000000000000000002",
+)
+const SELECTOR_70A08231 = parse(bytesSchema, "0x70a08231")
+
 describe("multicall", () => {
   it("rejects an empty call list", async () => {
     const multicall = create_multicall([
       {
         chainId: "eip155:1",
-        transports: [fake_transport(() => {}, "0x")],
+        transports: [fake_transport(() => {}, EMPTY_BYTES)],
       },
     ])
     await expect(multicall([])).rejects.toThrow()
@@ -48,22 +64,18 @@ describe("multicall", () => {
     const multicall = create_multicall([
       {
         chainId: "eip155:1",
-        transports: [fake_transport(() => {}, "0x")],
+        transports: [fake_transport(() => {}, EMPTY_BYTES)],
       },
       {
         chainId: "eip155:10",
-        transports: [fake_transport(() => {}, "0x")],
+        transports: [fake_transport(() => {}, EMPTY_BYTES)],
       },
     ])
-    const a = make_callable(
-      "0x0000000000000000000000000000000000000001",
-      "0x",
-      "A",
-    )
+    const a = make_callable(ADDRESS_1, EMPTY_BYTES, "A")
     const b: Callable<string> = {
       chain_id: "eip155:10",
-      to: "0x0000000000000000000000000000000000000002",
-      data: "0x",
+      to: ADDRESS_2,
+      data: EMPTY_BYTES,
       decode: () => "B",
     }
     await expect(
@@ -96,8 +108,8 @@ describe("multicall", () => {
       },
     ])
     const call = make_callable(
-      "0x0000000000000000000000000000000000000001",
-      "0x70a08231",
+      ADDRESS_1,
+      SELECTOR_70A08231,
       "decoded",
     )
     const [result] = await multicall([call] as const)
@@ -137,16 +149,8 @@ describe("multicall", () => {
         ],
       },
     ])
-    const ok = make_callable(
-      "0x0000000000000000000000000000000000000001",
-      "0x",
-      42,
-    )
-    const fail = make_callable(
-      "0x0000000000000000000000000000000000000002",
-      "0x",
-      99,
-    )
+    const ok = make_callable(ADDRESS_1, EMPTY_BYTES, 42)
+    const fail = make_callable(ADDRESS_2, EMPTY_BYTES, 99)
     const [a, b] = await multicall([ok, fail] as const, {
       allow_failure: true,
     })
@@ -175,11 +179,7 @@ describe("multicall", () => {
         ],
       },
     ])
-    const call = make_callable(
-      "0x0000000000000000000000000000000000000001",
-      "0x",
-      "x",
-    )
+    const call = make_callable(ADDRESS_1, EMPTY_BYTES, "x")
     await expect(
       multicall([call] as const),
     ).rejects.toThrow(/call #0 reverted/)
