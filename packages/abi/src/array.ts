@@ -53,4 +53,3 @@ export type InferArrayElement<C> = C extends AbiCodec<
 >
   ? InferCodec<AbiCodec<T>>
   : never
-

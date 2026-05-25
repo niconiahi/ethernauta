@@ -115,7 +115,10 @@ describe("decode.ts", () => {
         addressSchema,
         "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
       )
-      const value = parse(uint256Schema, "0xde0b6b3a7640000")
+      const value = parse(
+        uint256Schema,
+        "0xde0b6b3a7640000",
+      )
       const calldata = encode_function_call({
         name: "transfer",
         args: [address(), uint256()] as const,

@@ -5,12 +5,7 @@ import {
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import {
-  address,
-  string_,
-  uint8,
-  uint256,
-} from "../leaves"
+import { address, string_, uint8, uint256 } from "../leaves"
 import {
   decode_event_log,
   encode_event_topics,

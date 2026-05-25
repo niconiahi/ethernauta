@@ -46,7 +46,10 @@ import {
   uint224Schema,
   uint256Schema,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import {
   type BaseIssue,
   type BaseSchema,
