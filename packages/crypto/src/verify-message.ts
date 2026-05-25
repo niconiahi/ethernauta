@@ -59,7 +59,10 @@ function digest_of(
   message: VerifyMessageParameters["message"],
 ): Hash32 {
   const prefixed = build_personal_message(message)
-  return parse(hash32Schema, bytes_to_hex(keccak_256(prefixed)))
+  return parse(
+    hash32Schema,
+    bytes_to_hex(keccak_256(prefixed)),
+  )
 }
 
 export function verify_message_deployed(

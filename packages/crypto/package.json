@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "dev": "tsdown --watch",
-    "build": "tsdown && biome format --write dist",
+    "build": "tsdown",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
@@ -33,7 +33,9 @@
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*",
     "@noble/hashes": "^1.8.0",
-    "@noble/secp256k1": "^2.3.0"
+    "@noble/secp256k1": "^2.3.0",
+    "@scure/bip32": "1.7.0",
+    "@scure/bip39": "1.6.0"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"

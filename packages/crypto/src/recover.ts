@@ -11,8 +11,8 @@ import {
   type Address,
   addressSchema,
   type Bytes64,
-  bytes64Schema,
   type Bytes65,
+  bytes64Schema,
   bytes65Schema,
   type Hash32,
   hash32Schema,
@@ -34,7 +34,10 @@ function parse_signature(_signature: Bytes64 | Bytes65): {
   compact: Uint8Array
   recovery: number
 } {
-  const signature = parse(recoverSignatureSchema, _signature)
+  const signature = parse(
+    recoverSignatureSchema,
+    _signature,
+  )
   const bytes = hex_to_bytes(signature)
   if (bytes.length === 65) {
     const v = bytes[64] as number
