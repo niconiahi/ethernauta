@@ -191,6 +191,12 @@ importers:
       '@ethernauta/abi':
         specifier: workspace:*
         version: link:../abi
+      '@ethernauta/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ethernauta/utils':
+        specifier: workspace:*
+        version: link:../utils
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)

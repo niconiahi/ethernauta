@@ -28,7 +28,9 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@ethernauta/abi": "workspace:*"
+    "@ethernauta/abi": "workspace:*",
+    "@ethernauta/core": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"

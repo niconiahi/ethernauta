@@ -15,6 +15,11 @@ import {
   generate,
 } from "@ethernauta/abi/generator"
 import {
+  type Bytes4,
+  bytes4Schema,
+} from "@ethernauta/core"
+import { bytes_to_hex } from "@ethernauta/utils"
+import {
   array,
   type InferOutput,
   object,
@@ -22,13 +27,8 @@ import {
   string,
 } from "valibot"
 
-function selector_hex(signature: string): `0x${string}` {
-  const bytes = to_selector(signature)
-  let hex = "0x"
-  for (const b of bytes) {
-    hex += b.toString(16).padStart(2, "0")
-  }
-  return hex as `0x${string}`
+function selector_hex(signature: string): Bytes4 {
+  return parse(bytes4Schema, bytes_to_hex(to_selector(signature)))
 }
 
 function parse_flags(args: string[]) {
@@ -182,8 +182,8 @@ type RegistryEntry = InferOutput<typeof registryEntrySchema>
 function collect_entries(
   files: string[],
   root: string,
-): Map<`0x${string}`, RegistryEntry> {
-  const out = new Map<`0x${string}`, RegistryEntry>()
+): Map<Bytes4, RegistryEntry> {
+  const out = new Map<Bytes4, RegistryEntry>()
   for (const file of files) {
     const raw = load_abi(file)
     const descriptions = parse(
@@ -221,7 +221,7 @@ function collect_entries(
 }
 
 function format_registry(
-  entries: Map<`0x${string}`, RegistryEntry>,
+  entries: Map<Bytes4, RegistryEntry>,
 ): string {
   const sorted = Array.from(entries.entries()).sort(
     ([a], [b]) => (a < b ? -1 : a > b ? 1 : 0),
