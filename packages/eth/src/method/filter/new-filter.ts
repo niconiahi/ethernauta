@@ -1,4 +1,4 @@
-import type { Bytes } from "@ethernauta/core"
+import type { Uint } from "@ethernauta/core"
 import { uintSchema } from "@ethernauta/core"
 import type {
   Readable,
@@ -15,15 +15,15 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 /**
- * @returns The created filter
+ * @returns The created filter's identifier
  */
 export function eth_newFilter(
   _parameters: Parameters,
-): Readable<Bytes> {
+): Readable<Uint> {
   return async ([
     transports,
     _context,
-  ]: ResolvedReader): Promise<Bytes> => {
+  ]: ResolvedReader): Promise<Uint> => {
     const method = "eth_newFilter"
     const parameters = parse(parametersSchema, _parameters)
     const call = parse(callSchema, [method, parameters])
