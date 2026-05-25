@@ -123,51 +123,57 @@ export function create_signer(
     const signer: Signer = (method, params) =>
       new Promise((resolve, reject) => {
         const id = crypto.randomUUID()
-        window.addEventListener("message", function handler(event) {
-          const parsed = safeParse(
-            signerResponseSchema,
-            event.data,
-          )
-          if (!parsed.success) return
-          const data = parsed.output
-          if (data.id !== id) return
-          window.removeEventListener("message", handler)
-          if (
-            data.type ===
-            "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
-          ) {
-            reject({
-              code: ERROR_CODE.USER_REJECTED_REQUEST,
-              message: "User rejected request",
-            })
-            return
-          }
-          if (
-            data.type ===
-            "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-          ) {
-            reject({
-              code: ERROR_CODE.USER_REJECTED_REQUEST,
-              message: "Extension closed",
-            })
-            return
-          }
-          if (
-            data.type ===
-            "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"
-          ) {
-            resolve(data.signature)
-            return
-          }
-          resolve(data.signed_transaction)
-        })
-        const request = parse(signTransactionRequestSchema, {
-          type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
-          id,
-          method,
-          chainId: sign_context.chain_id,
-          params,
-        })
+        window.addEventListener(
+          "message",
+          function handler(event) {
+            const parsed = safeParse(
+              signerResponseSchema,
+              event.data,
+            )
+            if (!parsed.success) return
+            const data = parsed.output
+            if (data.id !== id) return
+            window.removeEventListener("message", handler)
+            if (
+              data.type ===
+              "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
+            ) {
+              reject({
+                code: ERROR_CODE.USER_REJECTED_REQUEST,
+                message: "User rejected request",
+              })
+              return
+            }
+            if (
+              data.type ===
+              "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
+            ) {
+              reject({
+                code: ERROR_CODE.USER_REJECTED_REQUEST,
+                message: "Extension closed",
+              })
+              return
+            }
+            if (
+              data.type ===
+              "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"
+            ) {
+              resolve(data.signature)
+              return
+            }
+            resolve(data.signed_transaction)
+          },
+        )
+        const request = parse(
+          signTransactionRequestSchema,
+          {
+            type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
+            id,
+            method,
+            chainId: sign_context.chain_id,
+            params,
+          },
+        )
         window.postMessage(request, window.location.origin)
       })
     return [signer, sign_context]

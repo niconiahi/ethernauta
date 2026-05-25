@@ -7,13 +7,11 @@ import {
   tuple,
 } from "@ethernauta/abi"
 import {
-  type Address,
   addressSchema,
   type Bytes,
   bytes32Schema,
   bytesSchema,
 } from "@ethernauta/core"
-import { chainIdSchema } from "./chain/chain-id"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -28,6 +26,7 @@ import {
   tupleWithRest,
 } from "valibot"
 import { callSchema as rpcCallSchema } from "./call"
+import { chainIdSchema } from "./chain/chain-id"
 import type { Callable } from "./contract"
 import {
   type ChainEntry,
