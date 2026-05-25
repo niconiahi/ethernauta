@@ -9,7 +9,8 @@
   "eslint_disable": 0,
   "any": 0,
   "never": 8,
-  "unknown": 199,
+  "_unknown_bump_2026_05_25_bytes64": "199 → 200: new bytes64Schema in @ethernauta/core adds one isBytes64(input: unknown) predicate, matching every other bytesN file in the package.",
+  "unknown": 200,
   "invariant_calls": 0,
   "redundant_annotations": 0
 }
