@@ -121,6 +121,25 @@ export const REGISTRY = {
     types: ["address", "address", "uint256"],
     param_names: ["from", "to", "value"],
   },
+  "0x23e30c8b": {
+    name: "onFlashLoan",
+    signature:
+      "onFlashLoan(address,address,uint256,uint256,bytes)",
+    types: [
+      "address",
+      "address",
+      "uint256",
+      "uint256",
+      "bytes",
+    ],
+    param_names: [
+      "initiator",
+      "token",
+      "amount",
+      "fee",
+      "data",
+    ],
+  },
   "0x2a55205a": {
     name: "royaltyInfo",
     signature: "royaltyInfo(uint256,uint256)",
