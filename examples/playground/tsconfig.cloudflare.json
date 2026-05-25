@@ -22,14 +22,18 @@
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
       "~/*": ["./app/*"],
-      "@ethernauta/transport": [
-        "../../packages/transport/src"
-      ],
+      "@ethernauta/abi": ["../../packages/abi/src"],
       "@ethernauta/chain": ["../../packages/chain/src"],
+      "@ethernauta/core": ["../../packages/core/src"],
       "@ethernauta/crypto": ["../../packages/crypto/src"],
+      "@ethernauta/eip/*": ["../../packages/eip/src/*"],
       "@ethernauta/ens": ["../../packages/ens/src"],
       "@ethernauta/erc/*": ["../../packages/erc/src/*"],
       "@ethernauta/eth": ["../../packages/eth/src"],
+      "@ethernauta/transport": [
+        "../../packages/transport/src"
+      ],
+      "@ethernauta/utils": ["../../packages/utils/src"],
       "@ethernauta/wallet": ["../../packages/wallet/src"]
     },
     "esModuleInterop": true,
