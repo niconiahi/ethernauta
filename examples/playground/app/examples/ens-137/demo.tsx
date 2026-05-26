@@ -1,12 +1,6 @@
 import { eip155_1 } from "@ethernauta/chain"
 import { addressSchema } from "@ethernauta/core"
 import {
-  get_ens_address,
-  get_ens_avatar,
-  get_ens_name,
-  get_ens_text,
-} from "@ethernauta/ens"
-import {
   create_reader,
   encode_chain_id,
   http,
@@ -20,6 +14,13 @@ import {
   string,
 } from "valibot"
 import { Button } from "../../components/button"
+
+// `@ethernauta/ens` carries the ENSIP-15 Unicode normalization
+// tables (multi-megabyte). Top-level importing it pulls the
+// data into both the SSR worker bundle and the initial client
+// chunk. Since the ENS calls only fire from the click handlers
+// below, we lazy-import on first use — the data ships only
+// when the user actually resolves a name.
 
 const MAINNET_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -70,6 +71,11 @@ export function Ens137Demo() {
     set_error(null)
     set_forward(null)
     try {
+      const {
+        get_ens_address,
+        get_ens_avatar,
+        get_ens_text,
+      } = await import("@ethernauta/ens")
       const [addr, avatar, twitter, url, description] =
         await Promise.all([
           get_ens_address({ name })(ctx),
@@ -105,6 +111,9 @@ export function Ens137Demo() {
     set_error(null)
     set_reverse(null)
     try {
+      const { get_ens_name } = await import(
+        "@ethernauta/ens"
+      )
       const resolved = await get_ens_name({
         address: parse(addressSchema, address),
       })(ctx)

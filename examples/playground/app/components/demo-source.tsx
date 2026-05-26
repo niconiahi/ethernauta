@@ -12,13 +12,31 @@
 // own <pre> wrapper, and re-host the highlighted spans inside
 // MDX_COMPONENTS.pre — the same component that styles every
 // fenced code block on the site.
+//
+// We import via `shiki/core` with explicit lang/theme `import()`
+// statements so the bundler statically tree-shakes everything
+// down to just the langs we list. Importing from the umbrella
+// `shiki` package via `codeToHtml` pulls all ~200 language
+// grammars and ~30 themes into the worker bundle, which blows
+// the Cloudflare Workers 3 MiB free-tier limit.
 
 import { useEffect, useState } from "react"
-import { codeToHtml } from "shiki"
+import { createHighlighterCore } from "shiki/core"
+import { createOnigurumaEngine } from "shiki/engine/oniguruma"
 
 import { MDX_COMPONENTS } from "./mdx"
 
 const { pre: Pre } = MDX_COMPONENTS
+
+const highlighter_promise = createHighlighterCore({
+  themes: [import("@shikijs/themes/github-light")],
+  langs: [
+    import("@shikijs/langs/typescript"),
+    import("@shikijs/langs/tsx"),
+    import("@shikijs/langs/solidity"),
+  ],
+  engine: createOnigurumaEngine(import("shiki/wasm")),
+})
 
 function strip_outer_pre(shiki_html: string): string {
   return shiki_html.replace(/^<pre[^>]*>|<\/pre>\s*$/g, "")
@@ -38,10 +56,13 @@ export function DemoSource({
 
   useEffect(() => {
     let cancelled = false
-    codeToHtml(source, {
-      lang: language,
-      theme: "github-light",
-    })
+    highlighter_promise
+      .then((highlighter) =>
+        highlighter.codeToHtml(source, {
+          lang: language,
+          theme: "github-light",
+        }),
+      )
       .then((result) => {
         if (!cancelled)
           set_inner_html(strip_outer_pre(result))
