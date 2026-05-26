@@ -3,16 +3,16 @@
   "name": "ethernauta",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground run dev",
+    "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground --filter @ethernauta/docs run dev",
     "test": "pnpm --recursive run test:unit",
-    "build": "pnpm --filter @ethernauta/cli run build && pnpm --recursive --filter '!@ethernauta/cli' --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' run build",
+    "build": "pnpm --filter @ethernauta/cli run build && pnpm --recursive --filter '!@ethernauta/cli' --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' run build",
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "lint:ratchet": "bash scripts/no-escape-hatches.sh",
     "format": "pnpm --recursive run format",
     "typecheck": "pnpm --recursive --parallel run typecheck",
-    "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' publish",
-    "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' publish --dry-run"
+    "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish",
+    "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish --dry-run"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

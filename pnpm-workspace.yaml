@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - examples/playground
+  - docs
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

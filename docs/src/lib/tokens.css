@@ -1,0 +1,62 @@
+:root {
+  color-scheme: light dark;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    "Fira Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /*
+   * Neutral scale, 50 = lightest, 950 = darkest.
+   * 50–300 are Alabaster Grey, 400–600 are Grey Olive,
+   * 700–950 are Gunmetal → Onyx.
+   */
+  --neutral-50: #e6e6e6;
+  --neutral-100: #e3e3e3;
+  --neutral-200: #e1e1e1;
+  --neutral-300: #e0e0e0;
+  --neutral-400: #979797;
+  --neutral-500: #969696;
+  --neutral-600: #949494;
+  --neutral-700: #434343;
+  --neutral-800: #292929;
+  --neutral-900: #1a1a1a;
+  --neutral-950: #101010;
+
+  /* Semantic tokens — light theme defaults */
+  --bg: var(--neutral-50);
+  --surface: var(--neutral-100);
+  --surface-strong: var(--neutral-200);
+  --border: var(--neutral-300);
+  --text: var(--neutral-950);
+  --text-muted: var(--neutral-700);
+  --link-hover-bg: var(--neutral-200);
+  --active-bg: var(--neutral-950);
+  --active-text: var(--neutral-50);
+  --code-bg: var(--neutral-200);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: var(--neutral-950);
+    --surface: var(--neutral-900);
+    --surface-strong: var(--neutral-800);
+    --border: var(--neutral-800);
+    --text: var(--neutral-50);
+    --text-muted: var(--neutral-300);
+    --link-hover-bg: var(--neutral-800);
+    --active-bg: var(--neutral-50);
+    --active-text: var(--neutral-950);
+    --code-bg: var(--neutral-900);
+  }
+
+  /* Shiki dual-theme: swap to the dark theme tokens it emitted. */
+  .shiki,
+  .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+}
