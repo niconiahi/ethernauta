@@ -1,24 +1,60 @@
 ![logo](https://github.com/niconiahi/ethernauta/blob/main/assets/logo.svg)
 
-## Use Ethernauta with your AI agent
+**Ethernauta** is a tree-shakable Ethereum library plus a Chrome MV3 wallet. Every method is a small curried function consumed by one of four resolver shapes (`Readable<T>`, `Writable<T>`, `Signable<T>`, `Callable<T>`) — pay only for what you import, drop in the wallet only when you need to sign.
 
-Drop [`skills/ethernauta/SKILL.md`](https://github.com/niconiahi/ethernauta/blob/main/skills/ethernauta/SKILL.md) into your agent's context and it will know — without visiting these docs — how to wire chains, read state, connect a wallet, sign transactions, and call contracts the Ethernauta way. The skill is concept-by-concept (WHAT it is, WHEN to reach for it) and links to a self-contained, copy-pasteable example for every section under [`skills/ethernauta/examples/`](https://github.com/niconiahi/ethernauta/tree/main/skills/ethernauta/examples). Every pattern is lifted from real code in [Animatronik](https://github.com/niconiahi/animatronik) or the in-repo playground — nothing speculative.
+## Install
 
-## Full working example: Animatronik
+```bash
+pnpm add @ethernauta/chain @ethernauta/eth @ethernauta/transport
+```
 
-[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, and `create_signer` + `create_writer` for state changes. The source is the most complete public reference for consuming the library.
+## Read the chain in 12 lines
 
-## Philosophy
+```ts
+import { eip155_11155111 } from "@ethernauta/chain"
+import { eth_blockNumber } from "@ethernauta/eth"
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport"
 
-The monorepo is arquitectured as per described in [Valibot's thesis](https://valibot.dev/thesis.pdf) so that it takes full use of tree-shaking thus making the bundle size of the library much smaller than similar libraries. It comes with the burden of getting used to composing functions (of small bundle size) but this is helped with a clear API
+const SEPOLIA = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
 
-It's ESM only, it should run anywhere in the web. Only [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API) are used. This repository won't use [Node APIs](https://nodejs.org/dist/latest-v18.x/docs/api/) as part of its design
+const reader = create_reader([{
+  chainId: SEPOLIA,
+  transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+}])
 
-## Characteristics
+const head = await eth_blockNumber()(reader({ chain_id: SEPOLIA }))
+```
 
-- It only has heavy cryptography libraries as dependencies
-- It uses validation schemas to validate every piece of data that flows through the library
-- Seamless API for interacting with multiple blockchain ecosystems (currently: [Ethereum](https://ethereum.org/))
+Signing, writing, contract reads and EIP-6963 wallet discovery follow the same `method(args)(resolver({ chain_id, …ctx }))` shape — see [`@ethernauta/eth`](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) and [`@ethernauta/transport`](https://github.com/niconiahi/ethernauta/tree/main/packages/transport).
+
+## Why Ethernauta
+
+- **Tiny bundles.** Architected per [Valibot's thesis](https://valibot.dev/thesis.pdf) for aggressive tree-shaking — a dapp that only reads `eth_blockNumber` ships almost none of the library.
+- **No hosted services, no coordinated rollouts.** Public RPC endpoints, the wallet extension, and dapp code is the entire dependency surface. Adding an EIP / ERC is a folder-shaped operation.
+- **ESM-only, Web APIs only.** Runs anywhere the web platform runs — no Node-API leakage, no polyfills.
+- **Two consumer paths, both first-class.** Pre-sign and broadcast (`eth_signTransaction` + `eth_sendRawTransaction`, no wallet needed for the broadcast step), or hand the whole flow to the wallet (`eth_sendTransaction`). The library never forces a choice.
+- **Standards-compliant by construction.** EIP-1193 / EIP-6963 / EIP-5792 / EIP-7702 — any Ethernauta dapp talks to any standards-compliant wallet, and the Ethernauta wallet serves any standards-compliant dapp.
+- **Schemas at every boundary.** Every value crossing a boundary is validated with a Valibot schema. The schema is the type (`type X = InferOutput<typeof xSchema>`).
+
+## What's in the box
+
+| Capability | Package |
+| --- | --- |
+| 500+ EIP-155 chain consts (CAIP-2 ready) | [`@ethernauta/chain`](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) |
+| Every `eth_*` JSON-RPC method, three shapes | [`@ethernauta/eth`](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) |
+| Resolver factories + HTTP / WebSocket / Multicall transports + EIP-1193 adapter | [`@ethernauta/transport`](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) |
+| EIPs 55 / 191 / 712 / 1014 / 1102 / 1193 / 1271 / 2255 / 3085 / 3326 / 4337 / 4361 / 4844 / 5792 / 6492 / 6963 / 7702 | [`@ethernauta/eip`](https://github.com/niconiahi/ethernauta/tree/main/packages/eip) |
+| ERCs 20 / 137 / 165 / 181 / 634 / 721 / 1155 / 1577 / 2304 / 2612 / 2981 / 3156 / 4494 / 4626 / 5564 / 5805 / 6372 / 7683 | [`@ethernauta/erc`](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) |
+| ENS resolution + ENSIP-15 normalisation | [`@ethernauta/ens`](https://github.com/niconiahi/ethernauta/tree/main/packages/ens) |
+| ABI codec + code generator (`Callable` / `Signable` methods) | [`@ethernauta/abi`](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) |
+| CLI — `ethernauta abi`, `ethernauta registry` | [`@ethernauta/cli`](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) |
+| Cross-spec signature / SIWE verification + key derivation | [`@ethernauta/crypto`](https://github.com/niconiahi/ethernauta/tree/main/packages/crypto) |
+| Lifecycle tracker (`pending` → `mined` / `reverted`) | [`@ethernauta/transaction`](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) |
+| React hooks (`useProvider`, `useProviderDetail`) | [`@ethernauta/react`](https://github.com/niconiahi/ethernauta/tree/main/packages/react) |
+| Chrome MV3 wallet | [`@ethernauta/wallet`](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet) |
 
 ## Modules
 
@@ -37,212 +73,10 @@ It's ESM only, it should run anywhere in the web. Only [Web APIs](https://develo
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
 
-## Features
+## A real production dapp: Animatronik
 
-- [x] Chain manipulation methods ([CAIP](https://github.com/ChainAgnostic/caip-js))
-- [x] Ethereum base methods ([specification](https://github.com/ethereum/execution-apis/tree/main/src/eth))
-- [x] JSON RPC methods ([specification](https://www.jsonrpc.org/specification))
-- [x] Reader factory for blockchain reads with multiple transports
-- [x] Writer factory for blockchain writes with multiple transports
-- [x] Signer factory for wallet interactions with multiple transports
-- [x] Contract factory for `eth_call` against a specific contract with multiple transports
-- [x] Four method shapes: `Readable<T>`, `Writable<T>`, `Signable<T>`, `Callable<T>`
-- [x] Sign transactions with the wallet ([EIP-1559](https://eips.ethereum.org/EIPS/eip-1559))
-- [x] `FunctionSidecar` protocol for ABI-aware transaction signing in the wallet
-- [x] Methods for interacting with Metamask ([EIP-1102](https://eips.ethereum.org/EIPS/eip-1102))
-- [x] EIP-1193 provider implementation ([specification](https://eips.ethereum.org/EIPS/eip-1193))
-- [x] Multi-injected provider discovery ([EIP-6963](https://eips.ethereum.org/EIPS/eip-6963))
-- [x] ABI encoding/decoding ([abi-spec](https://docs.soliditylang.org/en/latest/abi-spec.html))
-- [x] ABI code generator (emits `Callable` for view methods, `Signable` for state-changing methods)
-- [x] Token Standard ([ERC-20](https://eips.ethereum.org/EIPS/eip-20))
-- [x] Standard Interface Detection ([ERC-165](https://eips.ethereum.org/EIPS/eip-165))
-- [x] Non-Fungible Token Standard ([ERC-721](https://eips.ethereum.org/EIPS/eip-721))
-- [x] Multi Token Standard ([ERC-1155](https://eips.ethereum.org/EIPS/eip-1155))
-- [x] Tokenized Vault Standard ([ERC-4626](https://eips.ethereum.org/EIPS/eip-4626))
-- [x] Batched calls ([EIP-5792](https://eips.ethereum.org/EIPS/eip-5792) — `wallet_sendCalls` / `wallet_getCallsStatus`)
-- [x] Chrome extension wallet
-- [ ] Metamask's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-- [ ] WalletConnect's connector using [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, and `create_signer` + `create_writer` for state changes. The source is the most complete public reference for consuming the library.
 
-## Examples
+## Use Ethernauta with your AI agent
 
-### Creating reader
-
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  create_reader,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-export const reader = create_reader([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
-  },
-])
-```
-
-### Reading from the blockchain
-
-```ts
-import { eth_getBlockByHash } from "@ethernauta/eth"
-import { reader, SEPOLIA_CHAIN_ID } from "./reader"
-
-const readable = eth_getBlockByHash([
-  "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
-  false,
-])
-const block = await readable(reader({ chain_id: SEPOLIA_CHAIN_ID }))
-```
-
-### Creating a writer
-
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  create_writer,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-export const writer = create_writer([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
-  },
-])
-```
-
-### Creating a signer
-
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  create_signer,
-  encode_chain_id,
-} from "@ethernauta/transport"
-
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-export const signer = create_signer([{ chainId: SEPOLIA_CHAIN_ID }])
-```
-
-### Creating a contract resolver
-
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  create_contract,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-export const contract = create_contract([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
-  },
-])
-```
-
-### Requesting accounts from the wallet
-
-```ts
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
-import { signer, SEPOLIA_CHAIN_ID } from "./signer"
-
-const [account] = await eth_requestAccounts()(
-  signer({ chain_id: SEPOLIA_CHAIN_ID }),
-)
-```
-
-### Signing and broadcasting a transaction
-
-```ts
-import {
-  eth_sendRawTransaction,
-  eth_signTransaction,
-} from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/utils"
-import { signer, writer, SEPOLIA_CHAIN_ID } from "./resolvers"
-
-const signed_transaction = await eth_signTransaction([
-  {
-    to: "0x515e9e0565fdddd4f8a9759744734154da453585",
-    value: number_to_hex(1),
-  },
-])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
-
-const hash = await eth_sendRawTransaction([signed_transaction])(
-  writer({ chain_id: SEPOLIA_CHAIN_ID }),
-)
-```
-
-### Reacting to transaction states
-
-```ts
-import { eth_getTransactionReceipt } from "@ethernauta/eth"
-import { hex_to_number } from "@ethernauta/utils"
-import { reader, SEPOLIA_CHAIN_ID } from "./reader"
-
-// Single-hash UI tracking — inline ~10-line poll. The wallet
-// owns batched-call tracking via EIP-5792 (wallet_getCallsStatus);
-// for a single tx, just poll the receipt directly.
-const interval_id = setInterval(async () => {
-  const receipt = await eth_getTransactionReceipt([hash])(
-    reader({ chain_id: SEPOLIA_CHAIN_ID }),
-  )
-  if (!receipt || !receipt.status) return
-  const status = hex_to_number(receipt.status) === 1 ? "mined" : "reverted"
-  // update your UI with `status` and `hash`
-  clearInterval(interval_id)
-}, 2000)
-```
-
-### Executing an ERC-20 method
-
-```ts
-import { transfer } from "@ethernauta/erc/20"
-import { eth_sendRawTransaction } from "@ethernauta/eth"
-import { number_to_hex } from "@ethernauta/utils"
-import { signer, writer, SEPOLIA_CHAIN_ID } from "./resolvers"
-
-const TOKEN_ADDRESS = "0x..."
-const signed = await transfer([
-  "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
-  number_to_hex(1),
-])(signer({ chain_id: SEPOLIA_CHAIN_ID, to: TOKEN_ADDRESS }))
-
-const hash = await eth_sendRawTransaction([signed])(
-  writer({ chain_id: SEPOLIA_CHAIN_ID }),
-)
-```
-
-### Reading from a contract
-
-```ts
-import { balanceOf } from "@ethernauta/erc/20"
-import { contract, SEPOLIA_CHAIN_ID } from "./contract"
-
-const TOKEN_ADDRESS = "0x..."
-const balance = await balanceOf({ owner: account })(
-  contract({ chain_id: SEPOLIA_CHAIN_ID, to: TOKEN_ADDRESS }),
-)
-```
-
+Drop [`skills/ethernauta/SKILL.md`](https://github.com/niconiahi/ethernauta/blob/main/skills/ethernauta/SKILL.md) into your agent's context and it will know — without visiting these docs — how to wire chains, read state, connect a wallet, sign transactions, and call contracts the Ethernauta way. The skill is concept-by-concept (WHAT it is, WHEN to reach for it) and links to a self-contained, copy-pasteable example for every section under [`skills/ethernauta/examples/`](https://github.com/niconiahi/ethernauta/tree/main/skills/ethernauta/examples). Every pattern is lifted from real code in [Animatronik](https://github.com/niconiahi/animatronik) or the in-repo playground — nothing speculative.
