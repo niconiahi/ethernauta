@@ -46,6 +46,13 @@ A typical setup wires this into a `package.json` script so generated methods sta
 }
 ```
 
+Flags:
+
+| Flag    | Description                                                                  |
+| ------- | ---------------------------------------------------------------------------- |
+| `--in`  | Path to a raw ABI JSON array **or** a Foundry artifact with an `abi` field   |
+| `--out` | Output directory; the generator writes `<out>/methods/*.ts` + a barrel file  |
+
 ### `ethernauta registry`
 
 Walk a directory for `*.abi.json` files and emit a single `REGISTRY` mapping 4-byte selectors to method metadata.
@@ -55,3 +62,10 @@ npx ethernauta registry --in src --out src/registry/registry.generated.ts
 ```
 
 The registry is used by the wallet to verify and display function names for transactions whose call data carries an unknown selector.
+
+Flags:
+
+| Flag    | Description                                                       |
+| ------- | ----------------------------------------------------------------- |
+| `--in`  | Directory walked recursively for `*.abi.json` files               |
+| `--out` | Output file path for the generated `REGISTRY` TypeScript module   |

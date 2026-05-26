@@ -2,12 +2,14 @@
 
 ## Philosophy
 
-This module aims to be an un-opinionated representation of the defined:
+This module is an un-opinionated representation of the public chain catalogue:
 
 - [Ethereum chains](https://github.com/ethereum-lists/chains/tree/master/_data/chains)
 - [chain schema](https://github.com/ethereum-lists/chains/blob/master/tools/schema/chainSchema.json)
 
-Each chain is exported as a const that you can pair with `encode_chain_id` (from `@ethernauta/transport`) to produce a [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) identifier.
+Every chain in the upstream list is exported as a const named `eip155_<chainId>` (one file per chain). Pair the const with `encode_chain_id` from `@ethernauta/transport` to produce a [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) identifier that every Ethernauta resolver factory accepts.
+
+A small derivation tool — `runIndexer` — refreshes the catalogue from the upstream repository.
 
 ## Modules
 
@@ -28,21 +30,65 @@ Each chain is exported as a const that you can pair with `encode_chain_id` (from
 
 ## API
 
+### Chain consts — one per EIP-155 chain
+
+```ts
+import {
+  eip155_1,           // Ethereum Mainnet
+  eip155_10,          // OP Mainnet
+  eip155_8453,        // Base
+  eip155_42161,       // Arbitrum One
+  eip155_11155111,    // Sepolia
+  // …500+ exports
+} from "@ethernauta/chain"
+
+// Each const exposes the upstream `chainSchema` shape:
+//   { name, shortName, chainId, networkId, nativeCurrency,
+//     rpc, explorers, … }
+```
+
+### Pair a chain with a CAIP-2 id
+
 ```ts
 import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  decode_chain_id,
-  encode_chain_id,
-} from "@ethernauta/transport"
+import { decode_chain_id, encode_chain_id } from "@ethernauta/transport"
 
 const chain_id = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155111.chainId,
 })
-console.log(chain_id) // eip155:11155111
+console.log(chain_id) // "eip155:11155111"
 
 const { namespace, reference } = decode_chain_id(chain_id)
-console.log(namespace) // eip155
-console.log(reference) // 11155111
+console.log(namespace) // "eip155"
+console.log(reference) // "11155111"
 ```
 
+### Schemas
+
+```ts
+import {
+  type Chain,
+  chainSchema,
+  type Feature,
+  type NativeCurrency,
+  type Explorer,
+  type Bridge,
+  type Parent,
+  type EnsRegistry,
+  type ShortName,
+  shortNameSchema,
+  type RedFlagSchema,
+} from "@ethernauta/chain"
+
+// `chainSchema` matches the upstream JSON schema and is what
+// every `eip155_*` export validates against at build time.
+```
+
+### Refresh the catalogue
+
+```bash
+pnpm --filter @ethernauta/chain indexer
+```
+
+The `indexer` script pulls the latest definitions from [ethereum-lists/chains](https://github.com/ethereum-lists/chains), validates each against `chainSchema`, and writes one TS file per chain under `src/chain/eip155/`.
