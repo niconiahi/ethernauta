@@ -153,7 +153,7 @@
 
   .card a {
     font-size: 0.85rem;
-    color: var(--active-text);
+    color: var(--text);
     text-decoration: none;
   }
 

@@ -7,6 +7,7 @@
     "dev": "vite dev",
     "build": "vite build && pagefind --site build",
     "preview": "wrangler pages dev build --port 4173",
+    "deploy": "npm run build && wrangler pages deploy build --project-name=ethernauta-docs",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
