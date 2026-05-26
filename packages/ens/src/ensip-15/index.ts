@@ -7,7 +7,6 @@ export {
 } from "./data/spec"
 export {
   from_cps,
-  get_ccc,
   nfc,
   nfd,
   to_cps,

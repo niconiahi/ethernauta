@@ -103,7 +103,6 @@ Normalization is **mandatory** before hashing — `namehash` of `"Vitalik.eth"` 
 | `ens_beautify` | Reverse-display safe form (idn-friendly). |
 | `to_cps`, `from_cps` | Code-point conversion. |
 | `nfd`, `nfc` | Unicode NF normalization. |
-| `get_ccc` | Combining-class accessor. |
 | `UCD_VERSION` | The Unicode version baked into the rules. |
 
 ### Avatar
