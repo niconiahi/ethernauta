@@ -113,7 +113,11 @@ export default function () {
           <ButtonLink href="https://chromewebstore.google.com/detail/ethernauta/lpjalkakmdgkepcogmaoipjjeahnpdjp">
             Add to Chrome
           </ButtonLink>
-          <ButtonLink href="/docs" variant="secondary">
+          <ButtonLink
+            href="https://ethernauta-docs.pages.dev"
+            target="_blank"
+            variant="secondary"
+          >
             Docs
           </ButtonLink>
           <ButtonLink href="/examples" variant="secondary">
