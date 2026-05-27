@@ -103,7 +103,7 @@ export default function ExamplesLayout() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "max-content 1fr",
+        gridTemplateColumns: "max-content minmax(0, 1fr)",
         background: "var(--bg)",
       }}
     >
