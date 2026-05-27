@@ -103,7 +103,7 @@ export default function ExamplesLayout() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "auto 1fr",
+        gridTemplateColumns: "max-content 1fr",
         background: "var(--bg)",
       }}
     >
@@ -146,6 +146,7 @@ export default function ExamplesLayout() {
                     fontSize: 14,
                     fontWeight: 500,
                     textDecoration: "none",
+                    whiteSpace: "nowrap",
                     color: isActive
                       ? "var(--active-text)"
                       : "var(--text)",
