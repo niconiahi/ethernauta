@@ -1,0 +1,6 @@
+# SvelteKit puts every fingerprinted artifact (chunks, entries,
+# CSS, fonts, hashed assets) under `/_app/immutable/`. Each filename
+# carries a content hash, so the contents never change at a given
+# URL — safe to tell browsers to cache forever and skip revalidation.
+/_app/immutable/*
+  Cache-Control: public, max-age=31536000, immutable

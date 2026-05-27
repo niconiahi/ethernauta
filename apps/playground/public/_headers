@@ -1,0 +1,7 @@
+# React Router emits every bundled JS/CSS chunk under `/assets/`
+# with a content hash in the filename, so the bytes at a given URL
+# never change. Tell browsers to cache them for a year and skip
+# revalidation entirely. Cloudflare Workers Assets honours
+# `_headers` shipped at the assets root.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
