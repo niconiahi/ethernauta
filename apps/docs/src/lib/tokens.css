@@ -69,8 +69,8 @@
 }
 
 :root {
-  --font-family-body: "DM Sans", sans-serif;
-  --font-family-heading: "DM Sans", sans-serif;
+  --font-family-body: "Inter", sans-serif;
+  --font-family-heading: "Inter", sans-serif;
 
   --font-size-body-sm: 14px;
   --font-size-body-md: 16px;

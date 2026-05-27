@@ -18,6 +18,7 @@ const sections = group_by_section(get_docs())
   <aside>
     <a class="brand" href="/" aria-label="Ethernauta">
       <img src="/logo.svg" alt="" width="56" height="56" />
+      <span>Ethernauta</span>
     </a>
     <Search />
     <nav>
@@ -52,6 +53,7 @@ const sections = group_by_section(get_docs())
     padding: 0;
     color: var(--text);
     background: var(--bg);
+    font-family: var(--font-family-body);
   }
 
   :global(*) {
@@ -75,9 +77,13 @@ const sections = group_by_section(get_docs())
   }
 
   .brand {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
     margin-bottom: 0.75rem;
-    line-height: 0;
+    color: var(--text);
+    text-decoration: none;
+    line-height: 1;
   }
 
   .brand img {
@@ -85,6 +91,12 @@ const sections = group_by_section(get_docs())
     background: var(--neutral-950);
     border-radius: 10px;
     padding: 6px;
+  }
+
+  .brand span {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
   nav section {

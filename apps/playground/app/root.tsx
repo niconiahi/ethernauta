@@ -109,9 +109,10 @@ export default function App() {
           style={{
             display: "inline-flex",
             alignItems: "center",
+            gap: 12,
             color: "var(--text)",
             textDecoration: "none",
-            lineHeight: 0,
+            lineHeight: 1,
           }}
         >
           <img
@@ -125,6 +126,15 @@ export default function App() {
               padding: 6,
             }}
           />
+          <span
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Ethernauta
+          </span>
         </Link>
         <ConnectWalletButton session={session} />
       </header>
