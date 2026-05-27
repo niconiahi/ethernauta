@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint64,
@@ -17,8 +20,6 @@ export const GET_L1_BASE_FEE_ESTIMATE_INERTIA_SIGNATURE = {
   signature: "getL1BaseFeeEstimateInertia()",
   names: [],
 }
-
-
 
 export function getL1BaseFeeEstimateInertia() {
   return (context: ContractContext): Callable<Uint64> => {

@@ -1,174 +1,179 @@
 <script>
-  import { onMount } from "svelte";
+import { onMount } from "svelte"
 
-  const STORAGE_KEY = "ethernauta-docs-recents";
-  const MAX_RECENTS = 5;
+const STORAGE_KEY = "ethernauta-docs-recents"
+const MAX_RECENTS = 5
 
-  let dialog;
-  let container;
-  let unavailable = $state(false);
-  let initialized = false;
-  let pagefind_ui;
-  let query = $state("");
-  let recents = $state([]);
+let dialog
+let container
+let unavailable = $state(false)
+let initialized = false
+let pagefind_ui
+let query = $state("")
+let recents = $state([])
 
-  function strip_html(url) {
-    return url.replace(/\.html(#|$)/, "$1");
+function strip_html(url) {
+  return url.replace(/\.html(#|$)/, "$1")
+}
+
+function load_recents() {
+  if (typeof localStorage === "undefined") {
+    return []
   }
-
-  function load_recents() {
-    if (typeof localStorage === "undefined") {
-      return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) {
+      return []
     }
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return [];
-      }
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) {
-        return [];
-      }
-      return parsed.filter((entry) => typeof entry === "string");
-    } catch {
-      return [];
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) {
+      return []
     }
+    return parsed.filter(
+      (entry) => typeof entry === "string",
+    )
+  } catch {
+    return []
   }
+}
 
-  function save_recents(items) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-      // quota exceeded or storage disabled
-    }
+function save_recents(items) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+  } catch {
+    // quota exceeded or storage disabled
   }
+}
 
-  function add_recent(value) {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return;
-    }
-    const next = [trimmed, ...recents.filter((r) => r !== trimmed)].slice(
-      0,
-      MAX_RECENTS,
-    );
-    recents = next;
-    save_recents(next);
+function add_recent(value) {
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return
   }
+  const next = [
+    trimmed,
+    ...recents.filter((r) => r !== trimmed),
+  ].slice(0, MAX_RECENTS)
+  recents = next
+  save_recents(next)
+}
 
-  function remove_recent(value) {
-    const next = recents.filter((r) => r !== value);
-    recents = next;
-    save_recents(next);
+function remove_recent(value) {
+  const next = recents.filter((r) => r !== value)
+  recents = next
+  save_recents(next)
+}
+
+async function ensure_pagefind() {
+  if (initialized) {
+    return
   }
-
-  async function ensure_pagefind() {
-    if (initialized) {
-      return;
+  initialized = true
+  const ui_js = "/pagefind/pagefind-ui.js"
+  const ui_css = "/pagefind/pagefind-ui.css"
+  try {
+    const head_response = await fetch(ui_js, {
+      method: "HEAD",
+    })
+    if (!head_response.ok) {
+      unavailable = true
+      return
     }
-    initialized = true;
-    const ui_js = "/pagefind/pagefind-ui.js";
-    const ui_css = "/pagefind/pagefind-ui.css";
-    try {
-      const head_response = await fetch(ui_js, { method: "HEAD" });
-      if (!head_response.ok) {
-        unavailable = true;
-        return;
-      }
-      const css = document.createElement("link");
-      css.rel = "stylesheet";
-      css.href = ui_css;
-      document.head.appendChild(css);
-      await import(/* @vite-ignore */ ui_js);
-      pagefind_ui = new window.PagefindUI({
-        element: container,
-        showSubResults: true,
-        showImages: false,
-        processResult: (result) => {
-          result.url = strip_html(result.url);
-          if (result.sub_results) {
-            for (const sub of result.sub_results) {
-              sub.url = strip_html(sub.url);
-            }
+    const css = document.createElement("link")
+    css.rel = "stylesheet"
+    css.href = ui_css
+    document.head.appendChild(css)
+    await import(/* @vite-ignore */ ui_js)
+    pagefind_ui = new window.PagefindUI({
+      element: container,
+      showSubResults: true,
+      showImages: false,
+      processResult: (result) => {
+        result.url = strip_html(result.url)
+        if (result.sub_results) {
+          for (const sub of result.sub_results) {
+            sub.url = strip_html(sub.url)
           }
-          return result;
-        },
-      });
-    } catch {
-      unavailable = true;
-    }
-  }
-
-  async function open() {
-    await ensure_pagefind();
-    recents = load_recents();
-    dialog.showModal();
-    requestAnimationFrame(() => {
-      const input = dialog.querySelector("input");
-      input?.focus();
-    });
-  }
-
-  function handle_dialog_click(event) {
-    if (event.target === dialog) {
-      dialog.close();
-      return;
-    }
-    const link = event.target.closest("a");
-    if (link) {
-      add_recent(query);
-      dialog.close();
-    }
-  }
-
-  function handle_dialog_input(event) {
-    if (event.target instanceof HTMLInputElement) {
-      query = event.target.value;
-    }
-  }
-
-  function handle_dialog_close() {
-    query = "";
-    if (pagefind_ui) {
-      pagefind_ui.triggerSearch("");
-    }
-  }
-
-  function select_recent(value) {
-    if (!pagefind_ui) {
-      return;
-    }
-    pagefind_ui.triggerSearch(value);
-    query = value;
-    requestAnimationFrame(() => {
-      dialog.querySelector("input")?.focus();
-    });
-  }
-
-  function delete_recent(event, value) {
-    event.stopPropagation();
-    remove_recent(value);
-  }
-
-  onMount(() => {
-    function handle_keydown(event) {
-      const is_open = dialog?.open;
-      const is_shortcut =
-        (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
-      if (is_shortcut) {
-        event.preventDefault();
-        if (is_open) {
-          dialog.close();
-        } else {
-          open();
         }
+        return result
+      },
+    })
+  } catch {
+    unavailable = true
+  }
+}
+
+async function open() {
+  await ensure_pagefind()
+  recents = load_recents()
+  dialog.showModal()
+  requestAnimationFrame(() => {
+    const input = dialog.querySelector("input")
+    input?.focus()
+  })
+}
+
+function handle_dialog_click(event) {
+  if (event.target === dialog) {
+    dialog.close()
+    return
+  }
+  const link = event.target.closest("a")
+  if (link) {
+    add_recent(query)
+    dialog.close()
+  }
+}
+
+function handle_dialog_input(event) {
+  if (event.target instanceof HTMLInputElement) {
+    query = event.target.value
+  }
+}
+
+function handle_dialog_close() {
+  query = ""
+  if (pagefind_ui) {
+    pagefind_ui.triggerSearch("")
+  }
+}
+
+function select_recent(value) {
+  if (!pagefind_ui) {
+    return
+  }
+  pagefind_ui.triggerSearch(value)
+  query = value
+  requestAnimationFrame(() => {
+    dialog.querySelector("input")?.focus()
+  })
+}
+
+function delete_recent(event, value) {
+  event.stopPropagation()
+  remove_recent(value)
+}
+
+onMount(() => {
+  function handle_keydown(event) {
+    const is_open = dialog?.open
+    const is_shortcut =
+      (event.metaKey || event.ctrlKey) &&
+      event.key.toLowerCase() === "k"
+    if (is_shortcut) {
+      event.preventDefault()
+      if (is_open) {
+        dialog.close()
+      } else {
+        open()
       }
     }
-    window.addEventListener("keydown", handle_keydown);
-    return () => {
-      window.removeEventListener("keydown", handle_keydown);
-    };
-  });
+  }
+  window.addEventListener("keydown", handle_keydown)
+  return () => {
+    window.removeEventListener("keydown", handle_keydown)
+  }
+})
 </script>
 
 <button class="trigger body-md-regular" type="button" onclick={open}>

@@ -127,7 +127,9 @@ describe("verify_message_deployed — EOA branch", () => {
   })
 
   it("returns true for a personal_sign over Uint8Array bytes", async () => {
-    const bytes = new TextEncoder().encode("hello bytes")
+    const bytes = Uint8Array.from(
+      new TextEncoder().encode("hello bytes"),
+    )
     const signature = personal_sign(bytes, PRIVATE_KEY)
     const transport = vi
       .fn<Http>()

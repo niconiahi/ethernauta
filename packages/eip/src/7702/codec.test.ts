@@ -8,9 +8,7 @@ import {
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import type {
-  AuthorizationSigned,
-} from "./authorization"
+import type { AuthorizationSigned } from "./authorization"
 import { SET_CODE_TX_TYPE } from "./authorization"
 import {
   decode_transaction_signed,
@@ -145,14 +143,8 @@ describe("codec.ts — decode", () => {
             "0xfa3a1d0c75a8d44a8dcd8c8dfcdcd52dbfdab845",
           ),
           storageKeys: [
-            parse(
-              hash32Schema,
-              `0x${"00".repeat(31)}01`,
-            ),
-            parse(
-              hash32Schema,
-              `0x${"00".repeat(31)}02`,
-            ),
+            parse(hash32Schema, `0x${"00".repeat(31)}01`),
+            parse(hash32Schema, `0x${"00".repeat(31)}02`),
           ],
         },
       ],
@@ -171,15 +163,17 @@ describe("codec.ts — decode", () => {
 
   it("should reject bytes without the 0x04 type prefix", () => {
     expect(() =>
-      decode_transaction_signed(new Uint8Array([0x02, 0xc0])),
+      decode_transaction_signed(
+        new Uint8Array([0x02, 0xc0]),
+      ),
     ).toThrow(/0x04 type prefix/)
   })
 
   it("should reject signed-decode when the body has 10 fields", () => {
     const encoded = encode_transaction_unsigned(BASE)
-    expect(() => decode_transaction_signed(encoded)).toThrow(
-      /expected 13 fields/,
-    )
+    expect(() =>
+      decode_transaction_signed(encoded),
+    ).toThrow(/expected 13 fields/)
   })
 
   it("should reject unsigned-decode when the body has 13 fields", () => {

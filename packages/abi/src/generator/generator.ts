@@ -110,7 +110,8 @@ export function emit_name_for(
   const name_counts = count_names(descriptions)
   const file_counts = count_filename_basenames(descriptions)
   const base = camel_to_kebab(description.name)
-  const overloaded = (name_counts.get(description.name) || 0) > 1
+  const overloaded =
+    (name_counts.get(description.name) || 0) > 1
   const file_collides = (file_counts.get(base) || 0) > 1
   if (!overloaded && !file_collides) {
     return description.name
@@ -757,11 +758,13 @@ export function generate(
       )
       writeFileSync(file_path, body)
       generated.push(emit_name)
-    }
-    catch (err) {
+    } catch (err) {
       const message =
         err instanceof Error ? err.message : String(err)
-      skipped.push({ name: description.name, reason: message })
+      skipped.push({
+        name: description.name,
+        reason: message,
+      })
     }
   }
   return parse(generateResultSchema, { generated, skipped })

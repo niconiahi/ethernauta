@@ -3,10 +3,7 @@
 // components zkSync charges in one shot.
 
 import { eip155_324 } from "@ethernauta/chain"
-import {
-  addressSchema,
-  type Uint,
-} from "@ethernauta/core"
+import { addressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_zksync } from "@ethernauta/gas"
 import {
   create_reader,
@@ -71,13 +68,11 @@ export function GasEstimateZksyncDemo() {
         max_priority_fee_per_gas:
           result.max_priority_fee_per_gas,
       })
-    }
-    catch (e) {
+    } catch (e) {
       set_error(
         e instanceof Error ? e.message : "Unknown error",
       )
-    }
-    finally {
+    } finally {
       set_in_flight(false)
     }
   }
@@ -85,7 +80,9 @@ export function GasEstimateZksyncDemo() {
   return (
     <div style={CARD}>
       <Button onClick={run} disabled={in_flight}>
-        {in_flight ? "Estimating…" : "Estimate on zkSync Era"}
+        {in_flight
+          ? "Estimating…"
+          : "Estimate on zkSync Era"}
       </Button>
       <ResultRow
         label="gas_limit"

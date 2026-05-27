@@ -20,7 +20,9 @@ const CHAIN_ID = encode_chain_id({
 const reader = create_reader([
   {
     chainId: CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
   },
 ])
 
@@ -39,9 +41,10 @@ const balance_b = await eth_getBalance({
 })(reader({ chain_id: CHAIN_ID }))
 
 // Single-arg methods accept either a 1-tuple or an object.
-const nonce_a = await eth_getTransactionCount([address, "latest"])(
-  reader({ chain_id: CHAIN_ID }),
-)
+const nonce_a = await eth_getTransactionCount([
+  address,
+  "latest",
+])(reader({ chain_id: CHAIN_ID }))
 
 const nonce_b = await eth_getTransactionCount({
   address,

@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint64,
@@ -25,7 +28,9 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function findBatchContainingBlock(_parameters: Parameters) {
+export function findBatchContainingBlock(
+  _parameters: Parameters,
+) {
   return (context: ContractContext): Callable<Uint64> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)

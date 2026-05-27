@@ -117,9 +117,7 @@ function encode_body(
   ]
 }
 
-function encode_access_list(
-  list: AccessList,
-): RlpInput[] {
+function encode_access_list(list: AccessList): RlpInput[] {
   return list.map((entry) => [
     hex_to_bytes(entry.address),
     entry.storageKeys.map(hex_to_bytes),
@@ -146,9 +144,7 @@ function prefix_type(encoded: Uint8Array): Uint8Array {
   return out
 }
 
-function decode_envelope(
-  bytes: Uint8Array,
-): RlpDecoded[] {
+function decode_envelope(bytes: Uint8Array): RlpDecoded[] {
   if (bytes.length === 0 || bytes[0] !== SET_CODE_TX_TYPE) {
     throw new Error(
       "decode_transaction: expected 0x04 type prefix",

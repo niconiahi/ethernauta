@@ -17,7 +17,10 @@ import {
   watch_transaction,
   window_store,
 } from "@ethernauta/transaction"
-import { encode_chain_id, http } from "@ethernauta/transport"
+import {
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { useEffect, useRef, useState } from "react"
 
 const CHAIN_ID = encode_chain_id({

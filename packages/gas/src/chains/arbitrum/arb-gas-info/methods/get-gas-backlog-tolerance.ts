@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint64,
@@ -17,8 +20,6 @@ export const GET_GAS_BACKLOG_TOLERANCE_SIGNATURE = {
   signature: "getGasBacklogTolerance()",
   names: [],
 }
-
-
 
 export function getGasBacklogTolerance() {
   return (context: ContractContext): Callable<Uint64> => {

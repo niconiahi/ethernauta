@@ -20,20 +20,24 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 const reader = create_reader([
   {
     chainId: SEPOLIA_CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
   },
 ])
 
-const address = "0x636c0fcd6da2207abfa80427b556695a4ad0af94" as const
+const address =
+  "0x636c0fcd6da2207abfa80427b556695a4ad0af94" as const
 
 // Two-step: method(args) returns Readable, then apply the resolver.
 const balance = await eth_getBalance([address, "latest"])(
   reader({ chain_id: SEPOLIA_CHAIN_ID }),
 )
 
-const nonce = await eth_getTransactionCount([address, "latest"])(
-  reader({ chain_id: SEPOLIA_CHAIN_ID }),
-)
+const nonce = await eth_getTransactionCount([
+  address,
+  "latest",
+])(reader({ chain_id: SEPOLIA_CHAIN_ID }))
 
 const block = await eth_blockNumber()(
   reader({ chain_id: SEPOLIA_CHAIN_ID }),

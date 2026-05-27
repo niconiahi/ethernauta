@@ -1,7 +1,7 @@
 <script>
-  import { get_docs } from "$lib/docs.js";
+import { get_docs } from "$lib/docs.js"
 
-  const docs = get_docs();
+const docs = get_docs()
 </script>
 
 <section class="hero">

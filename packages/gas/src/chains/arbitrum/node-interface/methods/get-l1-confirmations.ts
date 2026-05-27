@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bytes32,
@@ -10,7 +13,11 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Uint64 } from "@ethernauta/core"
-import { bytes32Schema, bytesSchema, uint64Schema } from "@ethernauta/core"
+import {
+  bytes32Schema,
+  bytesSchema,
+  uint64Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes32()] as const
 const OUTPUT_CODECS = [uint64()] as const
@@ -26,7 +33,9 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function getL1Confirmations(_parameters: Parameters) {
+export function getL1Confirmations(
+  _parameters: Parameters,
+) {
   return (context: ContractContext): Callable<Uint64> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)

@@ -13,8 +13,9 @@ export function discover_wallets(
   on_wallet: (detail: EIP6963ProviderDetail) => void,
 ): () => void {
   function handle_announce(event: Event) {
-    const detail = (event as CustomEvent<EIP6963ProviderDetail>)
-      .detail
+    const detail = (
+      event as CustomEvent<EIP6963ProviderDetail>
+    ).detail
     on_wallet(detail)
   }
 
@@ -24,7 +25,10 @@ export function discover_wallets(
 
   // Caller cleans up — e.g. inside useEffect's return.
   return () =>
-    window.removeEventListener(ANNOUNCE_EVENT, handle_announce)
+    window.removeEventListener(
+      ANNOUNCE_EVENT,
+      handle_announce,
+    )
 }
 
 // Usage:

@@ -31,7 +31,9 @@ const CHAIN_ID = encode_chain_id({
 const CHAINS = [
   {
     chainId: CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
   },
 ]
 
@@ -39,7 +41,9 @@ const signer = create_signer(CHAINS)
 const writer = create_writer(CHAINS)
 
 export default function Demo() {
-  const [account, set_account] = useState<string | null>(null)
+  const [account, set_account] = useState<string | null>(
+    null,
+  )
   const { tx, track } = useTransaction()
   const [error, set_error] = useState<string | null>(null)
 
@@ -68,7 +72,9 @@ export default function Demo() {
       track(hash)
     } catch (err) {
       set_error(
-        err instanceof Error ? err.message : "Unknown error",
+        err instanceof Error
+          ? err.message
+          : "Unknown error",
       )
     }
   }

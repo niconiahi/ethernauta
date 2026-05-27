@@ -70,7 +70,10 @@ export function calculate_gas_arbitrum(
       to: NODE_INTERFACE_PREDEPLOY,
     })
     const result = await eth_call([
-      { to: NODE_INTERFACE_PREDEPLOY, input: callable.data },
+      {
+        to: NODE_INTERFACE_PREDEPLOY,
+        input: callable.data,
+      },
     ])(resolved)
     const [gas_estimate, _gas_l1, base_fee, l1_base_fee] =
       callable.decode(result)

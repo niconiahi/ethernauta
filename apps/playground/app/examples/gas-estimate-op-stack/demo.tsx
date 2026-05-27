@@ -10,10 +10,7 @@ import {
   eip155_10,
   eip155_8453,
 } from "@ethernauta/chain"
-import {
-  addressSchema,
-  type Uint,
-} from "@ethernauta/core"
+import { addressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_op_stack } from "@ethernauta/gas"
 import {
   create_reader,
@@ -26,11 +23,13 @@ import { parse } from "valibot"
 
 import { Button } from "../../components/button"
 
-const CHAINS: ReadonlyArray<{ chain: Chain; label: string }> =
-  [
-    { chain: eip155_8453, label: "Base" },
-    { chain: eip155_10, label: "Optimism" },
-  ]
+const CHAINS: ReadonlyArray<{
+  chain: Chain
+  label: string
+}> = [
+  { chain: eip155_8453, label: "Base" },
+  { chain: eip155_10, label: "Optimism" },
+]
 
 const BASE_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -98,13 +97,11 @@ export function GasEstimateOpStackDemo() {
         max_fee_per_gas: result.max_fee_per_gas,
         l1_fee: result.l1_fee,
       })
-    }
-    catch (e) {
+    } catch (e) {
       set_error(
         e instanceof Error ? e.message : "Unknown error",
       )
-    }
-    finally {
+    } finally {
       set_in_flight(false)
     }
   }

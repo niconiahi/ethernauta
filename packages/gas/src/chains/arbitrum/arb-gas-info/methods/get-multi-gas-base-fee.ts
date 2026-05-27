@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   array,
@@ -9,7 +12,10 @@ import {
 } from "@ethernauta/abi"
 import { parse, array as v_array } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
-import { bytesSchema, uint256Schema } from "@ethernauta/core"
+import {
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [array(uint256())] as const
@@ -19,10 +25,10 @@ export const GET_MULTI_GAS_BASE_FEE_SIGNATURE = {
   names: [],
 }
 
-
-
 export function getMultiGasBaseFee() {
-  return (context: ContractContext): Callable<Uint256[]> => {
+  return (
+    context: ContractContext,
+  ): Callable<Uint256[]> => {
     const values = [] as const
     const calldata = encode_function_call({
       name: "getMultiGasBaseFee",

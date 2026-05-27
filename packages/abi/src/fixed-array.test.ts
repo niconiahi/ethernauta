@@ -32,7 +32,12 @@ describe("fixed_array", () => {
       codec.encode([v("0x1"), v("0x2")]),
     ).toThrow()
     expect(() =>
-      codec.encode([v("0x1"), v("0x2"), v("0x3"), v("0x4")]),
+      codec.encode([
+        v("0x1"),
+        v("0x2"),
+        v("0x3"),
+        v("0x4"),
+      ]),
     ).toThrow()
   })
 })

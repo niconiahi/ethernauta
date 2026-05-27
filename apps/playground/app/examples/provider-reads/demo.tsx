@@ -38,9 +38,9 @@ export function ProviderReadsDemo() {
   const [errors, set_errors] = useState<
     Record<string, string>
   >({})
-  const [in_flight, set_in_flight] = useState<string | null>(
-    null,
-  )
+  const [in_flight, set_in_flight] = useState<
+    string | null
+  >(null)
 
   async function run(
     method_name: string,
@@ -54,7 +54,10 @@ export function ProviderReadsDemo() {
     })
     try {
       const value = await runner()
-      set_results((prev) => ({ ...prev, [method_name]: value }))
+      set_results((prev) => ({
+        ...prev,
+        [method_name]: value,
+      }))
     } catch (e) {
       set_errors((prev) => ({
         ...prev,
@@ -82,8 +85,8 @@ export function ProviderReadsDemo() {
           color: "#555",
         }}
       >
-        Pick a wallet first (try the{" "}
-        <code>EIP-6963</code> example).
+        Pick a wallet first (try the <code>EIP-6963</code>{" "}
+        example).
       </div>
     )
   }

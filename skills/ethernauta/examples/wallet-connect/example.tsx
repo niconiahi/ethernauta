@@ -19,7 +19,9 @@ const CHAIN_ID = encode_chain_id({
 const signer = create_signer([{ chainId: CHAIN_ID }])
 
 export default function Connect() {
-  const [account, set_account] = useState<string | null>(null)
+  const [account, set_account] = useState<string | null>(
+    null,
+  )
   const [error, set_error] = useState<string | null>(null)
 
   async function handle_connect() {
@@ -32,7 +34,9 @@ export default function Connect() {
     } catch (err) {
       // 4001 = user rejected / extension closed
       set_error(
-        err instanceof Error ? err.message : "Connect failed",
+        err instanceof Error
+          ? err.message
+          : "Connect failed",
       )
     }
   }

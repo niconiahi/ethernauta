@@ -3,7 +3,10 @@
 
 import { eip155_11155111 } from "@ethernauta/chain"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
-import { eth_sendRawTransaction, eth_signTransaction } from "@ethernauta/eth"
+import {
+  eth_sendRawTransaction,
+  eth_signTransaction,
+} from "@ethernauta/eth"
 import {
   create_signer,
   create_writer,
@@ -20,7 +23,9 @@ const CHAIN_ID = encode_chain_id({
 const CHAINS = [
   {
     chainId: CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
   },
 ]
 const signer = create_signer(CHAINS)
@@ -29,7 +34,9 @@ const writer = create_writer(CHAINS)
 // EIP-1193 user-rejection / extension-close shape.
 type Eip1193Error = { code: number; message: string }
 
-function is_user_rejection(err: unknown): err is Eip1193Error {
+function is_user_rejection(
+  err: unknown,
+): err is Eip1193Error {
   return (
     typeof err === "object" &&
     err !== null &&
@@ -69,7 +76,9 @@ export function ErrorAwareTransfer() {
       // RPC / validation / network errors — surface and log.
       console.error(err)
       set_status(
-        err instanceof Error ? err.message : "Unknown error",
+        err instanceof Error
+          ? err.message
+          : "Unknown error",
       )
     }
   }

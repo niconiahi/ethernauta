@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint256,
@@ -8,17 +11,19 @@ import {
 } from "@ethernauta/abi"
 import { parse } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
-import { bytesSchema, uint256Schema } from "@ethernauta/core"
+import {
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint256()] as const
 
-export const GET_L1_PRICING_FUNDS_DUE_FOR_REWARDS_SIGNATURE = {
-  signature: "getL1PricingFundsDueForRewards()",
-  names: [],
-}
-
-
+export const GET_L1_PRICING_FUNDS_DUE_FOR_REWARDS_SIGNATURE =
+  {
+    signature: "getL1PricingFundsDueForRewards()",
+    names: [],
+  }
 
 export function getL1PricingFundsDueForRewards() {
   return (context: ContractContext): Callable<Uint256> => {

@@ -1,9 +1,9 @@
 <script>
-  import { page } from "$app/state";
-  import { get_doc_by_slug } from "$lib/docs.js";
+import { page } from "$app/state"
+import { get_doc_by_slug } from "$lib/docs.js"
 
-  const doc = $derived(get_doc_by_slug(page.params.slug));
-  const Doc = $derived(doc?.component);
+const doc = $derived(get_doc_by_slug(page.params.slug))
+const Doc = $derived(doc?.component)
 </script>
 
 {#if doc && Doc}

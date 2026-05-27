@@ -6,6 +6,7 @@
 import { eip155_11155111 } from "@ethernauta/chain"
 import {
   addressSchema,
+  bytes65Schema,
   bytesSchema,
   hash32Schema,
 } from "@ethernauta/core"
@@ -70,7 +71,7 @@ function personal_sign(message: string, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(bytes65Schema, bytes_to_hex(out))
 }
 
 const describe_live =
@@ -123,7 +124,7 @@ describe_live("SIWE live diagnose — Sepolia", () => {
     const verified = await verify_message_deployed({
       address: ADDRESS,
       message,
-      signature,
+      signature: parse(bytesSchema, signature),
     })(resolved)
     console.log("verify_msg   :", verified)
 

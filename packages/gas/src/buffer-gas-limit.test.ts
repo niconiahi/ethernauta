@@ -1,5 +1,8 @@
 import { eip155_1 } from "@ethernauta/chain"
-import { addressSchema, bytesSchema } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 import {
   encode_chain_id,
   type ResolvedReader,

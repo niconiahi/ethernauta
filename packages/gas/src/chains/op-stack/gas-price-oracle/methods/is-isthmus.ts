@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bool,
@@ -16,8 +19,6 @@ export const IS_ISTHMUS_SIGNATURE = {
   signature: "isIsthmus()",
   names: [],
 }
-
-
 
 export function isIsthmus() {
   return (context: ContractContext): Callable<boolean> => {

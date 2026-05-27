@@ -239,9 +239,9 @@ export function PermitDemo() {
             marginTop: 12,
           }}
         >
-          Needs an EIP-6963 wallet — Ethernauta, MetaMask, or
-          any compliant wallet — connected via the header's
-          Connect wallet button.
+          Needs an EIP-6963 wallet — Ethernauta, MetaMask,
+          or any compliant wallet — connected via the
+          header's Connect wallet button.
         </p>
       )}
     </div>

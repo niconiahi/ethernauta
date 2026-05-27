@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   string_,
@@ -16,8 +19,6 @@ export const VERSION_SIGNATURE = {
   signature: "version()",
   names: [],
 }
-
-
 
 export function version() {
   return (context: ContractContext): Callable<string> => {

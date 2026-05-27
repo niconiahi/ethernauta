@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
@@ -12,15 +15,42 @@ import {
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union, array as v_array } from "valibot"
-import type { Address, Bytes32, Uint256 } from "@ethernauta/core"
-import { addressSchema, bytes32Schema, bytesSchema, uint256Schema, uint64Schema } from "@ethernauta/core"
+import {
+  object,
+  parse,
+  tuple,
+  union,
+  array as v_array,
+} from "valibot"
+import type {
+  Address,
+  Bytes32,
+  Uint256,
+} from "@ethernauta/core"
+import {
+  addressSchema,
+  bytes32Schema,
+  bytesSchema,
+  uint256Schema,
+  uint64Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256(), uint64()] as const
-const OUTPUT_CODECS = [array(bytes32()), uint256(), address(), address(), uint256(), uint256(), uint256(), uint256(), bytes()] as const
+const OUTPUT_CODECS = [
+  array(bytes32()),
+  uint256(),
+  address(),
+  address(),
+  uint256(),
+  uint256(),
+  uint256(),
+  uint256(),
+  bytes(),
+] as const
 
 export const LEGACY_LOOKUP_MESSAGE_BATCH_PROOF_SIGNATURE = {
-  signature: "legacyLookupMessageBatchProof(uint256,uint64)",
+  signature:
+    "legacyLookupMessageBatchProof(uint256,uint64)",
   names: ["batchNum", "index"],
 }
 
@@ -30,8 +60,24 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function legacyLookupMessageBatchProof(_parameters: Parameters) {
-  return (context: ContractContext): Callable<[Bytes32[], Uint256, Address, Address, Uint256, Uint256, Uint256, Uint256, Bytes]> => {
+export function legacyLookupMessageBatchProof(
+  _parameters: Parameters,
+) {
+  return (
+    context: ContractContext,
+  ): Callable<
+    [
+      Bytes32[],
+      Uint256,
+      Address,
+      Address,
+      Uint256,
+      Uint256,
+      Uint256,
+      Uint256,
+      Bytes,
+    ]
+  > => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
@@ -45,7 +91,19 @@ export function legacyLookupMessageBatchProof(_parameters: Parameters) {
       chain_id: context.chain_id,
       to: context.to,
       data: parse(bytesSchema, bytes_to_hex(calldata)),
-      decode: (result: Bytes): [Bytes32[], Uint256, Address, Address, Uint256, Uint256, Uint256, Uint256, Bytes] => {
+      decode: (
+        result: Bytes,
+      ): [
+        Bytes32[],
+        Uint256,
+        Address,
+        Address,
+        Uint256,
+        Uint256,
+        Uint256,
+        Uint256,
+        Bytes,
+      ] => {
         const decoded = decode_function_result(
           OUTPUT_CODECS,
           result,

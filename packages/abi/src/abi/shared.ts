@@ -44,11 +44,7 @@ function is_array_suffix_chain(_s: string): boolean {
     }
     // First digit must be 1-9 — no leading zero, no zero-length array.
     const first = _s[i]
-    if (
-      first === undefined ||
-      first < "1" ||
-      first > "9"
-    )
+    if (first === undefined || first < "1" || first > "9")
       return false
     i += 1
     while (i < _s.length) {

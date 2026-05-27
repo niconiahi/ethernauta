@@ -1,5 +1,8 @@
 // https://eips.ethereum.org/EIPS/eip-1193
-import type { Provider, RequestArguments } from "@ethernauta/eip/1193"
+import type {
+  Provider,
+  RequestArguments,
+} from "@ethernauta/eip/1193"
 import { requestArgumentsSchema } from "@ethernauta/eip/1193"
 import type { InferOutput } from "valibot"
 import {
@@ -16,10 +19,7 @@ import {
 import type { Call } from "./call"
 import type { Http } from "./http"
 import type { Response } from "./json-rpc"
-import type {
-  ReadContext,
-  ResolvedReader,
-} from "./reader"
+import type { ReadContext, ResolvedReader } from "./reader"
 import { ReadContextSchema } from "./reader"
 import type {
   ResolvedSigner,

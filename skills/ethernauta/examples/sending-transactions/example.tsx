@@ -22,14 +22,19 @@ const CHAIN_ID = encode_chain_id({
 const CHAINS = [
   {
     chainId: CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
   },
 ]
 
 const signer = create_signer(CHAINS)
 const writer = create_writer(CHAINS)
 
-export async function send_transfer(to: `0x${string}`, wei: number) {
+export async function send_transfer(
+  to: `0x${string}`,
+  wei: number,
+) {
   // Step 1 — wallet signs. Leave nonce/gas fields unset:
   // the wallet fills them via eth_getTransactionCount /
   // eth_estimateGas / eth_feeHistory.

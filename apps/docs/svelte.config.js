@@ -1,12 +1,23 @@
-import adapter from "@sveltejs/adapter-static";
-import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
-import { escapeSvelte, mdsvex } from "mdsvex";
-import { createHighlighter } from "shiki";
+import adapter from "@sveltejs/adapter-static"
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte"
+import { escapeSvelte, mdsvex } from "mdsvex"
+import { createHighlighter } from "shiki"
 
 const highlighter = await createHighlighter({
   themes: ["github-light", "github-dark"],
-  langs: ["ts", "js", "tsx", "jsx", "bash", "json", "svelte", "html", "css", "md"],
-});
+  langs: [
+    "ts",
+    "js",
+    "tsx",
+    "jsx",
+    "bash",
+    "json",
+    "svelte",
+    "html",
+    "css",
+    "md",
+  ],
+})
 
 const config = {
   extensions: [".svelte", ".md"],
@@ -19,10 +30,13 @@ const config = {
           const html = escapeSvelte(
             highlighter.codeToHtml(code, {
               lang: lang ?? "text",
-              themes: { light: "github-light", dark: "github-dark" },
+              themes: {
+                light: "github-light",
+                dark: "github-dark",
+              },
             }),
-          );
-          return `{@html \`${html}\`}`;
+          )
+          return `{@html \`${html}\`}`
         },
       },
     }),
@@ -42,6 +56,6 @@ const config = {
       entries: ["*"],
     },
   },
-};
+}
 
-export default config;
+export default config

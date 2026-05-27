@@ -20,7 +20,8 @@ function decode_hex(input: `0x${string}`): RlpDecoded {
 
 type HexTree = string | HexTree[]
 function to_hex_tree(value: RlpDecoded): HexTree {
-  if (value instanceof Uint8Array) return bytes_to_hex(value)
+  if (value instanceof Uint8Array)
+    return bytes_to_hex(value)
   return value.map(to_hex_tree)
 }
 
@@ -160,15 +161,15 @@ describe("rlp.ts", () => {
   })
 
   it("should throw on trailing bytes", () => {
-    expect(() => rlp_decode(hex_to_bytes("0x8000"))).toThrow(
-      /trailing/,
-    )
+    expect(() =>
+      rlp_decode(hex_to_bytes("0x8000")),
+    ).toThrow(/trailing/)
   })
 
   it("should throw when the payload overruns the input", () => {
-    expect(() => rlp_decode(hex_to_bytes("0x83ab"))).toThrow(
-      /overruns/,
-    )
+    expect(() =>
+      rlp_decode(hex_to_bytes("0x83ab")),
+    ).toThrow(/overruns/)
   })
 
   it("should throw on empty input", () => {

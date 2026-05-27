@@ -4,10 +4,7 @@
 // the L2 execution + L1 batch-posting split in one shot.
 
 import { eip155_42161 } from "@ethernauta/chain"
-import {
-  addressSchema,
-  type Uint,
-} from "@ethernauta/core"
+import { addressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_arbitrum } from "@ethernauta/gas"
 import {
   create_reader,
@@ -60,13 +57,11 @@ export function GasEstimateArbitrumDemo() {
         l1_base_fee_estimate: result.l1_base_fee_estimate,
         l2_base_fee: result.l2_base_fee,
       })
-    }
-    catch (e) {
+    } catch (e) {
       set_error(
         e instanceof Error ? e.message : "Unknown error",
       )
-    }
-    finally {
+    } finally {
       set_in_flight(false)
     }
   }

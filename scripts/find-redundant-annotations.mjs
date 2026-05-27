@@ -47,9 +47,15 @@ const PACKAGES = [
 ]
 
 function load_program(package_name) {
-  const tsconfig_path = join(REPO_ROOT, "packages", package_name, "tsconfig.json")
+  const tsconfig_path = join(
+    REPO_ROOT,
+    "packages",
+    package_name,
+    "tsconfig.json",
+  )
   const parsed = ts.parseJsonConfigFileContent(
-    ts.readConfigFile(tsconfig_path, ts.sys.readFile).config,
+    ts.readConfigFile(tsconfig_path, ts.sys.readFile)
+      .config,
     ts.sys,
     join(REPO_ROOT, "packages", package_name),
   )
@@ -63,7 +69,8 @@ function is_skippable_initializer(initializer) {
   if (!initializer) return true
   if (ts.isObjectLiteralExpression(initializer)) return true
   if (ts.isArrayLiteralExpression(initializer)) return true
-  if (initializer.kind === ts.SyntaxKind.NullKeyword) return true
+  if (initializer.kind === ts.SyntaxKind.NullKeyword)
+    return true
   // Bare arrow / function expression: the annotation supplies the
   // parameter types that the arrow body can't infer on its own.
   // Removing it would cause implicit-any on each parameter.
@@ -73,8 +80,12 @@ function is_skippable_initializer(initializer) {
   if (
     ts.isCallExpression(initializer) &&
     ts.isParenthesizedExpression(initializer.expression) &&
-    (ts.isArrowFunction(initializer.expression.expression) ||
-      ts.isFunctionExpression(initializer.expression.expression))
+    (ts.isArrowFunction(
+      initializer.expression.expression,
+    ) ||
+      ts.isFunctionExpression(
+        initializer.expression.expression,
+      ))
   ) {
     return true
   }
@@ -87,7 +98,8 @@ function is_skippable_initializer(initializer) {
 function has_any(type) {
   if (type.flags & ts.TypeFlags.Any) return true
   if (type.flags & ts.TypeFlags.Object) {
-    const type_arguments = type.aliasTypeArguments ?? type.typeArguments
+    const type_arguments =
+      type.aliasTypeArguments ?? type.typeArguments
     if (type_arguments) {
       for (const argument of type_arguments) {
         if (has_any(argument)) return true
@@ -101,8 +113,14 @@ function types_equal(checker, declared, inferred) {
   // `any` is mutually assignable with everything, so the assignability
   // check would falsely flag `: T = something_any` as redundant. Skip.
   if (has_any(declared) || has_any(inferred)) return false
-  const a_to_b = checker.isTypeAssignableTo(declared, inferred)
-  const b_to_a = checker.isTypeAssignableTo(inferred, declared)
+  const a_to_b = checker.isTypeAssignableTo(
+    declared,
+    inferred,
+  )
+  const b_to_a = checker.isTypeAssignableTo(
+    inferred,
+    declared,
+  )
   return a_to_b && b_to_a
 }
 
@@ -120,8 +138,13 @@ function scan_package(package_name) {
     if (source_file.isDeclarationFile) continue
     const path = source_file.fileName
     if (path.includes("/node_modules/")) continue
-    if (!path.includes(`/packages/${package_name}/src/`)) continue
-    if (path.endsWith(".test.ts") || path.endsWith(".test.tsx")) continue
+    if (!path.includes(`/packages/${package_name}/src/`))
+      continue
+    if (
+      path.endsWith(".test.ts") ||
+      path.endsWith(".test.tsx")
+    )
+      continue
     if (path.includes("/chain/eip155/")) continue
 
     walk(source_file, (node) => {
@@ -129,21 +152,31 @@ function scan_package(package_name) {
       if (!node.type) return
       if (is_skippable_initializer(node.initializer)) return
 
-      const declared_type = checker.getTypeFromTypeNode(node.type)
-      const inferred_type = checker.getTypeAtLocation(node.initializer)
-
-      if (!types_equal(checker, declared_type, inferred_type)) return
-
-      const { line, character } = source_file.getLineAndCharacterOfPosition(
-        node.getStart(),
+      const declared_type = checker.getTypeFromTypeNode(
+        node.type,
       )
+      const inferred_type = checker.getTypeAtLocation(
+        node.initializer,
+      )
+
+      if (
+        !types_equal(checker, declared_type, inferred_type)
+      )
+        return
+
+      const { line, character } =
+        source_file.getLineAndCharacterOfPosition(
+          node.getStart(),
+        )
       findings.push({
         file: relative(REPO_ROOT, path),
         line: line + 1,
         column: character + 1,
         name: node.name.getText(source_file),
         annotation: node.type.getText(source_file),
-        initializer: node.initializer.getText(source_file).slice(0, 80),
+        initializer: node.initializer
+          .getText(source_file)
+          .slice(0, 80),
       })
     })
   }
@@ -160,7 +193,9 @@ function main() {
       all.push(...found)
     } catch (error) {
       if (!count_only) {
-        console.error(`[${pkg}] scan failed: ${error.message}`)
+        console.error(
+          `[${pkg}] scan failed: ${error.message}`,
+        )
       }
     }
   }
@@ -175,10 +210,14 @@ function main() {
     return
   }
 
-  console.log(`found ${all.length} redundant annotation${all.length === 1 ? "" : "s"}:\n`)
+  console.log(
+    `found ${all.length} redundant annotation${all.length === 1 ? "" : "s"}:\n`,
+  )
   for (const f of all) {
     console.log(`${f.file}:${f.line}:${f.column}`)
-    console.log(`  const ${f.name}: ${f.annotation} = ${f.initializer}${f.initializer.length >= 80 ? "..." : ""}`)
+    console.log(
+      `  const ${f.name}: ${f.annotation} = ${f.initializer}${f.initializer.length >= 80 ? "..." : ""}`,
+    )
     console.log()
   }
 }

@@ -1,5 +1,6 @@
 import {
   addressSchema,
+  byteSchema,
   bytesSchema,
   uintSchema,
 } from "@ethernauta/core"
@@ -8,10 +9,7 @@ import {
   sign_set_code_transaction,
 } from "@ethernauta/eip/7702"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
-import {
-  bytes_to_hex,
-  hex_to_bytes,
-} from "@ethernauta/utils"
+import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { Button } from "../../components/button"
 import {
@@ -139,19 +137,35 @@ export function AuthorizeDelegation() {
               )
             const raw = sign_set_code_transaction(
               {
-                chainId: BigInt(selected_chain.value.id),
-                nonce,
-                maxPriorityFeePerGas:
-                  MAX_PRIORITY_FEE_PER_GAS,
-                maxFeePerGas: MAX_FEE_PER_GAS,
-                gasLimit: GAS_LIMIT,
+                type: parse(byteSchema, "0x4"),
+                chainId: parse(
+                  uintSchema,
+                  big_to_hex(
+                    BigInt(selected_chain.value.id),
+                  ),
+                ),
+                nonce: parse(uintSchema, big_to_hex(nonce)),
+                maxPriorityFeePerGas: parse(
+                  uintSchema,
+                  big_to_hex(MAX_PRIORITY_FEE_PER_GAS),
+                ),
+                maxFeePerGas: parse(
+                  uintSchema,
+                  big_to_hex(MAX_FEE_PER_GAS),
+                ),
+                gas: parse(
+                  uintSchema,
+                  big_to_hex(GAS_LIMIT),
+                ),
                 to: params.to,
-                value: params.value
-                  ? BigInt(params.value)
-                  : 0n,
-                data: params.data
-                  ? hex_to_bytes(params.data)
-                  : new Uint8Array(),
+                value: parse(
+                  uintSchema,
+                  params.value ?? "0x0",
+                ),
+                input: parse(
+                  bytesSchema,
+                  params.data ?? "0x",
+                ),
                 accessList: [],
                 authorizationList: authorization_list,
               },

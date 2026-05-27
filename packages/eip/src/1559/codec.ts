@@ -48,9 +48,7 @@ function encode_body(
   ]
 }
 
-function encode_access_list(
-  list: AccessList,
-): RlpInput[] {
+function encode_access_list(list: AccessList): RlpInput[] {
   return list.map((entry: AccessListEntry) => [
     hex_to_bytes(entry.address),
     entry.storageKeys.map(hex_to_bytes),

@@ -5,23 +5,12 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "types": [
-      "vitest/globals"
-    ],
+    "lib": ["ESNext", "DOM"],
+    "types": ["vitest/globals"],
     "paths": {
-      "@ethernauta/*": [
-        "./packages/*/src"
-      ],
-      "@ethernauta/eip/*": [
-        "./packages/eip/src/*"
-      ],
-      "@ethernauta/erc/*": [
-        "./packages/erc/src/*"
-      ],
+      "@ethernauta/*": ["./packages/*/src"],
+      "@ethernauta/eip/*": ["./packages/eip/src/*"],
+      "@ethernauta/erc/*": ["./packages/erc/src/*"],
       "@ethernauta/abi/generator": [
         "./packages/abi/src/generator"
       ]

@@ -33,7 +33,9 @@ const CHAIN_ID = encode_chain_id({
 const CHAINS = [
   {
     chainId: CHAIN_ID,
-    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+    transports: [
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
+    ],
   },
 ]
 

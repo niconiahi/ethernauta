@@ -122,7 +122,7 @@ describe("recover.ts — recover_address", () => {
       out.set(r, 0)
       out.set(s, 32)
       out[64] = 27 + recovery
-      out[0] ^= 0x01
+      out[0] = (out[0] ?? 0) ^ 0x01
       const recovered = recover_address(
         HASH,
         parse(bytes65Schema, bytes_to_hex(out)),

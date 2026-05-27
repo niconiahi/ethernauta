@@ -51,7 +51,10 @@ export function estimate_l1_fee(
       to: GAS_PRICE_ORACLE_PREDEPLOY,
     })
     const result = await eth_call([
-      { to: GAS_PRICE_ORACLE_PREDEPLOY, input: callable.data },
+      {
+        to: GAS_PRICE_ORACLE_PREDEPLOY,
+        input: callable.data,
+      },
     ])(resolved)
     return callable.decode(result)
   }

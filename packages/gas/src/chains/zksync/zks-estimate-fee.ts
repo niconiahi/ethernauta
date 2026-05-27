@@ -35,7 +35,10 @@ export function zks_estimate_fee(
     resolved: ResolvedReader,
   ): Promise<ZksFee> => {
     const tx = parse(genericTransactionSchema, _tx)
-    const call = parse(callSchema, ["zks_estimateFee", [tx]])
+    const call = parse(callSchema, [
+      "zks_estimateFee",
+      [tx],
+    ])
     const [transports] = resolved
     const response = await Promise.any(
       transports.map((transport) => transport(call)),

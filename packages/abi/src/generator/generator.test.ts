@@ -245,7 +245,11 @@ describe("generator.ts", () => {
         out_dir,
       )
       const file = readFileSync(
-        join(out_dir, "methods", "get-gas-pricing-constraints.ts"),
+        join(
+          out_dir,
+          "methods",
+          "get-gas-pricing-constraints.ts",
+        ),
         "utf8",
       )
       expect(file).toContain(
@@ -290,7 +294,9 @@ describe("generator.ts", () => {
         ],
         out_dir,
       )
-      const files = readdirSync(join(out_dir, "methods")).sort()
+      const files = readdirSync(
+        join(out_dir, "methods"),
+      ).sort()
       const decimals_files = files.filter((f) =>
         f.startsWith("decimals_"),
       )
@@ -299,8 +305,12 @@ describe("generator.ts", () => {
         readFileSync(join(out_dir, "methods", f), "utf8"),
       )
       const all = contents.join("\n")
-      expect(all).toMatch(/export function DECIMALS_[0-9a-f]{8}\(\)/)
-      expect(all).toMatch(/export function decimals_[0-9a-f]{8}\(\)/)
+      expect(all).toMatch(
+        /export function DECIMALS_[0-9a-f]{8}\(\)/,
+      )
+      expect(all).toMatch(
+        /export function decimals_[0-9a-f]{8}\(\)/,
+      )
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
     }

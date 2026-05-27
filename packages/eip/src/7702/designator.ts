@@ -15,7 +15,9 @@ const DELEGATION_DESIGNATOR_PREFIX = "0xef0100"
 const DELEGATION_DESIGNATOR_LENGTH =
   DELEGATION_DESIGNATOR_PREFIX.length + 40
 
-export function is_delegation_designator(code: Bytes): boolean {
+export function is_delegation_designator(
+  code: Bytes,
+): boolean {
   return (
     code.length === DELEGATION_DESIGNATOR_LENGTH &&
     code.startsWith(DELEGATION_DESIGNATOR_PREFIX)

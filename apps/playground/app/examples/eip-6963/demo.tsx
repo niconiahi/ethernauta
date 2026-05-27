@@ -117,8 +117,8 @@ export function Eip6963Demo() {
         nudge late ones. Pick a wallet to persist its rdns
         via <code>set_provider_detail</code>; a reload
         rehydrates it through{" "}
-        <code>get_provider_detail</code> without the
-        user picking again.
+        <code>get_provider_detail</code> without the user
+        picking again.
       </p>
       <div style={{ display: "flex", gap: 8 }}>
         <Button onClick={rediscover}>Re-discover</Button>

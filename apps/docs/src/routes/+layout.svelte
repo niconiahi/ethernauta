@@ -1,16 +1,16 @@
 <script>
-  import { page } from "$app/state";
-  import { get_docs, group_by_section } from "$lib/docs.js";
-  import Search from "$lib/Search.svelte";
-  import "@fontsource/fira-mono/400.css";
-  import "@fontsource/fira-mono/500.css";
-  import "@fontsource/fira-mono/700.css";
-  import "$lib/tokens.css";
-  import "$lib/text_styles.css";
+import { page } from "$app/state"
+import { get_docs, group_by_section } from "$lib/docs.js"
+import Search from "$lib/Search.svelte"
+import "@fontsource/fira-mono/400.css"
+import "@fontsource/fira-mono/500.css"
+import "@fontsource/fira-mono/700.css"
+import "$lib/tokens.css"
+import "$lib/text_styles.css"
 
-  let { children } = $props();
+let { children } = $props()
 
-  const sections = group_by_section(get_docs());
+const sections = group_by_section(get_docs())
 </script>
 
 <div class="shell">

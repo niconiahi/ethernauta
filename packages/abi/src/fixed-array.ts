@@ -20,7 +20,8 @@ export function fixed_array<T>(
   _length: number,
 ): AbiCodec<T[]> {
   const signature = `${_element.signature}[${_length}]`
-  const codecs: AbiCodec<T>[] = Array(_length).fill(_element)
+  const codecs: AbiCodec<T>[] =
+    Array(_length).fill(_element)
   const element_schema = pipe(
     array(_element.schema),
     length(_length),

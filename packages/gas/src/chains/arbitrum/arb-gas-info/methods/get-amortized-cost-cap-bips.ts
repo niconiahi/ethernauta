@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint64,
@@ -17,8 +20,6 @@ export const GET_AMORTIZED_COST_CAP_BIPS_SIGNATURE = {
   signature: "getAmortizedCostCapBips()",
   names: [],
 }
-
-
 
 export function getAmortizedCostCapBips() {
   return (context: ContractContext): Callable<Uint64> => {

@@ -26,8 +26,7 @@ describe("calculate_gas_arbitrum", () => {
     // gasEstimate = 21000, gasEstimateForL1 = 300, baseFee = 100_000_000,
     // l1BaseFeeEstimate = 1_000_000_000. The codec encodes the 4-tuple
     // as four 32-byte slots back-to-back; total 256 hex chars.
-    const result =
-      `0x${slot(21000n)}${slot(300n)}${slot(100_000_000n)}${slot(1_000_000_000n)}`
+    const result = `0x${slot(21000n)}${slot(300n)}${slot(100_000_000n)}${slot(1_000_000_000n)}`
     const resolved: ResolvedReader = [
       [stub_http(result)],
       { chain_id: CHAIN_ID },

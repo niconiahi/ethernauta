@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint32,
@@ -17,8 +20,6 @@ export const BASE_FEE_SCALAR_SIGNATURE = {
   signature: "baseFeeScalar()",
   names: [],
 }
-
-
 
 export function baseFeeScalar() {
   return (context: ContractContext): Callable<Uint32> => {

@@ -1,4 +1,7 @@
-import { hash32Schema } from "@ethernauta/core"
+import {
+  addressSchema,
+  hash32Schema,
+} from "@ethernauta/core"
 import {
   hash_typed_data,
   type TypedData,
@@ -23,8 +26,10 @@ const TYPED_DATA: TypedData = {
     name: "Ether Mail",
     version: "1",
     chainId: 1,
-    verifyingContract:
+    verifyingContract: parse(
+      addressSchema,
       "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+    ),
   },
   types: {
     Person: [

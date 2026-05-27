@@ -165,7 +165,7 @@ describe_live(
       const good = personal_sign(message, PRIVATE_KEY)
       // Flip a byte in `r` to invalidate without changing length.
       const bytes = hex_to_bytes(good)
-      bytes[0] ^= 0x01
+      bytes[0] = (bytes[0] ?? 0) ^ 0x01
       const bad = parse(bytesSchema, bytes_to_hex(bytes))
       const resolved = reader({
         chain_id: SEPOLIA_CHAIN_ID,

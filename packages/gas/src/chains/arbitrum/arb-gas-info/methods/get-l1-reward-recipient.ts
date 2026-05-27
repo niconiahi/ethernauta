@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
@@ -8,7 +11,10 @@ import {
 } from "@ethernauta/abi"
 import { parse } from "valibot"
 import type { Address } from "@ethernauta/core"
-import { addressSchema, bytesSchema } from "@ethernauta/core"
+import {
+  addressSchema,
+  bytesSchema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [address()] as const
@@ -17,8 +23,6 @@ export const GET_L1_REWARD_RECIPIENT_SIGNATURE = {
   signature: "getL1RewardRecipient()",
   names: [],
 }
-
-
 
 export function getL1RewardRecipient() {
   return (context: ContractContext): Callable<Address> => {

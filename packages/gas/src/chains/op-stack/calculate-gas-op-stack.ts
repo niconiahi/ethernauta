@@ -128,7 +128,8 @@ export function calculate_gas_op_stack(
       type: TYPE_2,
       chainId: chain_id,
       nonce,
-      maxPriorityFeePerGas: fees_1559.max_priority_fee_per_gas,
+      maxPriorityFeePerGas:
+        fees_1559.max_priority_fee_per_gas,
       maxFeePerGas: fees_1559.max_fee_per_gas,
       gas,
       to,
@@ -158,4 +159,3 @@ export function calculate_gas_op_stack(
     })
   }
 }
-

@@ -25,8 +25,12 @@ export function GasEstimateDemo() {
   const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [multiplier, set_multiplier] = useState(1.5)
   const [percentile, set_percentile] = useState(10)
-  const [base_fee, set_base_fee] = useState<Uint | null>(null)
-  const [priority, set_priority] = useState<Uint | null>(null)
+  const [base_fee, set_base_fee] = useState<Uint | null>(
+    null,
+  )
+  const [priority, set_priority] = useState<Uint | null>(
+    null,
+  )
   const [max_fee, set_max_fee] = useState<Uint | null>(null)
   const [error, set_error] = useState<string | null>(null)
   const [in_flight, set_in_flight] = useState(false)
@@ -100,7 +104,10 @@ export function GasEstimateDemo() {
       <Button onClick={run} disabled={in_flight}>
         {in_flight ? "Estimating…" : "Estimate 1559 fees"}
       </Button>
-      <ResultRow label="base_fee_per_gas" value={base_fee} />
+      <ResultRow
+        label="base_fee_per_gas"
+        value={base_fee}
+      />
       <ResultRow
         label="max_priority_fee_per_gas"
         value={priority}

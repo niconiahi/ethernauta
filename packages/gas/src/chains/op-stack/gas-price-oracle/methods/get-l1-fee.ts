@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   bytes,
@@ -10,7 +13,10 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
-import { bytesSchema, uint256Schema } from "@ethernauta/core"
+import {
+  bytesSchema,
+  uint256Schema,
+} from "@ethernauta/core"
 
 const PARAM_CODECS = [bytes()] as const
 const OUTPUT_CODECS = [uint256()] as const

@@ -55,7 +55,9 @@ const supply = hex_to_number(supply_hex)
 const owner =
   "0x636c0fcd6da2207abfa80427b556695a4ad0af94" as const
 const balance_hex = await read(
-  balanceOf({ owner })(contract({ chain_id: CHAIN_ID, to })),
+  balanceOf({ owner })(
+    contract({ chain_id: CHAIN_ID, to }),
+  ),
 )
 
 // View with one arg — positional-tuple form.

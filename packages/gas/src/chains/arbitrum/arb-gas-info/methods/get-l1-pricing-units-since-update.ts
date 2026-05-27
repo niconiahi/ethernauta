@@ -1,5 +1,8 @@
 import type { Bytes } from "@ethernauta/core"
-import type { Callable, ContractContext } from "@ethernauta/transport"
+import type {
+  Callable,
+  ContractContext,
+} from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   uint64,
@@ -17,8 +20,6 @@ export const GET_L1_PRICING_UNITS_SINCE_UPDATE_SIGNATURE = {
   signature: "getL1PricingUnitsSinceUpdate()",
   names: [],
 }
-
-
 
 export function getL1PricingUnitsSinceUpdate() {
   return (context: ContractContext): Callable<Uint64> => {

@@ -3,7 +3,10 @@
 // every chain in the family (Base, Optimism, Mode, Zora, Mantle,
 // World Chain, Soneium, Lisk).
 
-import { type Address, addressSchema } from "@ethernauta/core"
+import {
+  type Address,
+  addressSchema,
+} from "@ethernauta/core"
 import { parse } from "valibot"
 
 export const GAS_PRICE_ORACLE_PREDEPLOY: Address = parse(

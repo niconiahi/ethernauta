@@ -4,7 +4,10 @@
 // satisfy extcodesize > 0; the node intercepts calls and answers
 // them in Go. The address is identical on Arbitrum One and Nova.
 
-import { type Address, addressSchema } from "@ethernauta/core"
+import {
+  type Address,
+  addressSchema,
+} from "@ethernauta/core"
 import { parse } from "valibot"
 
 export const NODE_INTERFACE_PREDEPLOY: Address = parse(
