@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@ethernauta/gas",
+  "type": "module",
+  "version": "0.0.43",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niconiahi/ethernauta"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest"
+  },
+  "dependencies": {
+    "@ethernauta/chain": "workspace:*",
+    "@ethernauta/core": "workspace:*",
+    "@ethernauta/eip": "workspace:*",
+    "@ethernauta/eth": "workspace:*",
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
+  },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
+  "devDependencies": {
+    "tsdown": "^0.13.3"
+  }
+}
