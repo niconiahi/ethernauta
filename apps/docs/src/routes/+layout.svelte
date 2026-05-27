@@ -7,6 +7,7 @@ import "@fontsource/fira-mono/500.css"
 import "@fontsource/fira-mono/700.css"
 import "$lib/tokens.css"
 import "$lib/text_styles.css"
+import "$lib/button.css"
 
 let { children } = $props()
 
@@ -15,7 +16,9 @@ const sections = group_by_section(get_docs())
 
 <div class="shell">
   <aside>
-    <a class="brand body-md-bold" href="/">Ethernauta</a>
+    <a class="brand" href="/" aria-label="Ethernauta">
+      <img src="/logo.svg" alt="" width="56" height="56" />
+    </a>
     <Search />
     <nav>
       {#each sections as section (section.section)}
@@ -57,13 +60,13 @@ const sections = group_by_section(get_docs())
 
   .shell {
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: auto 1fr;
     min-height: 100vh;
   }
 
   aside {
     border-right: 1px solid var(--border);
-    padding: 1.5rem 1rem;
+    padding: 0.75rem 1rem 1.5rem;
     position: sticky;
     top: 0;
     height: 100vh;
@@ -72,10 +75,16 @@ const sections = group_by_section(get_docs())
   }
 
   .brand {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    line-height: 0;
+  }
+
+  .brand img {
     display: block;
-    color: inherit;
-    text-decoration: none;
-    margin-bottom: 1.5rem;
+    background: var(--neutral-950);
+    border-radius: 10px;
+    padding: 6px;
   }
 
   nav section {

@@ -11,8 +11,8 @@ const docs = get_docs()
     available without one.
   </p>
   <div class="cta">
-    <a class="primary body-md-medium" href="/getting-started/introduction">Introduction →</a>
-    <a class="secondary body-md-medium" href="/getting-started/installation">Install</a>
+    <a class="button primary body-md-medium" href="/getting-started/introduction">Introduction →</a>
+    <a class="button secondary body-md-medium" href="/getting-started/installation">Install</a>
   </div>
 </section>
 
@@ -94,23 +94,6 @@ const docs = get_docs()
   .cta {
     display: flex;
     gap: 0.75rem;
-  }
-
-  .cta a {
-    display: inline-block;
-    padding: 0.55rem 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-  }
-
-  .cta .primary {
-    background: var(--active-bg);
-    color: var(--active-text);
-  }
-
-  .cta .secondary {
-    border: 1px solid var(--border);
-    color: var(--text);
   }
 
   .pitch {
