@@ -47,7 +47,7 @@
     --link-hover-bg: var(--neutral-800);
     --active-bg: var(--neutral-50);
     --active-text: var(--neutral-950);
-    --code-bg: var(--neutral-900);
+    --code-bg: var(--neutral-800);
   }
 
   /* Shiki dual-theme: swap to the dark theme tokens it emitted. */
@@ -59,4 +59,17 @@
     font-weight: var(--shiki-dark-font-weight) !important;
     text-decoration: var(--shiki-dark-text-decoration) !important;
   }
+}
+
+:root {
+  --font-family-body: "DM Sans", sans-serif;
+  --font-family-heading: "DM Sans", sans-serif;
+
+  --font-size-body-sm: 14px;
+  --font-size-body-md: 16px;
+  --font-size-body-lg: 18px;
+
+  --font-size-heading-sm: 24px;
+  --font-size-heading-md: 28px;
+  --font-size-heading-lg: 32px;
 }

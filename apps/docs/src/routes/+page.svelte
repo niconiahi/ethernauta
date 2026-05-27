@@ -5,69 +5,69 @@
 </script>
 
 <section class="hero">
-  <h1>Ethernauta</h1>
-  <p class="tagline">
+  <h1 class="heading-lg">Ethernauta</h1>
+  <p class="tagline body-md-regular">
     Primitive-first TypeScript for Ethereum. Every wallet operation, also
     available without one.
   </p>
   <div class="cta">
-    <a class="primary" href="/getting-started/introduction">Introduction →</a>
-    <a class="secondary" href="/getting-started/installation">Install</a>
+    <a class="primary body-md-medium" href="/getting-started/introduction">Introduction →</a>
+    <a class="secondary body-md-medium" href="/getting-started/installation">Install</a>
   </div>
 </section>
 
 <section class="pitch">
   <div class="card">
-    <h3>Two consumer paths</h3>
-    <p>
+    <h3 class="heading-sm">Two consumer paths</h3>
+    <p class="body-md-regular">
       Every signable operation can go through a wallet
       (<code>eth_sendTransaction</code>) <strong>or</strong> through a
       primitive pair the dapp composes itself
       (<code>eth_signTransaction</code> + <code>eth_sendRawTransaction</code>).
       The library refuses to pick for you.
     </p>
-    <a href="/concepts/two-paths">Read about the paths →</a>
+    <a class="body-md-medium" href="/concepts/two-paths">Read about the paths →</a>
   </div>
 
   <div class="card">
-    <h3>Four resolver shapes</h3>
-    <p>
+    <h3 class="heading-sm">Four resolver shapes</h3>
+    <p class="body-md-regular">
       <code>Readable&lt;T&gt;</code>, <code>Writable&lt;T&gt;</code>,
       <code>Signable&lt;T&gt;</code>, <code>Callable&lt;T&gt;</code>. Three
       of them work without a wallet at all.
     </p>
-    <a href="/concepts/resolver-shapes">Read about the shapes →</a>
+    <a class="body-md-medium" href="/concepts/resolver-shapes">Read about the shapes →</a>
   </div>
 
   <div class="card">
-    <h3>Standards are folders</h3>
-    <p>
+    <h3 class="heading-sm">Standards are folders</h3>
+    <p class="body-md-regular">
       Every EIP / ERC lives under <code>packages/eip/src/&lt;n&gt;/</code> or
       <code>packages/erc/src/&lt;n&gt;/</code>. Adding a new one is a
       folder-shaped operation. No hosted infra, no server coordination.
     </p>
-    <a href="/concepts/folder-shaped-standards">Read about the shape →</a>
+    <a class="body-md-medium" href="/concepts/folder-shaped-standards">Read about the shape →</a>
   </div>
 
   <div class="card">
-    <h3>Schemas are the types</h3>
-    <p>
+    <h3 class="heading-sm">Schemas are the types</h3>
+    <p class="body-md-regular">
       Valibot schemas first; <code>v.InferOutput</code> second. Every wire
       boundary validates with <code>parse</code>. No
       hand-rolled <code>{"type X = { … }"}</code>.
     </p>
-    <a href="/concepts/schemas-are-types">Read about the rule →</a>
+    <a class="body-md-medium" href="/concepts/schemas-are-types">Read about the rule →</a>
   </div>
 </section>
 
 <section class="all">
-  <h2>Browse everything</h2>
+  <h2 class="heading-sm">Browse everything</h2>
   <ul class="grid">
     {#each docs as doc (doc.slug)}
       <li>
         <a href={doc.href}>
-          <span class="section">{doc.section}</span>
-          <span class="title">{doc.title}</span>
+          <span class="section body-sm-medium">{doc.section}</span>
+          <span class="title body-md-regular">{doc.title}</span>
         </a>
       </li>
     {/each}
@@ -82,14 +82,10 @@
   }
 
   .hero h1 {
-    font-size: 2.75rem;
     margin: 0 0 0.5rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
   }
 
   .tagline {
-    font-size: 1.15rem;
     color: var(--text-muted);
     max-width: 38rem;
     margin: 0 0 1.75rem;
@@ -105,8 +101,6 @@
     padding: 0.55rem 1rem;
     border-radius: 8px;
     text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
   }
 
   .cta .primary {
@@ -141,18 +135,14 @@
 
   .card h3 {
     margin: 0 0 0.5rem;
-    font-size: 1rem;
   }
 
   .card p {
     margin: 0 0 0.75rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.55;
   }
 
   .card a {
-    font-size: 0.85rem;
     color: var(--text);
     text-decoration: none;
   }
@@ -166,12 +156,11 @@
     padding: 0.05rem 0.3rem;
     border-radius: 4px;
     font-family: var(--font-mono);
-    font-size: 0.85em;
+    font-size: 1em;
   }
 
   .all h2 {
     margin: 0 0 1rem;
-    font-size: 1.1rem;
   }
 
   .grid {
@@ -204,13 +193,7 @@
   }
 
   .grid .section {
-    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--text-muted);
-  }
-
-  .grid .title {
-    font-size: 0.92rem;
   }
 </style>

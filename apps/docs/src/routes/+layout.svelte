@@ -6,6 +6,7 @@
   import "@fontsource/fira-mono/500.css";
   import "@fontsource/fira-mono/700.css";
   import "$lib/tokens.css";
+  import "$lib/text_styles.css";
 
   let { children } = $props();
 
@@ -14,17 +15,18 @@
 
 <div class="shell">
   <aside>
-    <a class="brand" href="/">Ethernauta</a>
+    <a class="brand body-md-bold" href="/">Ethernauta</a>
     <Search />
     <nav>
       {#each sections as section (section.section)}
         <section>
-          <h3>{section.section}</h3>
+          <h3 class="body-sm-medium">{section.section}</h3>
           <ul>
             {#each section.items as doc (doc.slug)}
               <li>
                 <a
                   href={doc.href}
+                  class="body-md-regular"
                   class:active={page.url.pathname === doc.href}
                 >
                   {doc.title}
@@ -45,7 +47,6 @@
   :global(html, body) {
     margin: 0;
     padding: 0;
-    font-family: var(--font-sans);
     color: var(--text);
     background: var(--bg);
   }
@@ -72,8 +73,6 @@
 
   .brand {
     display: block;
-    font-weight: 600;
-    font-size: 1.1rem;
     color: inherit;
     text-decoration: none;
     margin-bottom: 1.5rem;
@@ -84,9 +83,7 @@
   }
 
   nav h3 {
-    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
     color: var(--text-muted);
     margin: 0 0 0.5rem;
   }
@@ -107,7 +104,6 @@
     border-radius: 6px;
     color: var(--text);
     text-decoration: none;
-    font-size: 0.9rem;
   }
 
   nav a:hover {
@@ -132,13 +128,12 @@
     padding: 1rem;
     border-radius: 8px;
     overflow-x: auto;
-    font-size: 0.85em;
     line-height: 1.55;
   }
 
   :global(main code) {
     font-family: var(--font-mono);
-    font-size: 0.9em;
+    font-size: 1em;
   }
 
   :global(main :not(pre) > code) {

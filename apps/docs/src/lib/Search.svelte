@@ -171,7 +171,7 @@
   });
 </script>
 
-<button class="trigger" type="button" onclick={open}>
+<button class="trigger body-md-regular" type="button" onclick={open}>
   <span>Search</span>
   <kbd>⌘K</kbd>
 </button>
@@ -185,7 +185,7 @@
   <div class="panel">
     <div class="search" bind:this={container}>
       {#if unavailable}
-        <p class="hint">
+        <p class="hint body-md-regular">
           Search is only available after <code>pnpm build</code>.
         </p>
       {/if}
@@ -193,7 +193,7 @@
 
     {#if !query && recents.length > 0}
       <section class="recents">
-        <h3>Recent searches</h3>
+        <h3 class="body-sm-medium">Recent searches</h3>
         <ul>
           {#each recents as recent (recent)}
             <li>
@@ -233,8 +233,6 @@
     color: var(--text-muted);
     border-radius: 6px;
     cursor: pointer;
-    font: inherit;
-    font-size: 0.85rem;
     margin-bottom: 1.25rem;
   }
 
@@ -245,7 +243,6 @@
 
   .trigger kbd {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
     color: var(--text-muted);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -278,14 +275,11 @@
 
   .hint {
     margin: 0;
-    font-size: 0.85rem;
     color: var(--text-muted);
-    line-height: 1.5;
   }
 
   .hint code {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
     background: var(--surface-strong);
     padding: 0.05rem 0.3rem;
     border-radius: 4px;
@@ -298,9 +292,7 @@
   }
 
   .recents h3 {
-    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
     color: var(--text-muted);
     margin: 0 0 0.5rem;
     padding: 0 0.5rem;
