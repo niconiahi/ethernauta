@@ -23,25 +23,26 @@ const percentileSchema = pipe(
   minValue(0),
   maxValue(100),
 )
-const rewardsSchema = array(percentileSchema)
+const rewardPercentilesSchema = array(percentileSchema)
 const parametersSchema = union([
   tuple([
     uintSchema,
     blockNumberOrTagSchema,
-    array(percentileSchema),
+    rewardPercentilesSchema,
   ]),
   object({
     blockCount: uintSchema,
     newestBlock: blockNumberOrTagSchema,
-    rewardPercentiles: rewardsSchema,
+    rewardPercentiles: rewardPercentilesSchema,
   }),
 ])
 type Parameters = InferOutput<typeof parametersSchema>
+const rewardSchema = array(uintSchema)
 const feeHistoryResultsSchema = object({
   oldestBlock: uintSchema,
   baseFeePerGas: array(uintSchema),
   gasUsedRatio: array(ratioSchema),
-  reward: array(rewardsSchema),
+  reward: array(rewardSchema),
 })
 export type FeeHistoryResults = InferOutput<
   typeof feeHistoryResultsSchema
