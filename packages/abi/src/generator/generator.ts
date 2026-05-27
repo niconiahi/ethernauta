@@ -266,6 +266,42 @@ function get_type_info(input: AbiInput): TypeInfo {
     return info
   }
 
+  // Fixed-length array T[K]. Solidity ABI: no length prefix on the
+  // wire (K is in the type). Valibot side emits `tuple([elem, ...])`
+  // with K entries so the user sees the literal `[T, T, T]` shape.
+  // The two array regexes are disjoint at the closing bracket
+  // (`\[\d+\]$` vs `\[\]$`), so for `uint64[3][]` the dynamic branch
+  // below strips the outer `[]` first and recurses with `uint64[3]`.
+  const fixed_match = /^(.+)\[(\d+)\]$/.exec(type)
+  if (fixed_match) {
+    const inner_type = fixed_match[1] as string
+    const fixed_length = Number(fixed_match[2])
+    const inner = get_type_info({
+      name: input.name,
+      type: inner_type,
+    })
+    const param_items = Array(fixed_length)
+      .fill(inner.param_schema)
+      .join(", ")
+    const type_items = Array(fixed_length)
+      .fill(inner.param_type)
+      .join(", ")
+    const info: TypeInfo = {
+      param_schema: `tuple([${param_items}])`,
+      param_type: `[${type_items}]`,
+      decoded_schema: `tuple([${param_items}])`,
+      decoded_type: `[${type_items}]`,
+      builder: `fixed_array(${inner.builder}, ${fixed_length})`,
+      valibot_names: new Set(inner.valibot_names),
+      core_schemas: new Set(inner.core_schemas),
+      core_types: new Set(inner.core_types),
+      abi_builders: new Set(inner.abi_builders),
+    }
+    info.valibot_names.add("tuple")
+    info.abi_builders.add("fixed_array")
+    return info
+  }
+
   // Dynamic array of a primitive (or another array): T[]
   const arr_match = /^(.+)\[\]$/.exec(type)
   if (arr_match) {
@@ -315,8 +351,6 @@ function get_type_info(input: AbiInput): TypeInfo {
       )
     case "uint":
       return core_leaf("uint256Schema", "Uint256", "uint")
-    case "hash32":
-      return core_leaf("hash32Schema", "Hash32", "hash32")
     default: {
       const uint_match = /^uint(\d+)$/.exec(type)
       if (uint_match) {
@@ -671,14 +705,35 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
 `
 }
 
+const generateResultSchema = object({
+  generated: array(string()),
+  skipped: array(
+    object({ name: string(), reason: string() }),
+  ),
+})
+export type GenerateResult = InferOutput<
+  typeof generateResultSchema
+>
+
+// Real-world ABIs frequently include methods that exercise types the
+// generator does not (yet) handle — `int256` and other signed
+// integers being the canonical example. Rather than crashing the
+// entire codegen run on the first such method, build each function's
+// body inside a try/catch and skip-with-reason. The caller (cli)
+// surfaces the skipped list to the user.
 export function generate(
   descriptions: Description[],
   out_dir: string,
-): void {
+): GenerateResult {
   const resolved_out_dir = resolve(out_dir, "methods")
   if (!existsSync(resolved_out_dir)) {
     mkdirSync(resolved_out_dir, { recursive: true })
   }
+  const generated: string[] = []
+  const skipped: {
+    name: string
+    reason: string
+  }[] = []
   for (const description of descriptions) {
     if (description.type !== "function") continue
     const emit_name = emit_name_for(
@@ -692,13 +747,22 @@ export function generate(
     const is_readable =
       description.stateMutability === "view" ||
       description.stateMutability === "pure"
-    const body = is_readable
-      ? build_readable(description, emit_name)
-      : build_signable(description, emit_name)
-    const file_path = join(
-      resolved_out_dir,
-      `${file_basename}.ts`,
-    )
-    writeFileSync(file_path, body)
+    try {
+      const body = is_readable
+        ? build_readable(description, emit_name)
+        : build_signable(description, emit_name)
+      const file_path = join(
+        resolved_out_dir,
+        `${file_basename}.ts`,
+      )
+      writeFileSync(file_path, body)
+      generated.push(emit_name)
+    }
+    catch (err) {
+      const message =
+        err instanceof Error ? err.message : String(err)
+      skipped.push({ name: description.name, reason: message })
+    }
   }
+  return parse(generateResultSchema, { generated, skipped })
 }

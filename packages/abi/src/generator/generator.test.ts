@@ -225,6 +225,44 @@ describe("generator.ts", () => {
     }
   })
 
+  it("should emit a Callable for methods returning uint64[3][]", () => {
+    // Arbitrum ArbGasInfo.getGasPricingConstraints returns
+    // uint64[3][] — a dynamic array of fixed-length-3 arrays.
+    const out_dir = make_tmp()
+    try {
+      generate(
+        [
+          {
+            type: "function",
+            name: "getGasPricingConstraints",
+            inputs: [],
+            outputs: [
+              { name: "constraints", type: "uint64[3][]" },
+            ],
+            stateMutability: "view",
+          },
+        ],
+        out_dir,
+      )
+      const file = readFileSync(
+        join(out_dir, "methods", "get-gas-pricing-constraints.ts"),
+        "utf8",
+      )
+      expect(file).toContain(
+        "OUTPUT_CODECS = [array(fixed_array(uint64(), 3))] as const",
+      )
+      expect(file).toContain(
+        "Callable<[Uint64, Uint64, Uint64][]>",
+      )
+      expect(file).toContain(
+        "parse(v_array(tuple([uint64Schema, uint64Schema, uint64Schema])), decoded)",
+      )
+      expect(file).toContain("fixed_array,")
+    } finally {
+      rmSync(out_dir, { recursive: true, force: true })
+    }
+  })
+
   it("should disambiguate siblings whose names collide after kebab-casing", () => {
     // OP-stack GasPriceOracle ships both `DECIMALS` (constant) and
     // `decimals` (alias). camel_to_kebab lowercases both to

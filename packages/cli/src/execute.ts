@@ -92,6 +92,7 @@ function dedupe_by_signature(
 function write_barrel(
   out_dir: string,
   functions: Description[],
+  generated_emit_names: Set<string>,
 ): void {
   const seen = new Set<string>()
   const lines: string[] = []
@@ -99,6 +100,7 @@ function write_barrel(
     if (f.type !== "function") continue
     const js_name = emit_name_for(f, functions)
     if (seen.has(js_name)) continue
+    if (!generated_emit_names.has(js_name)) continue
     seen.add(js_name)
     const basename = emit_file_basename_for(f, functions)
     lines.push(`export { ${js_name} } from "./${basename}"`)
@@ -122,11 +124,23 @@ export function execute_abi(args: string[]): void {
     descriptions.filter((d) => d.type === "function"),
   )
   const generatable = functions.filter(is_generatable)
-  generate(generatable, out_dir)
-  write_barrel(out_dir, generatable)
-  console.log(
-    `regenerated ${generatable.length} methods into ${out_dir}/methods/`,
+  const result = generate(generatable, out_dir)
+  write_barrel(
+    out_dir,
+    generatable,
+    new Set(result.generated),
   )
+  console.log(
+    `regenerated ${result.generated.length} methods into ${out_dir}/methods/`,
+  )
+  if (result.skipped.length > 0) {
+    console.warn(
+      `skipped ${result.skipped.length} method(s):`,
+    )
+    for (const s of result.skipped) {
+      console.warn(`  - ${s.name}: ${s.reason}`)
+    }
+  }
 }
 
 function parse_registry_flags(args: string[]) {

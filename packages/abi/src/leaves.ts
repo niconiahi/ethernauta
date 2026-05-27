@@ -15,8 +15,6 @@ import {
   bytes65Schema,
   bytes256Schema,
   bytesSchema,
-  type Hash32,
-  hash32Schema,
   type Uint8,
   type Uint16,
   type Uint24,
@@ -242,10 +240,6 @@ export function bytes65(): AbiCodec<Bytes65> {
 
 export function bytes256(): AbiCodec<Bytes256> {
   return make_bytes_fixed(256, "bytes256", bytes256Schema)
-}
-
-export function hash32(): AbiCodec<Hash32> {
-  return make_bytes_fixed(32, "hash32", hash32Schema)
 }
 
 // ---------------------------------------------------------------- uintN
