@@ -62,7 +62,7 @@ export function create_injected_transport(
     try {
       const result = await _provider.request({
         method,
-        params,
+        params: params ?? [],
       })
       return {
         jsonrpc: "2.0",
