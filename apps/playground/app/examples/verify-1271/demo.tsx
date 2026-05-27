@@ -6,9 +6,9 @@ import {
 } from "@ethernauta/core"
 import { verify_message_deployed } from "@ethernauta/crypto"
 import { personal_sign } from "@ethernauta/eip/191"
+import { useProvider } from "@ethernauta/react"
 import {
   create_reader,
-  create_signer,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
@@ -17,6 +17,7 @@ import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
+import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -32,7 +33,6 @@ const CHAINS = [
   },
 ]
 const reader = create_reader(CHAINS)
-const signer = create_signer(CHAINS)
 
 const MESSAGE = "Verify me with EIP-1271"
 
@@ -41,6 +41,7 @@ export function Verify1271Demo() {
   const owner = session
     ? parse(addressSchema, session.address)
     : null
+  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [signature, set_signature] = useState<Bytes | null>(
     null,
   )
@@ -49,14 +50,14 @@ export function Verify1271Demo() {
   const [error, set_error] = useState<string | null>(null)
 
   async function sign_and_verify() {
-    if (!owner) return
+    if (!owner || !provider) return
     set_busy(true)
     set_error(null)
     set_valid(null)
     set_signature(null)
     try {
       const raw_sig = await personal_sign([MESSAGE, owner])(
-        signer({ chain_id: SEPOLIA_CHAIN_ID }),
+        provider.signer({ chain_id: SEPOLIA_CHAIN_ID }),
       )
       const sig = parse(bytesSchema, raw_sig)
       set_signature(sig)

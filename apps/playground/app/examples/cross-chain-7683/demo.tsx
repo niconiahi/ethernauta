@@ -12,16 +12,14 @@ import {
   hash_gasless_order,
   sign_gasless_order,
 } from "@ethernauta/erc/7683"
-import {
-  create_signer,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
+import { useProvider } from "@ethernauta/react"
+import { encode_chain_id } from "@ethernauta/transport"
 import { useState } from "react"
 import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
+import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -54,16 +52,6 @@ const USDC_OP_SEPOLIA = parse(
 const DEFAULT_SETTLER =
   "0x0000000000000000000000000000000000000000" as const
 
-const CHAINS = [
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-]
-const signer = create_signer(CHAINS)
-
 // Most settlers tag their order-data shape with a bytes32
 // magic value so they can multiplex orderData layouts. The
 // canonical 7683 ref impl uses keccak("ERC7683") — replace
@@ -81,6 +69,7 @@ function shorten(hex: string, head = 10, tail = 8): string {
 export function CrossChain7683Demo() {
   const session = use_session()
   const user = session?.address ?? null
+  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [settler, set_settler] =
     useState<string>(DEFAULT_SETTLER)
   const [order, set_order] =
@@ -95,7 +84,7 @@ export function CrossChain7683Demo() {
   const [error, set_error] = useState<string | null>(null)
 
   async function sign_order() {
-    if (!user) return
+    if (!user || !provider) return
     set_loading(true)
     set_error(null)
     set_signature(null)
@@ -135,7 +124,7 @@ export function CrossChain7683Demo() {
       const sig = await sign_gasless_order({
         order: built,
         domain,
-      })(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+      })(provider.signer({ chain_id: SEPOLIA_CHAIN_ID }))
       set_order(built)
       set_order_id(id)
       set_signature(sig)

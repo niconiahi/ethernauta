@@ -17,17 +17,15 @@ import {
   uintSchema,
 } from "@ethernauta/core"
 import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
-import {
-  create_signer,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
+import { useProvider } from "@ethernauta/react"
+import { encode_chain_id } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { useState } from "react"
 import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
+import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -66,16 +64,6 @@ const TARGETS = [
 const ZERO_VALUE = parse(uint256Schema, "0x0")
 const ZERO_DATA = parse(bytesSchema, "0x")
 
-const CHAINS = [
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-]
-const signer = create_signer(CHAINS)
-
 const call_tuple = tuple({
   to: address(),
   value: uint256(),
@@ -105,6 +93,7 @@ function encode_execute(
 export function Delegate7702Demo() {
   const session = use_session()
   const owner = session?.address ?? null
+  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [tx_hash, set_tx_hash] = useState<string | null>(
     null,
   )
@@ -112,7 +101,7 @@ export function Delegate7702Demo() {
   const [error, set_error] = useState<string | null>(null)
 
   async function run_batch() {
-    if (!owner) return
+    if (!owner || !provider) return
     set_loading(true)
     set_error(null)
     try {
@@ -131,7 +120,7 @@ export function Delegate7702Demo() {
             address: BATCH_EXECUTOR,
           },
         ],
-      })(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+      })(provider.signer({ chain_id: SEPOLIA_CHAIN_ID }))
       set_tx_hash(hash)
     } catch (e) {
       set_error(

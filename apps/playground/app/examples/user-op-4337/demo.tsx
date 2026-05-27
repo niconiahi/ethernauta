@@ -25,9 +25,9 @@ import {
   sign_user_op,
   type UserOperation,
 } from "@ethernauta/eip/4337"
+import { useProvider } from "@ethernauta/react"
 import {
   create_reader,
-  create_signer,
   create_writer,
   encode_chain_id,
   http,
@@ -38,6 +38,7 @@ import { parse } from "valibot"
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
+import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -48,16 +49,6 @@ const SEPOLIA_REF_HEX = parse(
   uintSchema,
   `0x${eip155_11155111.chainId.toString(16)}`,
 )
-
-const NODE_CHAINS = [
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-]
-const signer = create_signer(NODE_CHAINS)
 
 // SimpleAccount.execute(target, value, data) — standard
 // ERC-4337 reference account entry point. Other smart-account
@@ -114,6 +105,7 @@ const PLACEHOLDER_SIGNATURE = parse(
 export function UserOp4337Demo() {
   const session = use_session()
   const owner = session?.address ?? null
+  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [sender, set_sender] = useState<string>("")
   const [bundler_url, set_bundler_url] =
     useState<string>("")
@@ -161,7 +153,7 @@ export function UserOp4337Demo() {
   }
 
   async function build_and_sign() {
-    if (!owner || !sender) return
+    if (!owner || !sender || !provider) return
     set_loading(true)
     set_error(null)
     set_op(null)
@@ -195,7 +187,7 @@ export function UserOp4337Demo() {
         owner: parse(addressSchema, owner),
         entryPoint: ENTRY_POINT_V07_ADDRESS,
         chainId: SEPOLIA_REF_HEX,
-      })(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+      })(provider.signer({ chain_id: SEPOLIA_CHAIN_ID }))
       set_signed_op({ ...draft, signature })
     } catch (e) {
       set_error(
