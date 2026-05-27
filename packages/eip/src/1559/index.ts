@@ -1,6 +1,7 @@
 // https://eips.ethereum.org/EIPS/eip-1559
 
 export { calculate_base_fee } from "./calculate-base-fee"
+export { encode_transaction_unsigned } from "./codec"
 export {
   BASE_FEE_MAX_CHANGE_DENOMINATOR,
   ELASTICITY_MULTIPLIER,
