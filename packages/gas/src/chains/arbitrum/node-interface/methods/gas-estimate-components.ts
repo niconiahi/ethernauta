@@ -1,18 +1,22 @@
 import type { Bytes } from "@ethernauta/core"
-import { eth_signTransaction } from "@ethernauta/eth"
-import type { ResolvedSigner, Signable } from "@ethernauta/transport"
+import type { Callable, ContractContext } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   address,
   bool,
   bytes,
+  uint256,
+  uint64,
+  decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { InferOutput } from "valibot"
 import { boolean, object, parse, tuple, union } from "valibot"
-import { addressSchema, bytesSchema, uintSchema } from "@ethernauta/core"
+import type { Uint256, Uint64 } from "@ethernauta/core"
+import { addressSchema, bytesSchema, uint256Schema, uint64Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), bool(), bytes()] as const
+const OUTPUT_CODECS = [uint64(), uint64(), uint256(), uint256()] as const
 
 export const GAS_ESTIMATE_COMPONENTS_SIGNATURE = {
   signature: "gasEstimateComponents(address,bool,bytes)",
@@ -25,10 +29,8 @@ const parametersSchema = union([
 ])
 type Parameters = InferOutput<typeof parametersSchema>
 
-export function gasEstimateComponents(_parameters: Parameters): Signable<Bytes> {
-  return async ([signer, context]: ResolvedSigner): Promise<Bytes> => {
-    if (!context.to)
-      throw new Error("contract Signable requires a 'to' on the signer resolver")
+export function gasEstimateComponents(_parameters: Parameters) {
+  return (context: ContractContext): Callable<[Uint64, Uint64, Uint256, Uint256]> => {
     const parameters = parse(parametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1], parameters[2]] as const)
@@ -38,19 +40,22 @@ export function gasEstimateComponents(_parameters: Parameters): Signable<Bytes> 
       args: PARAM_CODECS,
       values,
     })
-    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
-    //               maxPriorityFeePerGas by querying the network
-    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
-    //               Generator MUST leave these fields unset.
-    return eth_signTransaction(
-      [{
-        to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
-        _ethernauta: {
-          function: GAS_ESTIMATE_COMPONENTS_SIGNATURE,
-        },
-      }],
-    )([signer, context])
+    return {
+      chain_id: context.chain_id,
+      to: context.to,
+      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      decode: (result: Bytes): [Uint64, Uint64, Uint256, Uint256] => {
+        const decoded = decode_function_result(
+          OUTPUT_CODECS,
+          result,
+        )
+        return [
+          parse(uint64Schema, decoded[0]),
+          parse(uint64Schema, decoded[1]),
+          parse(uint256Schema, decoded[2]),
+          parse(uint256Schema, decoded[3]),
+        ]
+      },
+    }
   }
 }
