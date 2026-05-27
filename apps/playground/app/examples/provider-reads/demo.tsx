@@ -35,10 +35,12 @@ export function ProviderReadsDemo() {
   const [results, set_results] = useState<
     Record<string, string>
   >({})
+  const [errors, set_errors] = useState<
+    Record<string, string>
+  >({})
   const [in_flight, set_in_flight] = useState<string | null>(
     null,
   )
-  const [error, set_error] = useState<string | null>(null)
 
   async function run(
     method_name: string,
@@ -46,14 +48,19 @@ export function ProviderReadsDemo() {
   ) {
     if (!provider) return
     set_in_flight(method_name)
-    set_error(null)
+    set_errors((prev) => {
+      const { [method_name]: _drop, ...rest } = prev
+      return rest
+    })
     try {
       const value = await runner()
       set_results((prev) => ({ ...prev, [method_name]: value }))
     } catch (e) {
-      set_error(
-        e instanceof Error ? e.message : "Unknown error",
-      )
+      set_errors((prev) => ({
+        ...prev,
+        [method_name]:
+          e instanceof Error ? e.message : "Unknown error",
+      }))
     } finally {
       set_in_flight(null)
     }
@@ -95,6 +102,7 @@ export function ProviderReadsDemo() {
       <ReadRow
         label="eth_blockNumber"
         result={results.eth_blockNumber}
+        error={errors.eth_blockNumber}
         loading={in_flight === "eth_blockNumber"}
         disabled={in_flight !== null}
         onClick={() =>
@@ -107,6 +115,7 @@ export function ProviderReadsDemo() {
       <ReadRow
         label="eth_chainId"
         result={results.eth_chainId}
+        error={errors.eth_chainId}
         loading={in_flight === "eth_chainId"}
         disabled={in_flight !== null}
         onClick={() =>
@@ -119,6 +128,7 @@ export function ProviderReadsDemo() {
       <ReadRow
         label="eth_gasPrice"
         result={results.eth_gasPrice}
+        error={errors.eth_gasPrice}
         loading={in_flight === "eth_gasPrice"}
         disabled={in_flight !== null}
         onClick={() =>
@@ -131,6 +141,7 @@ export function ProviderReadsDemo() {
       <ReadRow
         label="eth_maxPriorityFeePerGas"
         result={results.eth_maxPriorityFeePerGas}
+        error={errors.eth_maxPriorityFeePerGas}
         loading={in_flight === "eth_maxPriorityFeePerGas"}
         disabled={in_flight !== null}
         onClick={() =>
@@ -143,16 +154,17 @@ export function ProviderReadsDemo() {
       <ReadRow
         label="eth_getBalance (connected account)"
         result={results.eth_getBalance}
+        error={errors.eth_getBalance}
         loading={in_flight === "eth_getBalance"}
         disabled={in_flight !== null || !owner}
         onClick={() =>
           run("eth_getBalance", async () => {
             if (!reader) throw new Error("No provider")
             if (!owner) throw new Error("Sign in first")
-            return await eth_getBalance({
-              address: parse(addressSchema, owner),
-              block: "latest",
-            })(reader)
+            return await eth_getBalance([
+              parse(addressSchema, owner),
+              "latest",
+            ])(reader)
           })
         }
       />
@@ -161,17 +173,6 @@ export function ProviderReadsDemo() {
           <SignInHint />
         </div>
       )}
-      {error && (
-        <p
-          style={{
-            color: "#e53e3e",
-            fontSize: 14,
-            margin: 0,
-          }}
-        >
-          {error}
-        </p>
-      )}
     </div>
   )
 }
@@ -179,12 +180,14 @@ export function ProviderReadsDemo() {
 function ReadRow({
   label,
   result,
+  error,
   loading,
   disabled,
   onClick,
 }: {
   label: string
   result: string | undefined
+  error: string | undefined
   loading: boolean
   disabled: boolean
   onClick: () => void
@@ -221,13 +224,13 @@ function ReadRow({
           style={{
             fontFamily: "monospace",
             fontSize: 13,
-            color: "#666",
+            color: error ? "#e53e3e" : "#666",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
           }}
         >
-          {result ?? "—"}
+          {error ?? result ?? "—"}
         </span>
       </div>
       <Button
