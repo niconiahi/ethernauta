@@ -7,7 +7,7 @@ description: Official consumer guide for the @ethernauta/* packages — what eac
 
 This document teaches a consuming agent how to build a dapp on top of `@ethernauta/*`. It is organized by **concept**, not by package. Each section explains WHAT the concept is, WHEN to reach for it, and points to a self-contained example file under `examples/<section>/`.
 
-The canonical real-world consumer is the [animatronik](https://github.com/niconiahi/animatronik) dapp — every pattern below is taken verbatim from it or from `examples/playground` inside the ethernauta monorepo. If a pattern is not represented in this skill, it is not a supported usage.
+The canonical real-world consumer is the [animatronik](https://github.com/niconiahi/animatronik) dapp — every pattern below is taken verbatim from it or from `apps/playground` inside the ethernauta monorepo. If a pattern is not represented in this skill, it is not a supported usage.
 
 ---
 
@@ -154,7 +154,7 @@ The four method shapes:
 - `wallet_getCallsStatus` returns receipts grouped by bundle once all calls have mined; before that, status is `PENDING`.
 - Today the wallet executes calls sequentially. Atomic execution (EIP-7702) is a future capability. Dapps that branch on `wallet_getCapabilities` will degrade gracefully.
 
-→ **See** `examples/playground/app/examples/send-calls/demo.tsx` for the live consumer pattern.
+→ **See** `apps/playground/app/examples/send-calls/demo.tsx` for the live consumer pattern.
 
 ---
 

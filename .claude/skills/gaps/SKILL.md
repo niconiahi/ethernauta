@@ -290,7 +290,7 @@ animatronik but should land in the same regeneration pass for completeness.
 
 After 1–5 land, the consumer code adjusts.
 
-### 6.1 Playground (`examples/playground/app/routes/home.tsx`)
+### 6.1 Playground (`apps/playground/app/routes/home.tsx`)
 
 Today:
 ```ts
@@ -346,7 +346,7 @@ The migration is complete when:
 6. ERC-721 Enumerable methods (`totalSupply`, `tokenByIndex`,
    `tokenOfOwnerByIndex`) exist as generated `Readable<uint256>`s.
 7. No `_signer("<method_name>", ...)` raw call sites exist anywhere in
-   `examples/` or in `_animatronik/`.
+   `apps/playground/` or in `_animatronik/`.
 8. `_animatronik` builds, dev-serves, and the mint flow works end-to-end
    against Sepolia with the Ethernauta wallet extension.
 

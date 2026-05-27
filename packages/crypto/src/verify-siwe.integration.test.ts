@@ -6,7 +6,7 @@
 //
 // Skipped by default — set ETHERNAUTA_LIVE=1 to run.
 //
-// Equivalence with `examples/playground/app/lib/auth/reader.server.ts`
+// Equivalence with `apps/playground/app/lib/auth/reader.server.ts`
 // is intentional: identical `create_reader` config, identical
 // `verify_siwe_message` invocation, identical
 // `bytesSchema` / `addressSchema` parses. If this test goes
@@ -48,7 +48,7 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 })
 
 // Test mnemonic published on the playground home page —
-// `examples/playground/app/routes/home.tsx` (TEST_MNEMONIC).
+// `apps/playground/app/routes/home.tsx` (TEST_MNEMONIC).
 // Account 0 under the wallet's BIP-44 path is the EOA the
 // playground onboarding actually signs SIWE from, so it's
 // the *exact* address the live regression hits.

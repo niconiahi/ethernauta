@@ -17,7 +17,7 @@ Read this before touching anything. One pass through this file is enough to orie
 @ethernauta/eip         EIP protocol implementations (published)
 @ethernauta/chain       Static chain configs — 500+ EIP-155 chains (published)
 @ethernauta/wallet      Chrome extension — private, not published
-examples/playground     Dev testing env — React Router, Cloudflare Pages
+apps/playground         Dev testing env — React Router, Cloudflare Pages
 ```
 
 **Dependency direction:** `wallet` and `eip` depend on `transport`. `eth` depends on `transport`. Nothing depends on `wallet`. Never create circular deps.

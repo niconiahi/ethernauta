@@ -42,7 +42,7 @@ forge script script/DeployBatchExecutor.s.sol \
 ```
 
 After deploy, copy the printed address into the playground
-example at `examples/playground/app/examples/delegate-7702/`.
+example at `apps/playground/app/examples/delegate-7702/`.
 
 ## Contracts
 
