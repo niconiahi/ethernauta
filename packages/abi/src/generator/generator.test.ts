@@ -1,4 +1,9 @@
-import { mkdtempSync, readFileSync, rmSync } from "node:fs"
+import {
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+} from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
@@ -215,6 +220,49 @@ describe("generator.ts", () => {
       expect(file).toContain("[parameters.order]")
       // Signable, not Callable.
       expect(file).toContain("Signable<Bytes>")
+    } finally {
+      rmSync(out_dir, { recursive: true, force: true })
+    }
+  })
+
+  it("should disambiguate siblings whose names collide after kebab-casing", () => {
+    // OP-stack GasPriceOracle ships both `DECIMALS` (constant) and
+    // `decimals` (alias). camel_to_kebab lowercases both to
+    // `decimals`, which would collide on the emitted filename if
+    // disambiguation only fired on JS-name collisions. Both should
+    // get the selector suffix so each lands in its own file.
+    const out_dir = make_tmp()
+    try {
+      generate(
+        [
+          {
+            type: "function",
+            name: "DECIMALS",
+            inputs: [],
+            outputs: [{ name: "", type: "uint256" }],
+            stateMutability: "view",
+          },
+          {
+            type: "function",
+            name: "decimals",
+            inputs: [],
+            outputs: [{ name: "", type: "uint256" }],
+            stateMutability: "pure",
+          },
+        ],
+        out_dir,
+      )
+      const files = readdirSync(join(out_dir, "methods")).sort()
+      const decimals_files = files.filter((f) =>
+        f.startsWith("decimals_"),
+      )
+      expect(decimals_files).toHaveLength(2)
+      const contents = decimals_files.map((f) =>
+        readFileSync(join(out_dir, "methods", f), "utf8"),
+      )
+      const all = contents.join("\n")
+      expect(all).toMatch(/export function DECIMALS_[0-9a-f]{8}\(\)/)
+      expect(all).toMatch(/export function decimals_[0-9a-f]{8}\(\)/)
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
     }

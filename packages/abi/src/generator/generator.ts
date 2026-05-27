@@ -84,13 +84,35 @@ function count_names(
   return counts
 }
 
+// Real ABIs can have functions whose names differ only by case
+// (`DECIMALS` vs `decimals` on OP's GasPriceOracle). camel_to_kebab
+// lowercases both to `decimals`, which collides on the emitted
+// filename even though the JS identifier is distinct. Counting
+// kebab-cased basenames catches that class of collision so the
+// suffix branch fires for both siblings.
+function count_filename_basenames(
+  descriptions: Description[],
+): Map<string, number> {
+  const counts = new Map<string, number>()
+  for (const d of descriptions) {
+    if (d.type !== "function") continue
+    const base = camel_to_kebab(d.name)
+    counts.set(base, (counts.get(base) || 0) + 1)
+  }
+  return counts
+}
+
 export function emit_name_for(
   description: Description,
   descriptions: Description[],
 ): string {
   if (description.type !== "function") return ""
-  const counts = count_names(descriptions)
-  if ((counts.get(description.name) || 0) <= 1) {
+  const name_counts = count_names(descriptions)
+  const file_counts = count_filename_basenames(descriptions)
+  const base = camel_to_kebab(description.name)
+  const overloaded = (name_counts.get(description.name) || 0) > 1
+  const file_collides = (file_counts.get(base) || 0) > 1
+  if (!overloaded && !file_collides) {
     return description.name
   }
   const sig = canonical_signature(
