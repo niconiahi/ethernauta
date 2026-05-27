@@ -15,20 +15,42 @@ import {
   type Uint,
 } from "@ethernauta/core"
 import { calculate_gas_op_stack } from "@ethernauta/gas"
-import { useProvider } from "@ethernauta/react"
-import { encode_chain_id } from "@ethernauta/transport"
+import {
+  create_reader,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
 import { useMemo, useState } from "react"
 import { parse } from "valibot"
 
 import { Button } from "../../components/button"
-import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const CHAINS: ReadonlyArray<{ chain: Chain; label: string }> =
   [
     { chain: eip155_8453, label: "Base" },
     { chain: eip155_10, label: "Optimism" },
   ]
+
+const BASE_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_8453.chainId,
+})
+const OPTIMISM_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_10.chainId,
+})
+
+const reader = create_reader([
+  {
+    chainId: BASE_CHAIN_ID,
+    transports: [http("https://mainnet.base.org/")],
+  },
+  {
+    chainId: OPTIMISM_CHAIN_ID,
+    transports: [http("https://mainnet.optimism.io")],
+  },
+])
 
 const DEFAULT_TO = parse(
   addressSchema,
@@ -43,7 +65,6 @@ type Fees = {
 }
 
 export function GasEstimateOpStackDemo() {
-  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [chain_idx, set_chain_idx] = useState(0)
   const [multiplier, set_multiplier] = useState(1.5)
   const [percentile, set_percentile] = useState(10)
@@ -61,17 +82,7 @@ export function GasEstimateOpStackDemo() {
     [chain],
   )
 
-  if (!provider) {
-    return (
-      <div style={WAITING}>
-        Pick a wallet first (try the <code>EIP-6963</code>{" "}
-        example), then switch its network to Base or Optimism.
-      </div>
-    )
-  }
-
   async function run() {
-    if (!provider) return
     set_in_flight(true)
     set_error(null)
     try {
@@ -79,7 +90,7 @@ export function GasEstimateOpStackDemo() {
         tx: { to: DEFAULT_TO },
         base_fee_multiplier: multiplier,
         priority_percentile: percentile,
-      })(provider.reader({ chain_id: discovery_chain_id }))
+      })(reader({ chain_id: discovery_chain_id }))
       set_fees({
         base_fee_per_gas: result.base_fee_per_gas,
         max_priority_fee_per_gas:
@@ -242,14 +253,6 @@ const CARD = {
   border: "1px solid #ddd",
   borderRadius: 8,
   background: "#fff",
-} as const
-const WAITING = {
-  padding: 16,
-  background: "#fff",
-  border: "1px solid #ddd",
-  borderRadius: 8,
-  fontSize: 14,
-  color: "#555",
 } as const
 const KNOB_ROW = {
   display: "grid",

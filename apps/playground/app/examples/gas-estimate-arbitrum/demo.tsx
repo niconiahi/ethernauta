@@ -9,19 +9,28 @@ import {
   type Uint,
 } from "@ethernauta/core"
 import { calculate_gas_arbitrum } from "@ethernauta/gas"
-import { useProvider } from "@ethernauta/react"
-import { encode_chain_id } from "@ethernauta/transport"
+import {
+  create_reader,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
 import { useState } from "react"
 import { parse } from "valibot"
 
 import { Button } from "../../components/button"
-import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
-const DISCOVERY_CHAIN_ID = encode_chain_id({
+const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_42161.chainId,
 })
+
+const reader = create_reader([
+  {
+    chainId: CHAIN_ID,
+    transports: [http("https://arb1.arbitrum.io/rpc")],
+  },
+])
 
 const DEFAULT_TO = parse(
   addressSchema,
@@ -35,28 +44,17 @@ type Fees = {
 }
 
 export function GasEstimateArbitrumDemo() {
-  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [fees, set_fees] = useState<Fees | null>(null)
   const [error, set_error] = useState<string | null>(null)
   const [in_flight, set_in_flight] = useState(false)
 
-  if (!provider) {
-    return (
-      <div style={WAITING}>
-        Pick a wallet first (try the <code>EIP-6963</code>{" "}
-        example), then switch its network to Arbitrum One.
-      </div>
-    )
-  }
-
   async function run() {
-    if (!provider) return
     set_in_flight(true)
     set_error(null)
     try {
       const result = await calculate_gas_arbitrum({
         tx: { to: DEFAULT_TO },
-      })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
+      })(reader({ chain_id: CHAIN_ID }))
       set_fees({
         gas_estimate: result.gas_estimate,
         l1_base_fee_estimate: result.l1_base_fee_estimate,
@@ -123,14 +121,6 @@ const CARD = {
   border: "1px solid #ddd",
   borderRadius: 8,
   background: "#fff",
-} as const
-const WAITING = {
-  padding: 16,
-  background: "#fff",
-  border: "1px solid #ddd",
-  borderRadius: 8,
-  fontSize: 14,
-  color: "#555",
 } as const
 const RESULT_ROW = {
   display: "grid",
