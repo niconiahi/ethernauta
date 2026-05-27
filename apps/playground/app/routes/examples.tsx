@@ -58,6 +58,10 @@ const EIP_EXAMPLES = [
     to: "/examples/eip-1193",
     title: "EIP-1193 provider",
   },
+  {
+    to: "/examples/provider-reads",
+    title: "provider.reader reads",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [
