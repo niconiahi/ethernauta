@@ -28,7 +28,6 @@
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "kzg:fetch": "./scripts/fetch-kzg-fixtures.sh",
     "test:unit": "vitest"
   },
   "dependencies": {
@@ -37,7 +36,9 @@
     "@ethernauta/utils": "workspace:*",
     "@noble/curves": "^1.9.7",
     "@noble/hashes": "^1.8.0",
-    "@noble/secp256k1": "^2.3.0"
+    "@noble/secp256k1": "^2.3.0",
+    "@paulmillr/trusted-setups": "^0.3.0",
+    "micro-eth-signer": "^0.18.1"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
