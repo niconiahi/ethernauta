@@ -1,9 +1,13 @@
+import { eip155_1 } from "@ethernauta/chain"
+import { uintSchema } from "@ethernauta/core"
+import type {
+  Call,
+  Response,
+  ResolvedReader,
+} from "@ethernauta/transport"
+import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import { chainIdSchema } from "../../../../transport/src/chain/chain-id"
-import type { Call } from "../../../../transport/src/call"
-import type { Response } from "../../../../transport/src/json-rpc"
-import type { ResolvedReader } from "../../../../transport/src/reader"
 
 import { eth_feeHistory } from "./fee-history"
 
@@ -17,7 +21,12 @@ function stub_http(
   })
 }
 
-const CHAIN_ID = parse(chainIdSchema, "eip155:1")
+const CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+const BLOCK_COUNT_1 = parse(uintSchema, "0x1")
+const BLOCK_COUNT_4 = parse(uintSchema, "0x4")
 
 describe("eth_feeHistory", () => {
   it("parses a realistic mainnet response shape (hex uint reward matrix)", async () => {
@@ -43,7 +52,7 @@ describe("eth_feeHistory", () => {
       { chain_id: CHAIN_ID },
     ]
     const result = await eth_feeHistory({
-      blockCount: "0x4",
+      blockCount: BLOCK_COUNT_4,
       newestBlock: "latest",
       rewardPercentiles: [25, 75],
     })(resolved)
@@ -64,7 +73,7 @@ describe("eth_feeHistory", () => {
     ]
     await expect(
       eth_feeHistory({
-        blockCount: "0x1",
+        blockCount: BLOCK_COUNT_1,
         newestBlock: "latest",
         rewardPercentiles: [25, 75],
       })(resolved),
@@ -83,11 +92,13 @@ describe("eth_feeHistory", () => {
       { chain_id: CHAIN_ID },
     ]
     await expect(
-      eth_feeHistory(["0x1", "latest", [50]])(resolved),
+      eth_feeHistory([BLOCK_COUNT_1, "latest", [50]])(
+        resolved,
+      ),
     ).resolves.toBeDefined()
     await expect(
       eth_feeHistory({
-        blockCount: "0x1",
+        blockCount: BLOCK_COUNT_1,
         newestBlock: "latest",
         rewardPercentiles: [50],
       })(resolved),
