@@ -1,7 +1,7 @@
 ---
 title: React integration
 section: Guides
-section_order: 7
+section_order: 3
 order: 7
 ---
 

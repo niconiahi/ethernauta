@@ -1,7 +1,7 @@
 ---
 title: "@ethernauta/chain"
 section: Overview
-section_order: 3
+section_order: 7
 order: 4
 ---
 

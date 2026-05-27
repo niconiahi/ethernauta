@@ -1,7 +1,7 @@
 ---
 title: Adding a new EIP / ERC
 section: Tooling
-section_order: 8
+section_order: 4
 order: 2
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Dispatch
 section: Wallet
-section_order: 6
+section_order: 8
 order: 2
 ---
 

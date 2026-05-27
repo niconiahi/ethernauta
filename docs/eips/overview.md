@@ -1,7 +1,7 @@
 ---
 title: Overview
 section: EIPs
-section_order: 4
+section_order: 5
 order: 1
 ---
 
@@ -26,7 +26,9 @@ import { discover_providers } from "@ethernauta/eip/6963";
 | [1102](/eips/1102) | Opt-in account exposure | `eth_requestAccounts`. |
 | [1193](/eips/1193) | Provider JavaScript API | The 1193 envelope itself. |
 | [1271](/eips/1271) | Standard signature validation for contracts | Smart-account signatures. |
+| [1559](/eips/1559) | Fee market change | Type-2 tx, base-fee arithmetic, `INITIAL_BASE_FEE` / elasticity constants. |
 | [2255](/eips/2255) | Wallet permissions | Permission-prompt protocol. |
+| [2930](/eips/2930) | Optional access lists | Type-1 tx + the `accessList` shape every later typed tx reuses. |
 | [3085](/eips/3085) | `wallet_addEthereumChain` | Adding a chain at runtime. |
 | [3326](/eips/3326) | `wallet_switchEthereumChain` | Switching active chain. |
 | [4337](/eips/4337) | Account abstraction (entry-point + UserOperation) | Smart-account flows. |

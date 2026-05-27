@@ -1,7 +1,7 @@
 ---
 title: Multi-wallet via EIP-6963
 section: Guides
-section_order: 7
+section_order: 3
 order: 6
 ---
 
