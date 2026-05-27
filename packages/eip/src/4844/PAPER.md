@@ -1,5 +1,3 @@
-## data
-
 ---
 title: "EIP-4844: Shard Blob Transactions"
 description: Shard Blob Transactions scale data-availability of Ethereum in a simple, forwards-compatible manner.
