@@ -24,10 +24,11 @@ import {
   DOMAIN_SEPARATOR,
   nonces,
 } from "@ethernauta/erc/20"
+import { useProviderDetail } from "@ethernauta/react"
 import {
   contract,
   create_multicall,
-  create_signer,
+  create_provider,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
@@ -49,7 +50,13 @@ const CHAINS = [
   },
 ]
 const multicall = create_multicall(CHAINS)
-const signer = create_signer(CHAINS)
+
+// Rehydrate the EIP-6963 wallet the user picked at SIWE
+// time — MetaMask, Ethernauta, or any compliant wallet.
+const provider_detail = useProviderDetail({
+  key: PROVIDER_STORE_KEY,
+})
+const provider = create_provider(provider_detail.provider)
 
 const ctx = contract({
   chain_id: MAINNET_CHAIN_ID,
@@ -57,7 +64,7 @@ const ctx = contract({
 })
 
 // 1. Read the two values the typed message depends on in
-//    a single round-trip.
+//    a single round-trip, via the public RPC reader.
 const [domain_separator, nonce_hex] = await multicall([
   DOMAIN_SEPARATOR()(ctx),
   nonces({ owner })(ctx),
@@ -66,7 +73,9 @@ const [domain_separator, nonce_hex] = await multicall([
 const nonce = BigInt(nonce_hex)
 const deadline = deadline_in(3600) // 1 hour from now
 
-// 2. Sign the typed Permit struct.
+// 2. Sign the typed Permit struct against the connected
+//    wallet's EIP-1193 provider — pops whichever wallet the
+//    user picked, not a hard-coded one.
 const signature = await eth_signTypedData_v4([
   owner,
   {
@@ -94,5 +103,5 @@ const signature = await eth_signTypedData_v4([
       deadline,
     },
   },
-])(signer({ chain_id: MAINNET_CHAIN_ID }))
+])(provider.signer({ chain_id: MAINNET_CHAIN_ID }))
 ```

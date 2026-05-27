@@ -9,10 +9,11 @@ import {
   DOMAIN_SEPARATOR,
   nonces,
 } from "@ethernauta/erc/2612"
+import { useProviderDetail } from "@ethernauta/react"
 import {
   contract,
   create_multicall,
-  create_signer,
+  create_provider,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
@@ -31,6 +32,7 @@ import {
 import { Button } from "../../components/button"
 import { SignInHint } from "../../components/sign-in-hint"
 import { use_session } from "../../lib/auth/use-session"
+import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const MAINNET_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -62,7 +64,6 @@ const CHAINS = [
   },
 ]
 const multicall = create_multicall(CHAINS)
-const signer = create_signer(CHAINS)
 
 const signedPermitSchema = object({
   owner: addressSchema,
@@ -78,6 +79,9 @@ type SignedPermit = InferOutput<typeof signedPermitSchema>
 export function PermitDemo() {
   const session = use_session()
   const owner = session?.address ?? null
+  const provider_detail = useProviderDetail({
+    key: PROVIDER_STORE_KEY,
+  })
   const [signed, set_signed] =
     useState<SignedPermit | null>(null)
   const [loading, set_loading] = useState(false)
@@ -85,9 +89,18 @@ export function PermitDemo() {
 
   async function sign_permit() {
     if (!owner) return
+    if (!provider_detail) {
+      set_error(
+        "No connected wallet. Reconnect via the header's Connect wallet button.",
+      )
+      return
+    }
     set_loading(true)
     set_error(null)
     try {
+      const provider = create_provider(
+        provider_detail.provider,
+      )
       const ctx = contract({
         chain_id: MAINNET_CHAIN_ID,
         to: USDC,
@@ -127,7 +140,7 @@ export function PermitDemo() {
             deadline,
           },
         },
-      ])(signer({ chain_id: MAINNET_CHAIN_ID }))
+      ])(provider.signer({ chain_id: MAINNET_CHAIN_ID }))
       set_signed({
         owner: owner_address,
         spender: SPENDER,
@@ -226,7 +239,9 @@ export function PermitDemo() {
             marginTop: 12,
           }}
         >
-          Needs the Ethernauta extension installed.
+          Needs an EIP-6963 wallet — Ethernauta, MetaMask, or
+          any compliant wallet — connected via the header's
+          Connect wallet button.
         </p>
       )}
     </div>
