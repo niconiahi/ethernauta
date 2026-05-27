@@ -1,0 +1,67 @@
+/* Shared button styles for docs / playground / wallet.
+ * Mirror across:
+ *   apps/docs/src/lib/button.css
+ *   apps/playground/app/styles/button.css
+ *   packages/wallet/src/styles/button.css
+ *
+ * Usage:  class="button primary"  /  class="button secondary"
+ *         class="button ghost"    /  class="button primary squared"
+ *         add `is-pressed` for the focus-outline state. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button.primary {
+  background: var(--active-bg);
+  border-color: var(--active-bg);
+  color: var(--active-text);
+}
+
+.button.primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.button.secondary {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.button.secondary:hover:not(:disabled) {
+  background: var(--link-hover-bg);
+}
+
+.button.ghost:hover:not(:disabled) {
+  background: var(--link-hover-bg);
+}
+
+.button.is-pressed {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.button.squared {
+  aspect-ratio: 1;
+  padding: 0.55rem;
+}
