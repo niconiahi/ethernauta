@@ -12,7 +12,8 @@
     "format": "pnpm --recursive run format",
     "typecheck": "pnpm --recursive --parallel run typecheck",
     "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish",
-    "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish --dry-run"
+    "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish --dry-run",
+    "deploy": "pnpm --filter @ethernauta/docs run deploy && pnpm --filter @ethernauta/playground run deploy"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
