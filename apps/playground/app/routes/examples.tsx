@@ -70,6 +70,10 @@ const UTILITY_EXAMPLES = [
     to: "/examples/event-decoding",
     title: "Event decoding",
   },
+  {
+    to: "/examples/gas-estimate",
+    title: "Gas estimation (1559)",
+  },
 ] as const
 
 const SECTIONS = [

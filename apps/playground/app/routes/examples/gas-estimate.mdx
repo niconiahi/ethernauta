@@ -1,0 +1,90 @@
+import { GithubLink } from "../../components/github-link"
+import { GasEstimateDemo } from "../../examples/gas-estimate/demo"
+
+# @ethernauta/gas — fee estimation per chain family
+
+`calculate_gas(chain, parameters)` is the dispatch surface.
+Pass the `Chain` you imported from `@ethernauta/chain`; the
+library reads `chain.chainId`, looks up the family (`1559`,
+`op-stack`, `arbitrum`, `zksync`), and routes to the matching
+primitive. The consumer never picks the estimator.
+
+v1 routes every chain to the 1559 path — that means execution
+fees are estimated correctly on every EIP-1559 chain, including
+the L2 portion of OP-stack / Arbitrum / zkSync rollups. The L1
+data-fee portion lands in v2 / v3 / v4 alongside their
+family-specific implementations.
+
+The returned `Fees1559` object has three fields:
+
+- `base_fee_per_gas` — read from the latest entry of
+  `baseFeePerGas`.
+- `max_priority_fee_per_gas` — averaged from the requested
+  percentile column of `reward[][]`.
+- `max_fee_per_gas` — `base × multiplier + priority`, integer
+  math via a 1e6 fixed-point scale.
+
+The multiplier and the percentile are caller knobs. The library
+ships no default — the dapp / wallet picks what they want.
+
+<GasEstimateDemo />
+
+<GithubLink path="apps/playground/app/examples/gas-estimate/demo.tsx" />
+
+## The code
+
+```tsx
+import { eip155_1 } from "@ethernauta/chain"
+import { calculate_gas } from "@ethernauta/gas"
+import { useProvider } from "@ethernauta/react"
+import { encode_chain_id } from "@ethernauta/transport"
+
+const DISCOVERY_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+
+const provider = useProvider({ key: "my-app:picked-rdns" })
+if (!provider) return <Picker />
+
+const fees = await calculate_gas(eip155_1, {
+  base_fee_multiplier: 1.5,
+  priority_percentile: 10,
+})(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
+
+// fees = { base_fee_per_gas, max_priority_fee_per_gas,
+//          max_fee_per_gas } — all Uint hex.
+```
+
+## The two paths, side by side
+
+Same call against a public RPC, no wallet involved — only the
+transport-construction line changes:
+
+```ts
+import { eip155_1 } from "@ethernauta/chain"
+import { calculate_gas } from "@ethernauta/gas"
+import { create_reader, http } from "@ethernauta/transport"
+
+const reader = create_reader([
+  {
+    chainId: "eip155:1",
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+])
+const fees = await calculate_gas(eip155_1, {
+  base_fee_multiplier: 1.5,
+  priority_percentile: 10,
+})(reader({ chain_id: "eip155:1" }))
+```
+
+## Why dispatch on `Chain`, not `chain_id`
+
+The chain-family lookup is a finite chainId-keyed Set; passing
+the full `Chain` object is the same amount of typing but gives
+the library room to grow into multi-field decisions
+(nativeCurrency for paymaster work, parent chain for L2 fee
+oracles) without a breaking signature change. Path-1 callers
+who only have the provider's `chain_id` can pair it with the
+matching `Chain` definition the same way they do when wiring
+`CHAINS` into `create_reader`.

@@ -69,5 +69,9 @@ export default [
       "provider-reads",
       "./routes/examples/provider-reads.mdx",
     ),
+    route(
+      "gas-estimate",
+      "./routes/examples/gas-estimate.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
