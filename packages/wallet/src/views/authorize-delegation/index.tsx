@@ -41,7 +41,7 @@ export function AuthorizeDelegation() {
   const req = set_code_request.value
   if (!req) {
     return (
-      <main className="p-4 w-80 text-sm text-gray-500">
+      <main className="p-4 w-80 text-sm text-[var(--text-muted)]">
         No delegation request pending.
       </main>
     )
@@ -53,12 +53,12 @@ export function AuthorizeDelegation() {
         <h1 className="text-xl font-bold leading-tight">
           Delegate your account
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           EIP-7702 — set EOA code to a contract for this tx.
         </p>
       </header>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-wide text-gray-500">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
+        <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           Delegating to
         </p>
         {params.delegations.map((delegation) => (
@@ -67,15 +67,15 @@ export function AuthorizeDelegation() {
             className="font-mono text-xs break-all"
           >
             {delegation.address}
-            <span className="text-gray-500">
+            <span className="text-[var(--text-muted)]">
               {" "}
               (chain {delegation.chainId})
             </span>
           </p>
         ))}
       </section>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-wide text-gray-500">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
+        <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           Calling
         </p>
         <p className="font-mono text-xs break-all">

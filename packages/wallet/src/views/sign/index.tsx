@@ -209,7 +209,7 @@ function DecodedCall({
           .join(", ")}
         )
       </div>
-      <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
+      <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[var(--border)]">
         {labels.map((label, i) => (
           <Field
             key={row_key(label, args[i])}
@@ -259,7 +259,7 @@ function Field({
     return (
       <div className="flex flex-col gap-1 text-xs">
         <span className="font-bold">{label}</span>
-        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
+        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[var(--border)]">
           {Object.entries(value).map(([k, v]) => (
             <Field key={k} label={k} value={v} />
           ))}
@@ -271,7 +271,7 @@ function Field({
     return (
       <div className="flex flex-col gap-1 text-xs">
         <span className="font-bold">{label}</span>
-        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
+        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[var(--border)]">
           {value.map((v, i) => (
             <Field
               key={row_key(label, v)}
@@ -347,7 +347,7 @@ function SectionLabel({
   children: ComponentChildren
 }) {
   return (
-    <p className="text-xs uppercase tracking-wide text-gray-500">
+    <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
       {children}
     </p>
   )
@@ -383,7 +383,7 @@ function DecodedSign({
       ? entry.param_names
       : entry.types.map((_, i) => String(i))
   return (
-    <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
+    <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
       {to && (
         <div className="flex flex-col gap-0.5">
           <SectionLabel>To</SectionLabel>
@@ -402,7 +402,7 @@ function DecodedSign({
       </div>
       <div className="flex flex-col gap-1">
         <SectionLabel>Params</SectionLabel>
-        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
+        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[var(--border)]">
           {labels.map((label, i) => (
             <Field
               key={row_key(label, args[i])}
@@ -442,16 +442,16 @@ export function Sign() {
         />
       ) : (
         <>
-          <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+          <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3">
+            <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
               Method
             </p>
             <p className="font-mono text-sm font-semibold break-all">
               {transaction_request.value.method}
             </p>
           </section>
-          <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+          <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
+            <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
               Params
             </p>
             <Params />

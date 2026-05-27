@@ -54,7 +54,7 @@ export function SelectAccount() {
         <h1 className="text-xl font-bold leading-tight">
           Accounts
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           Pick which account dapps see.
         </p>
       </header>
@@ -70,18 +70,18 @@ export function SelectAccount() {
                 className={[
                   "w-full text-left rounded-md border-2 p-2 cursor-pointer",
                   is_active
-                    ? "border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_10%,#faf5f0)]"
-                    : "border-gray-300 bg-white hover:border-gray-700",
+                    ? "border-[var(--text)] bg-[var(--surface-strong)]"
+                    : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--text)]",
                 ]
                   .filter(Boolean)
                   .join(" ")}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs uppercase tracking-wide text-gray-500">
+                  <span className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
                     Account #{account.index}
                   </span>
                   {is_active ? (
-                    <span className="text-xs text-[#FF5005] font-bold">
+                    <span className="text-xs text-[var(--text)] font-bold">
                       Active
                     </span>
                   ) : null}
@@ -98,7 +98,7 @@ export function SelectAccount() {
         })}
       </ul>
       {error && (
-        <p className="text-xs text-red-700">{error}</p>
+        <p className="text-xs text-[var(--danger)]">{error}</p>
       )}
       <div className="flex flex-col gap-2">
         <Button
@@ -118,7 +118,7 @@ export function SelectAccount() {
         </Button>
       </div>
       {!master_unlocked() && (
-        <p className="text-[10px] text-gray-500 text-center">
+        <p className="text-[10px] text-[var(--text-muted)] text-center">
           Sign in again to add new accounts.
         </p>
       )}

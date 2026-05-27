@@ -29,7 +29,7 @@ export function Wallet() {
         onClick={() => {
           view.value = "select-chain"
         }}
-        className="self-start bg-white p-2 border-2 rounded-md cursor-pointer text-base"
+        className="button secondary self-start"
       >
         {get_chain_id(selected_chain.value)} —{" "}
         {selected_chain.value.name}
@@ -39,16 +39,16 @@ export function Wallet() {
         onClick={() => {
           view.value = "select-account"
         }}
-        className="self-start bg-white p-2 border-2 rounded-md cursor-pointer text-base flex gap-1"
+        className="button secondary self-start gap-1"
       >
         <span>Address:</span>
-        <span className="underline underline-offset-2 decoration-[#FF5005]">
+        <span className="underline underline-offset-2 decoration-[var(--text)]">
           {address}
         </span>
       </button>
       <p className="flex gap-1 text-base">
         <span>Balance:</span>
-        <span className="underline underline-offset-2 decoration-[#FF5005]">
+        <span className="underline underline-offset-2 decoration-[var(--text)]">
           {strip_decimals(format_unit(balance.value), 5)}
         </span>{" "}
         ETH

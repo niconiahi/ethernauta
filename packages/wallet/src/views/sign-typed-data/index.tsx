@@ -38,7 +38,7 @@ function Field({
     return (
       <div className="flex flex-col gap-1 text-xs">
         <span className="font-bold">{label}</span>
-        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
+        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[var(--border)]">
           {Object.entries(value).map(([k, v]) => (
             <Field key={k} label={k} value={v} />
           ))}
@@ -50,7 +50,7 @@ function Field({
     return (
       <div className="flex flex-col gap-1 text-xs">
         <span className="font-bold">{label}</span>
-        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[#FF5005]/30">
+        <dl className="flex flex-col gap-1 pl-2 border-l-2 border-[var(--border)]">
           {value.map((v, i) => (
             <Field
               key={row_key(label, v)}
@@ -78,7 +78,7 @@ function SectionLabel({
   children: ComponentChildren
 }) {
   return (
-    <p className="text-xs uppercase tracking-wide text-gray-500">
+    <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
       {children}
     </p>
   )
@@ -88,7 +88,7 @@ export function SignTypedData() {
   const req = typed_data_request.value
   if (!req) {
     return (
-      <main className="p-4 w-80 text-sm text-gray-500">
+      <main className="p-4 w-80 text-sm text-[var(--text-muted)]">
         No typed-data request pending.
       </main>
     )
@@ -100,25 +100,25 @@ export function SignTypedData() {
         <h1 className="text-xl font-bold leading-tight">
           You are about to sign typed data
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           EIP-712 — verify the domain matches the site you
           expect.
         </p>
       </header>
 
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
         <SectionLabel>Domain</SectionLabel>
         <Field label="Domain" value={typed_data.domain} />
       </section>
 
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
         <SectionLabel>Primary type</SectionLabel>
         <p className="font-mono text-sm font-semibold break-all">
           {typed_data.primaryType}
         </p>
       </section>
 
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
         <SectionLabel>Message</SectionLabel>
         <Field
           label={typed_data.primaryType}

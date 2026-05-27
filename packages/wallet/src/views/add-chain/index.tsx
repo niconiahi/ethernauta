@@ -9,7 +9,7 @@ export function AddChain() {
   const req = add_chain_request.value
   if (!req) {
     return (
-      <main className="p-4 w-80 text-sm text-gray-500">
+      <main className="p-4 w-80 text-sm text-[var(--text-muted)]">
         No add-chain request pending.
       </main>
     )
@@ -21,12 +21,12 @@ export function AddChain() {
         <h1 className="text-xl font-bold leading-tight">
           Add a new chain?
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           EIP-3085 — a site is asking your wallet to know
           this chain.
         </p>
       </header>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2 text-sm">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2 text-sm">
         <Row label="Name" value={chain.chainName} />
         <Row label="Chain ID" value={chain.chainId} />
         <Row
@@ -84,7 +84,7 @@ function Row({
 }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs uppercase tracking-wide text-gray-500">
+      <span className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
         {label}
       </span>
       <span className="font-mono break-all">{value}</span>

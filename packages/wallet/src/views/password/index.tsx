@@ -27,7 +27,7 @@ export function Password() {
         }}
       />
       {error ? (
-        <p className="text-red-500 text-sm">{error}</p>
+        <p className="text-[var(--danger)] text-sm">{error}</p>
       ) : null}
       <Button
         onClick={async () => {

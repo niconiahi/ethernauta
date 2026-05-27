@@ -11,14 +11,17 @@
 
   body {
     width: fit-content;
-    background: linear-gradient(#feece7, #f9f7f1);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-family-body);
   }
 }
 
 input {
-  background: #fff;
+  background: var(--surface);
+  color: var(--text);
 }
 
 input:focus-visible {
-  outline-color: black;
+  outline-color: var(--text);
 }

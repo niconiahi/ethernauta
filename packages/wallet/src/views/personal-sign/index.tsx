@@ -32,8 +32,8 @@ function display_message(raw: string): string {
 
 function SiweView({ siwe }: { siwe: SiweMessage }) {
   return (
-    <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2 text-sm">
-      <p className="text-xs uppercase tracking-wide text-gray-500">
+    <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2 text-sm">
+      <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
         Sign in with Ethereum
       </p>
       <Row label="Site" value={siwe.domain} />
@@ -60,7 +60,7 @@ function Row({
 }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs uppercase tracking-wide text-gray-500">
+      <span className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
         {label}
       </span>
       <span className="font-mono break-all">{value}</span>
@@ -72,7 +72,7 @@ export function PersonalSign() {
   const req = personal_sign_request.value
   if (!req) {
     return (
-      <main className="p-4 w-80 text-sm text-gray-500">
+      <main className="p-4 w-80 text-sm text-[var(--text-muted)]">
         No personal-sign request pending.
       </main>
     )
@@ -85,12 +85,12 @@ export function PersonalSign() {
         <h1 className="text-xl font-bold leading-tight">
           You are about to sign a message
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           EIP-191 — prefixed personal_sign.
         </p>
       </header>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-wide text-gray-500">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
+        <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           Account
         </p>
         <p className="font-mono text-xs break-all">
@@ -100,8 +100,8 @@ export function PersonalSign() {
       {siwe ? (
         <SiweView siwe={siwe} />
       ) : (
-        <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
-          <p className="text-xs uppercase tracking-wide text-gray-500">
+        <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
+          <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
             Message
           </p>
           <pre className="whitespace-pre-wrap break-words text-sm font-mono">

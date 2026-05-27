@@ -19,12 +19,12 @@ export function Connect() {
         <h1 className="text-xl font-bold leading-tight">
           Connect to Ethernauta
         </h1>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-[var(--text-muted)]">
           A site is requesting access to your address.
         </p>
       </header>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3">
-        <p className="text-xs uppercase tracking-wide text-gray-500">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3">
+        <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           Address
         </p>
         <p

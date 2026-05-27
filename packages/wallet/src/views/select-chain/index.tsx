@@ -35,7 +35,7 @@ export function SelectChain() {
         <h1 className="text-xl font-bold leading-tight">
           Select a chain
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           Type a chain id — decimal, hex, or CAIP-2.
         </p>
       </header>
@@ -45,7 +45,7 @@ export function SelectChain() {
       >
         <input
           type="text"
-          className="bg-white p-2 border-2 rounded-md text-base font-mono"
+          className="bg-[var(--surface)] text-[var(--text)] border-[var(--border)] p-2 border-2 rounded-md text-base font-mono"
           value={input}
           placeholder="e.g. 1, 0xaa36a7, eip155:11155111"
           onInput={(event) => {
@@ -54,7 +54,7 @@ export function SelectChain() {
           }}
         />
         {error && (
-          <p className="text-xs text-red-700">{error}</p>
+          <p className="text-xs text-[var(--danger)]">{error}</p>
         )}
         <Button type="submit">Switch</Button>
         <Button

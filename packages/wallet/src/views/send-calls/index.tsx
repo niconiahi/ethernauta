@@ -58,7 +58,7 @@ export function SendCalls() {
   const [error, set_error] = useState<string | null>(null)
   if (!req) {
     return (
-      <main className="p-4 w-80 text-sm text-gray-500">
+      <main className="p-4 w-80 text-sm text-[var(--text-muted)]">
         No send-calls request pending.
       </main>
     )
@@ -76,12 +76,12 @@ export function SendCalls() {
         <h1 className="text-xl font-bold leading-tight">
           Send a batch of calls
         </h1>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           ERC-5792 — wallet_sendCalls.
         </p>
       </header>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-1">
-        <p className="text-xs uppercase tracking-wide text-gray-500">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-1">
+        <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           Chain
         </p>
         <p className="font-mono text-xs break-all">
@@ -90,8 +90,8 @@ export function SendCalls() {
             : `Unknown chain: ${param.chainId}`}
         </p>
       </section>
-      <section className="rounded-md border-2 border-[#FF5005] bg-[color-mix(in_srgb,#FF5005_8%,#faf5f0)] p-3 flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-wide text-gray-500">
+      <section className="rounded-md border-2 border-[var(--text)] bg-[var(--surface-strong)] p-3 flex flex-col gap-2">
+        <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           {param.calls.length} call
           {param.calls.length === 1 ? "" : "s"}
         </p>
@@ -138,7 +138,7 @@ export function SendCalls() {
         </p>
       )}
       {error && (
-        <p className="text-xs text-red-600 break-words">
+        <p className="text-xs text-[var(--danger)] break-words">
           {error}
         </p>
       )}
@@ -246,7 +246,7 @@ export function SendCalls() {
           Reject
         </Button>
       </div>
-      <p className="text-[10px] text-gray-500 leading-snug">
+      <p className="text-[10px] text-[var(--text-muted)] leading-snug">
         Sequential strategy: each call is sent as its own
         EIP-1559 transaction. Future versions can wrap the
         batch atomically via EIP-7702 / ERC-4337.{" "}
