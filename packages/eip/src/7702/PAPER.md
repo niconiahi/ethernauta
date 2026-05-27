@@ -1,5 +1,3 @@
-## data
-
 ---
 title: "EIP-7702: Set Code for EOAs"
 description: Add a new tx type that permanently sets the code for an EOA

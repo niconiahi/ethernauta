@@ -12,6 +12,12 @@ export {
   SET_CODE_MAGIC,
   SET_CODE_TX_TYPE,
 } from "./authorization"
+export {
+  decode_transaction_signed,
+  decode_transaction_unsigned,
+  encode_transaction_signed,
+  encode_transaction_unsigned,
+} from "./codec"
 export { is_delegation_designator } from "./designator"
 export {
   type DelegationIntent,
@@ -27,9 +33,8 @@ export {
   sign_set_code_transaction,
 } from "./sign"
 export {
-  type AccessListItem,
-  encode_set_code_signed,
-  encode_set_code_unsigned,
-  type SetCodeTransactionSigned,
-  type SetCodeTransactionUnsigned,
+  type Transaction7702Signed,
+  transaction7702SignedSchema,
+  type Transaction7702Unsigned,
+  transaction7702UnsignedSchema,
 } from "./transaction"

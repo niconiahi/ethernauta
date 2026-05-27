@@ -22,10 +22,12 @@ import {
   hash_authorization,
 } from "./authorization"
 import {
-  encode_set_code_signed,
-  encode_set_code_unsigned,
-  type SetCodeTransactionSigned,
-  type SetCodeTransactionUnsigned,
+  encode_transaction_signed,
+  encode_transaction_unsigned,
+} from "./codec"
+import type {
+  Transaction7702Signed,
+  Transaction7702Unsigned,
 } from "./transaction"
 
 function big_to_hex(value: bigint): `0x${string}` {
@@ -83,18 +85,21 @@ export function sign_authorization(
  * already-signed inner tuples.
  */
 export function sign_set_code_transaction(
-  unsigned: SetCodeTransactionUnsigned,
+  unsigned: Transaction7702Unsigned,
   private_key: Uint8Array,
 ): Uint8Array {
   const digest = keccak_256(
-    encode_set_code_unsigned(unsigned),
+    encode_transaction_unsigned(unsigned),
   )
   const signature = sign_digest(digest, private_key)
-  const signed: SetCodeTransactionSigned = {
+  const signed: Transaction7702Signed = {
     ...unsigned,
-    yParity: BigInt(signature.recovery),
-    r: signature.r,
-    s: signature.s,
+    yParity: parse(
+      uintSchema,
+      big_to_hex(BigInt(signature.recovery)),
+    ),
+    r: parse(uintSchema, big_to_hex(signature.r)),
+    s: parse(uintSchema, big_to_hex(signature.s)),
   }
-  return encode_set_code_signed(signed)
+  return encode_transaction_signed(signed)
 }

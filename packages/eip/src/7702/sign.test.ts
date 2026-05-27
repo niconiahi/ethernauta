@@ -1,4 +1,9 @@
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import {
+  addressSchema,
+  byteSchema,
+  bytesSchema,
+  uintSchema,
+} from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -12,7 +17,7 @@ import {
   sign_authorization,
   sign_set_code_transaction,
 } from "./sign"
-import type { SetCodeTransactionUnsigned } from "./transaction"
+import type { Transaction7702Unsigned } from "./transaction"
 
 // Test vector: a fixed, throwaway secp256k1 key.
 const PRIVATE_KEY = hex_to_bytes(
@@ -28,18 +33,19 @@ const AUTH: AuthorizationParameter = {
   nonce: parse(uintSchema, "0x5"),
 }
 
-const TX: SetCodeTransactionUnsigned = {
-  chainId: 11155111n,
-  nonce: 4n,
-  maxPriorityFeePerGas: 2_000_000_000n,
-  maxFeePerGas: 30_000_000_000n,
-  gasLimit: 1_000_000n,
+const TX: Transaction7702Unsigned = {
+  type: parse(byteSchema, "0x4"),
+  chainId: parse(uintSchema, "0xaa36a7"),
+  nonce: parse(uintSchema, "0x4"),
+  maxPriorityFeePerGas: parse(uintSchema, "0x77359400"),
+  maxFeePerGas: parse(uintSchema, "0x6fc23ac00"),
+  gas: parse(uintSchema, "0xf4240"),
   to: parse(
     addressSchema,
     "0x1234567890123456789012345678901234567890",
   ),
-  value: 0n,
-  data: new Uint8Array([0xa9, 0x05, 0x9c, 0xbb]),
+  value: parse(uintSchema, "0x0"),
+  input: parse(bytesSchema, "0xa9059cbb"),
   accessList: [],
   authorizationList: [],
 }
