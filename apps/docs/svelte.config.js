@@ -35,6 +35,9 @@ const config = {
       precompress: false,
       strict: true,
     }),
+    alias: {
+      $content: "../../docs/content",
+    },
     prerender: {
       entries: ["*"],
     },

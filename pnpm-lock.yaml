@@ -36,7 +36,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@edge-runtime/vm@5.0.0)(@types/debug@4.1.13)(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)
 
-  docs:
+  apps/docs:
     dependencies:
       '@fontsource/fira-mono':
         specifier: ^5.1.0
@@ -76,7 +76,7 @@ importers:
         specifier: ^4.13.2
         version: 4.90.1
 
-  examples/playground:
+  apps/playground:
     dependencies:
       '@ethernauta/abi':
         specifier: workspace:*

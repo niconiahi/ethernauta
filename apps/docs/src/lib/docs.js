@@ -1,4 +1,4 @@
-const modules = import.meta.glob("/content/**/*.md", { eager: true });
+const modules = import.meta.glob("$content/**/*.md", { eager: true });
 
 function read_string(record, key) {
   const value = record[key];
@@ -19,7 +19,7 @@ function read_number(record, key) {
 export function get_docs() {
   return Object.entries(modules)
     .map(([path, mod]) => {
-      const slug = path.replace(/^\/content\//, "").replace(/\.md$/, "");
+      const slug = path.replace(/^.*\/content\//, "").replace(/\.md$/, "");
       const metadata = mod.metadata ?? {};
       return {
         slug,

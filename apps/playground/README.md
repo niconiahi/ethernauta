@@ -1,6 +1,6 @@
 # Playground
 
-Officially maintained example app. Check it for real-world usage of the libraries — the canonical end-to-end is in [`app/routes/home.tsx`](https://github.com/niconiahi/ethernauta/blob/main/examples/playground/app/routes/home.tsx), which sets up reader / writer / signer / provider, connects a wallet, signs a transaction and tracks it.
+Officially maintained example app. Check it for real-world usage of the libraries — the canonical end-to-end is in [`app/routes/home.tsx`](https://github.com/niconiahi/ethernauta/blob/main/apps/playground/app/routes/home.tsx), which sets up reader / writer / signer / provider, connects a wallet, signs a transaction and tracks it.
 
 For a more complete production reference, see [Animatronik](https://github.com/niconiahi/animatronik) — a deployed NFT dApp built end-to-end on Ethernauta.
 

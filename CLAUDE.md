@@ -120,8 +120,12 @@ packages/
   wallet/       Chrome MV3 extension, PRIVATE (skills/wallet)
   cli/          codegen + registry tooling
 
-examples/
+apps/
   playground/   React Router dapp used for live testing
+  docs/         SvelteKit docs site (reads markdown from ../../docs/content)
+
+docs/
+  content/      markdown source for the docs site
 
 skills/
   conventions/  Valibot-first typing — read first, always
