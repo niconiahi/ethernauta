@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/gas-estimate-arbitrum/demo.tsx?raw"
 import { GasEstimateArbitrumDemo } from "../../examples/gas-estimate-arbitrum/demo"
 
 # Gas estimation — Arbitrum
@@ -27,20 +29,4 @@ l1_base_fee_estimate, l2_base_fee }`.
 
 ## The code
 
-```tsx
-import { calculate_gas_arbitrum } from "@ethernauta/gas"
-import { create_reader, http } from "@ethernauta/transport"
-
-const reader = create_reader([
-  {
-    chainId: "eip155:42161",
-    transports: [http("https://arb1.arbitrum.io/rpc")],
-  },
-])
-
-const fees = await calculate_gas_arbitrum({
-  tx: { to: "0x000…dEaD" },
-})(reader({ chain_id: "eip155:42161" }))
-
-// fees.gas_estimate is the total gas units
-```
+<DemoSource source={demoSource} />

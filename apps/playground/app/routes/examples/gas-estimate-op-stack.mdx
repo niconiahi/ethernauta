@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/gas-estimate-op-stack/demo.tsx?raw"
 import { GasEstimateOpStackDemo } from "../../examples/gas-estimate-op-stack/demo"
 
 # Gas estimation — OP-stack
@@ -27,26 +29,4 @@ max_priority_fee_per_gas, max_fee_per_gas, l1_fee }`.
 
 ## The code
 
-```tsx
-import { calculate_gas_op_stack } from "@ethernauta/gas"
-import { create_reader, http } from "@ethernauta/transport"
-
-const reader = create_reader([
-  {
-    chainId: "eip155:8453",
-    transports: [http("https://mainnet.base.org/")],
-  },
-  {
-    chainId: "eip155:10",
-    transports: [http("https://mainnet.optimism.io")],
-  },
-])
-
-const fees = await calculate_gas_op_stack({
-  tx: { to: "0x000…dEaD" },
-  base_fee_multiplier: 1.5,
-  priority_percentile: 10,
-})(reader({ chain_id: "eip155:8453" }))
-
-// fees.l1_fee is the L1 surcharge in wei
-```
+<DemoSource source={demoSource} />

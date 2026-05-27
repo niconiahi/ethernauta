@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/multicall/demo.tsx?raw"
 import { MulticallDemo } from "../../examples/multicall/demo"
 
 # Multicall — ERC-20 snapshot
@@ -13,50 +15,4 @@ via Multicall3.
 
 ## The code
 
-```ts
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  decimals,
-  name,
-  symbol,
-  totalSupply,
-} from "@ethernauta/erc/20"
-import {
-  contract,
-  create_multicall,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-
-const WETH_SEPOLIA =
-  "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
-
-const multicall = create_multicall([
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-])
-
-const ctx = contract({
-  chain_id: SEPOLIA_CHAIN_ID,
-  to: WETH_SEPOLIA,
-})
-
-// All four `Callable`s share the same contract context and
-// get aggregated into one `aggregate3` eth_call on
-// Multicall3. The result tuple preserves call order.
-const [name_, symbol_, decimals_, supply_] = await multicall([
-  name()(ctx),
-  symbol()(ctx),
-  decimals()(ctx),
-  totalSupply()(ctx),
-] as const)
-```
+<DemoSource source={demoSource} />

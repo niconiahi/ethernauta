@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/ens-137/demo.tsx?raw"
 import { Ens137Demo } from "../../examples/ens-137/demo"
 
 # ERC-137 — ENS resolution
@@ -44,59 +46,7 @@ implements `addr`, `name`, `text`, and so on.
 
 ## The code
 
-```ts
-import { eip155_1 } from "@ethernauta/chain"
-import {
-  get_ens_address,
-  get_ens_avatar,
-  get_ens_name,
-  get_ens_text,
-} from "@ethernauta/erc/137"
-import {
-  create_reader,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const MAINNET_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-})
-
-const reader = create_reader([
-  {
-    chainId: MAINNET_CHAIN_ID,
-    transports: [
-      http("https://eth-mainnet.public.blastapi.io"),
-    ],
-  },
-])
-const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
-
-// Forward — name → address + avatar + text records.
-// Each call is independent; fan them out in parallel.
-const [addr, avatar, twitter, url, description] =
-  await Promise.all([
-    get_ens_address({ name: "vitalik.eth" })(ctx),
-    get_ens_avatar({ name: "vitalik.eth" })(ctx),
-    get_ens_text({
-      name: "vitalik.eth",
-      key: "com.twitter",
-    })(ctx),
-    get_ens_text({ name: "vitalik.eth", key: "url" })(ctx),
-    get_ens_text({
-      name: "vitalik.eth",
-      key: "description",
-    })(ctx),
-  ])
-
-// Reverse — address → primary name. Internally does the
-// reverse-node lookup AND the forward-verify step, so a
-// non-null result is guaranteed authentic.
-const name = await get_ens_name({
-  address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-})(ctx)
-```
+<DemoSource source={demoSource} />
 
 ## Why normalization matters
 

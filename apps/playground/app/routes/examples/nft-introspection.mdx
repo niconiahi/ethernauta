@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/nft-introspection/demo.tsx?raw"
 import { NftIntrospectionDemo } from "../../examples/nft-introspection/demo"
 
 # NFT introspection — BAYC
@@ -15,59 +17,4 @@ multicall.
 
 ## The code
 
-```ts
-import { eip155_1 } from "@ethernauta/chain"
-import { supportsInterface } from "@ethernauta/erc/165"
-import {
-  name,
-  ownerOf,
-  tokenURI,
-  totalSupply,
-} from "@ethernauta/erc/721"
-import {
-  contract,
-  create_multicall,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const MAINNET_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-})
-
-const BAYC = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
-
-const INTERFACES = [
-  { id: "0x80ac58cd", label: "ERC-721" },
-  { id: "0x5b5e139f", label: "ERC-721 Metadata" },
-  { id: "0x780e9d63", label: "ERC-721 Enumerable" },
-  { id: "0x2a55205a", label: "ERC-2981 Royalty" },
-] as const
-
-const multicall = create_multicall([
-  {
-    chainId: MAINNET_CHAIN_ID,
-    transports: [http("https://ethereum-rpc.publicnode.com")],
-  },
-])
-
-const ctx = contract({
-  chain_id: MAINNET_CHAIN_ID,
-  to: BAYC,
-})
-
-// 4 supportsInterface probes + 4 sample reads, batched into
-// one aggregate3 call. Result preserves call order: first 4
-// are booleans for the interface probes, then name / supply
-// / ownerOf / tokenURI.
-const results = await multicall([
-  ...INTERFACES.map((i) =>
-    supportsInterface({ interfaceId: i.id })(ctx),
-  ),
-  name()(ctx),
-  totalSupply()(ctx),
-  ownerOf({ tokenId: "0x1" })(ctx),
-  tokenURI({ tokenId: "0x1" })(ctx),
-] as const)
-```
+<DemoSource source={demoSource} />

@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/gas-estimate/demo.tsx?raw"
 import { GasEstimateDemo } from "../../examples/gas-estimate/demo"
 
 # @ethernauta/gas — fee estimation (EIP-1559)
@@ -40,47 +42,11 @@ ships no default — the dapp / wallet picks what they want.
 
 ## The code
 
-```tsx
-import { eip155_1 } from "@ethernauta/chain"
-import { estimate_1559_fees } from "@ethernauta/gas"
-import { useProvider } from "@ethernauta/react"
-import { encode_chain_id } from "@ethernauta/transport"
-
-const DISCOVERY_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-})
-
-const provider = useProvider({ key: "my-app:picked-rdns" })
-if (!provider) return <Picker />
-
-const fees = await estimate_1559_fees({
-  base_fee_multiplier: 1.5,
-  priority_percentile: 10,
-})(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
-
-// fees = { base_fee_per_gas, max_priority_fee_per_gas,
-//          max_fee_per_gas }
-```
+<DemoSource source={demoSource} />
 
 ## Path-2 (no wallet) is the same call
 
 Same primitive against a public RPC reader — only the
 transport-construction line changes:
 
-```ts
-import { eip155_1 } from "@ethernauta/chain"
-import { estimate_1559_fees } from "@ethernauta/gas"
-import { create_reader, http } from "@ethernauta/transport"
-
-const reader = create_reader([
-  {
-    chainId: "eip155:1",
-    transports: [http("https://ethereum-rpc.publicnode.com")],
-  },
-])
-const fees = await estimate_1559_fees({
-  base_fee_multiplier: 1.5,
-  priority_percentile: 10,
-})(reader({ chain_id: "eip155:1" }))
-```
+<DemoSource source={demoSource} />

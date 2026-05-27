@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/verify-6492/demo.tsx?raw"
 import { Verify6492Demo } from "../../examples/verify-6492/demo"
 
 # EIP-6492 — pre-deploy signature wrapping
@@ -26,52 +28,7 @@ ordinary 1271 / EOA blob.
 
 ## The code
 
-```ts
-import {
-  type Address,
-  addressSchema,
-  type Bytes,
-  bytesSchema,
-} from "@ethernauta/core"
-import {
-  is_wrapped_signature,
-  unwrap_signature,
-  wrap_signature,
-} from "@ethernauta/eip/6492"
-import { parse } from "valibot"
-
-// `factory` is the address of the contract that knows how
-// to deploy the smart-contract wallet (e.g. an ERC-4337
-// account factory, a Safe proxy factory). `factoryData`
-// is the calldata that triggers that deploy — usually
-// `createAccount(owner, salt)` or equivalent. `signature`
-// is whatever the wallet's `isValidSignature` will accept
-// once it exists on-chain.
-const factory: Address = parse(
-  addressSchema,
-  "0x000000000000000000000000000000000000FA01",
-)
-const factoryData: Bytes = parse(
-  bytesSchema,
-  "0xdeadbeefcafebabe",
-)
-const signature: Bytes = parse(
-  bytesSchema,
-  `0x${"42".repeat(65)}`,
-)
-
-const wrapped = wrap_signature({
-  factory,
-  factoryData,
-  signature,
-})
-
-is_wrapped_signature(wrapped) // true
-is_wrapped_signature(signature) // false
-
-const unwrapped = unwrap_signature(wrapped)
-// unwrapped: { factory, factoryData, signature } | null
-```
+<DemoSource source={demoSource} />
 
 ## When to wrap
 

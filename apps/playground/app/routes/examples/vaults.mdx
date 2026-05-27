@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/vaults/demo.tsx?raw"
 import { VaultsDemo } from "../../examples/vaults/demo"
 
 # ERC-4626 vault dashboards
@@ -16,70 +18,4 @@ two contracts, one roundtrip.
 
 ## The code
 
-```ts
-import { eip155_1 } from "@ethernauta/chain"
-import {
-  decimals,
-  symbol,
-  totalSupply,
-} from "@ethernauta/erc/20"
-import {
-  asset,
-  convertToAssets,
-  totalAssets,
-} from "@ethernauta/erc/4626"
-import {
-  contract,
-  create_multicall,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const MAINNET_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-})
-
-const VAULTS = [
-  {
-    label: "Morpho · Steakhouse USDC",
-    address: "0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB",
-  },
-  {
-    label: "Yearn · yvUSDC v3",
-    address: "0xBe53A109B494E5c9f97b9Cd39Fe969BE68BF6204",
-  },
-] as const
-
-const multicall = create_multicall([
-  {
-    chainId: MAINNET_CHAIN_ID,
-    transports: [http("https://ethereum-rpc.publicnode.com")],
-  },
-])
-
-// `convertToAssets(1 share)` returns the underlying amount
-// for one share — the standard "price per share". We pass
-// 1e18 because most vaults use 18 share decimals; if not,
-// normalise on the client using the read `decimals()` value.
-const ONE_SHARE = `0x${(10n ** 18n).toString(16)}` as const
-
-// 6 reads per vault × 2 vaults = 12 reads, one aggregate3
-// eth_call. Tuple order matches the array order below.
-const calls = VAULTS.flatMap((v) => {
-  const ctx = contract({
-    chain_id: MAINNET_CHAIN_ID,
-    to: v.address,
-  })
-  return [
-    symbol()(ctx),
-    decimals()(ctx),
-    totalSupply()(ctx),
-    totalAssets()(ctx),
-    convertToAssets({ shares: ONE_SHARE })(ctx),
-    asset()(ctx),
-  ] as const
-})
-
-const results = await multicall(calls as never)
-```
+<DemoSource source={demoSource} />

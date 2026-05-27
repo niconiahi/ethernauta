@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/event-decoding/demo.tsx?raw"
 import { EventDecodingDemo } from "../../examples/event-decoding/demo"
 
 # Decoding contract event logs
@@ -24,56 +26,7 @@ HTTP transport.
 
 ## The code
 
-```ts
-import { address, uint256 } from "@ethernauta/abi"
-import { eip155_1 } from "@ethernauta/chain"
-import {
-  eth_blockNumber,
-  get_contract_events,
-} from "@ethernauta/eth"
-import {
-  create_reader,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-
-const MAINNET_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-})
-
-const reader = create_reader([
-  {
-    chainId: MAINNET_CHAIN_ID,
-    transports: [
-      http("https://eth-mainnet.public.blastapi.io"),
-    ],
-  },
-])
-const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
-
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-
-// Scan the last few blocks so the example is bounded.
-const head = BigInt(await eth_blockNumber()(ctx))
-const from = head - 3n
-
-// `args` is parallel to `indexed` — declares one ABI codec
-// per event input. Transfer(address indexed, address indexed,
-// uint256) → [address(), address(), uint256()] with
-// indexed = [true, true, false].
-const decoded = await get_contract_events({
-  address: USDC,
-  name: "Transfer",
-  args: [address(), address(), uint256()],
-  indexed: [true, true, false],
-  fromBlock: `0x${from.toString(16)}`,
-  toBlock: `0x${head.toString(16)}`,
-})(ctx)
-
-// decoded[i].args = [from, to, value], positional in the
-// same order as `args` above.
-```
+<DemoSource source={demoSource} />
 
 ## Indexed reference types
 

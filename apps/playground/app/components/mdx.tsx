@@ -27,24 +27,9 @@ export const MDX_COMPONENTS = {
       {...props}
       style={{
         fontSize: 15,
-        color: "#555",
+        color: "var(--text-muted)",
         lineHeight: 1.6,
         margin: "0 0 16px",
-      }}
-    />
-  ),
-  pre: (props: ComponentPropsWithoutRef<"pre">) => (
-    <pre
-      {...props}
-      style={{
-        background: "#f6f6f4",
-        border: "1px solid #e5e5e0",
-        borderRadius: 8,
-        padding: "16px 20px",
-        overflowX: "auto",
-        fontSize: 13,
-        lineHeight: 1.6,
-        margin: "0 0 24px",
       }}
     />
   ),

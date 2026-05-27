@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/eip-6963/demo.tsx?raw"
 import { Eip6963Demo } from "../../examples/eip-6963/demo"
 
 # EIP-6963 — wallet discovery + persistence
@@ -28,59 +30,7 @@ announcement, recover the live detail.
 
 ## The code
 
-```ts
-import {
-  ANNOUNCE_EVENT,
-  clear_provider_detail,
-  type EIP6963AnnounceProviderEvent,
-  type EIP6963ProviderDetail,
-  get_provider_detail,
-  REQUEST_EVENT,
-  set_provider_detail,
-  type Store,
-  web_storage,
-} from "@ethernauta/eip/6963"
-
-const PICKED_KEY = "ethernauta:picked-wallet"
-
-const store: Store = web_storage(window.localStorage)
-
-// 1. Continuous listen — every announce lands in the list.
-const providers: EIP6963ProviderDetail[] = []
-window.addEventListener(ANNOUNCE_EVENT, (event) => {
-  const detail =
-    (event as EIP6963AnnounceProviderEvent).detail
-  providers.push(detail)
-})
-window.dispatchEvent(new Event(REQUEST_EVENT))
-
-// 2. On user pick, persist the rdns. Nothing else is
-//    written — the live Provider stays in memory, the
-//    identifier is what survives reloads.
-function pick(provider_detail: EIP6963ProviderDetail) {
-  set_provider_detail({
-    store,
-    key: PICKED_KEY,
-    provider_detail,
-  })
-}
-
-// 3. On a later page load, rehydrate by re-issuing the
-//    6963 handshake and filtering by the stored rdns.
-const provider_detail = await get_provider_detail({
-  store,
-  key: PICKED_KEY,
-  ms: 200,
-})
-// provider_detail is null when the wallet is no longer installed.
-
-// 4. Clear the persisted selection on disconnect / wallet
-//    uninstalled / user request.
-clear_provider_detail({
-  store,
-  key: PICKED_KEY,
-})
-```
+<DemoSource source={demoSource} />
 
 The `Store` shape is `{ get, set, remove }` — synchronous
 get/set/remove returning `string | null`. `window.localStorage`

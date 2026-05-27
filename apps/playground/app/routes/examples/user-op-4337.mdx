@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/user-op-4337/demo.tsx?raw"
 import { UserOp4337Demo } from "../../examples/user-op-4337/demo"
 
 # ERC-4337 v0.7 — sign + submit a UserOperation
@@ -39,109 +41,7 @@ receipt.
 
 ## The code
 
-```ts
-import {
-  address,
-  bytes,
-  encode_function_call,
-  uint256,
-} from "@ethernauta/abi"
-import { eip155_11155111 } from "@ethernauta/chain"
-import {
-  ENTRY_POINT_V07_ADDRESS,
-  eth_estimateUserOperationGas,
-  eth_getUserOperationReceipt,
-  eth_sendUserOperation,
-  get_user_op_hash,
-  sign_user_op,
-  type UserOperation,
-} from "@ethernauta/eip/4337"
-import {
-  create_reader,
-  create_signer,
-  create_writer,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
-
-const SEPOLIA_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_11155111.chainId,
-})
-const SEPOLIA_REF_HEX = "0xaa36a7" as const
-
-// Bundler talks ERC-4337 RPC; node talks regular eth_*.
-// They're different transports — keep them separate.
-const NODE_CHAINS = [
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [
-      http("https://ethereum-sepolia-rpc.publicnode.com"),
-    ],
-  },
-]
-const BUNDLER_CHAINS = [
-  {
-    chainId: SEPOLIA_CHAIN_ID,
-    transports: [http(BUNDLER_URL)],
-  },
-]
-const signer = create_signer(NODE_CHAINS)
-const reader = create_reader(BUNDLER_CHAINS)
-const writer = create_writer(BUNDLER_CHAINS)
-
-// SimpleAccount.execute(target, value, data) calldata.
-const callData = bytes_to_hex(
-  encode_function_call({
-    name: "execute",
-    args: [address(), uint256(), bytes()] as const,
-    values: [TARGET, 0n, "0x"] as never,
-  }),
-)
-
-// 1. Draft op with dummy gas + signature for estimation.
-const draft: UserOperation = {
-  sender: SMART_ACCOUNT,
-  nonce: "0x0",
-  callData,
-  callGasLimit: "0x186a0",
-  verificationGasLimit: "0x186a0",
-  preVerificationGas: "0xc350",
-  maxFeePerGas: "0x6fc23ac00",
-  maxPriorityFeePerGas: "0x77359400",
-  signature: `0x${"00".repeat(65)}`,
-}
-
-// 2. Ask the bundler for tighter gas numbers.
-const estimated = await eth_estimateUserOperationGas({
-  op: draft,
-  entryPoint: ENTRY_POINT_V07_ADDRESS,
-})(reader({ chain_id: SEPOLIA_CHAIN_ID }))
-
-const op = { ...draft, ...estimated }
-
-// 3. Sign the userOpHash with the owner EOA. The wallet
-//    pops personal_sign(userOpHash).
-const signature = await sign_user_op({
-  op,
-  owner: OWNER_EOA,
-  entryPoint: ENTRY_POINT_V07_ADDRESS,
-  chainId: SEPOLIA_REF_HEX,
-})(signer({ chain_id: SEPOLIA_CHAIN_ID }))
-
-// 4. Submit to the bundler. Returns the userOpHash.
-const userOpHash = await eth_sendUserOperation({
-  op: { ...op, signature },
-  entryPoint: ENTRY_POINT_V07_ADDRESS,
-})(writer({ chain_id: SEPOLIA_CHAIN_ID }))
-
-// 5. Poll. Once bundled, `receipt.receipt.transactionHash`
-//    is the on-chain tx.
-const receipt = await eth_getUserOperationReceipt(
-  userOpHash,
-)(reader({ chain_id: SEPOLIA_CHAIN_ID }))
-```
+<DemoSource source={demoSource} />
 
 ## Free Sepolia bundlers
 

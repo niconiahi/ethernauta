@@ -13,7 +13,7 @@ import tsconfigPaths from "vite-tsconfig-paths"
 // loads every shiki grammar (~200), blowing the Worker bundle
 // past Cloudflare's size limit.
 const highlighter = await createHighlighter({
-  themes: ["github-light"],
+  themes: ["github-light", "github-dark"],
   langs: ["ts", "tsx", "solidity"],
 })
 
@@ -28,8 +28,15 @@ export default defineConfig({
         [
           rehypePrettyCode,
           {
-            theme: "github-light",
-            keepBackground: false,
+            // Dual-theme emits per-token CSS vars (--shiki-light /
+            // --shiki-dark); the @media (prefers-color-scheme: dark)
+            // rule in tokens.css swaps between them. Matches the docs
+            // site's mdsvex setup.
+            theme: {
+              light: "github-light",
+              dark: "github-dark",
+            },
+            keepBackground: true,
             getHighlighter: () => highlighter,
           },
         ],

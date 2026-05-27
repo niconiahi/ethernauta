@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/permit/demo.tsx?raw"
 import { PermitDemo } from "../../examples/permit/demo"
 
 # Permit signing — USDC
@@ -17,91 +19,4 @@ prior `approve()` transaction.
 
 ## The code
 
-```ts
-import { eip155_1 } from "@ethernauta/chain"
-import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
-import {
-  DOMAIN_SEPARATOR,
-  nonces,
-} from "@ethernauta/erc/20"
-import { useProviderDetail } from "@ethernauta/react"
-import {
-  contract,
-  create_multicall,
-  create_provider,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
-import { deadline_in, parse_unit } from "@ethernauta/utils"
-
-const MAINNET_CHAIN_ID = encode_chain_id({
-  namespace: "eip155",
-  reference: eip155_1.chainId,
-})
-
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-const SPENDER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
-const VALUE = parse_unit("100", 6) // 100 USDC, 6 decimals
-
-const CHAINS = [
-  {
-    chainId: MAINNET_CHAIN_ID,
-    transports: [http("https://ethereum-rpc.publicnode.com")],
-  },
-]
-const multicall = create_multicall(CHAINS)
-
-// Rehydrate the EIP-6963 wallet the user picked at SIWE
-// time — MetaMask, Ethernauta, or any compliant wallet.
-const provider_detail = useProviderDetail({
-  key: PROVIDER_STORE_KEY,
-})
-const provider = create_provider(provider_detail.provider)
-
-const ctx = contract({
-  chain_id: MAINNET_CHAIN_ID,
-  to: USDC,
-})
-
-// 1. Read the two values the typed message depends on in
-//    a single round-trip, via the public RPC reader.
-const [domain_separator, nonce_hex] = await multicall([
-  DOMAIN_SEPARATOR()(ctx),
-  nonces({ owner })(ctx),
-] as const)
-
-const nonce = BigInt(nonce_hex)
-const deadline = deadline_in(3600) // 1 hour from now
-
-// 2. Sign the typed Permit struct against the connected
-//    wallet's EIP-1193 provider — pops whichever wallet the
-//    user picked, not a hard-coded one.
-const signature = await eth_signTypedData_v4([
-  owner,
-  {
-    domain: {
-      name: "USD Coin",
-      version: "2",
-      chainId: 1n,
-      verifyingContract: USDC,
-    },
-    types: {
-      Permit: [
-        { name: "owner", type: "address" },
-        { name: "spender", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "nonce", type: "uint256" },
-        { name: "deadline", type: "uint256" },
-      ],
-    },
-    primaryType: "Permit",
-    message: {
-      owner,
-      spender: SPENDER,
-      value: VALUE,
-      nonce,
-      deadline,
-    },
-  },
-])(provider.signer({ chain_id: MAINNET_CHAIN_ID }))
-```
+<DemoSource source={demoSource} />

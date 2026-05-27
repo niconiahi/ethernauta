@@ -1,4 +1,6 @@
+import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
+import demoSource from "../../examples/gas-estimate-zksync/demo.tsx?raw"
 import { GasEstimateZksyncDemo } from "../../examples/gas-estimate-zksync/demo"
 
 # Gas estimation — zkSync Era
@@ -26,20 +28,4 @@ your dapp.
 
 ## The code
 
-```tsx
-import { calculate_gas_zksync } from "@ethernauta/gas"
-import { create_reader, http } from "@ethernauta/transport"
-
-const reader = create_reader([
-  {
-    chainId: "eip155:324",
-    transports: [http("https://mainnet.era.zksync.io")],
-  },
-])
-
-const fees = await calculate_gas_zksync({
-  tx: { from: connected_address, to: "0x000…dEaD" },
-})(reader({ chain_id: "eip155:324" }))
-
-// fees.gas_per_pubdata_limit is the L1-publish surcharge
-```
+<DemoSource source={demoSource} />
