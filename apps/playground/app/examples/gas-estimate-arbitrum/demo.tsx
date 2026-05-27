@@ -1,5 +1,5 @@
-// `calculate_gas(chain, { kind: "arbitrum", tx })` against Arbitrum
-// One. Single read of the NodeInterface precompile's
+// `calculate_gas_arbitrum({ tx })` against Arbitrum One. Single read
+// of the NodeInterface precompile's
 // gasEstimateComponents(to, false, data) — the Nitro node hands back
 // the L2 execution + L1 batch-posting split in one shot.
 
@@ -8,7 +8,7 @@ import {
   addressSchema,
   type Uint,
 } from "@ethernauta/core"
-import { calculate_gas } from "@ethernauta/gas"
+import { calculate_gas_arbitrum } from "@ethernauta/gas"
 import { useProvider } from "@ethernauta/react"
 import { encode_chain_id } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
@@ -54,14 +54,9 @@ export function GasEstimateArbitrumDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const result = await calculate_gas(eip155_42161, {
-        kind: "arbitrum",
+      const result = await calculate_gas_arbitrum({
         tx: { to: DEFAULT_TO },
       })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
-      if (result.kind !== "arbitrum")
-        throw new Error(
-          `unexpected fees kind: ${result.kind}`,
-        )
       set_fees({
         gas_estimate: result.gas_estimate,
         l1_base_fee_estimate: result.l1_base_fee_estimate,

@@ -1,11 +1,12 @@
-// Calls `calculate_gas(chain, parameters)` — the dispatch
-// surface. Reads the chain's family (1559, op-stack, arbitrum,
-// zksync) and routes to the matching estimator. v1 routes
-// every chain to the 1559 path.
+// Calls `estimate_1559_fees(parameters)` directly. Mainnet (and any
+// other EIP-1559 EVM chain that isn't an L2 family member) takes the
+// vanilla `eth_feeHistory` path — no L1 surcharge to factor in.
+// L2 demos (op-stack / arbitrum / zksync) import their own family
+// helper from `@ethernauta/gas`; there is no central dispatcher.
 
 import { eip155_1 } from "@ethernauta/chain"
 import type { Uint } from "@ethernauta/core"
-import { calculate_gas } from "@ethernauta/gas"
+import { estimate_1559_fees } from "@ethernauta/gas"
 import { useProvider } from "@ethernauta/react"
 import { encode_chain_id } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
@@ -53,15 +54,10 @@ export function GasEstimateDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const fees = await calculate_gas(eip155_1, {
-        kind: "1559",
+      const fees = await estimate_1559_fees({
         base_fee_multiplier: multiplier,
         priority_percentile: percentile,
       })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
-      if (fees.kind !== "1559")
-        throw new Error(
-          `unexpected fees kind: ${fees.kind}`,
-        )
       set_base_fee(fees.base_fee_per_gas)
       set_priority(fees.max_priority_fee_per_gas)
       set_max_fee(fees.max_fee_per_gas)

@@ -1,24 +1,28 @@
 import { GithubLink } from "../../components/github-link"
 import { GasEstimateDemo } from "../../examples/gas-estimate/demo"
 
-# @ethernauta/gas — fee estimation per chain family
+# @ethernauta/gas — fee estimation (EIP-1559)
 
-`calculate_gas(chain, parameters)` is the dispatch surface.
-Pass the `Chain` you imported from `@ethernauta/chain`; the
-library reads `chain.chainId`, looks up the family (`1559`,
-`op-stack`, `arbitrum`, `zksync`), and routes to the matching
-primitive. The consumer never picks the estimator.
+`estimate_1559_fees({ base_fee_multiplier, priority_percentile })`
+is the primitive for any EIP-1559 EVM chain that isn't part of an
+L2 fee family. Mainnet, every testnet, every sidechain — anything
+that prices gas exclusively via `eth_feeHistory` lands here.
 
-Every call is `kind`-tagged so the dispatcher can match the
-caller's intent against the chain's family. Pass
-`{ kind: "1559", base_fee_multiplier, priority_percentile }` for
-EIP-1559 chains; pass `{ kind: "op-stack", tx, ... }` /
-`{ kind: "arbitrum", tx }` / `{ kind: "zksync", tx }` for the
-matching L2 families. The return value is a discriminated union
-on the same `kind` — narrow with `if (fees.kind === "1559")`
-before reading family-specific fields.
+For chains in an L2 fee family the consumer imports the matching
+helper directly:
 
-The 1559 arm returns three fields:
+- **OP-stack** (Base, Optimism, Mode, Zora, Mantle, World Chain,
+  Soneium, Lisk) → `calculate_gas_op_stack`.
+- **Arbitrum** (One, Nova) → `calculate_gas_arbitrum`.
+- **zkSync Era** (mainnet, Sepolia) → `calculate_gas_zksync`.
+
+There is no central dispatcher — the consumer picks the helper
+the same way they pick a chain. `@ethernauta/gas` also exports
+`gas_family(chain)` and the `FamilyForChainId<Id>` conditional
+type for consumers who want to branch on family at runtime or
+type level.
+
+The 1559 return shape:
 
 - `base_fee_per_gas` — read from the latest entry of
   `baseFeePerGas`.
@@ -38,7 +42,7 @@ ships no default — the dapp / wallet picks what they want.
 
 ```tsx
 import { eip155_1 } from "@ethernauta/chain"
-import { calculate_gas } from "@ethernauta/gas"
+import { estimate_1559_fees } from "@ethernauta/gas"
 import { useProvider } from "@ethernauta/react"
 import { encode_chain_id } from "@ethernauta/transport"
 
@@ -50,24 +54,23 @@ const DISCOVERY_CHAIN_ID = encode_chain_id({
 const provider = useProvider({ key: "my-app:picked-rdns" })
 if (!provider) return <Picker />
 
-const fees = await calculate_gas(eip155_1, {
-  kind: "1559",
+const fees = await estimate_1559_fees({
   base_fee_multiplier: 1.5,
   priority_percentile: 10,
 })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
 
-// fees = { kind: "1559", base_fee_per_gas,
-//          max_priority_fee_per_gas, max_fee_per_gas }
+// fees = { base_fee_per_gas, max_priority_fee_per_gas,
+//          max_fee_per_gas }
 ```
 
-## The two paths, side by side
+## Path-2 (no wallet) is the same call
 
-Same call against a public RPC, no wallet involved — only the
+Same primitive against a public RPC reader — only the
 transport-construction line changes:
 
 ```ts
 import { eip155_1 } from "@ethernauta/chain"
-import { calculate_gas } from "@ethernauta/gas"
+import { estimate_1559_fees } from "@ethernauta/gas"
 import { create_reader, http } from "@ethernauta/transport"
 
 const reader = create_reader([
@@ -76,20 +79,8 @@ const reader = create_reader([
     transports: [http("https://ethereum-rpc.publicnode.com")],
   },
 ])
-const fees = await calculate_gas(eip155_1, {
-  kind: "1559",
+const fees = await estimate_1559_fees({
   base_fee_multiplier: 1.5,
   priority_percentile: 10,
 })(reader({ chain_id: "eip155:1" }))
 ```
-
-## Why dispatch on `Chain`, not `chain_id`
-
-The chain-family lookup is a finite chainId-keyed Set; passing
-the full `Chain` object is the same amount of typing but gives
-the library room to grow into multi-field decisions
-(nativeCurrency for paymaster work, parent chain for L2 fee
-oracles) without a breaking signature change. Path-1 callers
-who only have the provider's `chain_id` can pair it with the
-matching `Chain` definition the same way they do when wiring
-`CHAINS` into `create_reader`.

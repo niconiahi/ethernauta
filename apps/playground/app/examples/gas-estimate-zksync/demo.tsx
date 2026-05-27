@@ -1,13 +1,13 @@
-// `calculate_gas(chain, { kind: "zksync", tx })` against zkSync Era.
-// Single zks_estimateFee RPC call — the zkSync node returns the
-// four fee components zkSync charges in one shot.
+// `calculate_gas_zksync({ tx })` against zkSync Era. Single
+// zks_estimateFee RPC call — the zkSync node returns the four fee
+// components zkSync charges in one shot.
 
 import { eip155_324 } from "@ethernauta/chain"
 import {
   addressSchema,
   type Uint,
 } from "@ethernauta/core"
-import { calculate_gas } from "@ethernauta/gas"
+import { calculate_gas_zksync } from "@ethernauta/gas"
 import { useProvider } from "@ethernauta/react"
 import { encode_chain_id } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
@@ -63,14 +63,9 @@ export function GasEstimateZksyncDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const result = await calculate_gas(eip155_324, {
-        kind: "zksync",
+      const result = await calculate_gas_zksync({
         tx: { from: DEFAULT_FROM, to: DEFAULT_TO },
       })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
-      if (result.kind !== "zksync")
-        throw new Error(
-          `unexpected fees kind: ${result.kind}`,
-        )
       set_fees({
         gas_limit: result.gas_limit,
         gas_per_pubdata_limit: result.gas_per_pubdata_limit,

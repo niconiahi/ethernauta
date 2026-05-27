@@ -1,9 +1,9 @@
-// `calculate_gas(chain, { kind: "op-stack", tx, ... })` against a
-// picker of Base or Optimism. Both chains route through the same
-// op-stack family helper — this demo is the visual proof that the
-// L1 fee read (GasPriceOracle.getL1Fee on the 0x420…000F predeploy)
-// composes the same way regardless of which OP-stack chain the
-// provider is on.
+// `calculate_gas_op_stack({ tx, ... })` against a picker of Base or
+// Optimism. Both chains use the same family helper — this demo is
+// the visual proof that the L1 fee read (GasPriceOracle.getL1Fee on
+// the 0x420…000F predeploy) composes the same way regardless of
+// which OP-stack chain the provider is on. The chain is wired into
+// the `provider.reader({ chain_id })` resolver, not into the helper.
 
 import {
   type Chain,
@@ -14,7 +14,7 @@ import {
   addressSchema,
   type Uint,
 } from "@ethernauta/core"
-import { calculate_gas } from "@ethernauta/gas"
+import { calculate_gas_op_stack } from "@ethernauta/gas"
 import { useProvider } from "@ethernauta/react"
 import { encode_chain_id } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
@@ -75,16 +75,11 @@ export function GasEstimateOpStackDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const result = await calculate_gas(chain, {
-        kind: "op-stack",
+      const result = await calculate_gas_op_stack({
         tx: { to: DEFAULT_TO },
         base_fee_multiplier: multiplier,
         priority_percentile: percentile,
       })(provider.reader({ chain_id: discovery_chain_id }))
-      if (result.kind !== "op-stack")
-        throw new Error(
-          `unexpected fees kind: ${result.kind}`,
-        )
       set_fees({
         base_fee_per_gas: result.base_fee_per_gas,
         max_priority_fee_per_gas:
