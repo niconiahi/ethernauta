@@ -54,9 +54,14 @@ export function GasEstimateDemo() {
     set_error(null)
     try {
       const fees = await calculate_gas(eip155_1, {
+        kind: "1559",
         base_fee_multiplier: multiplier,
         priority_percentile: percentile,
       })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
+      if (fees.kind !== "1559")
+        throw new Error(
+          `unexpected fees kind: ${fees.kind}`,
+        )
       set_base_fee(fees.base_fee_per_gas)
       set_priority(fees.max_priority_fee_per_gas)
       set_max_fee(fees.max_fee_per_gas)

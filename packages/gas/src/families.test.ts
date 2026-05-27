@@ -16,10 +16,7 @@ describe("gas_family", () => {
     expect(gas_family(eip155_11155111)).toBe("1559")
   })
 
-  it("routes Optimism to 1559 in v1 (OP_STACK set is empty)", () => {
-    // v2 uncomments chainId 10 in OP_STACK; this assertion
-    // documents the v1 behaviour and will flip to "op-stack"
-    // at that point.
-    expect(gas_family(eip155_10)).toBe("1559")
+  it("routes Optimism to op-stack", () => {
+    expect(gas_family(eip155_10)).toBe("op-stack")
   })
 })

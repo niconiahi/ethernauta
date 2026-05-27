@@ -9,13 +9,16 @@ library reads `chain.chainId`, looks up the family (`1559`,
 `op-stack`, `arbitrum`, `zksync`), and routes to the matching
 primitive. The consumer never picks the estimator.
 
-v1 routes every chain to the 1559 path — that means execution
-fees are estimated correctly on every EIP-1559 chain, including
-the L2 portion of OP-stack / Arbitrum / zkSync rollups. The L1
-data-fee portion lands in v2 / v3 / v4 alongside their
-family-specific implementations.
+Every call is `kind`-tagged so the dispatcher can match the
+caller's intent against the chain's family. Pass
+`{ kind: "1559", base_fee_multiplier, priority_percentile }` for
+EIP-1559 chains; pass `{ kind: "op-stack", tx, ... }` /
+`{ kind: "arbitrum", tx }` / `{ kind: "zksync", tx }` for the
+matching L2 families. The return value is a discriminated union
+on the same `kind` — narrow with `if (fees.kind === "1559")`
+before reading family-specific fields.
 
-The returned `Fees1559` object has three fields:
+The 1559 arm returns three fields:
 
 - `base_fee_per_gas` — read from the latest entry of
   `baseFeePerGas`.
@@ -48,12 +51,13 @@ const provider = useProvider({ key: "my-app:picked-rdns" })
 if (!provider) return <Picker />
 
 const fees = await calculate_gas(eip155_1, {
+  kind: "1559",
   base_fee_multiplier: 1.5,
   priority_percentile: 10,
 })(provider.reader({ chain_id: DISCOVERY_CHAIN_ID }))
 
-// fees = { base_fee_per_gas, max_priority_fee_per_gas,
-//          max_fee_per_gas } — all Uint hex.
+// fees = { kind: "1559", base_fee_per_gas,
+//          max_priority_fee_per_gas, max_fee_per_gas }
 ```
 
 ## The two paths, side by side
@@ -73,6 +77,7 @@ const reader = create_reader([
   },
 ])
 const fees = await calculate_gas(eip155_1, {
+  kind: "1559",
   base_fee_multiplier: 1.5,
   priority_percentile: 10,
 })(reader({ chain_id: "eip155:1" }))

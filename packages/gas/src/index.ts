@@ -17,3 +17,11 @@ export {
   estimatePriorityFeeParametersSchema,
 } from "./estimate-priority-fee"
 export { gas_family, type GasFamily } from "./families"
+export {
+  type CalculateGasFees,
+  calculateGasFeesSchema,
+} from "./fees"
+export {
+  type CalculateGasParameters,
+  calculateGasParametersSchema,
+} from "./parameters"
