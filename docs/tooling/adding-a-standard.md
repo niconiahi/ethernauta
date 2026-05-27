@@ -129,7 +129,7 @@ This emits the method files and updates the selector registry.
 
 ## Step 8 — Docs page
 
-Add a `docs/content/eips/<n>.md` or `docs/content/ercs/<n>.md`. Follow the existing templates: spec link, one-paragraph what + why, surface table, code example, `See also`. Tag the order field so it sorts in numeric position within the section.
+Add a `docs/eips/<n>.md` or `docs/ercs/<n>.md`. Follow the existing templates: spec link, one-paragraph what + why, surface table, code example, `See also`. Tag the order field so it sorts in numeric position within the section.
 
 ## Step 9 — Test
 

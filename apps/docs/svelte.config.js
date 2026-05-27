@@ -36,7 +36,7 @@ const config = {
       strict: true,
     }),
     alias: {
-      $content: "../../docs/content",
+      $content: "../../docs",
     },
     prerender: {
       entries: ["*"],
