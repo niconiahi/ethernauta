@@ -3,7 +3,7 @@
 // surfaces every intermediate value so we can see exactly
 // which one diverges from the synthetic-transport tests.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
   bytes65Schema,

@@ -8,7 +8,7 @@
 // Store-shaped object for custom backends (chrome.storage,
 // IndexedDB, in-memory tests).
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import type { Hash32 } from "@ethernauta/core"
 import {
   create_tracker,

@@ -1,4 +1,4 @@
-import { eip155_8453 } from "@ethernauta/chain"
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
 import {
   addressSchema,
   bytesSchema,

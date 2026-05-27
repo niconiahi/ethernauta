@@ -3,7 +3,7 @@ import {
   encode_function_call,
   string_,
 } from "@ethernauta/abi"
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   type Address,
   addressSchema,

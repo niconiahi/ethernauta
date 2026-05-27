@@ -1,4 +1,4 @@
-import { eip155_42161 } from "@ethernauta/chain"
+import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
 import { addressSchema } from "@ethernauta/core"
 import {
   encode_chain_id,

@@ -1,8 +1,6 @@
-import {
-  eip155_1,
-  eip155_10,
-  eip155_11155111,
-} from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
+import { eip155_10 } from "@ethernauta/chain/eip155-10"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { describe, expect, it } from "vitest"
 
 import { gas_family } from "./families"

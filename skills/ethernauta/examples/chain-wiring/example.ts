@@ -1,10 +1,8 @@
 // Build the chain id and chain entries once at module scope.
 // Pass the resulting CHAINS array to whichever factories you need.
 
-import {
-  eip155_1,
-  eip155_11155111,
-} from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   create_reader,
   create_signer,

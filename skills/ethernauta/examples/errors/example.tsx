@@ -1,7 +1,7 @@
 // Distinguish user rejections (4001) from RPC errors and
 // validation errors. Render the first softly; surface the rest.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   eth_sendRawTransaction,

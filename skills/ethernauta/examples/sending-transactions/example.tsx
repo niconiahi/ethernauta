@@ -1,7 +1,7 @@
 // Sign a native ETH transfer, then broadcast it.
 // Pattern: signer for signing, writer for sending.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   eth_sendRawTransaction,
   eth_signTransaction,

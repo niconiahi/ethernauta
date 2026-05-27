@@ -1,4 +1,4 @@
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { addressSchema } from "@ethernauta/core"
 import {
   derive_private_key,

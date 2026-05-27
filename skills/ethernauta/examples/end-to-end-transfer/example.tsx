@@ -1,7 +1,7 @@
 // End-to-end: connect, sign, send, track. Single component.
 // Distilled from examples/playground/app/routes/home.tsx.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   eth_sendRawTransaction,

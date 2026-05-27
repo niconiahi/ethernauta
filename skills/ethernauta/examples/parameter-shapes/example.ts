@@ -1,7 +1,7 @@
 // Every parameterized Ethernauta method accepts two equivalent
 // forms. Pick one style per codebase and stick to it.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   eth_getBalance,
   eth_getTransactionCount,

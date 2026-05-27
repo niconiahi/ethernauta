@@ -1,6 +1,6 @@
 // Reading raw chain state via Readable methods.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   eth_blockNumber,
   eth_getBalance,

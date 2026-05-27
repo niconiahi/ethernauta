@@ -1,7 +1,7 @@
 // Calling a state-changing contract method.
 // Taken from animatronik's dapp.add.tsx mint flow.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { addressSchema } from "@ethernauta/eth"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {

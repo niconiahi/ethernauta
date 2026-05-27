@@ -6,10 +6,8 @@
 // route — that's the consumer's policy, not a property of
 // `verify_siwe_message` itself.
 
-import {
-  eip155_1,
-  eip155_11155111,
-} from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   create_reader,
   encode_chain_id,

@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   encode_chain_id,
   type ResolvedReader,

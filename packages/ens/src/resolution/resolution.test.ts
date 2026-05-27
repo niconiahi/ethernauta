@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { addressSchema } from "@ethernauta/core"
 import {
   create_reader,

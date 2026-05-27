@@ -3,7 +3,7 @@
 // transports per chain and executes the eth_call.
 // Taken from the animatronik dapp's showcase loader.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { addressSchema } from "@ethernauta/eth"
 import {
   contract,

@@ -12,7 +12,7 @@
 // `bytesSchema` / `addressSchema` parses. If this test goes
 // red, the playground flow is broken for the same reason.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
   bytesSchema,
