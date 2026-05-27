@@ -9,6 +9,9 @@
     "types": ["vitest/globals"],
     "paths": {
       "@ethernauta/*": ["./packages/*/src"],
+      "@ethernauta/chain/*": [
+        "./packages/chain/src/chain/eip155/*"
+      ],
       "@ethernauta/eip/*": ["./packages/eip/src/*"],
       "@ethernauta/erc/*": ["./packages/erc/src/*"],
       "@ethernauta/abi/generator": [

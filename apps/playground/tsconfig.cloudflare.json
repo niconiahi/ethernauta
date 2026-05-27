@@ -24,6 +24,9 @@
       "~/*": ["./app/*"],
       "@ethernauta/abi": ["../../packages/abi/src"],
       "@ethernauta/chain": ["../../packages/chain/src"],
+      "@ethernauta/chain/*": [
+        "../../packages/chain/src/chain/eip155/*"
+      ],
       "@ethernauta/core": ["../../packages/core/src"],
       "@ethernauta/crypto": ["../../packages/crypto/src"],
       "@ethernauta/eip/*": ["../../packages/eip/src/*"],

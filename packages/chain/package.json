@@ -11,8 +11,18 @@
     "url": "https://github.com/niconiahi/ethernauta"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./*": {
+      "types": "./dist/chain/eip155/*.d.mts",
+      "import": "./dist/chain/eip155/*.mjs"
+    }
+  },
   "files": [
     "dist",
     "src"
