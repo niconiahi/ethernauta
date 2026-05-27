@@ -5,9 +5,9 @@ import {
   hash32Schema,
   uintSchema,
 } from "@ethernauta/core"
+import { accessListSchema } from "@ethernauta/eip/2930"
 import { ethernautaContextSchema } from "@ethernauta/transport"
 import { array, nullable, object, optional } from "valibot"
-import { accessListSchema } from "../transaction"
 
 /**
  * Generic transaction object applicable to all types.

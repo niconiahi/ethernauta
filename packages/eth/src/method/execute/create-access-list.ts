@@ -1,4 +1,5 @@
 import { uintSchema } from "@ethernauta/core"
+import { accessListSchema } from "@ethernauta/eip/2930"
 import type {
   Readable,
   ResolvedReader,
@@ -13,10 +14,7 @@ import {
   union,
 } from "valibot"
 import { blockNumberOrTagOrHashSchema } from "../../core/block"
-import {
-  accessListSchema,
-  genericTransactionSchema,
-} from "../../core/transaction"
+import { genericTransactionSchema } from "../../core/transaction"
 
 const parametersSchema = union([
   tuple([genericTransactionSchema]),
