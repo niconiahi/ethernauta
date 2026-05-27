@@ -104,7 +104,7 @@ export function CrossChain7683Demo() {
         // until orderData matches the settler's schema.
         orderData: parse(
           bytesSchema,
-          `0x${USDC_SEPOLIA.slice(2).padStart(64, "0")}${USDC_OP_SEPOLIA.slice(2).padStart(64, "0")}${OP_SEPOLIA_REF_HEX.slice(2).padStart(64, "0")}`,
+          `0x${USDC_SEPOLIA.slice(2).padStart(64, "0")}${USDC_OP_SEPOLIA.slice(2).padStart(64, "0")}${OP_SEPOLIA_REF_HEX.slice(2).padStart(64, "0")}`.toLowerCase(),
         ),
         window: {
           open_window_s: 60 * 5,
