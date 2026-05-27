@@ -1,6 +1,6 @@
 import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
-import demoSource from "../../examples/eip-6963/demo.tsx?raw"
+import demoHtml from "../../examples/eip-6963/demo.tsx?highlighted"
 import { Eip6963Demo } from "../../examples/eip-6963/demo"
 
 # EIP-6963 — wallet discovery + persistence
@@ -30,7 +30,7 @@ announcement, recover the live detail.
 
 ## The code
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />
 
 The `Store` shape is `{ get, set, remove }` — synchronous
 get/set/remove returning `string | null`. `window.localStorage`

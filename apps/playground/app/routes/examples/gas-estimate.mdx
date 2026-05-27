@@ -1,6 +1,6 @@
 import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
-import demoSource from "../../examples/gas-estimate/demo.tsx?raw"
+import demoHtml from "../../examples/gas-estimate/demo.tsx?highlighted"
 import { GasEstimateDemo } from "../../examples/gas-estimate/demo"
 
 # @ethernauta/gas — fee estimation (EIP-1559)
@@ -42,11 +42,11 @@ ships no default — the dapp / wallet picks what they want.
 
 ## The code
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />
 
 ## Path-2 (no wallet) is the same call
 
 Same primitive against a public RPC reader — only the
 transport-construction line changes:
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />

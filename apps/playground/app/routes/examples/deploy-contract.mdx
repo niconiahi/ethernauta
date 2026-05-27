@@ -1,6 +1,6 @@
 import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
-import demoSource from "../../examples/deploy-contract/demo.tsx?raw"
+import demoHtml from "../../examples/deploy-contract/demo.tsx?highlighted"
 import { DeployContractDemo } from "../../examples/deploy-contract/demo"
 
 # EIP-1014 — CREATE / CREATE2 address derivation
@@ -24,7 +24,7 @@ against EIP-1014 fixture vectors.
 
 ## The code (deriving addresses)
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />
 
 ## Deploying through the wallet
 
@@ -34,7 +34,7 @@ signing half — it encodes constructor calldata and calls
 creation transactions). The wallet fills `nonce` / `gas`
 / fees per the project invariant.
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />
 
 `Signable<Bytes>` returns the signed raw transaction —
 broadcast it with `eth_sendRawTransaction` to get the

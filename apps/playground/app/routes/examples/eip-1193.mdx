@@ -1,6 +1,6 @@
 import { DemoSource } from "../../components/demo-source"
 import { GithubLink } from "../../components/github-link"
-import demoSource from "../../examples/eip-1193/demo.tsx?raw"
+import demoHtml from "../../examples/eip-1193/demo.tsx?highlighted"
 import { Eip1193Demo } from "../../examples/eip-1193/demo"
 
 # EIP-1193 — provider as transport facade
@@ -44,14 +44,14 @@ shape used everywhere else in the library.
 
 ## The code
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />
 
 ## The two paths, side by side
 
 The same `eth_getBalance` call works against a public RPC
 with no wallet — just swap the transport:
 
-<DemoSource source={demoSource} />
+<DemoSource html={demoHtml} />
 
 `create_provider(provider).reader({ chain_id })` and
 `create_reader(CHAINS)({ chain_id })` produce structurally
