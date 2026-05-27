@@ -14,11 +14,16 @@ export function Row({
         justifyContent: "space-between",
         gap: 12,
         padding: "8px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 13,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
@@ -26,7 +31,7 @@ export function Row({
           fontFamily: mono
             ? "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
             : "inherit",
-          color: "#1a1a1a",
+          color: "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

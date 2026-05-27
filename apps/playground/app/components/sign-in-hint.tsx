@@ -10,9 +10,9 @@ export function SignInHint() {
         margin: 0,
         padding: "10px 12px",
         borderRadius: 6,
-        background: "#fff7ed",
-        border: "1px solid #fed7aa",
-        color: "#9a3412",
+        background: "var(--surface-strong)",
+        border: "1px solid var(--active-bg)",
+        color: "var(--text)",
         fontSize: 13,
       }}
     >

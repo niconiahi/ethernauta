@@ -4,7 +4,7 @@
 // L2 demos (op-stack / arbitrum / zksync) import their own family
 // helper from `@ethernauta/gas`; there is no central dispatcher.
 
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import type { Uint } from "@ethernauta/core"
 import { estimate_1559_fees } from "@ethernauta/gas"
 import { useProvider } from "@ethernauta/react"
@@ -40,11 +40,11 @@ export function GasEstimateDemo() {
       <div
         style={{
           padding: 16,
-          background: "#fff",
-          border: "1px solid #ddd",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 8,
           fontSize: 14,
-          color: "#555",
+          color: "var(--text-muted)",
         }}
       >
         Pick a wallet first (try the <code>EIP-6963</code>{" "}
@@ -80,9 +80,9 @@ export function GasEstimateDemo() {
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
       <KnobRow
@@ -116,7 +116,7 @@ export function GasEstimateDemo() {
       {error && (
         <div
           style={{
-            color: "#e53e3e",
+            color: "var(--danger)",
             fontFamily: "monospace",
             fontSize: 13,
           }}
@@ -169,7 +169,7 @@ function KnobRow({
         style={{
           width: 80,
           padding: "6px 8px",
-          border: "1px solid #ddd",
+          border: "1px solid var(--border)",
           borderRadius: 4,
           fontFamily: "monospace",
           fontSize: 14,
@@ -194,14 +194,14 @@ function ResultRow({
         alignItems: "center",
         gap: 12,
         padding: "10px 0",
-        borderTop: "1px solid #f0f0f0",
+        borderTop: "1px solid var(--border)",
       }}
     >
       <span
         style={{
           fontFamily: "monospace",
           fontSize: 14,
-          color: "#1a1a1a",
+          color: "var(--text)",
         }}
       >
         {label}
@@ -210,7 +210,7 @@ function ResultRow({
         style={{
           fontFamily: "monospace",
           fontSize: 13,
-          color: "#555",
+          color: "var(--text-muted)",
         }}
       >
         {value

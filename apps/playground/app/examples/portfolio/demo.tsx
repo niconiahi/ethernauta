@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { addressSchema } from "@ethernauta/core"
 import {
   balanceOf,
@@ -130,8 +130,8 @@ export function PortfolioDemo() {
     <div style={{ margin: "16px 0 24px" }}>
       <div
         style={{
-          background: "#fff",
-          border: "1px solid #ddd",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 8,
           padding: 24,
           marginBottom: 16,
@@ -142,9 +142,9 @@ export function PortfolioDemo() {
             display: "flex",
             justifyContent: "space-between",
             padding: "10px 0",
-            borderBottom: "1px solid #f0f0f0",
+            borderBottom: "1px solid var(--border)",
             fontSize: 12,
-            color: "#999",
+            color: "var(--text-muted)",
             textTransform: "uppercase",
             letterSpacing: 0.5,
           }}
@@ -158,7 +158,7 @@ export function PortfolioDemo() {
           <p
             style={{
               margin: "12px 0 0",
-              color: "#666",
+              color: "var(--text-muted)",
               fontSize: 14,
             }}
           >
@@ -169,7 +169,7 @@ export function PortfolioDemo() {
           <p
             style={{
               margin: "12px 0 0",
-              color: "#e53e3e",
+              color: "var(--danger)",
               fontSize: 14,
             }}
           >
@@ -183,17 +183,17 @@ export function PortfolioDemo() {
               display: "flex",
               justifyContent: "space-between",
               padding: "10px 0",
-              borderBottom: "1px solid #f0f0f0",
+              borderBottom: "1px solid var(--border)",
               fontSize: 14,
             }}
           >
-            <span style={{ color: "#666" }}>
+            <span style={{ color: "var(--text-muted)" }}>
               {h.symbol}
             </span>
             <span
               style={{
                 fontFamily: "monospace",
-                color: "#1a1a1a",
+                color: "var(--text)",
               }}
             >
               {format(h.balance, h.decimals)}
@@ -209,11 +209,13 @@ export function PortfolioDemo() {
               fontSize: 14,
             }}
           >
-            <span style={{ color: "#666" }}>Roundtrip</span>
+            <span style={{ color: "var(--text-muted)" }}>
+              Roundtrip
+            </span>
             <span
               style={{
                 fontFamily: "monospace",
-                color: "#1a1a1a",
+                color: "var(--text)",
               }}
             >
               {elapsed_ms} ms · {TOKENS.length * 3} reads ·

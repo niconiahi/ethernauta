@@ -13,7 +13,7 @@ export default function ExamplesIndex() {
       <p
         style={{
           fontSize: 16,
-          color: "#555",
+          color: "var(--text-muted)",
           lineHeight: 1.6,
           maxWidth: 560,
           margin: 0,

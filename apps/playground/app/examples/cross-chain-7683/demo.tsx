@@ -1,4 +1,4 @@
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
   bytes32Schema,
@@ -179,7 +179,12 @@ export function CrossChain7683Demo() {
           marginBottom: 16,
         }}
       >
-        <span style={{ fontSize: 13, color: "#666" }}>
+        <span
+          style={{
+            fontSize: 13,
+            color: "var(--text-muted)",
+          }}
+        >
           Origin settler (verifyingContract)
         </span>
         <input
@@ -191,7 +196,7 @@ export function CrossChain7683Demo() {
             fontFamily: "monospace",
             fontSize: 13,
             padding: "8px 10px",
-            border: "1px solid #ddd",
+            border: "1px solid var(--border)",
             borderRadius: 6,
           }}
         />
@@ -199,7 +204,7 @@ export function CrossChain7683Demo() {
       {error && (
         <p
           style={{
-            color: "#e53e3e",
+            color: "var(--danger)",
             fontSize: 14,
             marginBottom: 16,
           }}
@@ -230,8 +235,8 @@ export function CrossChain7683Demo() {
           style={{
             marginTop: 24,
             padding: 12,
-            background: "#fff",
-            border: "1px solid #ddd",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 6,
             fontSize: 13,
           }}
@@ -256,7 +261,7 @@ export function CrossChain7683Demo() {
         <p
           style={{
             fontSize: 13,
-            color: "#999",
+            color: "var(--text-muted)",
             marginTop: 12,
           }}
         >
@@ -285,17 +290,22 @@ function Row({
         justifyContent: "space-between",
         gap: 16,
         padding: "10px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",
-          color: "#1a1a1a",
+          color: "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

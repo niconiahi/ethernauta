@@ -5,8 +5,8 @@ import {
   type EIP6963ProviderDetail,
   get_provider_detail,
   REQUEST_EVENT,
-  set_provider_detail,
   type Store,
+  set_provider_detail,
 } from "@ethernauta/eip/6963"
 import { useEffect, useState } from "react"
 import { Button } from "../../components/button"
@@ -105,12 +105,18 @@ export function Eip6963Demo() {
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
-      <p style={{ margin: 0, color: "#555", fontSize: 14 }}>
+      <p
+        style={{
+          margin: 0,
+          color: "var(--text-muted)",
+          fontSize: 14,
+        }}
+      >
         Wallets announce themselves via{" "}
         <code>eip6963:announceProvider</code>; a dapp
         dispatches <code>eip6963:requestProvider</code> to
@@ -130,7 +136,7 @@ export function Eip6963Demo() {
         <div
           style={{
             padding: 12,
-            border: "1px solid #eee",
+            border: "1px solid var(--border)",
             borderRadius: 6,
             display: "grid",
             gap: 4,
@@ -151,7 +157,9 @@ export function Eip6963Demo() {
         </div>
       )}
       {providers.length === 0 ? (
-        <p style={{ margin: 0, color: "#999" }}>
+        <p
+          style={{ margin: 0, color: "var(--text-muted)" }}
+        >
           No EIP-6963 providers announced yet. Install
           MetaMask, Brave, or Ethernauta and re-discover.
         </p>
@@ -176,8 +184,8 @@ export function Eip6963Demo() {
                 padding: 8,
                 border:
                   picked_rdns === p.info.rdns
-                    ? "2px solid #FF5005"
-                    : "1px solid #eee",
+                    ? "2px solid var(--active-bg)"
+                    : "1px solid var(--border)",
                 borderRadius: 6,
               }}
             >
@@ -201,7 +209,7 @@ export function Eip6963Demo() {
                   <strong>{p.info.name}</strong>
                   <span
                     style={{
-                      color: "#999",
+                      color: "var(--text-muted)",
                       marginLeft: 6,
                       fontFamily: "monospace",
                       fontSize: 12,
@@ -237,7 +245,9 @@ function Row({
         gap: 8,
       }}
     >
-      <span style={{ color: "#666" }}>{label}</span>
+      <span style={{ color: "var(--text-muted)" }}>
+        {label}
+      </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",

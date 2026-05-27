@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
   uint256Schema,
@@ -166,8 +166,8 @@ export function VaultsDemo() {
             <div
               key={"label" in v ? v.label : i}
               style={{
-                background: "#fff",
-                border: "1px solid #ddd",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
                 padding: 20,
               }}
@@ -175,7 +175,7 @@ export function VaultsDemo() {
               <div
                 style={{
                   fontSize: 12,
-                  color: "#999",
+                  color: "var(--text-muted)",
                   textTransform: "uppercase",
                   letterSpacing: 0.5,
                   marginBottom: 8,
@@ -187,7 +187,7 @@ export function VaultsDemo() {
                 <p
                   style={{
                     margin: 0,
-                    color: "#666",
+                    color: "var(--text-muted)",
                     fontSize: 14,
                   }}
                 >
@@ -227,7 +227,7 @@ export function VaultsDemo() {
       {error && (
         <p
           style={{
-            color: "#e53e3e",
+            color: "var(--danger)",
             fontSize: 14,
             marginBottom: 16,
           }}
@@ -238,7 +238,7 @@ export function VaultsDemo() {
       {elapsed_ms !== null && (
         <p
           style={{
-            color: "#666",
+            color: "var(--text-muted)",
             fontSize: 13,
             margin: "0 0 16px",
             fontFamily: "monospace",
@@ -271,17 +271,22 @@ function Row({
         justifyContent: "space-between",
         gap: 8,
         padding: "6px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 13,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",
-          color: "#1a1a1a",
+          color: "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

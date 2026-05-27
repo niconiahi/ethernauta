@@ -2,7 +2,7 @@
 // zks_estimateFee RPC call — the zkSync node returns the four fee
 // components zkSync charges in one shot.
 
-import { eip155_324 } from "@ethernauta/chain"
+import { eip155_324 } from "@ethernauta/chain/eip155-324"
 import { addressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_zksync } from "@ethernauta/gas"
 import {
@@ -128,9 +128,9 @@ const CARD = {
   display: "grid",
   gap: 16,
   padding: 16,
-  border: "1px solid #ddd",
+  border: "1px solid var(--border)",
   borderRadius: 8,
-  background: "#fff",
+  background: "var(--surface)",
 } as const
 const RESULT_ROW = {
   display: "grid",
@@ -138,7 +138,7 @@ const RESULT_ROW = {
   alignItems: "center",
   gap: 12,
   padding: "10px 0",
-  borderTop: "1px solid #f0f0f0",
+  borderTop: "1px solid var(--border)",
 } as const
 const MONO = {
   fontFamily: "monospace",
@@ -147,10 +147,10 @@ const MONO = {
 const RESULT_VALUE = {
   fontFamily: "monospace",
   fontSize: 13,
-  color: "#555",
+  color: "var(--text-muted)",
 } as const
 const ERROR = {
-  color: "#e53e3e",
+  color: "var(--danger)",
   fontFamily: "monospace",
   fontSize: 13,
 } as const

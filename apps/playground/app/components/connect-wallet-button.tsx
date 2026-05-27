@@ -26,7 +26,7 @@ import {
 } from "@ethernauta/core"
 import { personal_sign } from "@ethernauta/eip/191"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
-import { type Provider } from "@ethernauta/eip/1193"
+import type { Provider } from "@ethernauta/eip/1193"
 import { build_siwe_message } from "@ethernauta/eip/4361"
 import {
   ANNOUNCE_EVENT,
@@ -41,10 +41,10 @@ import {
   create_injected_signer,
   encode_chain_id,
 } from "@ethernauta/transport"
-import { PROVIDER_STORE_KEY } from "../lib/provider-store"
 import { useEffect, useRef, useState } from "react"
 import { useRevalidator } from "react-router"
 import { parse } from "valibot"
+import { PROVIDER_STORE_KEY } from "../lib/provider-store"
 import { Button } from "./button"
 
 type Session = {
@@ -244,10 +244,10 @@ export function ConnectWalletButton({
             top: "calc(100% + 8px)",
             right: 0,
             minWidth: 240,
-            background: "#fff",
-            border: "1px solid #ddd",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: 8,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+            boxShadow: "var(--shadow-md)",
             padding: 8,
             zIndex: 10,
           }}
@@ -258,7 +258,7 @@ export function ConnectWalletButton({
                 style={{
                   padding: "8px 10px",
                   fontSize: 12,
-                  color: "#666",
+                  color: "var(--text-muted)",
                   wordBreak: "break-all",
                 }}
               >
@@ -278,7 +278,7 @@ export function ConnectWalletButton({
               style={{
                 padding: "8px 10px",
                 fontSize: 13,
-                color: "#666",
+                color: "var(--text-muted)",
               }}
             >
               No EIP-6963 wallet detected. Install
@@ -312,7 +312,7 @@ export function ConnectWalletButton({
               style={{
                 padding: "8px 10px",
                 fontSize: 12,
-                color: "#c00",
+                color: "var(--danger)",
                 wordBreak: "break-word",
               }}
             >

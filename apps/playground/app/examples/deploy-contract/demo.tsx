@@ -69,9 +69,9 @@ export function DeployContractDemo() {
         display: "grid",
         gap: 12,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
       <Section title="CREATE">
@@ -131,7 +131,7 @@ function Section({
         display: "grid",
         gap: 4,
         padding: 12,
-        border: "1px solid #eee",
+        border: "1px solid var(--border)",
         borderRadius: 6,
       }}
     >
@@ -162,11 +162,18 @@ function Row({
         gap: 12,
         fontSize: 13,
         padding: highlight ? "4px 6px" : 0,
-        background: highlight ? "#fff7e6" : "transparent",
+        background: highlight
+          ? "var(--surface-strong)"
+          : "transparent",
         borderRadius: highlight ? 4 : 0,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span

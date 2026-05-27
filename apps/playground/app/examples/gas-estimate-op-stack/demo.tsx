@@ -5,11 +5,9 @@
 // which OP-stack chain the provider is on. The chain is wired into
 // the `provider.reader({ chain_id })` resolver, not into the helper.
 
-import {
-  type Chain,
-  eip155_10,
-  eip155_8453,
-} from "@ethernauta/chain"
+import type { Chain } from "@ethernauta/chain"
+import { eip155_10 } from "@ethernauta/chain/eip155-10"
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
 import { addressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_op_stack } from "@ethernauta/gas"
 import {
@@ -175,10 +173,13 @@ function ChainPicker({
             padding: "8px 12px",
             border:
               i === value
-                ? "2px solid #1a1a1a"
-                : "1px solid #ddd",
+                ? "2px solid var(--text)"
+                : "1px solid var(--border)",
             borderRadius: 4,
-            background: i === value ? "#fafafa" : "#fff",
+            background:
+              i === value
+                ? "var(--surface-strong)"
+                : "var(--surface)",
             fontFamily: "monospace",
             fontSize: 14,
             cursor: "pointer",
@@ -247,9 +248,9 @@ const CARD = {
   display: "grid",
   gap: 16,
   padding: 16,
-  border: "1px solid #ddd",
+  border: "1px solid var(--border)",
   borderRadius: 8,
-  background: "#fff",
+  background: "var(--surface)",
 } as const
 const KNOB_ROW = {
   display: "grid",
@@ -263,7 +264,7 @@ const RESULT_ROW = {
   alignItems: "center",
   gap: 12,
   padding: "10px 0",
-  borderTop: "1px solid #f0f0f0",
+  borderTop: "1px solid var(--border)",
 } as const
 const MONO = {
   fontFamily: "monospace",
@@ -272,7 +273,7 @@ const MONO = {
 const INPUT = {
   width: 80,
   padding: "6px 8px",
-  border: "1px solid #ddd",
+  border: "1px solid var(--border)",
   borderRadius: 4,
   fontFamily: "monospace",
   fontSize: 14,
@@ -280,10 +281,10 @@ const INPUT = {
 const RESULT_VALUE = {
   fontFamily: "monospace",
   fontSize: 13,
-  color: "#555",
+  color: "var(--text-muted)",
 } as const
 const ERROR = {
-  color: "#e53e3e",
+  color: "var(--danger)",
   fontFamily: "monospace",
   fontSize: 13,
 } as const

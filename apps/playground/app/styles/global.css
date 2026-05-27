@@ -14,6 +14,14 @@ a:hover {
   text-decoration: underline;
 }
 
+:root {
+  /* Playground retains Inter as its body font; the docs' DM Sans
+   * fallback lives in tokens.css. Override only the family vars,
+   * everything else (sizes, weights, neutrals) flows through. */
+  --font-family-body: "Inter", sans-serif;
+  --font-family-heading: "Inter", sans-serif;
+}
+
 @layer base {
   html,
   body {
@@ -26,17 +34,25 @@ a:hover {
   }
 
   body {
-    background: linear-gradient(#feece7, #f9f7f1);
+    background: var(--bg);
+    color: var(--text);
   }
 }
 
 code {
-  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
+  font-size: 1em;
 }
 
 :not(pre) > code {
-  background: #f0eee9;
-  padding: 1px 6px;
+  background: var(--code-bg);
+  padding: 0.1rem 0.35rem;
   border-radius: 4px;
-  font-size: 0.9em;
+}
+
+main pre {
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.55;
 }

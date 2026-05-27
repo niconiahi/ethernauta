@@ -3,7 +3,7 @@
 // then polls `wallet_getCallsStatus`. Works against any
 // standards-compliant wallet.
 
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
   bytesSchema,

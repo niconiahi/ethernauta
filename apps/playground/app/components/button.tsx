@@ -5,62 +5,31 @@ import {
   useState,
 } from "react"
 
-function use_interaction(
-  variant: "primary" | "secondary" | "ghost",
+type Variant = "primary" | "secondary" | "ghost"
+
+function class_names(
+  variant: Variant,
   squared: boolean,
+  pressed: boolean,
 ) {
+  return [
+    "button",
+    variant,
+    squared ? "squared" : "",
+    pressed ? "is-pressed" : "",
+  ]
+    .filter(Boolean)
+    .join(" ")
+}
+
+function use_pressed() {
   const [pressed, set_pressed] = useState(false)
-  const [hovered, set_hovered] = useState(false)
-
-  const colors =
-    variant === "ghost"
-      ? {
-          background: hovered ? "#f0f0f0" : "transparent",
-          border: "none",
-          color: "inherit",
-        }
-      : variant === "secondary"
-        ? {
-            background: hovered
-              ? "color-mix(in srgb, #FF5005 25%, #faf5f0)"
-              : "color-mix(in srgb, #FF5005 12%, #faf5f0)",
-            border: "2px solid #FF5005",
-            color: "#FF5005",
-          }
-        : {
-            background: hovered ? "#cc4004" : "#FF5005",
-            border: "2px solid #c73d00",
-            color: "#fff",
-          }
-
   return {
-    style: {
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 8,
-      padding: "12px 24px",
-      fontSize: 16,
-      fontWeight: 600,
-      cursor: "pointer",
-      textDecoration: "none",
-      outline: pressed ? "2px solid #374151" : "none",
-      outlineOffset: pressed ? 2 : 0,
-      transition: "background 0.15s ease",
-      ...(squared
-        ? { aspectRatio: "1", padding: "12px" }
-        : {}),
-      ...colors,
-    },
+    pressed,
     onPointerDown: () => set_pressed(true),
     onPointerUp: () => set_pressed(false),
-    onPointerLeave: () => {
-      set_pressed(false)
-      set_hovered(false)
-    },
+    onPointerLeave: () => set_pressed(false),
     onTouchCancel: () => set_pressed(false),
-    onMouseEnter: () => set_hovered(true),
-    onMouseLeave: () => set_hovered(false),
   }
 }
 
@@ -68,15 +37,26 @@ export function Button({
   children,
   variant = "primary",
   squared = false,
+  className,
   ...props
 }: {
   children: ReactNode
-  variant?: "primary" | "secondary" | "ghost"
+  variant?: Variant
   squared?: boolean
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
-  const interaction = use_interaction(variant, squared)
+  const { pressed, ...pressed_handlers } = use_pressed()
   return (
-    <button type="button" {...interaction} {...props}>
+    <button
+      type="button"
+      className={[
+        class_names(variant, squared, pressed),
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      {...pressed_handlers}
+      {...props}
+    >
       {children}
     </button>
   )
@@ -85,14 +65,24 @@ export function Button({
 export function ButtonLink({
   children,
   variant = "primary",
+  className,
   ...props
 }: {
   children: ReactNode
-  variant?: "primary" | "secondary" | "ghost"
+  variant?: Variant
 } & AnchorHTMLAttributes<HTMLAnchorElement>) {
-  const interaction = use_interaction(variant, false)
+  const { pressed, ...pressed_handlers } = use_pressed()
   return (
-    <a className="button-link" {...interaction} {...props}>
+    <a
+      className={[
+        class_names(variant, false, pressed),
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      {...pressed_handlers}
+      {...props}
+    >
       {children}
     </a>
   )

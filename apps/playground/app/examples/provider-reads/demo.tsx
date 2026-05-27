@@ -78,11 +78,11 @@ export function ProviderReadsDemo() {
       <div
         style={{
           padding: 16,
-          background: "#fff",
-          border: "1px solid #ddd",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 8,
           fontSize: 14,
-          color: "#555",
+          color: "var(--text-muted)",
         }}
       >
         Pick a wallet first (try the <code>EIP-6963</code>{" "}
@@ -97,9 +97,9 @@ export function ProviderReadsDemo() {
         display: "grid",
         gap: 12,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
       <ReadRow
@@ -203,7 +203,7 @@ function ReadRow({
         alignItems: "center",
         gap: 12,
         padding: "10px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
       }}
     >
       <div
@@ -218,7 +218,7 @@ function ReadRow({
           style={{
             fontFamily: "monospace",
             fontSize: 14,
-            color: "#1a1a1a",
+            color: "var(--text)",
           }}
         >
           {label}
@@ -227,7 +227,9 @@ function ReadRow({
           style={{
             fontFamily: "monospace",
             fontSize: 13,
-            color: error ? "#e53e3e" : "#666",
+            color: error
+              ? "var(--danger)"
+              : "var(--text-muted)",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",

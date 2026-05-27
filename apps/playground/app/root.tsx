@@ -1,3 +1,9 @@
+import "./styles/tokens.css"
+import "./styles/text_styles.css"
+import "./styles/button.css"
+import "./styles/tailwind.css"
+import "./styles/global.css"
+
 import {
   isRouteErrorResponse,
   Link,
@@ -12,8 +18,6 @@ import {
 import type { Route } from "./+types/root"
 import { ConnectWalletButton } from "./components/connect-wallet-button"
 import { read_session_cookie } from "./lib/auth/session.server"
-import "./styles/tailwind.css"
-import "./styles/global.css"
 
 export async function loader({
   request,
@@ -80,10 +84,10 @@ export default function App() {
     <div
       style={{
         display: "grid",
-        gridTemplateRows: "56px 1fr",
+        gridTemplateRows: "80px 1fr",
         minHeight: "100vh",
-        fontFamily: "sans-serif",
-        color: "#1a1a1a",
+        fontFamily: "var(--font-family-body)",
+        color: "var(--text)",
       }}
     >
       <header
@@ -91,9 +95,9 @@ export default function App() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 24px",
-          borderBottom: "1px solid #ddd",
-          background: "#fff",
+          padding: "0 1rem",
+          borderBottom: "1px solid var(--border)",
+          background: "var(--surface)",
           position: "sticky",
           top: 0,
           zIndex: 5,
@@ -101,28 +105,26 @@ export default function App() {
       >
         <Link
           to="/"
+          aria-label="Ethernauta"
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 8,
-            color: "#1a1a1a",
+            color: "var(--text)",
             textDecoration: "none",
+            lineHeight: 0,
           }}
         >
           <img
             src="/logo.svg"
-            alt="Ethernauta"
-            width={28}
-            height={28}
+            alt=""
+            width={56}
+            height={56}
             style={{
-              background: "#111",
-              borderRadius: 6,
-              padding: 3,
+              background: "var(--neutral-950)",
+              borderRadius: 10,
+              padding: 6,
             }}
           />
-          <span style={{ fontWeight: 700, fontSize: 14 }}>
-            Ethernauta
-          </span>
         </Link>
         <ConnectWalletButton session={session} />
       </header>

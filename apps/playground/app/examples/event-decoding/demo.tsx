@@ -3,7 +3,7 @@ import {
   address,
   uint256,
 } from "@ethernauta/abi"
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
   type Uint256,
@@ -108,12 +108,18 @@ export function EventDecodingDemo() {
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
-      <p style={{ margin: 0, color: "#555", fontSize: 14 }}>
+      <p
+        style={{
+          margin: 0,
+          color: "var(--text-muted)",
+          fontSize: 14,
+        }}
+      >
         Decodes the last few blocks of <code>Transfer</code>{" "}
         events on USDC mainnet via{" "}
         <code>get_contract_events</code>.
@@ -125,7 +131,11 @@ export function EventDecodingDemo() {
       </div>
       {range && (
         <p
-          style={{ margin: 0, fontSize: 13, color: "#666" }}
+          style={{
+            margin: 0,
+            fontSize: 13,
+            color: "var(--text-muted)",
+          }}
         >
           Blocks {range} — {rows.length} shown
         </p>
@@ -146,7 +156,10 @@ export function EventDecodingDemo() {
         >
           <thead>
             <tr
-              style={{ textAlign: "left", color: "#666" }}
+              style={{
+                textAlign: "left",
+                color: "var(--text-muted)",
+              }}
             >
               <th style={{ padding: "4px 8px" }}>from</th>
               <th style={{ padding: "4px 8px" }}>to</th>
@@ -166,7 +179,7 @@ export function EventDecodingDemo() {
                 // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
                 key={i}
                 style={{
-                  borderTop: "1px solid #f0f0f0",
+                  borderTop: "1px solid var(--border)",
                 }}
               >
                 <td style={{ padding: "4px 8px" }}>

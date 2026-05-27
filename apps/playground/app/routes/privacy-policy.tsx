@@ -28,7 +28,12 @@ export default function () {
       >
         Privacy Policy
       </h1>
-      <p style={{ marginBottom: 32, color: "#666" }}>
+      <p
+        style={{
+          marginBottom: 32,
+          color: "var(--text-muted)",
+        }}
+      >
         <strong>Last updated: May 11, 2026</strong>
       </p>
 

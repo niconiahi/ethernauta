@@ -233,7 +233,7 @@ export function Stealth5564Demo() {
       {error && (
         <p
           style={{
-            color: "#e53e3e",
+            color: "var(--danger)",
             fontSize: 14,
             marginTop: 12,
           }}
@@ -244,7 +244,7 @@ export function Stealth5564Demo() {
       <p
         style={{
           fontSize: 12,
-          color: "#999",
+          color: "var(--text-muted)",
           marginTop: 24,
         }}
       >
@@ -276,7 +276,9 @@ function Field({
         marginBottom: 12,
       }}
     >
-      <span style={{ fontSize: 13, color: "#666" }}>
+      <span
+        style={{ fontSize: 13, color: "var(--text-muted)" }}
+      >
         {label}
       </span>
       <input
@@ -289,7 +291,7 @@ function Field({
           fontFamily: "monospace",
           fontSize: 12,
           padding: "8px 10px",
-          border: "1px solid #ddd",
+          border: "1px solid var(--border)",
           borderRadius: 6,
         }}
       />
@@ -313,17 +315,22 @@ function Row({
         justifyContent: "space-between",
         gap: 16,
         padding: "10px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",
-          color: "#1a1a1a",
+          color: "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

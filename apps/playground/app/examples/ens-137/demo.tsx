@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { addressSchema } from "@ethernauta/core"
 import {
   create_reader,
@@ -131,7 +131,7 @@ export function Ens137Demo() {
         display: "grid",
         gap: 24,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
       }}
     >

@@ -6,7 +6,7 @@ import {
   tuple,
   uint256,
 } from "@ethernauta/abi"
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   type Address,
   addressSchema,
@@ -154,7 +154,7 @@ export function Delegate7702Demo() {
       {error && (
         <p
           style={{
-            color: "#e53e3e",
+            color: "var(--danger)",
             fontSize: 14,
             marginBottom: 16,
           }}
@@ -186,7 +186,7 @@ export function Delegate7702Demo() {
             rel="noreferrer"
             style={{
               fontSize: 14,
-              color: "#FF5005",
+              color: "var(--active-bg)",
               alignSelf: "center",
             }}
           >
@@ -198,7 +198,7 @@ export function Delegate7702Demo() {
         <p
           style={{
             fontSize: 13,
-            color: "#999",
+            color: "var(--text-muted)",
             marginTop: 12,
           }}
         >
@@ -226,17 +226,22 @@ function Row({
         justifyContent: "space-between",
         gap: 16,
         padding: "10px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",
-          color: "#1a1a1a",
+          color: "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
   bytes32Schema,
@@ -163,8 +163,8 @@ export function PermitDemo() {
     <div style={{ margin: "16px 0 24px" }}>
       <div
         style={{
-          background: "#fff",
-          border: "1px solid #ddd",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 8,
           padding: 24,
           marginBottom: 16,
@@ -205,7 +205,7 @@ export function PermitDemo() {
       {error && (
         <p
           style={{
-            color: "#e53e3e",
+            color: "var(--danger)",
             fontSize: 14,
             marginBottom: 16,
           }}
@@ -235,7 +235,7 @@ export function PermitDemo() {
         <p
           style={{
             fontSize: 13,
-            color: "#999",
+            color: "var(--text-muted)",
             marginTop: 12,
           }}
         >
@@ -264,17 +264,22 @@ function Row({
         justifyContent: "space-between",
         gap: 16,
         padding: "10px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",
-          color: "#1a1a1a",
+          color: "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

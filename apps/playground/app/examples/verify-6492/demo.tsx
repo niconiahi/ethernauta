@@ -78,9 +78,9 @@ export function Verify6492Demo() {
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
       <Row label="Magic bytes" value={MAGIC_BYTES} mono />
@@ -161,7 +161,12 @@ function Row({
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span

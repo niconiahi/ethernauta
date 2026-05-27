@@ -58,6 +58,9 @@ const EIP_EXAMPLES = [
     to: "/examples/eip-1193",
     title: "EIP-1193 provider",
   },
+] as const
+
+const OTHER_EXAMPLES = [
   {
     to: "/examples/provider-reads",
     title: "provider.reader reads",
@@ -92,6 +95,7 @@ const SECTIONS = [
   { heading: "Utilities", items: UTILITY_EXAMPLES },
   { heading: "ERCs", items: ERC_EXAMPLES },
   { heading: "EIPs", items: EIP_EXAMPLES },
+  { heading: "Others", items: OTHER_EXAMPLES },
 ] as const
 
 export default function ExamplesLayout() {
@@ -99,15 +103,15 @@ export default function ExamplesLayout() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "240px 1fr",
-        background: "#faf5f0",
+        gridTemplateColumns: "auto 1fr",
+        background: "var(--bg)",
       }}
     >
       <aside
         style={{
-          borderRight: "1px solid #ddd",
+          borderRight: "1px solid var(--border)",
           padding: "32px 16px",
-          background: "#fff",
+          background: "var(--surface)",
         }}
       >
         {SECTIONS.map((section, i) => (
@@ -119,7 +123,7 @@ export default function ExamplesLayout() {
               style={{
                 fontSize: 14,
                 fontWeight: 700,
-                color: "#1a1a1a",
+                color: "var(--text)",
                 margin: "0 0 12px",
               }}
             >
@@ -142,9 +146,11 @@ export default function ExamplesLayout() {
                     fontSize: 14,
                     fontWeight: 500,
                     textDecoration: "none",
-                    color: isActive ? "#fff" : "#1a1a1a",
+                    color: isActive
+                      ? "var(--active-text)"
+                      : "var(--text)",
                     background: isActive
-                      ? "#FF5005"
+                      ? "var(--active-bg)"
                       : "transparent",
                   })}
                 >

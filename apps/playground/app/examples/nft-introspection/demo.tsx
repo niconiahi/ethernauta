@@ -1,4 +1,4 @@
-import { eip155_1 } from "@ethernauta/chain"
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
   bytes4Schema,
@@ -137,8 +137,8 @@ export function NftIntrospectionDemo() {
     <div style={{ margin: "16px 0 24px" }}>
       <div
         style={{
-          background: "#fff",
-          border: "1px solid #ddd",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 8,
           padding: 24,
           marginBottom: 16,
@@ -149,9 +149,9 @@ export function NftIntrospectionDemo() {
             display: "flex",
             justifyContent: "space-between",
             padding: "10px 0",
-            borderBottom: "1px solid #f0f0f0",
+            borderBottom: "1px solid var(--border)",
             fontSize: 12,
-            color: "#999",
+            color: "var(--text-muted)",
             textTransform: "uppercase",
             letterSpacing: 0.5,
           }}
@@ -162,7 +162,12 @@ export function NftIntrospectionDemo() {
           </span>
         </div>
         {loading && (
-          <p style={{ margin: "12px 0 0", color: "#666" }}>
+          <p
+            style={{
+              margin: "12px 0 0",
+              color: "var(--text-muted)",
+            }}
+          >
             Loading…
           </p>
         )}
@@ -170,7 +175,7 @@ export function NftIntrospectionDemo() {
           <p
             style={{
               margin: "12px 0 0",
-              color: "#e53e3e",
+              color: "var(--danger)",
             }}
           >
             {error}
@@ -233,11 +238,16 @@ function Row({
         justifyContent: "space-between",
         gap: 16,
         padding: "10px 0",
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid var(--border)",
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+      <span
+        style={{
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
       </span>
       <span
@@ -245,10 +255,10 @@ function Row({
           fontFamily: mono ? "monospace" : "inherit",
           color:
             ok === false
-              ? "#999"
+              ? "var(--text-muted)"
               : ok === true
-                ? "#0FA05C"
-                : "#1a1a1a",
+                ? "var(--success)"
+                : "var(--text)",
           textAlign: "right",
           overflow: "hidden",
           textOverflow: "ellipsis",

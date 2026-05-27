@@ -83,19 +83,27 @@ function Picker({
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
-      <p style={{ margin: 0, color: "#555", fontSize: 14 }}>
+      <p
+        style={{
+          margin: 0,
+          color: "var(--text-muted)",
+          fontSize: 14,
+        }}
+      >
         <code>useProviderDetail({"{ key }"})</code>{" "}
         rehydrates the previously-picked wallet from{" "}
         <code>localStorage</code>. Pick one below — the
         choice persists across reloads.
       </p>
       {providers.length === 0 ? (
-        <p style={{ margin: 0, color: "#999" }}>
+        <p
+          style={{ margin: 0, color: "var(--text-muted)" }}
+        >
           No EIP-1193 providers detected. Install MetaMask,
           Brave, or Ethernauta to exercise the demo.
         </p>
@@ -118,7 +126,7 @@ function Picker({
                 justifyContent: "space-between",
                 gap: 12,
                 padding: 8,
-                border: "1px solid #eee",
+                border: "1px solid var(--border)",
                 borderRadius: 6,
               }}
             >
@@ -256,12 +264,18 @@ function Connected({
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
-      <p style={{ margin: 0, color: "#555", fontSize: 14 }}>
+      <p
+        style={{
+          margin: 0,
+          color: "var(--text-muted)",
+          fontSize: 14,
+        }}
+      >
         <code>create_provider(provider_detail)</code> wraps
         the picked EIP-1193 provider into a single factory
         exposing <code>.signer({"{ chain_id }"})</code> for{" "}
@@ -274,7 +288,7 @@ function Connected({
       <div
         style={{
           padding: 12,
-          border: "1px solid #eee",
+          border: "1px solid var(--border)",
           borderRadius: 6,
           display: "grid",
           gap: 4,
@@ -323,7 +337,9 @@ function Row({
         gap: 8,
       }}
     >
-      <span style={{ color: "#666" }}>{label}</span>
+      <span style={{ color: "var(--text-muted)" }}>
+        {label}
+      </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",

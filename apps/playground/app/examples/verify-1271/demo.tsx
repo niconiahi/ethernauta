@@ -1,4 +1,4 @@
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
   type Bytes,
@@ -100,9 +100,9 @@ export function Verify1271Demo() {
         display: "grid",
         gap: 16,
         padding: 16,
-        border: "1px solid #ddd",
+        border: "1px solid var(--border)",
         borderRadius: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
       <Row label="Message" value={MESSAGE} />
@@ -169,7 +169,9 @@ function Row({
         fontSize: 14,
       }}
     >
-      <span style={{ color: "#666" }}>{label}</span>
+      <span style={{ color: "var(--text-muted)" }}>
+        {label}
+      </span>
       <span
         style={{
           fontFamily: mono ? "monospace" : "inherit",

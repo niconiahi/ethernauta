@@ -1,4 +1,4 @@
-import { eip155_11155111 } from "@ethernauta/chain"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { addressSchema, uintSchema } from "@ethernauta/core"
 import {
   eth_sendRawTransaction,
@@ -65,8 +65,8 @@ export default function () {
   return (
     <div
       style={{
-        color: "#1a1a1a",
-        background: "#faf5f0",
+        color: "var(--text)",
+        background: "var(--surface)",
       }}
     >
       {/* Hero */}
@@ -91,7 +91,7 @@ export default function () {
         <p
           style={{
             fontSize: 20,
-            color: "#555",
+            color: "var(--text-muted)",
             maxWidth: 480,
             margin: "0 auto 40px",
             lineHeight: 1.5,
@@ -146,7 +146,7 @@ export default function () {
         </h2>
         <p
           style={{
-            color: "#666",
+            color: "var(--text-muted)",
             fontSize: 14,
             marginBottom: 32,
           }}
@@ -217,10 +217,10 @@ export default function () {
             right: 16,
             top: "auto",
             left: "auto",
-            border: "2px solid #ddd",
+            border: "2px solid var(--border)",
             borderRadius: 8,
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface)",
             margin: 0,
           }}
         >
@@ -257,7 +257,7 @@ export default function () {
                 <title>Close</title>
                 <path
                   d="M1 1l12 12M13 1L1 13"
-                  stroke="#666"
+                  stroke="var(--text-muted)"
                   strokeWidth="2"
                   strokeLinecap="round"
                 />
@@ -321,8 +321,8 @@ export default function () {
                   width: 40,
                   height: 40,
                   borderRadius: "50%",
-                  background: "#FF5005",
-                  color: "#fff",
+                  background: "var(--active-bg)",
+                  color: "var(--active-text)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -345,7 +345,7 @@ export default function () {
               <p
                 style={{
                   fontSize: 14,
-                  color: "#666",
+                  color: "var(--text-muted)",
                   lineHeight: 1.6,
                   margin: 0,
                 }}
@@ -399,7 +399,7 @@ export default function () {
             <div
               style={{
                 fontSize: 11,
-                color: "#333",
+                color: "var(--text)",
                 marginBottom: 6,
               }}
             >
@@ -409,14 +409,16 @@ export default function () {
               <div
                 style={{
                   wordBreak: "break-all",
-                  color: "#555",
+                  color: "var(--text-muted)",
                   fontSize: 10,
                 }}
               >
                 0x636c0fcd6da2207abfa8...
               </div>
             </div>
-            <div style={{ fontSize: 11, color: "#333" }}>
+            <div
+              style={{ fontSize: 11, color: "var(--text)" }}
+            >
               <b>Balance</b> 0.09551 ETH
             </div>
           </ExtensionMockup>
@@ -425,7 +427,7 @@ export default function () {
             <div
               style={{
                 fontSize: 11,
-                color: "#333",
+                color: "var(--text)",
                 marginBottom: 8,
                 textAlign: "center",
               }}
@@ -435,7 +437,7 @@ export default function () {
             <div
               style={{
                 fontSize: 10,
-                color: "#555",
+                color: "var(--text-muted)",
                 marginBottom: 4,
               }}
             >
@@ -445,7 +447,7 @@ export default function () {
             <div
               style={{
                 fontSize: 10,
-                color: "#555",
+                color: "var(--text-muted)",
                 marginBottom: 8,
               }}
             >
@@ -463,9 +465,9 @@ export default function () {
       {/* Security */}
       <section
         style={{
-          background: "#fff",
-          borderTop: "1px solid #eee",
-          borderBottom: "1px solid #eee",
+          background: "var(--surface)",
+          borderTop: "1px solid var(--border)",
+          borderBottom: "1px solid var(--border)",
         }}
       >
         <div
@@ -514,7 +516,7 @@ export default function () {
               <p
                 style={{
                   fontSize: 14,
-                  color: "#666",
+                  color: "var(--text-muted)",
                   lineHeight: 1.6,
                   margin: 0,
                 }}
@@ -529,17 +531,17 @@ export default function () {
       {/* Footer */}
       <footer
         style={{
-          borderTop: "1px solid #eee",
+          borderTop: "1px solid var(--border)",
           textAlign: "center",
           padding: "24px",
           fontSize: 13,
-          color: "#999",
+          color: "var(--text-muted)",
         }}
       >
         <a
           href="/privacy-policy"
           style={{
-            color: "#999",
+            color: "var(--text-muted)",
             textDecoration: "underline",
           }}
         >
@@ -581,11 +583,11 @@ function ExtensionMockup({
     <div
       style={{
         width: 180,
-        background: "#faf5f0",
-        border: "1px solid #ddd",
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
         borderRadius: 8,
         overflow: "hidden",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+        boxShadow: "var(--shadow-sm)",
       }}
     >
       <div
@@ -625,7 +627,7 @@ function ExtensionMockup({
           style={{
             marginLeft: "auto",
             fontSize: 9,
-            color: "#aaa",
+            color: "var(--text-muted)",
           }}
         >
           {label}
@@ -644,13 +646,13 @@ function MockInput({
   return (
     <div
       style={{
-        border: "1.5px solid #333",
+        border: "1.5px solid var(--text)",
         borderRadius: 4,
         padding: "6px 8px",
         fontSize: 11,
-        color: "#999",
+        color: "var(--text-muted)",
         marginBottom: 8,
-        background: "#fff",
+        background: "var(--surface)",
       }}
     >
       {placeholder}
@@ -666,12 +668,12 @@ function MockButton({
   return (
     <div
       style={{
-        background: "#FF5005",
+        background: "var(--active-bg)",
         borderRadius: 4,
         padding: "7px 0",
         fontSize: 12,
         fontWeight: 700,
-        color: "#fff",
+        color: "var(--active-text)",
         textAlign: "center",
       }}
     >
@@ -695,7 +697,7 @@ function render_error(message: string) {
           width: 12,
           height: 12,
           borderRadius: "50%",
-          background: "#e53e3e",
+          background: "var(--danger)",
           display: "inline-block",
           flexShrink: 0,
         }}
@@ -724,7 +726,7 @@ function render_transaction(transaction: Transaction) {
               width: 12,
               height: 12,
               borderRadius: "50%",
-              background: "#FF5005",
+              background: "var(--active-bg)",
               display: "inline-block",
               animation: "pulse 1.2s ease-in-out infinite",
             }}
@@ -735,7 +737,7 @@ function render_transaction(transaction: Transaction) {
             target="_blank"
             rel="noreferrer"
             style={{
-              color: "#FF5005",
+              color: "var(--active-bg)",
               fontFamily: "monospace",
               fontSize: 13,
             }}
@@ -762,14 +764,14 @@ function render_transaction(transaction: Transaction) {
               width: 12,
               height: 12,
               borderRadius: "50%",
-              background: "#0FA05C",
+              background: "var(--success)",
               display: "inline-block",
             }}
           />
           Successful transaction{" "}
           <a
             href={`https://sepolia.etherscan.io/tx/${transaction.hash}`}
-            style={{ color: "#FF5005" }}
+            style={{ color: "var(--active-bg)" }}
           >
             See on Etherscan
           </a>
