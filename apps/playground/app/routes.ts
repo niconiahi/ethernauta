@@ -73,5 +73,17 @@ export default [
       "gas-estimate",
       "./routes/examples/gas-estimate.mdx",
     ),
+    route(
+      "gas-estimate-op-stack",
+      "./routes/examples/gas-estimate-op-stack.mdx",
+    ),
+    route(
+      "gas-estimate-arbitrum",
+      "./routes/examples/gas-estimate-arbitrum.mdx",
+    ),
+    route(
+      "gas-estimate-zksync",
+      "./routes/examples/gas-estimate-zksync.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

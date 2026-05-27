@@ -74,6 +74,18 @@ const UTILITY_EXAMPLES = [
     to: "/examples/gas-estimate",
     title: "Gas estimation (1559)",
   },
+  {
+    to: "/examples/gas-estimate-op-stack",
+    title: "Gas estimation (OP-stack)",
+  },
+  {
+    to: "/examples/gas-estimate-arbitrum",
+    title: "Gas estimation (Arbitrum)",
+  },
+  {
+    to: "/examples/gas-estimate-zksync",
+    title: "Gas estimation (zkSync)",
+  },
 ] as const
 
 const SECTIONS = [

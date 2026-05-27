@@ -1,0 +1,48 @@
+import { GithubLink } from "../../components/github-link"
+import { GasEstimateOpStackDemo } from "../../examples/gas-estimate-op-stack/demo"
+
+# Gas estimation — OP-stack
+
+`calculate_gas(chain, { kind: "op-stack", tx, base_fee_multiplier,
+priority_percentile })` orchestrates the four reads any OP-stack L2
+needs before broadcasting:
+
+1. `eth_feeHistory` — L2 base fee + caller-percentile priority tip.
+2. `eth_getTransactionCount` — nonce for the destination.
+3. `eth_estimateGas` — L2 gas units.
+4. `GasPriceOracle.getL1Fee(bytes)` at the
+   `0x420000000000000000000000000000000000000F` predeploy — the L1
+   data-fee surcharge.
+
+The picker below switches between Base and Optimism. Both chains
+route through the same `op-stack` family helper — only the
+provider's selected network changes.
+
+The returned shape is `{ kind: "op-stack", base_fee_per_gas,
+max_priority_fee_per_gas, max_fee_per_gas, l1_fee }`. Narrow on
+`fees.kind === "op-stack"` before reading `l1_fee`.
+
+<GasEstimateOpStackDemo />
+
+<GithubLink path="apps/playground/app/examples/gas-estimate-op-stack/demo.tsx" />
+
+## The code
+
+```tsx
+import { eip155_8453 } from "@ethernauta/chain"
+import { calculate_gas } from "@ethernauta/gas"
+import { useProvider } from "@ethernauta/react"
+
+const provider = useProvider({ key: "my-app:picked-rdns" })
+if (!provider) return <Picker />
+
+const fees = await calculate_gas(eip155_8453, {
+  kind: "op-stack",
+  tx: { to: "0x000…dEaD" },
+  base_fee_multiplier: 1.5,
+  priority_percentile: 10,
+})(provider.reader({ chain_id: "eip155:8453" }))
+
+if (fees.kind !== "op-stack") throw new Error("kind mismatch")
+// fees.l1_fee is the L1 surcharge in wei
+```
