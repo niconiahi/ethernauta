@@ -16,7 +16,8 @@
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "zip": "rm -f extension.zip && cd dist && zip -r ../extension.zip .",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "test:integration": "echo no integration tests"
   },
   "dependencies": {
     "@noble/hashes": "1.8.0",

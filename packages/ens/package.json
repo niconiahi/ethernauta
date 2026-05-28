@@ -24,7 +24,8 @@
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "test:integration": "echo no integration tests"
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",

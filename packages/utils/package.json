@@ -25,6 +25,7 @@
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest",
+    "test:integration": "echo no integration tests",
     "test:cli": "bun src/compiler/cli.ts --abi src/erc/165/IERC165.abi.json --out src/erc/165"
   },
   "peerDependencies": {

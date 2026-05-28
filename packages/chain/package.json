@@ -34,6 +34,7 @@
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest",
+    "test:integration": "echo no integration tests",
     "indexer": "bun src/indexer.ts && pnpm run format"
   },
   "peerDependencies": {

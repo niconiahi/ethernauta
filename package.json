@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground --filter @ethernauta/docs run dev",
-    "test": "pnpm --recursive run test:unit",
+    "test:unit": "pnpm --recursive run test:unit",
+    "test:integration": "pnpm --recursive run test:integration",
     "build": "pnpm --filter @ethernauta/cli run build && pnpm --recursive --filter '!@ethernauta/cli' --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' run build",
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
