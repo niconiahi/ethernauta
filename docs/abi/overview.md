@@ -41,10 +41,13 @@ Each Solidity static type has a matching codec:
 Each is an `AbiCodec<T>`:
 
 ```ts
-import { uint256, address } from "@ethernauta/abi";
+import { uint256 } from "@ethernauta/abi";
+import { Uint256Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const encoded = uint256.encode(42n);
-const decoded = uint256.decode(encoded);  // → 42n
+const codec = uint256();
+const encoded = codec.encode(parse(Uint256Schema, "0x2a"));
+const decoded = codec.decode(encoded, 0);
 ```
 
 `InferCodec<C>` extracts the TS type a codec produces; `InferArrayElement<C>` gets the element type of an array codec.
@@ -55,13 +58,20 @@ const decoded = uint256.decode(encoded);  // → 42n
 import { array, tuple, uint256, address, bool } from "@ethernauta/abi";
 
 // uint256[]
-const uint_array = array(uint256);
+const uint_array = array(uint256());
 
 // (address, uint256, bool)
-const trio = tuple([address, uint256, bool]);
+const trio = tuple({
+  to: address(),
+  amount: uint256(),
+  ok: bool(),
+});
 
 // (address, uint256[])
-const mixed = tuple([address, array(uint256)]);
+const mixed = tuple({
+  to: address(),
+  amounts: array(uint256()),
+});
 ```
 
 The codec composes the way the type composes. The codec for a function fragment with `(address spender, uint256 amount)` is `tuple([address, uint256])`.
@@ -71,16 +81,22 @@ The codec composes the way the type composes. The codec for a function fragment 
 The high-level builder. Pass an ABI function fragment, get a codec back:
 
 ```ts
-import { make_codec, parse_abi } from "@ethernauta/abi";
+import {
+  address,
+  encode_function_call,
+  uint256,
+} from "@ethernauta/abi";
+import { AddressSchema, Uint256Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const abi = parse_abi([
-  "function transfer(address to, uint256 amount) returns (bool)",
-]);
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const amount = parse(Uint256Schema, "0x3e8");
 
-const transfer = make_codec(abi[0]);
-
-const calldata = transfer.encode_inputs(["0xabc…", 1000n]);
-const result = transfer.decode_outputs(return_bytes);
+const calldata = encode_function_call({
+  name: "transfer",
+  args: [address(), uint256()] as const,
+  values: [to, amount] as const,
+});
 ```
 
 Used internally by `packages/erc/src/*/methods/*` to bind every ERC method.
@@ -88,15 +104,27 @@ Used internally by `packages/erc/src/*/methods/*` to bind every ERC method.
 ## Log decoding
 
 ```ts
-import { decode_logs, parse_abi } from "@ethernauta/abi";
+import {
+  address,
+  decode_logs,
+  type EventEntry,
+  uint256,
+} from "@ethernauta/abi";
+import type { EventLog } from "@ethernauta/abi";
 
-const events = parse_abi([
-  "event Transfer(address indexed from, address indexed to, uint256 value)",
-]);
+const entries: EventEntry[] = [
+  {
+    name: "Transfer",
+    args: [address(), address(), uint256()],
+    indexed: [true, true, false],
+  },
+];
 
-const decoded = decode_logs(events, raw_logs);
+declare const raw_logs: readonly EventLog[];
+
+const decoded = decode_logs(entries, raw_logs);
 // → DecodedLogEntry[]
-//   each carrying { name, signature, args, log }
+//   each carrying { name, args, log }
 ```
 
 `EventEntry<T>` is the typed shape of one decoded event; `DecodedLogEntry` is the union across all event signatures the caller passed.
@@ -106,8 +134,8 @@ const decoded = decode_logs(events, raw_logs);
 ```ts
 import { to_selector } from "@ethernauta/abi";
 
-to_selector("transfer(address,uint256)");   // → "0xa9059cbb"
-to_selector("balanceOf(address)");          // → "0x70a08231"
+to_selector("transfer(address,uint256)");   // → Uint8Array([0xa9, 0x05, 0x9c, 0xbb])
+to_selector("balanceOf(address)");          // → Uint8Array([0x70, 0xa0, 0x82, 0x31])
 ```
 
 Used by the registry generator (`@ethernauta/erc/registry`) and by the wallet's `wallet_sendCalls` UI to display human-readable method names from selectors.
@@ -115,15 +143,18 @@ Used by the registry generator (`@ethernauta/erc/registry`) and by the wallet's 
 ## Revert decoding
 
 ```ts
-import { revert } from "@ethernauta/abi";
+import { decode_revert_reason } from "@ethernauta/abi";
+import { BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
 // raw revert bytes from eth_call
-const reason = revert.decode(raw_bytes);
+const raw_bytes = parse(BytesSchema, "0x");
+const reason = decode_revert_reason(raw_bytes);
 // →
-//   | { kind: "error_string"; message: string }
+//   | { kind: "empty" }
+//   | { kind: "error"; reason: string }
 //   | { kind: "panic"; code: bigint }
-//   | { kind: "custom_error"; selector: Bytes4; data: Bytes }
-//   | { kind: "raw"; data: Bytes }
+//   | { kind: "custom"; selector: Bytes; data: Bytes }
 ```
 
 Picks `Error(string)`, `Panic(uint256)`, or custom-error / raw fallback. The wallet uses this to surface readable revert reasons in its UI; dapps use it for the same purpose.
@@ -136,15 +167,15 @@ pnpm dlx @ethernauta/cli abi --in ./erc20.abi.json --out ./generated/
 
 Produces one TypeScript file per ABI method. Each file binds the method into a `Callable<T>` you can use directly:
 
-```ts
-// generated/balance-of.ts (auto-generated)
-import { make_codec, parse_abi } from "@ethernauta/abi";
+```ts ignore
+// generated/balance-of.ts (auto-generated, illustrative)
+import { make_codec } from "@ethernauta/abi";
 import type { Callable } from "@ethernauta/transport";
 
-const codec = make_codec(/* fragment */);
-
-export function balanceOf(args: { owner: Address }): Callable<Uint256> {
-  return /* curried codec invocation */;
+// each generated method binds the function selector + decoder once
+// and returns a Callable<T> ready to be passed through `eth_call`.
+export function balanceOf(_args: readonly [Address]): Callable<Uint256> {
+  /* curried codec invocation */
 }
 ```
 
