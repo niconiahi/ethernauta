@@ -8,7 +8,7 @@
 //   ```ts ignore         skip this block entirely
 //   ```ts no-check       emit `// @ts-nocheck` header so it's parsed but not checked
 //
-// Run with: pnpm docs:check
+// Run with: pnpm --filter @ethernauta/docs check:examples
 
 import { spawnSync } from "node:child_process"
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs"
@@ -16,7 +16,7 @@ import { dirname, join, relative, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const repo_root = resolve(__dirname, "..")
+const repo_root = resolve(__dirname, "../../..")
 const docs_dir = join(repo_root, "docs")
 const out_dir = join(repo_root, "tmp", "docs-check")
 const tsconfig_path = join(repo_root, "tsconfig.docs-check.json")

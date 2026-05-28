@@ -11,7 +11,6 @@
     "lint:ratchet": "bash scripts/no-escape-hatches.sh",
     "format": "pnpm --recursive run format",
     "typecheck": "pnpm --recursive --parallel run typecheck",
-    "docs:check": "node scripts/check-docs-examples.mjs",
     "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish",
     "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish --dry-run",
     "deploy": "pnpm --filter @ethernauta/docs run deploy && pnpm --filter @ethernauta/playground run deploy"
