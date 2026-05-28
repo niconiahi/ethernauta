@@ -12,87 +12,135 @@ Once a transaction is broadcast, you need to know when it mines, whether it reve
 ```ts
 import {
   create_tracker,
-  create_store,
-  register_transaction,
-  wait_for_receipt,
-  watch_transaction,
+  window_store,
 } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const store = create_store({ namespace: "my-dapp", backend: localStorage });
-const tracker = create_tracker([eip155_1], { store });
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
 ```
+
+`window_store` is the default `Store` (wraps a `Map` on `window.transactions`). Pass any object satisfying the `Store` interface — `{ get, set }` — to back it with `localStorage`, `chrome.storage`, IndexedDB, etc.
 
 ## After broadcasting
 
 ```ts
+import {
+  create_tracker,
+  register_transaction,
+  window_store,
+} from "@ethernauta/transaction";
 import { eth_sendRawTransaction } from "@ethernauta/eth";
+import { create_writer, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const hash = await eth_sendRawTransaction(signed)(writer);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const writer = create_writer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const signed = parse(BytesSchema, "0x");
 
-await register_transaction({
-  hash,
-  chain_id: eip155_1.chain_id,
-  meta: { intent: "swap 100 USDC for ETH" },
-})(tracker({ chain_id: eip155_1.chain_id }));
+const hash = await eth_sendRawTransaction([signed])(
+  writer({ chain_id: CHAIN_ID }),
+);
+const pending = await register_transaction(hash)(
+  tracker({ chain_id: CHAIN_ID }),
+);
 ```
 
-The tracker now owns the hash. The metadata is whatever you want to remember about it.
+The tracker now owns the hash. `register_transaction` returns the `PendingTransaction` record it wrote to the store.
 
 ## Awaiting the receipt
 
 ```ts
-const receipt = await wait_for_receipt({ hash })(
-  tracker({ chain_id: eip155_1.chain_id }),
+import { create_tracker, wait_for_receipt, window_store } from "@ethernauta/transaction";
+import { RECEIPT_STATUS, is_post_byzantium } from "@ethernauta/eth";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const hash = parse(Hash32Schema, "0x" + "0".repeat(64));
+
+const receipt = await wait_for_receipt([hash])(
+  tracker({ chain_id: CHAIN_ID }),
 );
 
-if (receipt.status === "success") {
+if (is_post_byzantium(receipt) && receipt.status === RECEIPT_STATUS.SUCCESS) {
   // mined and didn't revert
 } else {
-  // mined but reverted
+  // mined but reverted (or pre-Byzantium — no `status` field)
 }
 ```
 
-`wait_for_receipt` polls at the tracker's interval (default 2s; configurable). Resolves when the receipt is available.
+`wait_for_receipt` polls at the tracker's interval (default 2s; configurable via `[hash, { poll_interval_ms, confirmations, timeout_ms }]`). Resolves when the receipt is available and the confirmation threshold is reached.
 
 ## Watching with a callback
 
 ```ts
-const unsubscribe = watch_transaction({
-  hash,
-  on_receipt: (receipt) => {
-    if (receipt.status === "success") {
-      show_success();
-    } else {
-      show_reverted(receipt);
-    }
-  },
-  on_error: (err) => {
-    // dropped, replaced, network error
-  },
-})(tracker({ chain_id: eip155_1.chain_id }));
+import { create_tracker, watch_transaction, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const hash = parse(Hash32Schema, "0x" + "0".repeat(64));
+
+const unsubscribe = watch_transaction(hash, (transaction) => {
+  if (transaction.status === "mined") {
+    // mined and didn't revert
+  } else if (transaction.status === "reverted") {
+    // mined but reverted
+  }
+})(tracker({ chain_id: CHAIN_ID }));
 ```
 
-Returns an unsubscribe function. Use when you want side effects on receipt arrival rather than awaiting.
+Returns an unsubscribe function. Use when you want side effects on lifecycle transitions rather than awaiting.
 
 ## Surviving reloads
 
-The store is the key. If the page reloads while a tx is pending, the tracker rehydrates its registry from the store on construction, and you can pick up where you left off:
+The store is the key. If the page reloads while a tx is pending, the tracker keeps reading from the same `Store`, and you can pick up the in-flight hash and re-attach a watcher:
 
 ```ts
-const tracker = create_tracker([eip155_1], { store });
+import { create_tracker, watch_transaction, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-// query pending txs for the current chain
-const pending = Array.from(registry.values()).filter((tx) => tx.status === "pending");
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const pending_hash = parse(Hash32Schema, "0x" + "0".repeat(64));
 
-for (const tx of pending) {
-  watch_transaction({ hash: tx.hash, on_receipt, on_error })(
-    tracker({ chain_id: tx.chain_id }),
-  );
-}
+watch_transaction(pending_hash, (_transaction) => {
+  // re-attached after reload
+})(tracker({ chain_id: CHAIN_ID }));
 ```
 
-The `registry` export is the in-memory mirror; the `Store` is the persistent backing.
+The dapp owns the bookkeeping of which hashes are in-flight — typically by keeping a list under its own key in the same `Store`.
 
 ## See also
 
