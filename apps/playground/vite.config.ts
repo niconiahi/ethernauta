@@ -54,7 +54,10 @@ function highlightSourcePlugin(): Plugin {
     },
     async load(id) {
       if (!id.endsWith(HIGHLIGHTED_QUERY)) return null
-      const filepath = id.slice(0, -HIGHLIGHTED_QUERY.length)
+      const filepath = id.slice(
+        0,
+        -HIGHLIGHTED_QUERY.length,
+      )
       const code = await readFile(filepath, "utf8")
       const ext = path.extname(filepath).toLowerCase()
       const lang = EXTENSION_TO_LANG[ext] ?? "text"

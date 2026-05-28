@@ -15,7 +15,13 @@ import type {
 } from "@ethernauta/transport"
 import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { boolean, object, parse, tuple, union } from "valibot"
+import {
+  boolean,
+  object,
+  parse,
+  tuple,
+  union,
+} from "valibot"
 
 const ParametersSchema = union([
   tuple([BytesSchema]),

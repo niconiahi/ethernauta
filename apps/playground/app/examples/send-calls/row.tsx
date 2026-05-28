@@ -11,9 +11,7 @@ export function Row({
 }) {
   return (
     <div className="send-calls-row">
-      <span className="send-calls-row-label">
-        {label}
-      </span>
+      <span className="send-calls-row-label">{label}</span>
       <span
         className={
           mono

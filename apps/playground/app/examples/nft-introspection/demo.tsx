@@ -149,9 +149,7 @@ export function NftIntrospectionDemo() {
           </p>
         )}
         {error && (
-          <p className="nft-introspection-error">
-            {error}
-          </p>
+          <p className="nft-introspection-error">{error}</p>
         )}
         {snapshot && (
           <>

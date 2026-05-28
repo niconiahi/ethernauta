@@ -3,11 +3,11 @@
 export { deploy_contract } from "./deploy-contract"
 export {
   type GetContractAddressParameters,
-  get_contract_address,
   GetContractAddressParametersSchema,
+  get_contract_address,
 } from "./get-contract-address"
 export {
   type GetCreate2AddressParameters,
-  get_create2_address,
   GetCreate2AddressParametersSchema,
+  get_create2_address,
 } from "./get-create2-address"

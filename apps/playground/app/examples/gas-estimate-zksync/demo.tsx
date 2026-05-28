@@ -101,7 +101,11 @@ export function GasEstimateZksyncDemo() {
         label="max_priority_fee_per_gas"
         value={fees?.max_priority_fee_per_gas ?? null}
       />
-      {error && <div className="gas-estimate-zksync-error">{error}</div>}
+      {error && (
+        <div className="gas-estimate-zksync-error">
+          {error}
+        </div>
+      )}
     </div>
   )
 }
@@ -115,7 +119,9 @@ function ResultRow({
 }) {
   return (
     <div className="gas-estimate-zksync-result-row">
-      <span className="gas-estimate-zksync-mono">{label}</span>
+      <span className="gas-estimate-zksync-mono">
+        {label}
+      </span>
       <span className="gas-estimate-zksync-result-value">
         {value
           ? `${value} (${hex_to_bigint(value).toLocaleString("en-US")})`

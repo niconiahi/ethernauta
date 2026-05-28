@@ -110,9 +110,7 @@ export function Verify1271Demo() {
         />
       )}
       {error && (
-        <p className="verify-1271-error">
-          {error}
-        </p>
+        <p className="verify-1271-error">{error}</p>
       )}
       <div className="verify-1271-actions">
         {!owner && <SignInHint />}
@@ -154,9 +152,7 @@ function Row({
 }) {
   return (
     <div className="verify-1271-row">
-      <span className="verify-1271-row-label">
-        {label}
-      </span>
+      <span className="verify-1271-row-label">{label}</span>
       <span
         className={
           mono

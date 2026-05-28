@@ -86,7 +86,11 @@ export function GasEstimateArbitrumDemo() {
         label="l2_base_fee"
         value={fees?.l2_base_fee ?? null}
       />
-      {error && <div className="gas-estimate-arbitrum-error">{error}</div>}
+      {error && (
+        <div className="gas-estimate-arbitrum-error">
+          {error}
+        </div>
+      )}
     </div>
   )
 }
@@ -100,7 +104,9 @@ function ResultRow({
 }) {
   return (
     <div className="gas-estimate-arbitrum-result-row">
-      <span className="gas-estimate-arbitrum-mono">{label}</span>
+      <span className="gas-estimate-arbitrum-mono">
+        {label}
+      </span>
       <span className="gas-estimate-arbitrum-result-value">
         {value
           ? `${value} (${hex_to_bigint(value).toLocaleString("en-US")})`

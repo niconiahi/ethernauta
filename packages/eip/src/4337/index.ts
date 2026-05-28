@@ -28,8 +28,8 @@ export {
   PackedUserOperationSchema,
   type UserOperation,
   type UserOperationByHash,
-  type UserOperationReceipt,
   UserOperationByHashSchema,
+  type UserOperationReceipt,
   UserOperationReceiptSchema,
   UserOperationSchema,
 } from "./types"

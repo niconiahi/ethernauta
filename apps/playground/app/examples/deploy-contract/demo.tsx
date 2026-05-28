@@ -99,9 +99,7 @@ export function DeployContractDemo() {
         )}
       </Section>
       {error && (
-        <p className="deploy-contract-error">
-          {error}
-        </p>
+        <p className="deploy-contract-error">{error}</p>
       )}
       <div>
         <Button onClick={derive}>Derive addresses</Button>

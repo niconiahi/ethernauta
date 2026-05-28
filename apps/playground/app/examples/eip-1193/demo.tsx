@@ -191,7 +191,7 @@ function Connected({
     return () => {
       cancelled = true
     }
-  }, [provider_detail, provider])
+  }, [provider])
 
   async function connect() {
     if (!chain_id_hex) return

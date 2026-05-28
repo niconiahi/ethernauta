@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest"
 
-import {
-  anvil_account,
-  anvil_accounts,
-} from "./accounts"
+import { anvil_account, anvil_accounts } from "./accounts"
 import {
   clear_mnemonic,
   DEFAULT_ANVIL_MNEMONIC,

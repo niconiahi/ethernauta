@@ -5,10 +5,10 @@ import {
   discover_providers,
   type EIP6963ProviderDetail,
   get_provider_detail,
-  pick_provider,
   type Provider,
-  set_provider_detail,
+  pick_provider,
   type Store,
+  set_provider_detail,
 } from "."
 
 const STUB_PROVIDER: Provider = {

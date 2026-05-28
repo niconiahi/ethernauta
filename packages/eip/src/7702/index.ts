@@ -2,10 +2,10 @@
 
 export {
   type AuthorizationList,
-  type AuthorizationParameter,
-  type AuthorizationSigned,
   AuthorizationListSchema,
+  type AuthorizationParameter,
   AuthorizationParameterSchema,
+  type AuthorizationSigned,
   AuthorizationSignedSchema,
   build_authorization_message,
   hash_authorization,

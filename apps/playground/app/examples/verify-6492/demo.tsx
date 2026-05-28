@@ -124,9 +124,7 @@ export function Verify6492Demo() {
         </>
       )}
       {error && (
-        <p className="verify-6492-error">
-          {error}
-        </p>
+        <p className="verify-6492-error">{error}</p>
       )}
       <div>
         <Button onClick={do_wrap}>Wrap + unwrap</Button>
@@ -146,9 +144,7 @@ function Row({
 }) {
   return (
     <div className="verify-6492-row">
-      <span className="verify-6492-row-label">
-        {label}
-      </span>
+      <span className="verify-6492-row-label">{label}</span>
       <span
         className={
           mono

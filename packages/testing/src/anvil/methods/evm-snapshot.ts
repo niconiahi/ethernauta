@@ -8,7 +8,7 @@
 // than `UintSchema` — anvil's hex encoding has no leading-zero
 // guarantees the strict uint regex requires.
 
-import { BytesSchema, type Bytes } from "@ethernauta/core"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,

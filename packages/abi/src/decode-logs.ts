@@ -11,8 +11,8 @@ import type { AbiCodec } from "./abi-codec"
 import {
   decode_event_log,
   type EventLog,
-  event_topic_hash,
   EventLogSchema,
+  event_topic_hash,
 } from "./encoding/event"
 
 // Decoded log entry. `args` is positional in the matched event's

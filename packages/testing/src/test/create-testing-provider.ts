@@ -11,8 +11,8 @@
 //   eth_getBalance(addr)(resolver.reader({ chain_id }))
 //   eth_sendTransaction(tx)(resolver.signer({ chain_id }))
 
-import { create_provider } from "@ethernauta/eip/1193"
 import type { Provider } from "@ethernauta/eip/1193"
+import { create_provider } from "@ethernauta/eip/1193"
 import { CallSchema, http } from "@ethernauta/transport"
 import { parse } from "valibot"
 

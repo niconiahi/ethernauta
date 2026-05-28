@@ -23,6 +23,6 @@
 }
 
 .send-calls-row-value.is-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
-    monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }

@@ -7,8 +7,8 @@ import {
   Bytes32Schema,
   BytesSchema,
   type Uint32,
-  type Uint256,
   Uint32Schema,
+  type Uint256,
   Uint256Schema,
 } from "@ethernauta/core"
 import {

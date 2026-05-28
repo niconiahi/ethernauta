@@ -5,9 +5,9 @@
 // accept. The schema is the single source of truth — RLP only
 // enters this file.
 
-import {
-  type AccessList,
-  type AccessListEntry,
+import type {
+  AccessList,
+  AccessListEntry,
 } from "@ethernauta/eip/2930"
 import {
   hex_to_bytes,

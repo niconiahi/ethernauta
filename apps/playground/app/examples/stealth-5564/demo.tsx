@@ -140,9 +140,7 @@ export function Stealth5564Demo() {
 
   return (
     <div className="stealth-5564-root">
-      <h3 className="stealth-5564-heading">
-        Recipient
-      </h3>
+      <h3 className="stealth-5564-heading">Recipient</h3>
       <Field
         label="Spending private key"
         value={spending_priv}
@@ -221,14 +219,10 @@ export function Stealth5564Demo() {
         Recover stealth address
       </Button>
       {match_result && (
-        <p className="stealth-5564-match">
-          {match_result}
-        </p>
+        <p className="stealth-5564-match">{match_result}</p>
       )}
       {error && (
-        <p className="stealth-5564-error">
-          {error}
-        </p>
+        <p className="stealth-5564-error">{error}</p>
       )}
       <p className="stealth-5564-footnote">
         All math runs in-browser. Nothing is broadcast.

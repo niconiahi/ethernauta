@@ -97,9 +97,7 @@ export function GasEstimateDemo() {
       />
       <ResultRow label="max_fee_per_gas" value={max_fee} />
       {error && (
-        <div className="gas-estimate-error">
-          {error}
-        </div>
+        <div className="gas-estimate-error">{error}</div>
       )}
     </div>
   )

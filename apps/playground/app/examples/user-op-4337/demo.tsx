@@ -331,9 +331,7 @@ export function UserOp4337Demo() {
         onChange={set_target}
       />
       {error && (
-        <p className="user-op-4337-error">
-          {error}
-        </p>
+        <p className="user-op-4337-error">{error}</p>
       )}
       <div className="user-op-4337-actions">
         {!owner && <SignInHint />}

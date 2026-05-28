@@ -195,11 +195,7 @@ export function PermitDemo() {
           </>
         )}
       </div>
-      {error && (
-        <p className="permit-error">
-          {error}
-        </p>
-      )}
+      {error && <p className="permit-error">{error}</p>}
       <div className="permit-button-row">
         {!owner && <SignInHint />}
         {owner && (
@@ -234,9 +230,7 @@ function Row({
 }) {
   return (
     <div className="permit-row">
-      <span className="permit-row-label">
-        {label}
-      </span>
+      <span className="permit-row-label">{label}</span>
       <span
         className={
           mono

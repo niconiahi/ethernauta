@@ -203,11 +203,7 @@ export function Ens137Demo() {
         )}
       </section>
 
-      {error && (
-        <p className="ens-137-error">
-          {error}
-        </p>
-      )}
+      {error && <p className="ens-137-error">{error}</p>}
     </div>
   )
 }

@@ -5,10 +5,6 @@
 // through both M3 seams.
 
 import { UintSchema } from "@ethernauta/core"
-import { create_provider, http, ResponseSchema } from "@ethernauta/transport"
-import { parse } from "valibot"
-import { beforeAll, describe, expect, it } from "vitest"
-
 import {
   anvil,
   anvil_account,
@@ -17,11 +13,22 @@ import {
   evm_mine,
   without_isolation,
 } from "@ethernauta/testing"
+import {
+  create_provider,
+  http,
+  ResponseSchema,
+} from "@ethernauta/transport"
+import { parse } from "valibot"
+import { beforeAll, describe, expect, it } from "vitest"
 
 const transport = http(anvil())
-const resolver = create_provider(create_testing_provider(anvil()))
+const resolver = create_provider(
+  create_testing_provider(anvil()),
+)
 
-async function get_balance(address: string): Promise<string> {
+async function get_balance(
+  address: string,
+): Promise<string> {
   const response = await transport([
     "eth_getBalance",
     [address, "latest"],
@@ -39,9 +46,9 @@ describe("plugin integration — endpoint reachable", () => {
     ])
     const body = parse(ResponseSchema, response)
     if ("error" in body) throw new Error(body.error.message)
-    expect(parse(UintSchema, body.result).startsWith("0x")).toBe(
-      true,
-    )
+    expect(
+      parse(UintSchema, body.result).startsWith("0x"),
+    ).toBe(true)
   })
 
   it("create_provider(anvil()) returns a usable resolver pair", async () => {

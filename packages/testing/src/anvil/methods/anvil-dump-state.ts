@@ -10,7 +10,7 @@
 // preserve historical block states (default `false`). The blob
 // is opaque to the consumer; do not parse it.
 
-import { BytesSchema, type Bytes } from "@ethernauta/core"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,

@@ -153,9 +153,7 @@ export function Delegate7702Demo() {
         )}
       </div>
       {error && (
-        <p className="delegate-7702-error">
-          {error}
-        </p>
+        <p className="delegate-7702-error">{error}</p>
       )}
       <div className="delegate-7702-actions">
         {!owner && <SignInHint />}

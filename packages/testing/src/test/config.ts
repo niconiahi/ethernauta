@@ -28,7 +28,9 @@ export const ForkConfigSchema = object({
   url: pipe(string(), url()),
   block_number: optional(bigint()),
 })
-export type ForkConfig = InferOutput<typeof ForkConfigSchema>
+export type ForkConfig = InferOutput<
+  typeof ForkConfigSchema
+>
 
 export const TestConfigSchema = object({
   chain_id: optional(number()),
@@ -42,4 +44,6 @@ export const TestConfigSchema = object({
   extra_args: optional(array(string())),
   isolate: optional(boolean()),
 })
-export type TestConfig = InferOutput<typeof TestConfigSchema>
+export type TestConfig = InferOutput<
+  typeof TestConfigSchema
+>

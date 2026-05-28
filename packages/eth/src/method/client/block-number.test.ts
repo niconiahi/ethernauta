@@ -1,7 +1,7 @@
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { UintSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   create_reader,
   encode_chain_id,

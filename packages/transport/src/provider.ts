@@ -1,8 +1,5 @@
 // https://eips.ethereum.org/EIPS/eip-1193
-import type {
-  Provider,
-  RequestArguments,
-} from "@ethernauta/eip/1193"
+import type { Provider } from "@ethernauta/eip/1193"
 import { RequestArgumentsSchema } from "@ethernauta/eip/1193"
 import type { InferOutput } from "valibot"
 import {

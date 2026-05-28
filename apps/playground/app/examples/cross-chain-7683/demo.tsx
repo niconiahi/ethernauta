@@ -185,9 +185,7 @@ export function CrossChain7683Demo() {
         />
       </label>
       {error && (
-        <p className="cross-chain-7683-error">
-          {error}
-        </p>
+        <p className="cross-chain-7683-error">{error}</p>
       )}
       <div className="cross-chain-7683-button-row">
         {!user && <SignInHint />}

@@ -9,8 +9,8 @@
 // slot for future meta-data). We parse with `BytesSchema`
 // because the value is opaque and the caller never inspects it.
 
-import { BytesSchema, UintSchema } from "@ethernauta/core"
 import type { Bytes } from "@ethernauta/core"
+import { BytesSchema, UintSchema } from "@ethernauta/core"
 import type {
   ResolvedWriter,
   Writable,

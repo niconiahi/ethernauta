@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest"
 
 import {
-  NO_PLUGIN_MESSAGE,
   clear_endpoint,
+  NO_PLUGIN_MESSAGE,
   set_endpoint,
 } from "./endpoint-store"
 import { anvil } from "./test"

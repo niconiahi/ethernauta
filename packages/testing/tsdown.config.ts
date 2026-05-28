@@ -1,10 +1,7 @@
 import { defineConfig } from "tsdown"
 
 export default defineConfig({
-  entry: [
-    "./src/index.ts",
-    "./src/vitest/setup.ts",
-  ],
+  entry: ["./src/index.ts", "./src/vitest/setup.ts"],
   clean: true,
   format: ["esm"],
   dts: { sourcemap: true },

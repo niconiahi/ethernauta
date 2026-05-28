@@ -1,18 +1,14 @@
-import { parse as devalue_parse } from "devalue"
+import type { Bytes } from "@ethernauta/core"
 import type {
   ResolvedReader,
   ResolvedWriter,
 } from "@ethernauta/transport"
 import { http } from "@ethernauta/transport"
+import { parse as devalue_parse } from "devalue"
 import { parse } from "valibot"
 import { afterEach, beforeEach } from "vitest"
 
-import type { Bytes } from "@ethernauta/core"
-
-import {
-  evm_revert,
-  evm_snapshot,
-} from "../anvil/methods"
+import { evm_revert, evm_snapshot } from "../anvil/methods"
 import { await_ready } from "../spawner/await-ready"
 import { pick_free_port } from "../spawner/pick-free-port"
 import { register_cleanup } from "../spawner/signals"

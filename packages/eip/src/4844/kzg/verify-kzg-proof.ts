@@ -7,8 +7,8 @@ import { parse } from "valibot"
 
 import {
   type KzgCommitment,
-  type KzgProof,
   KzgCommitmentSchema,
+  type KzgProof,
   KzgProofSchema,
 } from "../schemas"
 import { get_kzg } from "./setup"

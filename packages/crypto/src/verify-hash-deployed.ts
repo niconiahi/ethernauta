@@ -24,8 +24,8 @@ import type { ResolvedReader } from "@ethernauta/transport"
 import { parse, safeParse } from "valibot"
 
 import {
-  recover_address,
   RecoverSignatureSchema,
+  recover_address,
 } from "./recover"
 
 const EMPTY_BYTES = parse(BytesSchema, "0x")

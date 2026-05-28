@@ -41,7 +41,10 @@ describe.skipIf(!is_enabled)("spawner round-trip", () => {
           }),
         },
       )
-      const body = parse(ResponseSchema, await response.json())
+      const body = parse(
+        ResponseSchema,
+        await response.json(),
+      )
       if ("error" in body) {
         throw new Error(body.error.message)
       }

@@ -149,7 +149,11 @@ export function GasEstimateOpStackDemo() {
         label="l1_fee"
         value={fees?.l1_fee ?? null}
       />
-      {error && <div className="gas-estimate-op-stack-error">{error}</div>}
+      {error && (
+        <div className="gas-estimate-op-stack-error">
+          {error}
+        </div>
+      )}
     </div>
   )
 }
@@ -200,7 +204,9 @@ function KnobRow({
 }) {
   return (
     <label className="gas-estimate-op-stack-knob-row">
-      <span className="gas-estimate-op-stack-mono">{label}</span>
+      <span className="gas-estimate-op-stack-mono">
+        {label}
+      </span>
       <input
         type="number"
         value={value}
@@ -225,7 +231,9 @@ function ResultRow({
 }) {
   return (
     <div className="gas-estimate-op-stack-result-row">
-      <span className="gas-estimate-op-stack-mono">{label}</span>
+      <span className="gas-estimate-op-stack-mono">
+        {label}
+      </span>
       <span className="gas-estimate-op-stack-result-value">
         {value
           ? `${value} (${hex_to_bigint(value).toLocaleString("en-US")})`

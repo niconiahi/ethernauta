@@ -60,22 +60,22 @@ export { sign_typed_data } from "./sign-typed-data"
 export { signature_to_hex } from "./signature-to-hex"
 export {
   type VerifyMessageParameters,
+  VerifyMessageParametersSchema,
   verify_message,
   verify_message_deployed,
   verify_message_universal,
-  VerifyMessageParametersSchema,
 } from "./verify-message"
 export {
   type VerifySiweMessageFailureReason,
   type VerifySiweMessageParameters,
+  VerifySiweMessageParametersSchema,
   type VerifySiweMessageResult,
   verify_siwe_message,
-  VerifySiweMessageParametersSchema,
 } from "./verify-siwe"
 export {
   type VerifyTypedDataParameters,
+  VerifyTypedDataParametersSchema,
   verify_typed_data,
   verify_typed_data_deployed,
   verify_typed_data_universal,
-  VerifyTypedDataParametersSchema,
 } from "./verify-typed-data"

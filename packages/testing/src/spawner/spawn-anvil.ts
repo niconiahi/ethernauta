@@ -30,7 +30,9 @@ export const SpawnConfigSchema = object({
   fork: optional(ForkConfigSchema),
   extra_args: optional(array(string())),
 })
-export type SpawnConfig = InferOutput<typeof SpawnConfigSchema>
+export type SpawnConfig = InferOutput<
+  typeof SpawnConfigSchema
+>
 
 // `SpawnHandle` is a control surface, not a value-bearing
 // boundary — it carries a `ChildProcess` from node's standard

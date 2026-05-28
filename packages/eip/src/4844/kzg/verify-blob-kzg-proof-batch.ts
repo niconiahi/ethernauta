@@ -5,8 +5,8 @@ import {
   type Blob,
   BlobSchema,
   type KzgCommitment,
-  type KzgProof,
   KzgCommitmentSchema,
+  type KzgProof,
   KzgProofSchema,
 } from "../schemas"
 import { get_kzg } from "./setup"

@@ -7,7 +7,10 @@
 // JSON `null` on success. Useful for swapping a contract's
 // implementation in-place during a test without redeploying.
 
-import { AddressSchema, BytesSchema } from "@ethernauta/core"
+import {
+  AddressSchema,
+  BytesSchema,
+} from "@ethernauta/core"
 import type {
   ResolvedWriter,
   Writable,

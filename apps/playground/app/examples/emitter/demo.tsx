@@ -38,7 +38,10 @@ function now_iso(): string {
 export function EmitterDemo() {
   // useMemo so the emitter is created once per mount; useEffect
   // below subscribes and tears down with the component.
-  const emitter: Emitter = useMemo(() => create_emitter(), [])
+  const emitter: Emitter = useMemo(
+    () => create_emitter(),
+    [],
+  )
   const [log, set_log] = useState<LogEntry[]>([])
 
   useEffect(() => {
@@ -81,14 +84,20 @@ export function EmitterDemo() {
       <div className="emitter-buttons">
         <Button
           onClick={() => {
-            emitter.emit("accountsChanged", SAMPLE_ACCOUNTS_A)
+            emitter.emit(
+              "accountsChanged",
+              SAMPLE_ACCOUNTS_A,
+            )
           }}
         >
           accountsChanged (1 account)
         </Button>
         <Button
           onClick={() => {
-            emitter.emit("accountsChanged", SAMPLE_ACCOUNTS_B)
+            emitter.emit(
+              "accountsChanged",
+              SAMPLE_ACCOUNTS_B,
+            )
           }}
         >
           accountsChanged (2 accounts)

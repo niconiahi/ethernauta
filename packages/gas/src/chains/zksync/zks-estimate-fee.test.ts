@@ -1,8 +1,8 @@
+import { AddressSchema } from "@ethernauta/core"
 import {
   encode_chain_id,
   type ResolvedReader,
 } from "@ethernauta/transport"
-import { AddressSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 

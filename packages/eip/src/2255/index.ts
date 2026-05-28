@@ -7,6 +7,6 @@ export {
   CaveatSchema,
   type Permission,
   PermissionSchema,
-  type RequestedPermissions,
   RequestedPermissionSchema,
+  type RequestedPermissions,
 } from "./permission"

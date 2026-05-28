@@ -165,9 +165,7 @@ export function VaultsDemo() {
                 {v.label}
               </div>
               {loading && !s && (
-                <p className="vaults-loading">
-                  Loading…
-                </p>
+                <p className="vaults-loading">Loading…</p>
               )}
               {s && (
                 <>
@@ -199,11 +197,7 @@ export function VaultsDemo() {
           )
         })}
       </div>
-      {error && (
-        <p className="vaults-error">
-          {error}
-        </p>
-      )}
+      {error && <p className="vaults-error">{error}</p>}
       {elapsed_ms !== null && (
         <p className="vaults-elapsed">
           {elapsed_ms} ms · {VAULTS.length * 6} reads · 1
@@ -228,9 +222,7 @@ function Row({
 }) {
   return (
     <div className="vaults-row">
-      <span className="vaults-row-label">
-        {label}
-      </span>
+      <span className="vaults-row-label">{label}</span>
       <span
         className={
           mono

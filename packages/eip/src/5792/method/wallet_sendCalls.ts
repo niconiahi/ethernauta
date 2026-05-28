@@ -7,8 +7,8 @@ import type {
 import { parse } from "valibot"
 import {
   type SendCallsParameters,
-  type SendCallsResult,
   SendCallsParametersSchema,
+  type SendCallsResult,
   SendCallsResultSchema,
 } from "../capabilities"
 

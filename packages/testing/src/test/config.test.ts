@@ -1,7 +1,10 @@
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { ForkConfigSchema, TestConfigSchema } from "./config"
+import {
+  ForkConfigSchema,
+  TestConfigSchema,
+} from "./config"
 
 describe("ForkConfigSchema", () => {
   it("accepts a valid http url", () => {

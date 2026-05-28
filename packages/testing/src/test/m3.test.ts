@@ -16,9 +16,17 @@
 // 1193-discovered wallet — only the provider construction
 // (`create_provider(create_testing_provider(anvil()))` vs an injected provider) differs.
 
-import { BytesSchema, Hash32Schema, UintSchema } from "@ethernauta/core"
+import {
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
+} from "@ethernauta/core"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
-import { ResponseSchema, create_provider, http } from "@ethernauta/transport"
+import {
+  create_provider,
+  http,
+  ResponseSchema,
+} from "@ethernauta/transport"
 import { parse } from "valibot"
 import {
   afterAll,
@@ -53,7 +61,10 @@ describe.skipIf(!is_enabled)(
 
     beforeAll(async () => {
       const port = await pick_free_port()
-      handle = spawn_anvil({ port, extra_args: ["--silent"] })
+      handle = spawn_anvil({
+        port,
+        extra_args: ["--silent"],
+      })
       await await_ready({ handle, timeout_ms: 10_000 })
       set_endpoint(`http://127.0.0.1:${port}`)
       set_mnemonic(DEFAULT_ANVIL_MNEMONIC)
@@ -72,13 +83,16 @@ describe.skipIf(!is_enabled)(
         [],
       ])
       const body = parse(ResponseSchema, response)
-      if ("error" in body) throw new Error(body.error.message)
+      if ("error" in body)
+        throw new Error(body.error.message)
       const block_number = parse(UintSchema, body.result)
       expect(block_number.startsWith("0x")).toBe(true)
     })
 
     it("path 1: create_provider(create_testing_provider(anvil())).signer signs an eth_sendTransaction", async () => {
-      const resolver = create_provider(create_testing_provider(anvil()))
+      const resolver = create_provider(
+        create_testing_provider(anvil()),
+      )
       const account = anvil_account(0)
       const account_one = anvil_account(1)
       const [signer] = resolver.signer({
@@ -99,7 +113,9 @@ describe.skipIf(!is_enabled)(
     })
 
     it("path 1: eth_signTransaction + eth_sendRawTransaction round-trip", async () => {
-      const resolver = create_provider(create_testing_provider(anvil()))
+      const resolver = create_provider(
+        create_testing_provider(anvil()),
+      )
       const account = anvil_account(0)
       const account_one = anvil_account(1)
       const [signer] = resolver.signer({

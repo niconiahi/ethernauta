@@ -13,9 +13,9 @@
 import {
   type Address,
   AddressSchema,
+  ByteSchema,
   type Bytes,
   BytesSchema,
-  ByteSchema,
   type Uint,
   type Uint256,
   UintSchema,
@@ -24,11 +24,11 @@ import {
   eth_estimateGas,
   eth_getTransactionCount,
 } from "@ethernauta/eth"
-import { decode_chain_id } from "@ethernauta/transport"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
+import { decode_chain_id } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   literal,

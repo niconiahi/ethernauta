@@ -2,8 +2,8 @@ import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { UintSchema } from "@ethernauta/core"
 import type {
   Call,
-  Response,
   ResolvedReader,
+  Response,
 } from "@ethernauta/transport"
 import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"

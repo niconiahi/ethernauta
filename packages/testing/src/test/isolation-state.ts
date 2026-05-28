@@ -11,6 +11,8 @@ export function is_isolation_disabled(): boolean {
   return isolation_disabled
 }
 
-export function set_isolation_disabled(value: boolean): void {
+export function set_isolation_disabled(
+  value: boolean,
+): void {
   isolation_disabled = value
 }

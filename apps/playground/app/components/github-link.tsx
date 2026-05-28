@@ -1,6 +1,7 @@
 import { ButtonLink } from "./button"
 
-export const REPO_URL = "https://github.com/niconiahi/ethernauta"
+export const REPO_URL =
+  "https://github.com/niconiahi/ethernauta"
 const REPO_BLOB = `${REPO_URL}/blob/main/`
 
 export function GithubLink({

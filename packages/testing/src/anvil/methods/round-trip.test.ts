@@ -49,8 +49,14 @@ describe.skipIf(!is_enabled)("anvil RPC bindings", () => {
     handle = spawn_anvil({ port, extra_args: ["--silent"] })
     await await_ready({ handle, timeout_ms: 10_000 })
     const transport = http(`http://127.0.0.1:${port}`)
-    resolved_reader = [[transport], { chain_id: "eip155:31337" }]
-    resolved_writer = [[transport], { chain_id: "eip155:31337" }]
+    resolved_reader = [
+      [transport],
+      { chain_id: "eip155:31337" },
+    ]
+    resolved_writer = [
+      [transport],
+      { chain_id: "eip155:31337" },
+    ]
   })
 
   afterAll(() => {
@@ -64,16 +70,16 @@ describe.skipIf(!is_enabled)("anvil RPC bindings", () => {
     expect(ok).toBe(true)
   })
 
-  it("evm_mine returns the placeholder \"0x0\"", async () => {
+  it('evm_mine returns the placeholder "0x0"', async () => {
     const result = await evm_mine()(resolved_writer)
     expect(result).toBe("0x0")
   })
 
   it("evm_increaseTime returns the new timestamp as bigint", async () => {
     const seconds = parse(UintSchema, "0x3c")
-    const new_timestamp = await evm_increaseTime([
-      seconds,
-    ])(resolved_writer)
+    const new_timestamp = await evm_increaseTime([seconds])(
+      resolved_writer,
+    )
     expect(typeof new_timestamp).toBe("bigint")
     expect(new_timestamp).toBeGreaterThan(0n)
   })
@@ -108,7 +114,10 @@ describe.skipIf(!is_enabled)("anvil RPC bindings", () => {
       "0x0000000000000000000000000000000000000003",
     )
     const slot = parse(UintSchema, "0x0")
-    const value = parse(Bytes32Schema, `0x${"1".repeat(64)}`)
+    const value = parse(
+      Bytes32Schema,
+      `0x${"1".repeat(64)}`,
+    )
     const result = await anvil_setStorageAt([
       address,
       slot,
@@ -123,19 +132,18 @@ describe.skipIf(!is_enabled)("anvil RPC bindings", () => {
       "0x0000000000000000000000000000000000000004",
     )
     const code = parse(BytesSchema, "0x6001600101")
-    const result = await anvil_setCode([
-      address,
-      code,
-    ])(resolved_writer)
+    const result = await anvil_setCode([address, code])(
+      resolved_writer,
+    )
     expect(result).toBeNull()
   })
 
   it("anvil_dumpState round-trips through anvil_loadState", async () => {
     const dumped = await anvil_dumpState()(resolved_reader)
     expect(dumped.startsWith("0x")).toBe(true)
-    const loaded = await anvil_loadState([
-      dumped,
-    ])(resolved_writer)
+    const loaded = await anvil_loadState([dumped])(
+      resolved_writer,
+    )
     expect(loaded).toBe(true)
   })
 })

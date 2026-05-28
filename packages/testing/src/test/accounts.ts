@@ -9,8 +9,8 @@
 
 import { AddressSchema } from "@ethernauta/core"
 import {
-  HDKey,
   derive_private_key,
+  type HDKey,
   mnemonic_to_seed,
   private_key_to_address,
   seed_to_master_key,
@@ -24,7 +24,9 @@ export const AnvilAccountSchema = object({
   address: AddressSchema,
   private_key: instance(Uint8Array),
 })
-export type AnvilAccount = InferOutput<typeof AnvilAccountSchema>
+export type AnvilAccount = InferOutput<
+  typeof AnvilAccountSchema
+>
 
 // Anvil pre-funds 10 accounts by default; the consumer can
 // override via `accounts: N` at plugin construction. The

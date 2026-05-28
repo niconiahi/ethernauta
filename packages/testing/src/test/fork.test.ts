@@ -12,7 +12,7 @@
 // endpoint from CI is brittle.
 
 import { BytesSchema } from "@ethernauta/core"
-import { ResponseSchema, http } from "@ethernauta/transport"
+import { http, ResponseSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
 import {
   afterAll,
