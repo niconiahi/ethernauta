@@ -11,6 +11,7 @@ The non-negotiable typing rule across the monorepo: **every value-bearing type s
 
 ```ts
 import * as v from "valibot";
+import { AddressSchema } from "@ethernauta/core";
 
 const userSchema = v.object({
   address: AddressSchema,
@@ -18,6 +19,9 @@ const userSchema = v.object({
 });
 
 type User = v.InferOutput<typeof userSchema>;
+
+declare const _example: User;
+void _example;
 ```
 
 That's the whole convention. The schema is the single source of truth; the type is derived. You never write `interface User { … }` for wire-bearing data. You never write `type User = { address: string; nickname: string }`.
@@ -27,6 +31,17 @@ That's the whole convention. The schema is the single source of truth; the type 
 The complement of schema-first typing: **boundaries validate with `parse`**, not `safeParse`.
 
 ```ts
+import * as v from "valibot";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+
+const sendParamsSchema = v.object({
+  to: AddressSchema,
+  value: UintSchema,
+  input: BytesSchema,
+});
+
+declare function broadcast(_params: v.InferOutput<typeof sendParamsSchema>): Promise<string>;
+
 function send(_params: unknown) {
   const params = v.parse(sendParamsSchema, _params); // throws on invalid
   // `params` is now `SendParams`, statically typed, runtime-validated
@@ -50,7 +65,7 @@ This rule is enforced not just for prettiness but for three concrete reasons:
 
 These produce ratchet violations in CI (`scripts/no-escape-hatches.sh`):
 
-```ts
+```ts ignore
 // NO — interfaces for value-bearing data
 interface User { address: string }
 
@@ -85,6 +100,13 @@ Full list in [@ethernauta/core](/core/overview). If the right primitive is missi
 ## The type lifecycle
 
 ```ts
+import * as v from "valibot";
+import {
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+} from "@ethernauta/core";
+
 // 1. Schema is authored.
 const sendParamsSchema = v.object({
   to: AddressSchema,
@@ -95,6 +117,8 @@ const sendParamsSchema = v.object({
 // 2. Type is derived.
 type SendParams = v.InferOutput<typeof sendParamsSchema>;
 
+declare function build_and_send(_p: SendParams): Promise<string>;
+
 // 3. Boundary parses, interior infers.
 function eth_sendTransaction(_params: unknown) {
   const params = v.parse(sendParamsSchema, _params);
@@ -102,9 +126,7 @@ function eth_sendTransaction(_params: unknown) {
   return build_and_send(params);
 }
 
-// 4. Consumer imports the schema OR the type, whichever they need.
-import { sendParamsSchema } from "@ethernauta/eth";
-import type { SendParams } from "@ethernauta/eth";
+void eth_sendTransaction;
 ```
 
 The schema is the value; the type is the shadow.
