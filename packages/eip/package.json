@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/eip",
   "type": "module",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "publishConfig": {
     "access": "public"
   },
