@@ -6,7 +6,8 @@
   "sideEffects": false,
   "scripts": {
     "dev": "run-p \"build:*:watch\"",
-    "build": "run-s build:manifest build:extension && pnpm run format",
+    "build": "run-s build:manifest build:extension build:zip && pnpm run format",
+    "build:zip": "rm -f extension.zip && cd dist && zip -r ../extension.zip .",
     "build:manifest": "vite build --config vite.manifest.config.ts",
     "build:extension": "vite build --config vite.extension.config.ts",
     "build:manifest:watch": "vite build --watch --config vite.manifest.config.ts",
