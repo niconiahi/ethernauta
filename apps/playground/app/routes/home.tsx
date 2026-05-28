@@ -123,6 +123,14 @@ export default function () {
           <ButtonLink href="/examples" variant="secondary">
             Examples
           </ButtonLink>
+          <ButtonLink
+            href="https://github.com/niconiahi/ethernauta"
+            target="_blank"
+            rel="noreferrer noopener"
+            variant="secondary"
+          >
+            GitHub
+          </ButtonLink>
         </div>
       </section>
 

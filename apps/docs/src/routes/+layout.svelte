@@ -21,6 +21,20 @@ const sections = group_by_section(get_docs())
       <span>Ethernauta</span>
     </a>
     <Search />
+    <a
+      class="button ghost github-link"
+      href="https://github.com/niconiahi/ethernauta"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.02c-3.2.7-3.87-1.37-3.87-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.27.73-1.56-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.19a11.1 11.1 0 0 1 5.83 0c2.22-1.5 3.2-1.19 3.2-1.19.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"
+        />
+      </svg>
+      <span>Star on GitHub</span>
+    </a>
     <nav>
       {#each sections as section (section.section)}
         <section>
@@ -91,6 +105,15 @@ const sections = group_by_section(get_docs())
     background: var(--neutral-950);
     border-radius: 10px;
     padding: 6px;
+  }
+
+  .github-link {
+    width: 100%;
+    height: 42px;
+    gap: 10px;
+    margin: 0.75rem 0 1.5rem;
+    border: 1px solid var(--border);
+    color: var(--text);
   }
 
   .brand span {
