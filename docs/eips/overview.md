@@ -10,8 +10,8 @@ order: 1
 Every Ethereum Improvement Proposal that Ethernauta implements lives as a subpath of `@ethernauta/eip`. The folder name is the EIP number. Import what you need:
 
 ```ts
-import { sign_typed_data } from "@ethernauta/eip/712";
-import { wallet_send_calls } from "@ethernauta/eip/5792";
+import { eth_signTypedData_v4 } from "@ethernauta/eip/712";
+import { wallet_sendCalls } from "@ethernauta/eip/5792";
 import { discover_providers } from "@ethernauta/eip/6963";
 ```
 
