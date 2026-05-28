@@ -51,8 +51,8 @@ The CLI's command handlers are also exported as functions for embedding in other
 ```ts
 import { execute_abi, execute_registry } from "@ethernauta/cli";
 
-await execute_abi({ input: "./foo.abi.json", output: "./generated/" });
-await execute_registry({ input: "./packages/erc/src", output: "./registry.ts" });
+execute_abi(["--in", "./foo.abi.json", "--out", "./generated/"]);
+execute_registry(["--in", "./packages/erc/src", "--out", "./registry.ts"]);
 ```
 
 ## Adding a new generator
