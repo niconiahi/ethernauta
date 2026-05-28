@@ -1,45 +1,27 @@
 // End-to-end demonstration of the two-files-total consumer
 // experience promised in 01-scope.md. The companion
 // `vitest.config.mjs` registers `ethernautaAnvil()`; this file
-// only imports `test` from the package root and composes it
-// through the project's `http(...)` transport.
+// only imports `anvil` from the package root and composes it
+// through both M3 seams.
 
 import { UintSchema } from "@ethernauta/core"
-import type {
-  ResolvedReader,
-  ResolvedWriter,
-} from "@ethernauta/transport"
-import { ResponseSchema, http } from "@ethernauta/transport"
+import { create_provider, http, ResponseSchema } from "@ethernauta/transport"
 import { parse } from "valibot"
-import {
-  beforeAll,
-  describe,
-  expect,
-  it,
-} from "vitest"
+import { beforeAll, describe, expect, it } from "vitest"
 
-import { test as anvilTest } from "../dist/index.js"
+import {
+  anvil,
+  anvil_account,
+  create_testing_provider,
+  without_isolation,
+} from "@ethernauta/testing"
 import {
   anvil_setBalance,
   evm_mine,
-} from "../dist/anvil/index.js"
-import { without_isolation } from "../dist/vitest/index.js"
+} from "@ethernauta/testing/anvil"
 
-const url = anvilTest()
-const transport = http(url)
-const reader: ResolvedReader = [
-  [transport],
-  { chain_id: "eip155:31337" },
-]
-const writer: ResolvedWriter = [
-  [transport],
-  { chain_id: "eip155:31337" },
-]
-
-// Same well-known anvil-mnemonic account #0; the plugin spawned
-// anvil with the default mnemonic, so this address is unlocked.
-const ACCOUNT_ZERO =
-  "0xf39Fd6e51aad88F6F4ce6aB8827279cfFFb92266"
+const transport = http(anvil())
+const resolver = create_provider(create_testing_provider(anvil()))
 
 async function get_balance(address: string): Promise<string> {
   const response = await transport([
@@ -52,7 +34,7 @@ async function get_balance(address: string): Promise<string> {
 }
 
 describe("plugin integration — endpoint reachable", () => {
-  it("test() returns a working URL", async () => {
+  it("anvil() returns a working URL for path-2 reads", async () => {
     const response = await transport([
       "eth_blockNumber",
       [],
@@ -63,20 +45,29 @@ describe("plugin integration — endpoint reachable", () => {
       true,
     )
   })
+
+  it("create_provider(anvil()) returns a usable resolver pair", async () => {
+    const [transports] = resolver.reader({
+      chain_id: "eip155:31337",
+    })
+    expect(transports.length).toBeGreaterThan(0)
+  })
 })
 
 describe("plugin integration — default isolation", () => {
   it("test 1: mutates account-0 balance to a sentinel value", async () => {
+    const account = anvil_account(0)
     await anvil_setBalance([
-      ACCOUNT_ZERO,
+      account.address,
       parse(UintSchema, "0x123"),
-    ])(writer)
-    const balance = await get_balance(ACCOUNT_ZERO)
+    ])([[transport], { chain_id: "eip155:31337" }])
+    const balance = await get_balance(account.address)
     expect(balance).toBe("0x123")
   })
 
   it("test 2: sees the original balance (revert worked)", async () => {
-    const balance = await get_balance(ACCOUNT_ZERO)
+    const account = anvil_account(0)
+    const balance = await get_balance(account.address)
     expect(balance).not.toBe("0x123")
   })
 })
@@ -97,7 +88,10 @@ describe("plugin integration — without_isolation opt-out", () => {
   })
 
   it("test 1: mines a block, raising the block number", async () => {
-    await evm_mine()(writer)
+    await evm_mine()([
+      [transport],
+      { chain_id: "eip155:31337" },
+    ])
   })
 
   it("test 2: sees the mined block (no revert between tests)", async () => {

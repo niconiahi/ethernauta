@@ -7,6 +7,8 @@ import { http } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { afterEach, beforeEach } from "vitest"
 
+import type { Bytes } from "@ethernauta/core"
+
 import {
   evm_revert,
   evm_snapshot,
@@ -16,10 +18,15 @@ import { pick_free_port } from "../spawner/pick-free-port"
 import { register_cleanup } from "../spawner/signals"
 import { spawn_anvil } from "../spawner/spawn-anvil"
 import { TestConfigSchema } from "../test/config"
-import { set_endpoint } from "../test/endpoint-store"
+import {
+  DEFAULT_ANVIL_MNEMONIC,
+  set_endpoint,
+  set_mnemonic,
+} from "../test/endpoint-store"
+
+import { is_isolation_disabled } from "../test/isolation-state"
 
 import { OPTIONS_ENV_VAR } from "./constants"
-import { is_isolation_disabled } from "./isolation-state"
 
 // Per-worker setup file injected by `ethernautaAnvil()` into
 // vitest's `setupFiles` list. Vitest runs this in each worker
@@ -53,6 +60,7 @@ register_cleanup(handle)
 await await_ready({ handle, timeoutMs: 30_000 })
 const url = `http://127.0.0.1:${port}`
 set_endpoint(url)
+set_mnemonic(options.mnemonic ?? DEFAULT_ANVIL_MNEMONIC)
 
 const isolate = options.isolate ?? true
 if (isolate) {
@@ -65,7 +73,7 @@ if (isolate) {
     [transport],
     { chain_id: "eip155:31337" },
   ]
-  let snapshotId: string | undefined
+  let snapshotId: Bytes | undefined
 
   beforeEach(async () => {
     if (is_isolation_disabled()) return

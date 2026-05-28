@@ -513,9 +513,18 @@ importers:
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core
+      '@ethernauta/crypto':
+        specifier: workspace:*
+        version: link:../crypto
+      '@ethernauta/eip':
+        specifier: workspace:*
+        version: link:../eip
       '@ethernauta/transport':
         specifier: workspace:*
         version: link:../transport
+      '@ethernauta/utils':
+        specifier: workspace:*
+        version: link:../utils
       devalue:
         specifier: ^5.8.1
         version: 5.8.1
@@ -523,6 +532,12 @@ importers:
         specifier: ^3.0.0
         version: 3.2.4(@edge-runtime/vm@5.0.0)(@types/debug@4.1.13)(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)
     devDependencies:
+      '@ethernauta/eth':
+        specifier: workspace:*
+        version: link:../eth
+      '@ethernauta/testing':
+        specifier: workspace:*
+        version: 'link:'
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)

@@ -1,9 +1,10 @@
 # @ethernauta/testing
 
 Vitest-first testing utility for `@ethernauta/*` consumers. Spawns
-a local anvil node per worker, exposes its endpoint as a transport
-compatible with `http(...)`, and runs default-on snapshot/revert
-isolation around each test.
+a local anvil node per worker, exposes its endpoint as a URL that
+both `http(...)` (path 2) and `create_provider(...)` (path 1)
+accept, and runs default-on snapshot/revert isolation around each
+test.
 
 ## Install
 
@@ -24,10 +25,26 @@ export default defineConfig({ plugins: [ethernautaAnvil()] })
 
 ```ts
 // some.test.ts
-import { http, create_reader } from "@ethernauta/transport"
-import { test } from "@ethernauta/testing"
+import {
+  create_provider,
+  create_reader,
+  http,
+} from "@ethernauta/transport"
+import {
+  anvil,
+  anvil_account,
+  create_testing_provider,
+} from "@ethernauta/testing"
 
-const reader = create_reader([{ chainId, transports: [http(test())] }])
+// path 2 (no wallet)
+const reader = create_reader([
+  { chainId: "eip155:31337", transports: [http(anvil())] },
+])
+
+// path 1 (wallet-shape) — same shape as production's
+// `create_provider(window.ethereum)`; only the provider source differs.
+const resolver = create_provider(create_testing_provider(anvil()))
+const account = anvil_account(0)
 ```
 
 Full docs land in Phase 8.
@@ -36,6 +53,6 @@ Full docs land in Phase 8.
 
 | Subpath | Exports |
 |---|---|
-| `@ethernauta/testing` | `test()`, account helpers, lifecycle types |
-| `@ethernauta/testing/vitest` | `ethernautaAnvil()` vitest plugin |
+| `@ethernauta/testing` | `anvil()`, account helpers, lifecycle types |
+| `@ethernauta/testing/vitest` | `ethernautaAnvil()` vitest plugin, `without_isolation()` |
 | `@ethernauta/testing/anvil` | Anvil RPC method bindings (`evm_*`, `anvil_*`) |

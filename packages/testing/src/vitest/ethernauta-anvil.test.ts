@@ -40,40 +40,46 @@ describe("ethernautaAnvil()", () => {
     })
   })
 
-  it("appends the setup file to existing setupFiles", () => {
+  it("appends the setup file to existing setupFiles", async () => {
     const plugin = ethernautaAnvil()
     if (typeof plugin.config !== "function") return
-    const result = plugin.config(
+    const result = await plugin.config(
       { test: { setupFiles: ["./other.ts"] } },
       { command: "serve", mode: "test" },
     )
-    expect(result?.test?.setupFiles).toBeDefined()
-    const files = result?.test?.setupFiles
+    if (result === null || result === undefined) return
+    if (!("test" in result)) return
+    expect(result.test?.setupFiles).toBeDefined()
+    const files = result.test?.setupFiles
     if (!Array.isArray(files)) return
     expect(files.length).toBe(2)
     expect(files[0]).toBe("./other.ts")
     expect(files[1]).toMatch(/setup\.(t|j)s$/)
   })
 
-  it("works when setupFiles is undefined", () => {
+  it("works when setupFiles is undefined", async () => {
     const plugin = ethernautaAnvil()
     if (typeof plugin.config !== "function") return
-    const result = plugin.config(
+    const result = await plugin.config(
       {},
       { command: "serve", mode: "test" },
     )
-    const files = result?.test?.setupFiles
+    if (result === null || result === undefined) return
+    if (!("test" in result)) return
+    const files = result.test?.setupFiles
     expect(Array.isArray(files)).toBe(true)
   })
 
-  it("normalises a string setupFiles into an array", () => {
+  it("normalises a string setupFiles into an array", async () => {
     const plugin = ethernautaAnvil()
     if (typeof plugin.config !== "function") return
-    const result = plugin.config(
+    const result = await plugin.config(
       { test: { setupFiles: "./other.ts" } },
       { command: "serve", mode: "test" },
     )
-    const files = result?.test?.setupFiles
+    if (result === null || result === undefined) return
+    if (!("test" in result)) return
+    const files = result.test?.setupFiles
     if (!Array.isArray(files)) return
     expect(files[0]).toBe("./other.ts")
   })
