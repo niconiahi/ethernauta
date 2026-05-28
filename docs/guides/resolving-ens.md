@@ -17,17 +17,30 @@ import {
   get_ens_avatar,
   ens_normalize,
 } from "@ethernauta/ens";
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const reader = create_reader([eip155_1]);
-const ctx = reader({ chain_id: eip155_1.chain_id });
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
+void get_ens_address;
+void get_ens_name;
+void get_ens_text;
+void get_ens_avatar;
+void ens_normalize;
+void ctx;
 ```
 
 ## Always normalize first
 
 ```ts
+import { ens_normalize } from "@ethernauta/ens";
+
 const name = ens_normalize("Vitalik.eth");  // → "vitalik.eth"
+void name;
 ```
 
 ENSIP-15 normalization is **mandatory** — `namehash("Vitalik.eth")` is different from `namehash("vitalik.eth")`. The orchestration functions in `@ethernauta/ens` do NOT auto-normalize; they assume their input is already normalized.
@@ -37,8 +50,19 @@ If the input came from a user form, normalize before any lookup.
 ## Forward: name → address
 
 ```ts
+import { get_ens_address } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
 const address = await get_ens_address({ name: "vitalik.eth" })(ctx);
 // → "0xd8da6bf26964af9d7eed9e03e53415d37aa96045" | null
+void address;
 ```
 
 Returns `null` if the name has no `addr` record.
@@ -46,8 +70,22 @@ Returns `null` if the name has no `addr` record.
 ## Reverse: address → name
 
 ```ts
+import { get_ens_name } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
+const address = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045");
 const name = await get_ens_name({ address })(ctx);
 // → "vitalik.eth" | null
+void name;
 ```
 
 Includes the **forward-verification step** — the reverse record is claim-only, so the function looks up the claimed name's forward address and confirms it matches. If it doesn't, the result is `null`.
@@ -55,10 +93,22 @@ Includes the **forward-verification step** — the reverse record is claim-only,
 ## Text records
 
 ```ts
+import { get_ens_text } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
 const twitter = await get_ens_text({
   name: "vitalik.eth",
   key: "com.twitter",
 })(ctx);
+
+void twitter;
 ```
 
 Common keys: `email`, `url`, `description`, `com.twitter`, `com.github`, `org.telegram`.
@@ -66,7 +116,18 @@ Common keys: `email`, `url`, `description`, `com.twitter`, `com.github`, `org.te
 ## Avatars
 
 ```ts
+import { get_ens_avatar } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
 const avatar = await get_ens_avatar({ name: "vitalik.eth" })(ctx);
+void avatar;
 ```
 
 `AvatarResult` is a discriminated union over the avatar's URI scheme:
