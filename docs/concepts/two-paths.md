@@ -21,16 +21,26 @@ Both paths ship. Both are first-class. **Collapsing either is a violation** rega
 The dapp calls a wallet-implemented RPC method (`eth_sendTransaction`, `personal_sign`, `wallet_sendCalls`, …). The wallet does the heavy lifting: builds the tx, fills in nonce / gas, prompts the user, signs, broadcasts, returns a hash. From the dapp's POV it's one round trip.
 
 ```ts
-import { create_signer } from "@ethernauta/transport";
+import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_sendTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const signer = create_signer([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
-const hash = await eth_sendTransaction({
-  to: recipient,
-  value: amount,
-  input: "0x",
-})(signer({ chain_id: eip155_1.chain_id }));
+const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const amount = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
+
+const hash = await eth_sendTransaction([{ to: recipient, value: amount, input }])(
+  signer({ chain_id: CHAIN_ID }),
+);
+
+void hash;
 ```
 
 What the dapp gives up: control of the broadcast endpoint, ability to inspect the signed payload before it hits the network, ability to retry with a different RPC.
@@ -42,23 +52,40 @@ What the dapp gets: simplicity. One call, one prompt, one hash.
 The dapp asks the wallet only for the signed bytes (`eth_signTransaction`), then broadcasts them itself through a `Writable<T>` against any RPC (the chain's public endpoints, the dapp's own infrastructure, a private bundler).
 
 ```ts
-import { create_signer, create_writer } from "@ethernauta/transport";
+import {
+  create_signer,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport";
 import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const signer = create_signer([eip155_1]);
-const writer = create_writer([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const writer = create_writer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
-const signed = await eth_signTransaction({
-  to: recipient,
-  value: amount,
-  input: "0x",
-})(signer({ chain_id: eip155_1.chain_id }));
+const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const amount = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
+
+const signed = await eth_signTransaction([{ to: recipient, value: amount, input }])(
+  signer({ chain_id: CHAIN_ID }),
+);
 
 // inspect, log, persist `signed` here if you want
 
-const hash = await eth_sendRawTransaction(signed)(
-  writer({ chain_id: eip155_1.chain_id }),
+const hash = await eth_sendRawTransaction([signed])(
+  writer({ chain_id: CHAIN_ID }),
 );
+
+void hash;
 ```
 
 Two round trips. The dapp now owns the broadcast — which means it can:
