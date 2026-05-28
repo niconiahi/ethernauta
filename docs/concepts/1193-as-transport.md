@@ -10,12 +10,15 @@ order: 5
 EIP-1193 defines a four-field interface:
 
 ```ts
-type Provider = {
-  request(args: RequestArguments): Promise<unknown>
-  on(event, listener): void
-  removeListener(event, listener): void
-  emit(event, payload): void
-}
+import type { Provider } from "@ethernauta/eip/1193";
+
+// Provider exposes exactly four fields:
+//   request(args): Promise<unknown>
+//   on(event, listener): void
+//   removeListener(event, listener): void
+//   emit(event, payload): void
+declare const provider: Provider;
+void provider;
 ```
 
 That's it. Method existence, routing, state caching, confirmation policy — **none of those are part of 1193**. They're wallet-side concerns. Ethernauta enforces that separation rigidly (M5 in the project maxims).
@@ -36,19 +39,29 @@ A method outside all four returns 4200 (Unsupported Method). The 1193 envelope i
 A dapp consuming a 1193 provider doesn't reach for a different API. The library adapts the provider into the same resolver shapes:
 
 ```ts
+import { parse } from "valibot";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { eth_blockNumber, eth_sendTransaction } from "@ethernauta/eth";
+import type { Provider } from "@ethernauta/eip/1193";
 import { create_provider } from "@ethernauta/transport";
 
-const provider = create_provider(window.ethereum);
+declare const injected: Provider;
+const adapter = create_provider(injected);
 
 // for reads
 const block = await eth_blockNumber()(
-  provider.reader({ chain_id: "eip155:1" }),
+  adapter.reader({ chain_id: "eip155:1" }),
 );
+void block;
 
 // for signatures
-const hash = await eth_sendTransaction({ to, value })(
-  provider.signer({ chain_id: "eip155:1" }),
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x16345785d8a0000");
+const input = parse(BytesSchema, "0x");
+const hash = await eth_sendTransaction([{ to, value, input }])(
+  adapter.signer({ chain_id: "eip155:1" }),
 );
+void hash;
 ```
 
 The call shape is identical to `create_reader(CHAINS)` / `create_signer(CHAINS)`. The only difference is the transport-construction line — which is the dapp's decision, made per call, not a contrast every demo has to enact.
