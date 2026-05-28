@@ -5,20 +5,20 @@ export const eip155_133 = {
   shortName: "HSKT",
   title: "HashKey Chain Testnet",
   chain: "HashKey Chain Testnet",
-  rpc: ["https://hashkeychain-testnet.alt.technology"],
+  rpc: ["https://testnet.hsk.xyz"],
   faucets: [],
   nativeCurrency: {
     name: "HashKey EcoPoints",
     symbol: "HSK",
     decimals: 18,
   },
-  infoURL: "https://hashkey.cloud",
+  infoURL: "https://hashkeychain.net",
   chainId: 133,
   networkId: 133,
   explorers: [
     {
       name: "blockscout",
-      url: "https://hashkeychain-testnet-explorer.alt.technology",
+      url: "https://testnet-explorer.hsk.xyz",
       standard: "EIP3091",
     },
   ],

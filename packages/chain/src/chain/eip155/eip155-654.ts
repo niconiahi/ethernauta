@@ -5,7 +5,7 @@ export const eip155_654 = {
   shortName: "kalichainMainnet",
   chain: "Kalichain",
   icon: "kalichain",
-  rpc: ["https://mainnet.kalichain.com"],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "kalis",
@@ -15,11 +15,6 @@ export const eip155_654 = {
   infoURL: "https://kalichain.com",
   chainId: 654,
   networkId: 654,
-  explorers: [
-    {
-      name: "kalichain explorer",
-      url: "https://explorer.kalichain.com",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

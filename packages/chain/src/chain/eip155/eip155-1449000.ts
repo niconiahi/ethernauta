@@ -7,7 +7,7 @@ export const eip155_1449000 = {
   icon: "xrplevm",
   rpc: [
     "https://rpc.testnet.xrplevm.org",
-    "https://ws.testnet.xrplevm.org",
+    "wss://ws.testnet.xrplevm.org",
   ],
   faucets: ["https://faucet.xrplevm.org"],
   features: [

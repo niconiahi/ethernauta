@@ -5,7 +5,7 @@ export const eip155_48899 = {
   shortName: "zircuit-testnet",
   chain: "Zircuit Testnet",
   icon: "zircuit",
-  rpc: ["https://testnet.zircuit.com"],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "ETH",
@@ -15,11 +15,6 @@ export const eip155_48899 = {
   infoURL: "https://www.zircuit.com/",
   chainId: 48899,
   networkId: 48899,
-  explorers: [
-    {
-      name: "Zircuit",
-      url: "https://explorer.testnet.zircuit.com",
-      standard: "none",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

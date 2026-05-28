@@ -4,7 +4,7 @@ export const eip155_1329 = {
   name: "Sei Network",
   shortName: "sei",
   chain: "Sei",
-  icon: "seiv2",
+  icon: "sei",
   rpc: [
     "https://evm-rpc.sei-apis.com",
     "wss://evm-ws.sei-apis.com",
@@ -21,8 +21,8 @@ export const eip155_1329 = {
   slip44: 19000118,
   explorers: [
     {
-      name: "Seitrace",
-      url: "https://seitrace.com",
+      name: "Seiscan",
+      url: "https://seiscan.io",
       standard: "EIP3091",
     },
   ],

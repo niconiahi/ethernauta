@@ -1,9 +1,10 @@
 import type { Chain } from "../shared"
 
 export const eip155_178 = {
-  name: "ABEY Testnet",
+  name: "Abey Testnet",
   shortName: "abeyt",
-  chain: "ABEY",
+  chain: "Abey",
+  icon: "abey",
   rpc: ["https://testrpc.abeychain.com"],
   faucets: ["https://testnet-faucet.abeychain.com"],
   features: [

@@ -1,14 +1,14 @@
 import type { Chain } from "../shared"
 
 export const eip155_560000 = {
-  name: "Hetu Testnet",
+  name: "Hetu Mainnet",
   shortName: "HETU",
   chain: "HETU",
-  rpc: ["https://rpc.testchainv1.hetuscan.com"],
-  faucets: ["https:/testchainv1.hetuscan.com"],
+  rpc: ["https://rpc.va.hetu.org"],
+  faucets: [],
   nativeCurrency: {
-    name: "tETH",
-    symbol: "tETH",
+    name: "HETU",
+    symbol: "HETU",
     decimals: 18,
   },
   infoURL: "https://hetu.org",
@@ -16,8 +16,8 @@ export const eip155_560000 = {
   networkId: 560000,
   explorers: [
     {
-      name: "Hetu Testnet Scan",
-      url: "https://testchainv1.hetuscan.com",
+      name: "Hetu Mainnet Scan",
+      url: "https://scan.v1.hetu.org",
       standard: "EIP3091",
     },
   ],

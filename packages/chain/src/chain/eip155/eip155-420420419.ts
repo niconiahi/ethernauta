@@ -1,10 +1,16 @@
 import type { Chain } from "../shared"
 
 export const eip155_420420419 = {
-  name: "Asset Hub",
-  shortName: "AH",
+  name: "Polkadot",
+  shortName: "dot",
   chain: "DOT",
-  rpc: ["https://asset-hub-eth-rpc.polkadot.io"],
+  icon: "polkadot",
+  rpc: [
+    "https://services.polkadothub-rpc.com/mainnet",
+    "wss://services.polkadothub-rpc.com/mainnet",
+    "https://eth-rpc.polkadot.io",
+    "wss://eth-rpc.polkadot.io",
+  ],
   faucets: [],
   features: [
     {
@@ -19,8 +25,14 @@ export const eip155_420420419 = {
     symbol: "DOT",
     decimals: 18,
   },
-  infoURL: "https://polkadot.network",
+  infoURL: "https://polkadot.com",
   chainId: 420420419,
   networkId: 420420419,
-  explorers: [],
+  explorers: [
+    {
+      name: "blockscout",
+      url: "https://blockscout.polkadot.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

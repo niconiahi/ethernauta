@@ -5,7 +5,10 @@ export const eip155_3030 = {
   shortName: "BCHYPER",
   chain: "BC Hyper Chain",
   icon: "bchyper",
-  rpc: ["https://mainapi.bchscan.io"],
+  rpc: [
+    "https://mainapi.bchscan.io",
+    "https://datahub-asia02.bchscan.io/",
+  ],
   faucets: [],
   features: [
     {

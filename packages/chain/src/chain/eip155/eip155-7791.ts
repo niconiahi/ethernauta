@@ -1,0 +1,33 @@
+import type { Chain } from "../shared"
+
+export const eip155_7791 = {
+  name: "DiamondzChain",
+  shortName: "dzx",
+  chain: "DZX",
+  rpc: ["https://rpc-mainnet.diamondz.baby"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Diamondz Shadow Game and Movies",
+    symbol: "SDM",
+    decimals: 18,
+  },
+  infoURL: "https://diamondzshadow.info",
+  chainId: 7791,
+  networkId: 7791,
+  explorers: [
+    {
+      name: "DiamondzChain Explorer",
+      url: "https://diamondz.tryethernal.com",
+      standard: "EIP3091",
+    },
+  ],
+  parent: {
+    type: "L2",
+    chain: "eip155-42161",
+    bridges: [
+      {
+        url: "https://b0b35872-9442-43c9-8cb4-5719d6808be9.bridges.rollbridge.app",
+      },
+    ],
+  },
+} satisfies Chain

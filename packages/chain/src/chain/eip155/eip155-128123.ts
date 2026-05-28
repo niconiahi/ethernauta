@@ -1,13 +1,16 @@
 import type { Chain } from "../shared"
 
 export const eip155_128123 = {
-  name: "Etherlink Testnet",
+  name: "Etherlink Ghostnet Testnet",
   shortName: "etlt",
   chain: "Etherlink",
   icon: "etherlink",
   rpc: ["https://node.ghostnet.etherlink.com"],
   faucets: ["https://faucet.etherlink.com"],
   features: [
+    {
+      name: "EIP155",
+    },
     {
       name: "EIP1559",
     },
@@ -22,9 +25,10 @@ export const eip155_128123 = {
   networkId: 128123,
   explorers: [
     {
-      name: "Etherlink Testnet Explorer",
+      name: "Etherlink Ghostnet Testnet Explorer",
       url: "https://testnet.explorer.etherlink.com",
       standard: "EIP3091",
     },
   ],
+  status: "deprecated",
 } satisfies Chain

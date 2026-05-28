@@ -6,8 +6,8 @@ export const eip155_1440002 = {
   chain: "XRPLEVM Devnet",
   icon: "xrplevm",
   rpc: [
-    "https://rpc.xrplevm.org",
-    "https://ws.xrplevm.org",
+    "https://rpc.devnet.xrplevm.org",
+    "wss://ws.devnet.xrplevm.org",
   ],
   faucets: ["https://faucet.xrplevm.org"],
   features: [

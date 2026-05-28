@@ -3,8 +3,14 @@ import type { Chain } from "../shared"
 export const eip155_21210 = {
   name: "1Money Network Mainnet",
   shortName: "1money",
-  chain: "1Money Network",
-  rpc: ["https://mainnet.1money.network"],
+  chain: "1MoneyNetwork",
+  icon: "1moneynetwork",
+  rpc: [
+    "https://rpc.mainnet.1money.network",
+    "https://rpc1.mainnet.1money.network",
+    "https://rpc2.mainnet.1money.network",
+    "https://rpc3.mainnet.1money.network",
+  ],
   faucets: [],
   features: [
     {
@@ -12,12 +18,18 @@ export const eip155_21210 = {
     },
   ],
   nativeCurrency: {
-    name: "USD1",
-    symbol: "USD1",
+    name: "FREE",
+    symbol: "FREE",
     decimals: 18,
   },
-  infoURL: "https://1money.com",
+  infoURL: "https://www.1moneynetwork.com",
   chainId: 21210,
   networkId: 21210,
-  explorers: [],
+  explorers: [
+    {
+      name: "1Money Network Explorer",
+      url: "https://www.1moneynetwork.com/explorer",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

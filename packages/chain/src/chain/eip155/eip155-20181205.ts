@@ -5,8 +5,9 @@ export const eip155_20181205 = {
   shortName: "qki",
   chain: "QKI",
   rpc: [
-    "https://hz.rpc.qkiscan.cn",
-    "https://jp.rpc.qkiscan.io",
+    "https://rpc1.qkirpc.org",
+    "https://rpc2.qkirpc.org",
+    "https://rpc3.qkirpc.org",
     "https://rpc1.qkiscan.io",
     "https://rpc2.qkiscan.io",
     "https://rpc3.qkiscan.io",

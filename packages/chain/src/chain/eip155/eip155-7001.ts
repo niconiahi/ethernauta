@@ -12,9 +12,7 @@ export const eip155_7001 = {
     "https://7001.rpc.thirdweb.com",
     "https://zeta-chain-testnet.drpc.org",
   ],
-  faucets: [
-    "https://www.zetachain.com/docs/reference/apps/get-testnet-zeta/",
-  ],
+  faucets: ["https://zetachain.com/docs/reference/faucet"],
   nativeCurrency: {
     name: "Zeta",
     symbol: "ZETA",
@@ -27,13 +25,8 @@ export const eip155_7001 = {
   explorers: [
     {
       name: "ZetaScan",
-      url: "https://athens.explorer.zetachain.com",
+      url: "https://testnet.zetascan.com",
       standard: "none",
-    },
-    {
-      name: "Blockscout",
-      url: "https://zetachain-athens-3.blockscout.com",
-      standard: "EIP3091",
     },
   ],
   status: "active",

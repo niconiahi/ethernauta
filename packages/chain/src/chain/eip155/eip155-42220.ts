@@ -25,8 +25,17 @@ export const eip155_42220 = {
     },
     {
       name: "blockscout",
-      url: "https://explorer.celo.org",
-      standard: "none",
+      url: "https://celo.blockscout.com",
+      standard: "EIP3091",
     },
   ],
+  parent: {
+    type: "L2",
+    chain: "eip155-1",
+    bridges: [
+      {
+        url: "https://superbridge.app/celo",
+      },
+    ],
+  },
 } satisfies Chain

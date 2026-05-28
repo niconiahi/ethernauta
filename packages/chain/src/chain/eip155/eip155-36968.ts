@@ -1,0 +1,31 @@
+import type { Chain } from "../shared"
+
+export const eip155_36968 = {
+  name: "AMA Testnet",
+  shortName: "AMA-TESTNET",
+  chain: "AMA",
+  rpc: ["https://testnet-rpc.ama.one"],
+  faucets: ["https://mcp.ama.one/testnet-faucet"],
+  nativeCurrency: {
+    name: "AMA",
+    symbol: "AMA",
+    decimals: 9,
+  },
+  infoURL: "https://ama.one",
+  chainId: 36968,
+  networkId: 36968,
+  slip44: 1,
+  explorers: [
+    {
+      name: "AMA Explorer Testnet",
+      url: "https://testnet-ama.ddns.net",
+      standard: "none",
+    },
+    {
+      name: "AMA Explorer Testnet Alt",
+      url: "https://testnet.explorer.ama.one",
+      standard: "none",
+    },
+  ],
+  status: "incubating",
+} satisfies Chain

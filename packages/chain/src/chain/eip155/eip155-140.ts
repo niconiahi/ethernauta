@@ -23,4 +23,11 @@ export const eip155_140 = {
   infoURL: "https://eteria.io",
   chainId: 140,
   networkId: 140,
+  explorers: [
+    {
+      name: "eteriascan",
+      url: "https://explorer.eteria.io",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

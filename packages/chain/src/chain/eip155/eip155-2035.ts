@@ -4,7 +4,7 @@ export const eip155_2035 = {
   name: "Phala Network",
   shortName: "phala",
   chain: "ETH",
-  rpc: [],
+  rpc: ["https://rpc.phala.network"],
   faucets: [],
   nativeCurrency: {
     name: "Ether",

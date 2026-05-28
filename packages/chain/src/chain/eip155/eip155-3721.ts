@@ -4,8 +4,15 @@ export const eip155_3721 = {
   name: "Xone Mainnet",
   shortName: "XOC",
   chain: "XOC",
-  icon: "Xonechain",
-  rpc: ["https://rpc.xone.org", "wss://rpc-wss.xone.org"],
+  icon: "xone_main",
+  rpc: [
+    "https://rpc.xone.org",
+    "https://rpc-node-1.xone.org",
+    "https://rpc-node-2.xone.org",
+    "https://rpc-node-3.xone.org",
+    "https://rpc-node-4.xone.org",
+    "wss://rpc.xone.org",
+  ],
   faucets: ["https://faucet.xone.org/"],
   features: [
     {
@@ -25,8 +32,8 @@ export const eip155_3721 = {
   networkId: 3721,
   explorers: [
     {
-      name: "Xonescan",
-      url: "https://xscscan.com",
+      name: "xone_main",
+      url: "https://xonescan.com",
       standard: "EIP3091",
     },
   ],

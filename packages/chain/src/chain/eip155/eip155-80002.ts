@@ -10,6 +10,7 @@ export const eip155_80002 = {
     "https://rpc-amoy.polygon.technology",
     "https://polygon-amoy-bor-rpc.publicnode.com",
     "wss://polygon-amoy-bor-rpc.publicnode.com",
+    "https://polygon-amoy.drpc.org",
   ],
   faucets: ["https://faucet.polygon.technology/"],
   nativeCurrency: {
@@ -25,11 +26,6 @@ export const eip155_80002 = {
     {
       name: "polygonscan-amoy",
       url: "https://amoy.polygonscan.com",
-      standard: "EIP3091",
-    },
-    {
-      name: "polygonamoy",
-      url: "https://www.oklink.com/amoy",
       standard: "EIP3091",
     },
   ],

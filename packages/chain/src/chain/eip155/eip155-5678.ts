@@ -5,8 +5,8 @@ export const eip155_5678 = {
   shortName: "tango",
   chain: "TANGO",
   rpc: [
-    "https://dancelight-2001.tanssi-api.network",
-    "wss://dancelight-2001.tanssi-api.network",
+    "https://services.tanssi-testnet.network/dancelight-2001",
+    "wss://services.tanssi-testnet.network/dancelight-2001",
   ],
   faucets: ["https://apps.tanssi.network/demo"],
   nativeCurrency: {
@@ -15,7 +15,7 @@ export const eip155_5678 = {
     decimals: 18,
   },
   infoURL:
-    "https://docs.tanssi.network/builders/tanssi-network/networks/dancebox/demo-evm-containerchain",
+    "https://docs.tanssi.network/builders/tanssi-network/testnet/demo-evm-network/",
   chainId: 5678,
   networkId: 5678,
   explorers: [

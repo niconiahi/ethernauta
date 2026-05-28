@@ -1,30 +1,30 @@
 import type { Chain } from "../shared"
 
 export const eip155_463 = {
-  name: "Areon Network Mainnet",
+  name: "Areum Network Mainnet",
   shortName: "area",
-  chain: "Areon",
-  icon: "areon",
+  chain: "Areum",
+  icon: "areum",
   rpc: [
-    "https://mainnet-rpc.areon.network",
-    "https://mainnet-rpc2.areon.network",
-    "https://mainnet-rpc3.areon.network",
-    "https://mainnet-rpc4.areon.network",
-    "https://mainnet-rpc5.areon.network",
+    "https://mainnet-rpc.areum.network",
+    "https://mainnet-rpc2.areum.network",
+    "https://mainnet-rpc3.areum.network",
+    "https://mainnet-rpc4.areum.network",
+    "https://mainnet-rpc5.areum.network",
   ],
   faucets: [],
   nativeCurrency: {
-    name: "Areon",
+    name: "Areum",
     symbol: "AREA",
     decimals: 18,
   },
-  infoURL: "https://areon.network",
+  infoURL: "https://areum.network",
   chainId: 463,
   networkId: 463,
   explorers: [
     {
-      name: "AreonScan",
-      url: "https://areonscan.com",
+      name: "Areum Explorer",
+      url: "https://explorer.areum.network",
       standard: "none",
     },
   ],

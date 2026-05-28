@@ -1,14 +1,14 @@
 import type { Chain } from "../shared"
 
 export const eip155_434 = {
-  name: "Boyaa Mainnet",
+  name: "Boyaa",
   shortName: "BYC",
   chain: "BYC",
   icon: "boyaanetwork",
-  rpc: ["https://evm-rpc.mainnet.boyaa.network"],
+  rpc: ["https://rpc.boyaa.network"],
   faucets: [],
   nativeCurrency: {
-    name: "Boyaa mainnet native coin",
+    name: "Boyaa native coin",
     symbol: "BYC",
     decimals: 18,
   },
@@ -18,7 +18,7 @@ export const eip155_434 = {
   explorers: [
     {
       name: "Boyaa explorer",
-      url: "https://explorer.mainnet.boyaa.network",
+      url: "https://explorer.boyaa.network",
       standard: "EIP3091",
     },
   ],

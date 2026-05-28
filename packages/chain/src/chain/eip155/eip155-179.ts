@@ -1,9 +1,10 @@
 import type { Chain } from "../shared"
 
 export const eip155_179 = {
-  name: "ABEY Mainnet",
+  name: "Abey Mainnet",
   shortName: "abey",
-  chain: "ABEY",
+  chain: "Abey",
+  icon: "abey",
   rpc: ["https://rpc.abeychain.com"],
   faucets: [],
   features: [

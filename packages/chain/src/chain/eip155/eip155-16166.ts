@@ -4,6 +4,7 @@ export const eip155_16166 = {
   name: "Cypherium Mainnet",
   shortName: "cph",
   chain: "CPH",
+  icon: "Cypherium",
   rpc: ["https://pubnodes.cypherium.io/rpc"],
   faucets: [],
   nativeCurrency: {
@@ -16,7 +17,7 @@ export const eip155_16166 = {
   networkId: 16166,
   explorers: [
     {
-      name: "Testnet Block Explorer",
+      name: "Cypherium Explorer (Ethernal)",
       url: "https://cypherium.tryethernal.com",
       standard: "EIP3091",
     },

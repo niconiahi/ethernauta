@@ -1,11 +1,11 @@
 import type { Chain } from "../shared"
 
 export const eip155_5464 = {
-  name: "Saga",
-  shortName: "saga",
-  chain: "SAGA",
-  icon: "saga",
-  rpc: ["http://sagaevm-5464-1.jsonrpc.sagarpc.io"],
+  name: "SagaEVM",
+  shortName: "sagaevm",
+  chain: "SagaEVM",
+  icon: "sagaevm",
+  rpc: ["https://sagaevm.jsonrpc.sagarpc.io"],
   faucets: [],
   features: [
     {
@@ -26,7 +26,7 @@ export const eip155_5464 = {
   explorers: [
     {
       name: "blockscout",
-      url: "https://sagaevm-5464-1.sagaexplorer.io",
+      url: "https://sagaevm.sagaexplorer.io",
       standard: "EIP3091",
     },
   ],

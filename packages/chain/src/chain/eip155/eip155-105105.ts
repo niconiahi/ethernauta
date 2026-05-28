@@ -1,24 +1,24 @@
 import type { Chain } from "../shared"
 
 export const eip155_105105 = {
-  name: "Stratis Mainnet",
-  shortName: "stratis",
-  chain: "Stratis",
-  icon: "stratis",
-  rpc: ["https://rpc.stratisevm.com"],
+  name: "Xertra Mainnet",
+  shortName: "xertra",
+  chain: "Xertra",
+  icon: "xertra",
+  rpc: ["https://rpc.xertra.com"],
   faucets: [],
   nativeCurrency: {
-    name: "Stratis",
+    name: "STRAX",
     symbol: "STRAX",
     decimals: 18,
   },
-  infoURL: "https://www.stratisplatform.com",
+  infoURL: "https://www.xertra.com/",
   chainId: 105105,
   networkId: 105105,
   explorers: [
     {
-      name: "Stratis Explorer",
-      url: "https://explorer.stratisevm.com",
+      name: "Xertra Explorer",
+      url: "https://explorer.xertra.com",
       standard: "EIP3091",
     },
   ],

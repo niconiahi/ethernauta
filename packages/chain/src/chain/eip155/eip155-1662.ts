@@ -4,7 +4,7 @@ export const eip155_1662 = {
   name: "Liquichain",
   shortName: "Liquichain",
   chain: "LQC",
-  rpc: [],
+  rpc: ["https://mainnet.liquichain.io/rpc"],
   faucets: [],
   nativeCurrency: {
     name: "Licoin",

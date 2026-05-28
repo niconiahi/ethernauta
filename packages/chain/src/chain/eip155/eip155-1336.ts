@@ -8,7 +8,7 @@ export const eip155_1336 = {
   rpc: [
     "https://json-rpc.uno.sentry.testnet.v3.kiivalidator.com",
   ],
-  faucets: ["https://explorer.kiichain.io/testnet/faucet"],
+  faucets: ["https://testnet.explorer.kiichain.io/faucet"],
   features: [],
   nativeCurrency: {
     name: "Kii",
@@ -21,7 +21,7 @@ export const eip155_1336 = {
   explorers: [
     {
       name: "KiiExplorer",
-      url: "https://explorer.kiichain.io/testnet",
+      url: "https://testnet.explorer.kiichain.io",
       standard: "none",
     },
   ],

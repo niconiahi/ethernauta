@@ -26,6 +26,11 @@ export const eip155_146 = {
   networkId: 146,
   explorers: [
     {
+      name: "etherscan",
+      url: "https://sonicscan.org",
+      standard: "EIP3091",
+    },
+    {
       name: "sonic",
       url: "https://explorer.soniclabs.com",
       standard: "none",

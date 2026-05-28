@@ -1,27 +1,19 @@
 import type { Chain } from "../shared"
 
 export const eip155_77652 = {
-  name: "Carrchain Testnet",
-  shortName: "Carrchain-Testnet",
-  chain: "Carrchain Testnet",
-  rpc: ["https://rpc-testnetcarrchain.artiffine.com"],
-  faucets: [
-    "https://faucet-testnetcarrchain.artiffine.com",
-  ],
+  name: "CarrChain Testnet (Deprecated)",
+  shortName: "Carrchain-Testnet-Deprecated",
+  chain: "CarrChain Testnet (Deprecated)",
+  rpc: [],
+  faucets: [],
   nativeCurrency: {
-    name: "Carrchain Coin",
+    name: "CarrChain Coin",
     symbol: "CARR",
     decimals: 18,
   },
-  infoURL:
-    "https://explorer-testnetcarrchain.artiffine.com",
+  infoURL: "https://carrchain.io",
   chainId: 77652,
   networkId: 77652,
-  explorers: [
-    {
-      name: "tracehawk",
-      url: "https://explorer-testnetcarrchain.artiffine.com",
-      standard: "none",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

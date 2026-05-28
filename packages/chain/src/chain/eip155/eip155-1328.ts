@@ -20,8 +20,8 @@ export const eip155_1328 = {
   networkId: 1328,
   explorers: [
     {
-      name: "Seitrace",
-      url: "https://seitrace.com",
+      name: "Seiscan",
+      url: "https://testnet.seiscan.io",
       standard: "EIP3091",
     },
   ],

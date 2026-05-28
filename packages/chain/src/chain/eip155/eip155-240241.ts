@@ -1,0 +1,38 @@
+import type { Chain } from "../shared"
+
+export const eip155_240241 = {
+  name: "Studio Blockchain Mainnet",
+  shortName: "stom",
+  chain: "STO",
+  icon: "studio",
+  rpc: [
+    "https://mainnet.studio-blockchain.com",
+    "https://mainnet2.studio-blockchain.com",
+    "https://mainnet3.studio-blockchain.com",
+    "https://mainnet.studio-scan.com",
+    "https://mainnet2.studio-scan.com",
+    "wss://mainnet.studio-blockchain.com:8547",
+  ],
+  faucets: [],
+  features: [
+    {
+      name: "EIP155",
+    },
+  ],
+  nativeCurrency: {
+    name: "Studio Token",
+    symbol: "STO",
+    decimals: 18,
+  },
+  infoURL: "https://studio-blockchain.com",
+  chainId: 240241,
+  networkId: 240241,
+  explorers: [
+    {
+      name: "Studio Scan",
+      url: "https://studio-scan.com",
+      standard: "EIP3091",
+    },
+  ],
+  status: "active",
+} satisfies Chain

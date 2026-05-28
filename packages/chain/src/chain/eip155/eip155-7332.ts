@@ -5,10 +5,7 @@ export const eip155_7332 = {
   shortName: "EON",
   chain: "EON",
   icon: "eon",
-  rpc: [
-    "https://eon-rpc.horizenlabs.io/ethv1",
-    "https://rpc.ankr.com/horizen_eon",
-  ],
+  rpc: [],
   faucets: [],
   features: [
     {
@@ -27,11 +24,6 @@ export const eip155_7332 = {
   chainId: 7332,
   networkId: 7332,
   slip44: 121,
-  explorers: [
-    {
-      name: "Horizen EON Block Explorer",
-      url: "https://eon-explorer.horizenlabs.io",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

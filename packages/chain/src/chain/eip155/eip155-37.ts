@@ -1,10 +1,10 @@
 import type { Chain } from "../shared"
 
 export const eip155_37 = {
-  name: "Xpla Mainnet",
-  shortName: "xpla",
-  chain: "XPLA",
-  icon: "xpla",
+  name: "CONX Chain",
+  shortName: "conx",
+  chain: "CONX",
+  icon: "conx",
   rpc: ["https://dimension-evm-rpc.xpla.dev"],
   faucets: [],
   nativeCurrency: {
@@ -12,15 +12,14 @@ export const eip155_37 = {
     symbol: "XPLA",
     decimals: 18,
   },
-  infoURL: "https://xpla.io",
+  infoURL: "https://conx.xyz",
   chainId: 37,
   networkId: 37,
   explorers: [
     {
-      name: "XPLA Explorer",
-      url: "https://explorer.xpla.io/mainnet",
+      name: "CONX Explorer",
+      url: "https://explorer.conx.xyz/mainnet",
       standard: "EIP3091",
     },
   ],
-  redFlags: ["reusedChainId"],
 } satisfies Chain

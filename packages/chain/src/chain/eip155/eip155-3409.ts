@@ -1,8 +1,8 @@
 import type { Chain } from "../shared"
 
 export const eip155_3409 = {
-  name: "Pepe Unchained",
-  shortName: "PEPU",
+  name: "Pepe Unchained Deprecated",
+  shortName: "pepudeprecated",
   chain: "PEPU",
   icon: "pepu",
   rpc: [
@@ -24,4 +24,5 @@ export const eip155_3409 = {
       standard: "EIP3091",
     },
   ],
+  status: "deprecated",
 } satisfies Chain

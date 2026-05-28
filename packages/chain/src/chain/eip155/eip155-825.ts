@@ -5,7 +5,11 @@ export const eip155_825 = {
   shortName: "tdly",
   chain: "Daily Network",
   icon: "daily",
-  rpc: ["https://rpc.testnet.dailycrypto.net"],
+  rpc: [
+    "https://rpc.testnet.dailycrypto.net",
+    "https://rpc-2.testnet.dailycrypto.net",
+    "https://rpc-3.testnet.dailycrypto.net",
+  ],
   faucets: [],
   nativeCurrency: {
     name: "Daily",

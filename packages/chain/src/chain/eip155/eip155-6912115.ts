@@ -1,25 +1,20 @@
 import type { Chain } from "../shared"
 
 export const eip155_6912115 = {
-  name: "ENI Testnet",
-  shortName: "eni-test",
+  name: "ENI Testnet (Deprecated)",
+  shortName: "eni-test-deprecated",
   chain: "ENI",
   icon: "eni-test",
-  rpc: ["https://rpc-testnet.eniac.network"],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
-    name: "ENI Testnet Token",
-    symbol: "ENI",
+    name: "EGAS",
+    symbol: "EGAS",
     decimals: 18,
   },
-  infoURL: "https://eniac.network/",
+  infoURL: "",
   chainId: 6912115,
   networkId: 6912115,
-  explorers: [
-    {
-      name: "ENI Testnet Explorer",
-      url: "https://scan-testnet.eniac.network",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

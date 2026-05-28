@@ -7,12 +7,17 @@ export const eip155_7979 = {
   icon: "doschain",
   rpc: ["https://main.doschain.com"],
   faucets: [],
+  features: [
+    {
+      name: "EIP1559",
+    },
+  ],
   nativeCurrency: {
     name: "DOS",
     symbol: "DOS",
     decimals: 18,
   },
-  infoURL: "https://doschain.io",
+  infoURL: "https://doschain.com",
   chainId: 7979,
   networkId: 7979,
   explorers: [
@@ -22,4 +27,5 @@ export const eip155_7979 = {
       standard: "EIP3091",
     },
   ],
+  status: "active",
 } satisfies Chain

@@ -1,0 +1,30 @@
+import type { Chain } from "../shared"
+
+export const eip155_73790 = {
+  name: "NV-CHAIN",
+  shortName: "nvc",
+  chain: "NVC",
+  rpc: [
+    "https://rpc.neurovatic.ai/rpc",
+    "https://rpc-eu.neurovatic.ai/rpc",
+    "https://rpc-use.neurovatic.ai/rpc",
+    "https://rpc-usw.neurovatic.ai/rpc",
+    "https://rpc-apac.neurovatic.ai/rpc",
+  ],
+  faucets: ["https://faucet.neurovatic.ai"],
+  nativeCurrency: {
+    name: "NeuroVatic Coin",
+    symbol: "NVC",
+    decimals: 18,
+  },
+  infoURL: "https://neurovatic.ai",
+  chainId: 73790,
+  networkId: 73790,
+  explorers: [
+    {
+      name: "nvScan",
+      url: "https://explorer.neurovatic.ai",
+      standard: "EIP3091",
+    },
+  ],
+} satisfies Chain

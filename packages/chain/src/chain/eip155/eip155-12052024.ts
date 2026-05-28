@@ -1,12 +1,10 @@
 import type { Chain } from "../shared"
 
 export const eip155_12052024 = {
-  name: "Memento Testnet",
+  name: "Memento Testnet (deprecated)",
   shortName: "memento-test",
   chain: "Memento",
-  rpc: [
-    "https://test-rpc.mementoblockchain.com/IRkghvI3FfEArEJMr4zC/rpc",
-  ],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "Ether",
@@ -16,11 +14,6 @@ export const eip155_12052024 = {
   infoURL: "",
   chainId: 12052024,
   networkId: 12052024,
-  explorers: [
-    {
-      name: "Tracehawk",
-      url: "https://test-explorer.mementoblockchain.com",
-      standard: "none",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

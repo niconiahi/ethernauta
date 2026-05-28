@@ -20,5 +20,11 @@ export const eip155_9069 = {
   infoURL: "https://apexfusion.org/",
   chainId: 9069,
   networkId: 9069,
-  explorers: [],
+  explorers: [
+    {
+      name: "apexfusion",
+      url: "https://explorer.nexus.mainnet.apexfusion.org",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

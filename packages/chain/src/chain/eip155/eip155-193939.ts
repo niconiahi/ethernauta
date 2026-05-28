@@ -4,6 +4,7 @@ export const eip155_193939 = {
   name: "R0AR Chain",
   shortName: "R0AR-Chain",
   chain: "R0AR Chain",
+  icon: "r0ar",
   rpc: ["https://rpc-r0ar.io"],
   faucets: [],
   nativeCurrency: {

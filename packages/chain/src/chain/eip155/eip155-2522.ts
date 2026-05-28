@@ -5,11 +5,7 @@ export const eip155_2522 = {
   shortName: "fraxtal-testnet",
   chain: "FRAX",
   icon: "fraxtal",
-  rpc: [
-    "https://rpc.testnet.frax.com",
-    "https://fraxtal-holesky-rpc.publicnode.com",
-    "wss://fraxtal-holesky-rpc.publicnode.com",
-  ],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "Frax",
@@ -20,12 +16,6 @@ export const eip155_2522 = {
   chainId: 2522,
   networkId: 2522,
   slip44: 1,
-  explorers: [
-    {
-      name: "fraxscan",
-      url: "https://holesky.fraxscan.com",
-      standard: "EIP3091",
-    },
-  ],
-  status: "active",
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

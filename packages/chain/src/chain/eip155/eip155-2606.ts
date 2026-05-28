@@ -7,8 +7,10 @@ export const eip155_2606 = {
   chain: "CRC",
   icon: "pocr",
   rpc: [
-    "https://pocrnet.westeurope.cloudapp.azure.com/http",
-    "wss://pocrnet.westeurope.cloudapp.azure.com/ws",
+    "https://rpc1.pocrnet.ca-dag.work",
+    "https://rpc2.pocrnet.ca-dag.work",
+    "wss://rpc1.pocrnet.ca-dag.work/ws",
+    "wss://rpc2.pocrnet.ca-dag.work/ws",
   ],
   faucets: [],
   nativeCurrency: {

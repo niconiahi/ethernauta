@@ -9,6 +9,9 @@ export const eip155_42793 = {
   faucets: [],
   features: [
     {
+      name: "EIP155",
+    },
+    {
       name: "EIP1559",
     },
   ],

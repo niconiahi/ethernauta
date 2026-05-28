@@ -6,6 +6,8 @@ export const eip155_42 = {
   chain: "LUKSO",
   icon: "lukso",
   rpc: [
+    "https://42.rpc.thirdweb.com",
+    "https://rpc.lukso.sigmacore.io",
     "https://rpc.mainnet.lukso.network",
     "wss://ws-rpc.mainnet.lukso.network",
   ],
@@ -28,8 +30,8 @@ export const eip155_42 = {
   networkId: 42,
   explorers: [
     {
-      name: "Blockscout",
-      url: "https://explorer.execution.mainnet.lukso.network",
+      name: "LUKSO Execution Explorer",
+      url: "https://explorer.lukso.network",
       standard: "EIP3091",
     },
   ],

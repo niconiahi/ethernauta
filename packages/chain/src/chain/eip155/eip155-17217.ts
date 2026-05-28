@@ -19,7 +19,7 @@ export const eip155_17217 = {
   explorers: [
     {
       name: "konet-explorer",
-      url: "https://explorer.kon-wallet.com",
+      url: "https://konetexplorer.io",
       standard: "EIP3091",
     },
   ],

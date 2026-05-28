@@ -1,7 +1,7 @@
 import type { Chain } from "../shared"
 
 export const eip155_327126 = {
-  name: "WABA Chain Testnet",
+  name: "WABA Chain Mainnet",
   shortName: "waba",
   chain: "WABA Mainnet",
   icon: "waba",

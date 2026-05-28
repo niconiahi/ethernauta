@@ -7,11 +7,9 @@ export const eip155_369 = {
   icon: "pulsechain",
   rpc: [
     "https://rpc.pulsechain.com",
-    "wss://rpc.pulsechain.com",
     "https://pulsechain-rpc.publicnode.com",
     "wss://pulsechain-rpc.publicnode.com",
     "https://rpc-pulsechain.g4mm4.io",
-    "wss://rpc-pulsechain.g4mm4.io",
   ],
   faucets: [],
   features: [

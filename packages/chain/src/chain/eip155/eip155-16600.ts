@@ -5,7 +5,7 @@ export const eip155_16600 = {
   shortName: "0gai-testnet",
   chain: "0G-Testnet",
   icon: "0gai",
-  rpc: ["https://evmrpc-testnet.0g.ai"],
+  rpc: [],
   faucets: ["https://faucet.0g.ai"],
   nativeCurrency: {
     name: "A0GI",
@@ -15,11 +15,6 @@ export const eip155_16600 = {
   infoURL: "https://0g.ai",
   chainId: 16600,
   networkId: 16600,
-  explorers: [
-    {
-      name: "0G BlockChain Explorer",
-      url: "https://chainscan-newton.0g.ai",
-      standard: "none",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

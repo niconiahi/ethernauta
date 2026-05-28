@@ -33,4 +33,5 @@ export const eip155_713715 = {
       standard: "EIP3091",
     },
   ],
+  status: "deprecated",
 } satisfies Chain

@@ -4,7 +4,7 @@ export const eip155_3333 = {
   name: "EthStorage Testnet",
   shortName: "es-t",
   chain: "EthStorage",
-  rpc: ["http://testnet.ethstorage.io:9540"],
+  rpc: ["https://rpc.testnet.ethstorage.io:9546"],
   faucets: [],
   nativeCurrency: {
     name: "Ether",
@@ -15,4 +15,8 @@ export const eip155_3333 = {
   chainId: 3333,
   networkId: 3333,
   slip44: 1,
+  parent: {
+    type: "L2",
+    chain: "eip155-11155111",
+  },
 } satisfies Chain

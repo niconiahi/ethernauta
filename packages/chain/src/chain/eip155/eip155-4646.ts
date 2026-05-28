@@ -1,19 +1,20 @@
 import type { Chain } from "../shared"
 
 export const eip155_4646 = {
-  name: "MST Chain",
+  name: "MST Mainnet",
   shortName: "mst",
-  title: "MST Chain",
   chain: "MST",
   icon: "mst",
   rpc: [
     "https://mariorpc.mstblockchain.com",
     "https://craftrpc.mstblockchain.com",
+    "wss://mariorpc.mstblockchain.com",
+    "wss://craftrpc.mstblockchain.com",
   ],
   faucets: [],
   nativeCurrency: {
-    name: "MST",
-    symbol: "MST",
+    name: "MST Native Coin",
+    symbol: "MSTC",
     decimals: 18,
   },
   infoURL: "https://mstblockchain.com",
@@ -22,7 +23,7 @@ export const eip155_4646 = {
   slip44: 4646,
   explorers: [
     {
-      name: "MST Mainnet Scan",
+      name: "mstscan",
       url: "https://mstscan.com",
       standard: "EIP3091",
     },

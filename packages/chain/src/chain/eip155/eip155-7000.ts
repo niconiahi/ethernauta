@@ -18,13 +18,13 @@ export const eip155_7000 = {
     symbol: "ZETA",
     decimals: 18,
   },
-  infoURL: "https://zetachain.com/docs/",
+  infoURL: "https://zetachain.com/docs",
   chainId: 7000,
   networkId: 7000,
   explorers: [
     {
-      name: "ZetaChain Mainnet Explorer",
-      url: "https://explorer.zetachain.com",
+      name: "ZetaScan",
+      url: "https://zetascan.com",
       standard: "none",
     },
   ],

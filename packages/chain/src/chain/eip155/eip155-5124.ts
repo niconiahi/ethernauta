@@ -1,11 +1,16 @@
 import type { Chain } from "../shared"
 
 export const eip155_5124 = {
-  name: "Seismic devnet",
-  shortName: "seismic-devnet",
+  name: "Seismic Testnet",
+  shortName: "seismic-testnet",
   chain: "Seismic",
-  rpc: ["https://node-2.seismicdev.net/rpc"],
-  faucets: ["https://faucet-2.seismicdev.net/"],
+  rpc: [
+    "https://gcp-1.seismictest.net/rpc",
+    "https://gcp-2.seismictest.net/rpc",
+    "wss://gcp-1.seismictest.net/ws",
+    "wss://gcp-2.seismictest.net/ws",
+  ],
+  faucets: ["https://faucet.seismictest.net"],
   features: [
     {
       name: "EIP155",
@@ -21,8 +26,8 @@ export const eip155_5124 = {
   networkId: 5124,
   explorers: [
     {
-      name: "Seismic Devnet Explorer",
-      url: "https://explorer-2.seismicdev.net",
+      name: "Seismic Testnet Explorer",
+      url: "https://seismic-testnet.socialscan.io",
       standard: "EIP3091",
     },
   ],

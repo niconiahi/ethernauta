@@ -21,5 +21,10 @@ export const eip155_65450 = {
       url: "https://explorer.scolcoin.com",
       standard: "EIP3091",
     },
+    {
+      name: "Scolcoin Explorer",
+      url: "https://explorador.scolcoin.com",
+      standard: "EIP3091",
+    },
   ],
 } satisfies Chain

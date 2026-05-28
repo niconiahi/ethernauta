@@ -5,11 +5,8 @@ export const eip155_1995 = {
   shortName: "edxt",
   chain: "edeXa",
   icon: "edexa",
-  rpc: [
-    "https://rpc.testnet.edexa.network",
-    "https://rpc.testnet.edexa.com",
-  ],
-  faucets: ["https://faucet.edexa.com/"],
+  rpc: [],
+  faucets: [],
   nativeCurrency: {
     name: "edeXa",
     symbol: "tEDX",
@@ -19,11 +16,5 @@ export const eip155_1995 = {
   chainId: 1995,
   networkId: 1995,
   slip44: 1,
-  explorers: [
-    {
-      name: "edexa-testnet-explorer",
-      url: "https://explorer.testnet.edexa.network",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
 } satisfies Chain

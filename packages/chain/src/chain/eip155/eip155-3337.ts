@@ -4,7 +4,7 @@ export const eip155_3337 = {
   name: "EthStorage Devnet",
   shortName: "es-d",
   chain: "EthStorage",
-  rpc: ["http://devnet.ethstorage.io:9540"],
+  rpc: ["https://rpc.devnet.ethstorage.io:9540"],
   faucets: [],
   nativeCurrency: {
     name: "Ether",

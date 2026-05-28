@@ -4,6 +4,7 @@ export const eip155_11166111 = {
   name: "R0AR Testnet",
   shortName: "R0AR-Test-Chain",
   chain: "R0AR Testnet",
+  icon: "r0ar",
   rpc: ["https://testnet.rpc-r0ar.io"],
   faucets: ["https://testnet.r0arfaucet.io"],
   nativeCurrency: {

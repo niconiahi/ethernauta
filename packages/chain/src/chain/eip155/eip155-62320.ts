@@ -18,4 +18,5 @@ export const eip155_62320 = {
   chainId: 62320,
   networkId: 62320,
   slip44: 1,
+  status: "deprecated",
 } satisfies Chain

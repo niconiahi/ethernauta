@@ -7,6 +7,11 @@ export const eip155_2203 = {
   icon: "ebtc",
   rpc: ["https://connect.bitcoinevm.com"],
   faucets: [],
+  features: [
+    {
+      name: "EIP155",
+    },
+  ],
   nativeCurrency: {
     name: "Bitcoin",
     symbol: "BTC",
@@ -17,9 +22,10 @@ export const eip155_2203 = {
   networkId: 2203,
   explorers: [
     {
-      name: "Explorer",
+      name: "Bitcoin EVM Explorer",
       url: "https://explorer.bitcoinevm.com",
-      standard: "none",
+      standard: "EIP3091",
     },
   ],
+  status: "active",
 } satisfies Chain

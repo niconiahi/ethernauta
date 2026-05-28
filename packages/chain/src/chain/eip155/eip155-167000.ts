@@ -1,7 +1,7 @@
 import type { Chain } from "../shared"
 
 export const eip155_167000 = {
-  name: "Taiko Alethia",
+  name: "Taiko",
   shortName: "tko-mainnet",
   chain: "ETH",
   icon: "taiko",
@@ -23,11 +23,6 @@ export const eip155_167000 = {
     {
       name: "etherscan",
       url: "https://taikoscan.io",
-      standard: "EIP3091",
-    },
-    {
-      name: "Routescan",
-      url: "https://taikoexplorer.com",
       standard: "EIP3091",
     },
   ],

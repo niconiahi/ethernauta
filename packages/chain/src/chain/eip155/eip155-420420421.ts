@@ -25,8 +25,8 @@ export const eip155_420420421 = {
   explorers: [
     {
       name: "subscan",
-      url: "https://westend-asset-hub-eth-explorer.parity.io",
-      standard: "EIP3091",
+      url: "https://assethub-westend.subscan.io",
+      standard: "none",
     },
   ],
 } satisfies Chain

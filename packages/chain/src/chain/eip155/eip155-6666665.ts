@@ -5,7 +5,7 @@ export const eip155_6666665 = {
   shortName: "SafeMainnet",
   chain: "Safe(AnWang)",
   icon: "safe-anwang",
-  rpc: ["https://rpc.anwang.com"],
+  rpc: ["https://safe4.anwang.com/rpc"],
   faucets: [],
   nativeCurrency: {
     name: "SAFE(AnWang)",
@@ -18,7 +18,7 @@ export const eip155_6666665 = {
   explorers: [
     {
       name: "Safe(AnWang) Explorer",
-      url: "http://safe4.anwang.com",
+      url: "https://safe4.anwang.com",
       standard: "EIP3091",
     },
   ],

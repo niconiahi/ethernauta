@@ -3,8 +3,8 @@ import type { Chain } from "../shared"
 export const eip155_3336 = {
   name: "EthStorage L2 Testnet",
   shortName: "esl2-t",
-  chain: "EthStorage",
-  rpc: ["http://testnet.l2.ethstorage.io:9540"],
+  chain: "EthStorage L2",
+  rpc: ["https://rpc.testnet.l2.ethstorage.io:9540"],
   faucets: [],
   nativeCurrency: {
     name: "Ether",
@@ -17,7 +17,7 @@ export const eip155_3336 = {
   slip44: 1,
   parent: {
     type: "L2",
-    chain: "eip155-11155111",
+    chain: "eip155-110011",
   },
   status: "incubating",
 } satisfies Chain

@@ -4,7 +4,11 @@ export const eip155_2868 = {
   name: "HyperAGI Mainnet",
   shortName: "hypt",
   chain: "HyperAGI",
-  rpc: [],
+  icon: "hyperagi",
+  rpc: [
+    "https://rpc.hyperagi.network",
+    "https://rpc.hyperagi.ai",
+  ],
   faucets: [],
   features: [
     {
@@ -19,13 +23,13 @@ export const eip155_2868 = {
     symbol: "HYPT",
     decimals: 18,
   },
-  infoURL: "https://hyperagi.network",
+  infoURL: "https://www.hyperagi.ai",
   chainId: 2868,
-  networkId: 1,
+  networkId: 2868,
   explorers: [
     {
-      name: "hyptscan",
-      url: "https://block.hyperagi.network",
+      name: "hyperscan",
+      url: "https://hyperscan.hyperagi.ai",
       standard: "EIP3091",
     },
   ],

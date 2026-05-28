@@ -2,7 +2,7 @@ import type { Chain } from "../shared"
 
 export const eip155_2368 = {
   name: "KiteAI Testnet",
-  shortName: "KiteAI",
+  shortName: "KiteAITestnet",
   chain: "KiteAI",
   icon: "kite",
   rpc: ["https://rpc-testnet.gokite.ai"],

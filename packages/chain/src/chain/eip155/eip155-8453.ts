@@ -12,6 +12,7 @@ export const eip155_8453 = {
     "wss://base.gateway.tenderly.co",
     "https://base-rpc.publicnode.com",
     "wss://base-rpc.publicnode.com",
+    "https://rpcfree.com/base-rpc",
   ],
   faucets: [],
   nativeCurrency: {

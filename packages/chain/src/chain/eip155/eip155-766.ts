@@ -5,7 +5,10 @@ export const eip155_766 = {
   shortName: "qom",
   chain: "QOM",
   icon: "qom",
-  rpc: ["https://rpc.qom.one"],
+  rpc: [
+    "https://rpc.qom.one",
+    "https://evm-rpc-ql1.foxxone.one",
+  ],
   faucets: [],
   nativeCurrency: {
     name: "Shiba Predator",

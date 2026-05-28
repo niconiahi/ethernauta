@@ -1,0 +1,29 @@
+import type { Chain } from "../shared"
+
+export const eip155_13579 = {
+  name: "Intuition Testnet",
+  shortName: "intuition-testnet",
+  chain: "TRUST",
+  icon: "intuition",
+  rpc: ["https://testnet.rpc.intuition.systems"],
+  faucets: ["https://intuition-testnet.hub.caldera.xyz"],
+  nativeCurrency: {
+    name: "Testnet TRUST",
+    symbol: "tTRUST",
+    decimals: 18,
+  },
+  infoURL: "https://intuition.systems",
+  chainId: 13579,
+  networkId: 13579,
+  explorers: [
+    {
+      name: "Intuition Testnet Explorer",
+      url: "https://testnet.explorer.intuition.systems",
+      standard: "EIP3091",
+    },
+  ],
+  parent: {
+    type: "L2",
+    chain: "eip155-84532",
+  },
+} satisfies Chain

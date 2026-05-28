@@ -5,7 +5,7 @@ export const eip155_1243 = {
   shortName: "ARC",
   chain: "ARC",
   icon: "arc",
-  rpc: ["https://rpc-main-1.archiechain.io"],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "ARC",
@@ -15,11 +15,6 @@ export const eip155_1243 = {
   infoURL: "https://archiechain.io/",
   chainId: 1243,
   networkId: 1243,
-  explorers: [
-    {
-      name: "archiescan",
-      url: "https://app.archiescan.io",
-      standard: "none",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

@@ -1,13 +1,13 @@
 import type { Chain } from "../shared"
 
 export const eip155_166 = {
-  name: "Omni",
-  shortName: "omni",
-  chain: "Omni",
-  icon: "omni",
+  name: "Nomina",
+  shortName: "nom",
+  chain: "Nomina",
+  icon: "nom",
   rpc: [
-    "https://mainnet.omni.network",
-    "wss://wss.mainnet.omni.network",
+    "https://mainnet.nomina.io",
+    "wss://wss.mainnet.nomina.io",
   ],
   faucets: [],
   features: [
@@ -16,8 +16,8 @@ export const eip155_166 = {
     },
   ],
   nativeCurrency: {
-    name: "Omni",
-    symbol: "OMNI",
+    name: "Nomina",
+    symbol: "NOM",
     decimals: 18,
   },
   infoURL: "https://docs.omni.network",
@@ -26,8 +26,8 @@ export const eip155_166 = {
   slip44: 1,
   explorers: [
     {
-      name: "Omni EVM and cross-chain Explorer",
-      url: "https://omniscan.network",
+      name: "Nomina EVM and cross-chain Explorer",
+      url: "https://nomscan.io",
       standard: "EIP3091",
     },
   ],

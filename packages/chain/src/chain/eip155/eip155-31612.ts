@@ -8,8 +8,8 @@ export const eip155_31612 = {
   rpc: [
     "https://rpc_evm-mezo.imperator.co",
     "wss://ws_evm-mezo.imperator.co",
-    "https://jsonrpc-mezo.boar.network",
-    "wss://jsonrpcws-mezo.boar.network",
+    "https://mezo-mainnet.boar.network",
+    "wss://mezo-mainnet.boar.network",
     "https://mainnet.mezo.public.validationcloud.io",
     "wss://mainnet.mezo.public.validationcloud.io",
     "https://rpc-internal.mezo.org",

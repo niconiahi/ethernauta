@@ -1,11 +1,11 @@
 import type { Chain } from "../shared"
 
 export const eip155_143 = {
-  name: "Monad Mainnet",
+  name: "Monad",
   shortName: "mon",
   chain: "MON",
   icon: "monad",
-  rpc: [],
+  rpc: ["https://rpc.monad.xyz"],
   faucets: [],
   features: [
     {
@@ -16,13 +16,24 @@ export const eip155_143 = {
     },
   ],
   nativeCurrency: {
-    name: "MON Token",
+    name: "Monad",
     symbol: "MON",
     decimals: 18,
   },
   infoURL: "https://monad.xyz",
   chainId: 143,
   networkId: 143,
-  slip44: 1,
-  explorers: [],
+  slip44: 268435779,
+  explorers: [
+    {
+      name: "Monad Vision",
+      url: "https://monadvision.com",
+      standard: "EIP3091",
+    },
+    {
+      name: "Monadscan",
+      url: "https://monadscan.com",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

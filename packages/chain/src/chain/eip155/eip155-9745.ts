@@ -2,10 +2,10 @@ import type { Chain } from "../shared"
 
 export const eip155_9745 = {
   name: "Plasma Mainnet",
-  shortName: "plasma-mainnet",
+  shortName: "plasma",
   chain: "Plasma",
   icon: "plasma",
-  rpc: [],
+  rpc: ["https://rpc.plasma.to"],
   faucets: [],
   nativeCurrency: {
     name: "Plasma",
@@ -15,5 +15,11 @@ export const eip155_9745 = {
   infoURL: "https://plasma.to",
   chainId: 9745,
   networkId: 9745,
-  explorers: [],
+  explorers: [
+    {
+      name: "Routescan",
+      url: "https://plasmascan.to",
+      standard: "EIP3091",
+    },
+  ],
 } satisfies Chain

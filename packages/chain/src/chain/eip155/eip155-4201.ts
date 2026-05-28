@@ -4,7 +4,7 @@ export const eip155_4201 = {
   name: "LUKSO Testnet",
   shortName: "lukso-testnet",
   chain: "LUKSO Testnet",
-  icon: "lukso",
+  icon: "lukso-testnet",
   rpc: [
     "https://rpc.testnet.lukso.network",
     "wss://ws-rpc.testnet.lukso.network",
@@ -29,9 +29,9 @@ export const eip155_4201 = {
   slip44: 1,
   explorers: [
     {
-      name: "Blockscout",
+      name: "LUKSO Testnet Execution Explorer",
       url: "https://explorer.execution.testnet.lukso.network",
-      standard: "none",
+      standard: "EIP3091",
     },
   ],
 } satisfies Chain

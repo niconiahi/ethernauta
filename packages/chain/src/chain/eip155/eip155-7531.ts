@@ -1,12 +1,15 @@
 import type { Chain } from "../shared"
 
 export const eip155_7531 = {
-  name: "Rome Mainnet 0 Palatine",
-  shortName: "rome-mainnet-0-palatine",
+  name: "Rome Palatine",
+  shortName: "rome-palatine",
   chain: "ROME",
   icon: "rome",
-  rpc: ["https://palatine-i.mainnet-0.romeprotocol.xyz"],
-  faucets: ["https://deposit.mainnet-0.romeprotocol.xyz"],
+  rpc: [
+    "https://palatine.romeprotocol.xyz",
+    "https://palatine2.romeprotocol.xyz",
+  ],
+  faucets: [],
   nativeCurrency: {
     name: "RSOL",
     symbol: "RSOL",
@@ -17,8 +20,8 @@ export const eip155_7531 = {
   networkId: 7531,
   explorers: [
     {
-      name: "Rome Mainnet 0 Palatine Explorer",
-      url: "https://romescout-palatine-i.mainnet-0.romeprotocol.xyz",
+      name: "Rome Palatine Explorer",
+      url: "https://romescout-palatine.romeprotocol.xyz",
       standard: "EIP3091",
     },
   ],

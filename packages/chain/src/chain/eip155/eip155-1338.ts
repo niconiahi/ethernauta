@@ -9,8 +9,8 @@ export const eip155_1338 = {
   rpc: ["https://rpc.atlantischain.network"],
   faucets: ["https://faucet.atlantischain.network"],
   nativeCurrency: {
-    name: "ELY",
-    symbol: "ELY",
+    name: "PYR",
+    symbol: "PYR",
     decimals: 18,
   },
   infoURL: "https://elysiumchain.tech",

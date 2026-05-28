@@ -1,12 +1,13 @@
 import type { Chain } from "../shared"
 
 export const eip155_6666689 = {
-  name: "The Ting Blockchain Testnet Explorer",
+  name: "Ting Chain Testnet",
   shortName: "ting-testnet",
-  chain: "Ting",
+  title: "Ting Chain Testnet",
+  chain: "tingchain",
   rpc: [
-    "https://testnet.tingchain.org",
-    "https://public.0xrpc.com/6666689",
+    "https://rpc-testnet.tingscan.com",
+    "wss://rpc-testnet.tingscan.com",
   ],
   faucets: [],
   features: [
@@ -18,8 +19,8 @@ export const eip155_6666689 = {
     },
   ],
   nativeCurrency: {
-    name: "Ton",
-    symbol: "Ton",
+    name: "Ting",
+    symbol: "TING",
     decimals: 18,
   },
   infoURL: "https://tingscan.com",
@@ -28,7 +29,7 @@ export const eip155_6666689 = {
   explorers: [
     {
       name: "TingScan",
-      url: "https://tingscan.com",
+      url: "https://testnet.tingscan.com",
       standard: "EIP3091",
     },
   ],

@@ -5,6 +5,7 @@ export const eip155_2020 = {
   shortName: "ron",
   title: "Ronin",
   chain: "ronin",
+  icon: "ronin",
   rpc: ["https://api.roninchain.com/rpc"],
   faucets: [],
   nativeCurrency: {

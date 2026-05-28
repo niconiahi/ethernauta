@@ -1,8 +1,8 @@
 import type { Chain } from "../shared"
 
 export const eip155_65349 = {
-  name: "CratD2C Testnet",
-  shortName: "cratd2c-testnet",
+  name: "CratD2C Testnet Deprecated",
+  shortName: "cratd2c-testnet-deprecated",
   chain: "CRATD2C",
   icon: "cratd2c-testnet",
   rpc: [
@@ -25,4 +25,5 @@ export const eip155_65349 = {
       standard: "EIP3091",
     },
   ],
+  status: "deprecated",
 } satisfies Chain

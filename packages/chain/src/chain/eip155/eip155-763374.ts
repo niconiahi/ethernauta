@@ -1,14 +1,11 @@
 import type { Chain } from "../shared"
 
 export const eip155_763374 = {
-  name: "Surge Testnet",
-  shortName: "surge-testnet",
-  chain: "Surge Testnet",
+  name: "Surge deprecated Testnet",
+  shortName: "surge-deprecated-testnet",
+  chain: "Surge deprecated Testnet",
   icon: "surge-testnet",
-  rpc: [
-    "https://l2-rpc.surge.staging-nethermind.xyz",
-    "wss://l2-rpc.surge.staging-nethermind.xyz",
-  ],
+  rpc: [],
   faucets: [],
   features: [
     {
@@ -23,14 +20,9 @@ export const eip155_763374 = {
     symbol: "ETH",
     decimals: 18,
   },
-  infoURL: "https://surge.wtf",
+  infoURL: "",
   chainId: 763374,
   networkId: 763374,
-  explorers: [
-    {
-      name: "blockscout",
-      url: "https://explorer.holesky.surge.wtf",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

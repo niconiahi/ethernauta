@@ -6,10 +6,11 @@ export const eip155_6934 = {
   chain: "XYL",
   icon: "xylume-testnet",
   rpc: ["https://xylume-testnet.sparked.network/rpc/"],
-  faucets: [
-    "https://debxylen.github.io/Xylume_TestNet/faucet.html",
-  ],
+  faucets: ["https://xylume-faucet.vercel.app/"],
   features: [
+    {
+      name: "EIP20",
+    },
     {
       name: "EIP155",
     },
@@ -18,6 +19,9 @@ export const eip155_6934 = {
     },
     {
       name: "Directed Acyclic Graph (DAG)",
+    },
+    {
+      name: "Unspent Transaction Output (UTXO)",
     },
   ],
   nativeCurrency: {

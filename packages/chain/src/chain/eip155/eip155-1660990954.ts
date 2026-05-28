@@ -32,5 +32,5 @@ export const eip155_1660990954 = {
       },
     ],
   },
-  status: "active",
+  status: "deprecated",
 } satisfies Chain

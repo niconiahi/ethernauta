@@ -4,7 +4,10 @@ export const eip155_869 = {
   name: "WorldMobileChain-Mainnet",
   shortName: "WMC",
   chain: "WMC",
-  rpc: [],
+  icon: "worldmobilechain",
+  rpc: [
+    "https://worldmobilechain-mainnet.g.alchemy.com/public",
+  ],
   faucets: [],
   nativeCurrency: {
     name: "World Mobile Token",
@@ -14,5 +17,12 @@ export const eip155_869 = {
   infoURL: "https://worldmobile.io/the-chain",
   chainId: 869,
   networkId: 869,
-  status: "incubating",
+  explorers: [
+    {
+      name: "World Mobile Chain Explorer",
+      url: "https://explorer.worldmobile.io",
+      standard: "none",
+    },
+  ],
+  status: "active",
 } satisfies Chain

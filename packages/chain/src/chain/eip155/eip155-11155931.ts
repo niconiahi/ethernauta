@@ -17,13 +17,16 @@ export const eip155_11155931 = {
     {
       name: "EIP1559",
     },
+    {
+      name: "EIP7702",
+    },
   ],
   nativeCurrency: {
     name: "RISE Testnet Ether",
     symbol: "ETH",
     decimals: 18,
   },
-  infoURL: "https://www.riselabs.xyz/",
+  infoURL: "https://risechain.com/",
   chainId: 11155931,
   networkId: 11155931,
   explorers: [

@@ -2,7 +2,7 @@ import type { Chain } from "../shared"
 
 export const eip155_490000 = {
   name: "Autonomys Taurus Testnet",
-  shortName: "ATN",
+  shortName: "ATN-deprecated",
   chain: "autonomys-taurus-testnet",
   icon: "autonomys",
   rpc: ["https://auto-evm.taurus.autonomys.xyz/ws"],
@@ -23,11 +23,6 @@ export const eip155_490000 = {
   infoURL: "https://www.autonomys.xyz",
   chainId: 490000,
   networkId: 490000,
-  explorers: [
-    {
-      name: "Autonomys Taurus Testnet Explorer",
-      url: "https://blockscout.taurus.autonomys.xyz",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

@@ -1,0 +1,35 @@
+import type { Chain } from "../shared"
+
+export const eip155_1810 = {
+  name: "Ruby Chain Testnet",
+  shortName: "ruby-testnet",
+  title: "Ruby Chain Testnet",
+  chain: "RUBY",
+  icon: "rubychain",
+  rpc: [
+    "https://rpc.ruby.testnet.finetry.win",
+    "https://rpc2.ruby.testnet.finetry.win",
+  ],
+  faucets: ["https://faucet.ruby.testnet.finetry.win"],
+  nativeCurrency: {
+    name: "Ruby",
+    symbol: "RUBY",
+    decimals: 18,
+  },
+  infoURL: "https://elektrum.io",
+  chainId: 1810,
+  networkId: 1810,
+  explorers: [
+    {
+      name: "Ruby Chain Explorer",
+      url: "https://explorer.ruby.testnet.finetry.win",
+      standard: "EIP3091",
+    },
+  ],
+  parent: {
+    type: "L2",
+    chain: "eip155-11155111",
+    bridges: [],
+  },
+  status: "active",
+} satisfies Chain

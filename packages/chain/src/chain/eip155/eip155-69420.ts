@@ -1,26 +1,30 @@
 import type { Chain } from "../shared"
 
 export const eip155_69420 = {
-  name: "Condrieu",
-  shortName: "cndr",
-  title: "Ethereum Verkle Testnet Condrieu",
-  chain: "ETH",
-  rpc: ["https://rpc.condrieu.ethdevops.io:8545"],
-  faucets: ["https://faucet.condrieu.ethdevops.io"],
+  name: "CHEESE Blockchain",
+  shortName: "cheese",
+  chain: "CHEESE",
+  rpc: [
+    "https://cheesescan.com/rpc",
+    "https://rpc1.cheesescan.com",
+    "https://rpc2.cheesescan.com",
+  ],
+  faucets: ["https://cheesescan.com/faucet"],
   nativeCurrency: {
-    name: "Condrieu Testnet Ether",
-    symbol: "CTE",
+    name: "CHEESE",
+    symbol: "CHEESE",
     decimals: 18,
   },
-  infoURL: "https://condrieu.ethdevops.io",
+  infoURL: "https://cheesescan.com",
   chainId: 69420,
   networkId: 69420,
-  slip44: 1,
   explorers: [
     {
-      name: "Condrieu explorer",
-      url: "https://explorer.condrieu.ethdevops.io",
-      standard: "none",
+      name: "CHEESE Explorer",
+      url: "https://cheesescan.com",
+      standard: "EIP3091",
     },
   ],
+  status: "incubating",
+  redFlags: ["reusedChainId"],
 } satisfies Chain

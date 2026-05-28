@@ -5,11 +5,8 @@ export const eip155_1663 = {
   shortName: "Gobi",
   chain: "Gobi",
   icon: "eon",
-  rpc: [
-    "https://gobi-rpc.horizenlabs.io/ethv1",
-    "https://rpc.ankr.com/horizen_gobi_testnet",
-  ],
-  faucets: ["https://faucet.horizen.io"],
+  rpc: [],
+  faucets: [],
   features: [
     {
       name: "EIP155",
@@ -27,11 +24,6 @@ export const eip155_1663 = {
   chainId: 1663,
   networkId: 1663,
   slip44: 1,
-  explorers: [
-    {
-      name: "Gobi Testnet Block Explorer",
-      url: "https://gobi-explorer.horizen.io",
-      standard: "EIP3091",
-    },
-  ],
+  explorers: [],
+  status: "deprecated",
 } satisfies Chain

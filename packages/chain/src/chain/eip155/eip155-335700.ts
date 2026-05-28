@@ -1,0 +1,28 @@
+import type { Chain } from "../shared"
+
+export const eip155_335700 = {
+  name: "Scenium",
+  shortName: "scenium",
+  chain: "Scenium",
+  icon: "scenium",
+  rpc: [
+    "https://services.tanssi-mainnet.network/tanssi-2004",
+    "wss://services.tanssi-mainnet.network/tanssi-2004",
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: "SCEN",
+    symbol: "SCEN",
+    decimals: 18,
+  },
+  infoURL: "hhttps://www.scenium.io/",
+  chainId: 335700,
+  networkId: 335700,
+  explorers: [
+    {
+      name: "Tanssi EVM Basic Explorer",
+      url: "https://evmexplorer.tanssi-chains.network/?rpcUrl=https://services.tanssi-mainnet.network/tanssi-2004",
+      standard: "none",
+    },
+  ],
+} satisfies Chain

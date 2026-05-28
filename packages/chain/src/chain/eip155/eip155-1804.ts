@@ -7,8 +7,10 @@ export const eip155_1804 = {
   chain: "CRC",
   icon: "pocr",
   rpc: [
-    "https://cacib-saturn-test.francecentral.cloudapp.azure.com",
-    "wss://cacib-saturn-test.francecentral.cloudapp.azure.com:9443",
+    "https://rpc1.kerleano.ca-dag.work",
+    "https://rpc2.kerleano.ca-dag.work",
+    "wss://rpc1.kerleano.ca-dag.work/ws",
+    "wss://rpc2.kerleano.ca-dag.work/ws",
   ],
   faucets: [
     "https://github.com/ethereum-pocr/kerleano/blob/main/docs/faucet.md",

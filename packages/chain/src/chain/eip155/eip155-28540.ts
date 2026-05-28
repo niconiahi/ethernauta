@@ -1,0 +1,28 @@
+import type { Chain } from "../shared"
+
+export const eip155_28540 = {
+  name: "Rivool",
+  shortName: "rivool",
+  chain: "Rivool",
+  icon: "rivool",
+  rpc: [
+    "https://services.tanssi-mainnet.network/tanssi-2005",
+    "wss://services.tanssi-mainnet.network/tanssi-2005",
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: "RVO",
+    symbol: "RVO",
+    decimals: 18,
+  },
+  infoURL: "https://rivool.finance/",
+  chainId: 28540,
+  networkId: 28540,
+  explorers: [
+    {
+      name: "Tanssi EVM Basic Explorer",
+      url: "https://evmexplorer.tanssi-chains.network/?rpcUrl=https://services.tanssi-mainnet.network/tanssi-2005",
+      standard: "none",
+    },
+  ],
+} satisfies Chain

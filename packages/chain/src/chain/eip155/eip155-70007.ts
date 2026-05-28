@@ -1,0 +1,24 @@
+import type { Chain } from "../shared"
+
+export const eip155_70007 = {
+  name: "Seven Chain",
+  shortName: "seven",
+  chain: "SEVEN",
+  rpc: ["https://theseven.meme/api/seven-chain/jsonrpc"],
+  faucets: [],
+  nativeCurrency: {
+    name: "Seven",
+    symbol: "SEVEN",
+    decimals: 18,
+  },
+  infoURL: "https://theseven.meme",
+  chainId: 70007,
+  networkId: 70007,
+  explorers: [
+    {
+      name: "Seven Chain Explorer",
+      url: "https://theseven.meme/blockchain/explorer",
+      standard: "EIP3091",
+    },
+  ],
+} satisfies Chain

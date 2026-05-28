@@ -2,14 +2,14 @@ import type { Chain } from "../shared"
 
 export const eip155_33772211 = {
   name: "Xone Testnet",
-  shortName: "txoc",
+  shortName: "tXOC",
   chain: "XOC",
-  icon: "xone-test",
+  icon: "xone_test",
   rpc: [
     "https://rpc-testnet.xone.plus",
     "https://rpc-testnet.xone.org",
     "https://rpc-testnet.knight.center",
-    "wss://wss-rpc-testnet.xone.org",
+    "wss://rpc-testnet.xone.org",
   ],
   faucets: ["https://faucet.xone.org/"],
   features: [
@@ -30,8 +30,8 @@ export const eip155_33772211 = {
   networkId: 33772211,
   explorers: [
     {
-      name: "testnet-xscscan",
-      url: "https://testnet.xscscan.com",
+      name: "xone_test",
+      url: "https://testnet.xonescan.com",
       standard: "EIP3091",
     },
   ],

@@ -10,6 +10,7 @@ export const eip155_42161 = {
     "https://arb1.arbitrum.io/rpc",
     "https://arbitrum-one-rpc.publicnode.com",
     "wss://arbitrum-one-rpc.publicnode.com",
+    "https://rpcfree.com/arbitrum-rpc",
   ],
   faucets: [],
   nativeCurrency: {

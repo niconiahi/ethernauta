@@ -1,0 +1,28 @@
+import type { Chain } from "../shared"
+
+export const eip155_12216 = {
+  name: "L2 Protocol Mainnet",
+  shortName: "l2p",
+  chain: "L2P",
+  rpc: [
+    "https://rpc.l2protocol.com",
+    "wss://rpc.l2protocol.com",
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: "L2P",
+    symbol: "L2P",
+    decimals: 18,
+  },
+  infoURL: "https://l2protocol.com",
+  chainId: 12216,
+  networkId: 12216,
+  slip44: 714,
+  explorers: [
+    {
+      name: "blockscout",
+      url: "https://l2pscan.com",
+      standard: "EIP3091",
+    },
+  ],
+} satisfies Chain

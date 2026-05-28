@@ -1,13 +1,10 @@
 import type { Chain } from "../shared"
 
 export const eip155_6342 = {
-  name: "MegaETH Testnet",
-  shortName: "megatest",
+  name: "MegaETH Testnet (Deprecated)",
+  shortName: "megatest-deprecated",
   chain: "ETH",
-  rpc: [
-    "https://carrot.megaeth.com/rpc",
-    "wss://carrot.megaeth.com/ws",
-  ],
+  rpc: [],
   faucets: [],
   nativeCurrency: {
     name: "MegaETH Testnet Ether",
@@ -18,4 +15,5 @@ export const eip155_6342 = {
   chainId: 6342,
   networkId: 6342,
   slip44: 1,
+  status: "deprecated",
 } satisfies Chain
