@@ -24,35 +24,50 @@ Returns `null` until the EIP-6963 announce dance resolves the persisted wallet.
 ```tsx
 import { useProvider } from "@ethernauta/react";
 import { eth_getBalance } from "@ethernauta/eth";
+import { useQuery } from "@tanstack/react-query";
+import type { Address } from "@ethernauta/core";
 
-function Balance({ address }) {
+function Balance({ address }: { address: Address }) {
   const provider = useProvider({ key: "wallet" });
 
-  if (!provider) {
-    return <p>Connecting…</p>;
-  }
+  const { data: balance } = useQuery({
+    queryKey: ["balance", address],
+    queryFn: () => {
+      if (!provider) throw new Error("no provider");
+      return eth_getBalance([address, "latest"])(
+        provider.reader({ chain_id: "eip155:1" }),
+      );
+    },
+    enabled: !!provider,
+  });
 
-  // provider.reader / provider.signer are ready to use
-  // no create_provider call needed — the hook did it
-  const balance = await eth_getBalance({ address, block: "latest" })(
-    provider.reader({ chain_id: "eip155:1" }),
-  );
-
-  return <p>{balance.toString()}</p>;
+  if (!provider) return <p>Connecting…</p>;
+  return <p>{balance?.toString() ?? "—"}</p>;
 }
+
+void Balance;
 ```
 
 You can read the metadata of the selected wallet:
 
 ```tsx
-provider.provider_detail.info.name;   // e.g. "Ethernauta"
-provider.provider_detail.info.icon;   // base64 / SVG / URL
-provider.provider_detail.info.rdns;   // e.g. "io.ethernauta"
+import { useProvider } from "@ethernauta/react";
+
+function WalletInfo() {
+  const provider = useProvider({ key: "wallet" });
+  if (!provider) return null;
+  const name = provider.provider_detail.info.name;   // e.g. "Ethernauta"
+  const icon = provider.provider_detail.info.icon;   // base64 / SVG / URL
+  const rdns = provider.provider_detail.info.rdns;   // e.g. "io.ethernauta"
+  return <p>{name} {icon} {rdns}</p>;
+}
+
+void WalletInfo;
 ```
 
 ### Arguments
 
-```ts
+```ts ignore
 useProvider({ key, store? }): Provider | null
 ```
 
@@ -64,9 +79,12 @@ useProvider({ key, store? }): Provider | null
 The `Provider` shape:
 
 ```ts
-type Provider = ProviderResolver & {
-  provider_detail: EIP6963ProviderDetail;
-};
+import type { Provider } from "@ethernauta/react";
+
+// Provider is structurally:
+//   ProviderResolver & { provider_detail: EIP6963ProviderDetail }
+declare const _example: Provider;
+void _example;
 ```
 
 ## useProviderDetail
@@ -76,24 +94,27 @@ The lower-level hook. Returns just the `EIP6963ProviderDetail` (info + raw 1193 
 ```tsx
 import { useProviderDetail } from "@ethernauta/react";
 import { watch_accounts } from "@ethernauta/eip/1193";
+import { useEffect } from "react";
 
 function AccountWatcher() {
-  const detail = useProviderDetail({ key: "wallet" });
+  const provider_detail = useProviderDetail({ key: "wallet" });
 
   useEffect(() => {
-    if (!detail) return;
-    return watch_accounts(detail.provider, (accounts) => {
+    if (!provider_detail) return;
+    return watch_accounts(provider_detail.provider, (accounts) => {
       console.log("now exposed:", accounts);
     });
-  }, [detail]);
+  }, [provider_detail]);
 
   return null;
 }
+
+void AccountWatcher;
 ```
 
 ### Arguments
 
-```ts
+```ts ignore
 useProviderDetail({ key, store? }): EIP6963ProviderDetail | null
 ```
 
@@ -114,15 +135,20 @@ import {
   discover_providers,
   set_provider_detail,
   web_storage,
+  type EIP6963ProviderDetail,
 } from "@ethernauta/eip/6963";
 
 const store = web_storage(localStorage);
 
 async function show_picker() {
   const providers = await discover_providers();
+  const chosen_detail: EIP6963ProviderDetail | undefined = providers[0];
+  if (!chosen_detail) return;
   // render a UI; on user pick:
-  set_provider_detail(chosen_detail, { store, key: "wallet" });
+  set_provider_detail({ store, key: "wallet", provider_detail: chosen_detail });
 }
+
+void show_picker;
 ```
 
 Once persisted, `useProvider({ key: "wallet" })` starts yielding the wrapped resolver.
@@ -133,20 +159,26 @@ Once persisted, `useProvider({ key: "wallet" })` starts yielding the wrapped res
 import { useProvider } from "@ethernauta/react";
 import { eth_getBalance } from "@ethernauta/eth";
 import { useQuery } from "@tanstack/react-query";
+import type { Address } from "@ethernauta/core";
 
-function Balance({ address }) {
+function Balance({ address }: { address: Address }) {
   const provider = useProvider({ key: "wallet" });
 
   const { data } = useQuery({
     queryKey: ["balance", address, 1],
-    queryFn: () => eth_getBalance({ address, block: "latest" })(
-      provider!.reader({ chain_id: "eip155:1" }),
-    ),
+    queryFn: () => {
+      if (!provider) throw new Error("no provider");
+      return eth_getBalance([address, "latest"])(
+        provider.reader({ chain_id: "eip155:1" }),
+      );
+    },
     enabled: !!provider,
   });
 
   return <p>{data?.toString() ?? "—"}</p>;
 }
+
+void Balance;
 ```
 
 The hook is one line. The cache layer is whatever you already use.
