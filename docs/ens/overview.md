@@ -17,11 +17,19 @@ pnpm add @ethernauta/ens
 
 ```ts
 import { get_ens_address } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
 const address = await get_ens_address({ name: "vitalik.eth" })(
-  reader({ chain_id: eip155_1.chain_id }),
+  reader({ chain_id: CHAIN_ID }),
 );
 // → "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+void address;
 ```
 
 Walks: `namehash(name)` → look up resolver via registry → call `addr(node)` on resolver. Returns `null` if any step yields zero.
@@ -29,12 +37,23 @@ Walks: `namehash(name)` → look up resolver via registry → call `addr(node)` 
 ## Reverse resolution
 
 ```ts
+import { parse } from "valibot";
+import { AddressSchema } from "@ethernauta/core";
 import { get_ens_name } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const address = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045");
 const name = await get_ens_name({ address })(
-  reader({ chain_id: eip155_1.chain_id }),
+  reader({ chain_id: CHAIN_ID }),
 );
 // → "vitalik.eth" or null
+void name;
 ```
 
 Includes the **forward-verification step** (ERC-181 reverse records are claim-only; the verifier confirms by checking that the claimed name resolves back to the same address).
@@ -43,19 +62,37 @@ Includes the **forward-verification step** (ERC-181 reverse records are claim-on
 
 ```ts
 import { get_ens_text } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
 const twitter = await get_ens_text({ name: "vitalik.eth", key: "com.twitter" })(
-  reader,
+  reader({ chain_id: CHAIN_ID }),
 );
+void twitter;
 ```
 
 ## Avatars
 
 ```ts
-import { get_ens_avatar, parse_avatar } from "@ethernauta/ens";
+import { get_ens_avatar } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const result = await get_ens_avatar({ name: "vitalik.eth" })(reader);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const result = await get_ens_avatar({ name: "vitalik.eth" })(
+  reader({ chain_id: CHAIN_ID }),
+);
 // AvatarResult: an HTTP URL, an IPFS / Swarm reference, an NFT pointer, ...
+void result;
 ```
 
 `parse_avatar` is the lower-level helper that decodes the `avatar` text record's URI scheme (`https://`, `ipfs://`, `eip155:1/erc721:...`, etc.) into a structured shape.
@@ -64,8 +101,18 @@ const result = await get_ens_avatar({ name: "vitalik.eth" })(reader);
 
 ```ts
 import { get_ens_resolver } from "@ethernauta/ens";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const resolver_address = await get_ens_resolver({ name: "vitalik.eth" })(reader);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const resolver_address = await get_ens_resolver({ name: "vitalik.eth" })(
+  reader({ chain_id: CHAIN_ID }),
+);
+void resolver_address;
 ```
 
 Useful when you want to bypass the orchestration and call the resolver directly.
@@ -75,10 +122,10 @@ Useful when you want to bypass the orchestration and call the resolver directly.
 ```ts
 import { ens_normalize, ens_beautify } from "@ethernauta/ens";
 
-ens_normalize("Vitalik.eth");          // → "vitalik.eth"
-ens_normalize("VitAlik.eth");          // → "vitalik.eth"
-ens_normalize("emoji😀.eth");          // → "emoji😀.eth" (NFC-normalized)
-ens_beautify("vitalik.eth");           // → "vitalik.eth"
+void ens_normalize("Vitalik.eth");          // → "vitalik.eth"
+void ens_normalize("VitAlik.eth");          // → "vitalik.eth"
+void ens_normalize("emoji😀.eth");          // → "emoji😀.eth" (NFC-normalized)
+void ens_beautify("vitalik.eth");           // → "vitalik.eth"
 ```
 
 Normalization is **mandatory** before hashing — `namehash` of `"Vitalik.eth"` is different from `"vitalik.eth"`. The library never auto-normalizes inside the orchestration functions (`get_ens_address` etc. assume their input is normalized) so the dapp has to call `ens_normalize` first if there's any chance of unnormalized input.
