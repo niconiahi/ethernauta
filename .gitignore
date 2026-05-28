@@ -4,6 +4,7 @@ dist
 .npmrc
 .tool-versions
 tmp
+tsconfig.docs-check.json
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 

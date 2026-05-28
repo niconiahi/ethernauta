@@ -21,7 +21,7 @@ A `Tracker` is a `Reader` plus a `Store`. The store persists pending transaction
 
 ```ts
 import { create_tracker, create_store } from "@ethernauta/transaction";
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const store = create_store({ namespace: "my-dapp", backend: localStorage });
 const tracker = create_tracker([eip155_1], { store });
@@ -107,5 +107,5 @@ Splitting it out also lets dapps that don't need persistence (one-shot scripts, 
 ## See also
 
 - [Guide → tracking a transaction lifecycle](/guides/tracking-lifecycle)
-- [@ethernauta/eth → eth_get_transaction_receipt](/eth/overview) — the underlying read.
+- [@ethernauta/eth → eth_getTransactionReceipt](/eth/overview) — the underlying read.
 - [Concepts → resolver shapes](/concepts/resolver-shapes) — `Trackable<T>` in context.

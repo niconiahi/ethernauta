@@ -30,11 +30,11 @@ Plus a fifth that the `@ethernauta/transaction` package layers on top:
 
 ```ts
 import { create_reader } from "@ethernauta/transport";
-import { eth_block_number } from "@ethernauta/eth";
+import { eth_blockNumber } from "@ethernauta/eth";
 
 const reader = create_reader([chain1, chain2]);
 
-const block = await eth_block_number()(
+const block = await eth_blockNumber()(
   reader({ chain_id: chain1.chain_id }),
 );
 ```
@@ -45,11 +45,11 @@ Backed by an HTTP transport that picks an RPC URL from the chain definition. Rea
 
 ```ts
 import { create_writer } from "@ethernauta/transport";
-import { eth_send_raw_transaction } from "@ethernauta/eth";
+import { eth_sendRawTransaction } from "@ethernauta/eth";
 
 const writer = create_writer([chain1]);
 
-const hash = await eth_send_raw_transaction(signed_bytes)(
+const hash = await eth_sendRawTransaction(signed_bytes)(
   writer({ chain_id: chain1.chain_id }),
 );
 ```
@@ -60,11 +60,11 @@ Same HTTP transport, but reserved for methods that broadcast. Only `eth_sendRawT
 
 ```ts
 import { create_signer } from "@ethernauta/transport";
-import { eth_send_transaction, personal_sign } from "@ethernauta/eth";
+import { eth_sendTransaction, personal_sign } from "@ethernauta/eth";
 
 const signer = create_signer([chain1]);
 
-const hash = await eth_send_transaction({ to, value, input })(
+const hash = await eth_sendTransaction({ to, value, input })(
   signer({ chain_id: chain1.chain_id }),
 );
 
@@ -79,11 +79,11 @@ The **only** shape that requires a wallet. The signer wraps a 1193 provider (the
 
 ```ts
 import { create_contract } from "@ethernauta/transport";
-import { balance_of } from "@ethernauta/erc/20";
+import { balanceOf } from "@ethernauta/erc/20";
 
 const contract = create_contract([chain1]);
 
-const balance = await balance_of({ address: holder })(
+const balance = await balanceOf({ address: holder })(
   contract({ chain_id: chain1.chain_id, contract: token_address }),
 );
 ```

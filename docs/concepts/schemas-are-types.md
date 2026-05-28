@@ -13,7 +13,7 @@ The non-negotiable typing rule across the monorepo: **every value-bearing type s
 import * as v from "valibot";
 
 const userSchema = v.object({
-  address: addressSchema,
+  address: AddressSchema,
   nickname: v.string(),
 });
 
@@ -44,7 +44,7 @@ This rule is enforced not just for prettiness but for three concrete reasons:
 
 **Single source of truth.** When a standard updates its schema (EIP-7702's authorization tuple changed shape multiple times during the draft phase), one edit at the Valibot definition flows through to the type, the parser, and any consumer. Hand-rolled type aliases would have created drift opportunities.
 
-**Composability.** Primitive schemas live in `@ethernauta/core` (`addressSchema`, `bytes32Schema`, `hash32Schema`, `uint256Schema`, …). Feature packages compose them. Adding a new EIP doesn't redeclare what an address is — it uses `addressSchema`. The catalog is small and stable; the compositions are large and ever-growing.
+**Composability.** Primitive schemas live in `@ethernauta/core` (`AddressSchema`, `Bytes32Schema`, `Hash32Schema`, `Uint256Schema`, …). Feature packages compose them. Adding a new EIP doesn't redeclare what an address is — it uses `AddressSchema`. The catalog is small and stable; the compositions are large and ever-growing.
 
 ## The forbidden shapes
 
@@ -74,11 +74,11 @@ The recursive Valibot anchor and the irreducible mapped-tuple boundary in `decod
 
 The primitives that compose everything else:
 
-- `addressSchema` — checksummed `0x` + 40 hex chars.
-- `bytes4Schema`, `bytes32Schema`, `bytes65Schema`, `bytesMax32Schema`, etc.
-- `hash32Schema` — 32-byte hash.
-- `uint8Schema`, `uint16Schema`, … `uint256Schema`, `uintSchema`.
-- `ratioSchema` — 0–1 inclusive.
+- `AddressSchema` — checksummed `0x` + 40 hex chars.
+- `Bytes4Schema`, `Bytes32Schema`, `Bytes65Schema`, `BytesMax32Schema`, etc.
+- `Hash32Schema` — 32-byte hash.
+- `Uint8Schema`, `Uint16Schema`, … `Uint256Schema`, `UintSchema`.
+- `RatioSchema` — 0–1 inclusive.
 
 Full list in [@ethernauta/core](/core/overview). If the right primitive is missing, **add it** instead of widening with `any` / `unknown`.
 
@@ -87,16 +87,16 @@ Full list in [@ethernauta/core](/core/overview). If the right primitive is missi
 ```ts
 // 1. Schema is authored.
 const sendParamsSchema = v.object({
-  to: addressSchema,
-  value: bytes32Schema,
-  input: bytesSchema,
+  to: AddressSchema,
+  value: Bytes32Schema,
+  input: BytesSchema,
 });
 
 // 2. Type is derived.
 type SendParams = v.InferOutput<typeof sendParamsSchema>;
 
 // 3. Boundary parses, interior infers.
-function eth_send_transaction(_params: unknown) {
+function eth_sendTransaction(_params: unknown) {
   const params = v.parse(sendParamsSchema, _params);
   // params: SendParams, fully typed, fully validated
   return build_and_send(params);

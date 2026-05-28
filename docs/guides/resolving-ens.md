@@ -18,7 +18,7 @@ import {
   ens_normalize,
 } from "@ethernauta/ens";
 import { create_reader } from "@ethernauta/transport";
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const reader = create_reader([eip155_1]);
 const ctx = reader({ chain_id: eip155_1.chain_id });

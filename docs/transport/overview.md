@@ -69,13 +69,13 @@ For subscription-based methods (`eth_newHeads`, `eth_newPendingTransactions`). H
 
 ```ts
 import { create_multicall } from "@ethernauta/transport";
-import { eth_get_balance, eth_block_number } from "@ethernauta/eth";
+import { eth_getBalance, eth_blockNumber } from "@ethernauta/eth";
 
 const multicall = create_multicall([eip155_1]);
 
 const [block, balance] = await multicall({ chain_id: eip155_1.chain_id }).all([
-  eth_block_number(),
-  eth_get_balance({ address, block: "latest" }),
+  eth_blockNumber(),
+  eth_getBalance({ address, block: "latest" }),
 ]);
 ```
 
@@ -87,11 +87,11 @@ For on-chain `Multicall3`-style aggregation (where the contract aggregates calls
 
 ```ts
 import { create_contract, contract } from "@ethernauta/transport";
-import { balance_of } from "@ethernauta/erc/20";
+import { balanceOf } from "@ethernauta/erc/20";
 
 const c = create_contract([eip155_1]);
 
-const balance = await balance_of({ owner: holder })(
+const balance = await balanceOf({ owner: holder })(
   c({ chain_id: eip155_1.chain_id, contract: token_address }),
 );
 ```
@@ -108,11 +108,11 @@ import { create_provider, create_injected_transport, create_injected_signer } fr
 const provider = create_provider(window.ethereum);
 
 // reads through the provider
-const block = await eth_block_number()(provider.reader({ chain_id: 1 }));
+const block = await eth_blockNumber()(provider.reader({ chain_id: "eip155:1" }));
 
 // signing through the provider
-const hash = await eth_send_transaction({ to, value })(
-  provider.signer({ chain_id: 1 }),
+const hash = await eth_sendTransaction({ to, value })(
+  provider.signer({ chain_id: "eip155:1" }),
 );
 ```
 
@@ -124,11 +124,11 @@ The wire schemas for JSON-RPC requests and responses:
 
 | Schema | Type |
 |---|---|
-| `methodSchema` | the method name |
-| `parametersSchema` | the params array |
-| `requestSchema` | full `{ jsonrpc, id, method, params }` |
-| `responseSchema` | full `{ jsonrpc, id, result } \| { ..., error }` |
-| `idSchema` | request ID |
+| `MethodSchema` | the method name |
+| `ParametersSchema` | the params array |
+| `RequestSchema` | full `{ jsonrpc, id, method, params }` |
+| `ResponseSchema` | full `{ jsonrpc, id, result } \| { ..., error }` |
+| `IdSchema` | request ID |
 
 Use these if you're building a custom transport (e.g. an in-memory mock for tests) and need to validate the wire shape.
 

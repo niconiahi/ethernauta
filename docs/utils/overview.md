@@ -49,14 +49,15 @@ These are the lowest-level converters every other package relies on. They have *
 ```ts
 import { rlp_encode, type RlpInput } from "@ethernauta/utils";
 
-const encoded = rlp_encode([
+const recipient_bytes_hex = "70997970c51812dc3a010c7d01b50e0d17dc79c8";
+const encoded: Uint8Array = rlp_encode([
   "0x01",                          // nonce
   "0x0f4240",                      // gas price
   "0x5208",                        // gas
   "0x" + recipient_bytes_hex,      // to
   "0x16345785D8A0000",             // value
   "0x",                            // data
-]);
+] satisfies RlpInput);
 ```
 
 `RlpInput` is a recursive shape: hex strings, bytes, or arrays of `RlpInput`. Used internally by `@ethernauta/eth`'s transaction encoders. Made available here because RLP is generally useful (other tools, debugging, custom tx types).
@@ -113,6 +114,7 @@ format_unit(1234000n, 6);     // → "1.234"
 ```ts
 import { invariant } from "@ethernauta/utils";
 
+const value: string | null = "frobnicate";
 invariant(value !== null, "value is null at the start of frobnication");
 // `value` is narrowed to non-null after this line
 ```

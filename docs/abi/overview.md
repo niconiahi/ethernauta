@@ -143,7 +143,7 @@ import type { Callable } from "@ethernauta/transport";
 
 const codec = make_codec(/* fragment */);
 
-export function balance_of(args: { owner: Address }): Callable<Uint256> {
+export function balanceOf(args: { owner: Address }): Callable<Uint256> {
   return /* curried codec invocation */;
 }
 ```

@@ -100,11 +100,11 @@ import { create_provider } from "@ethernauta/transport";
 const provider = create_provider(eip1193);
 
 // tier 2: chain reads via provider.reader
-const block = await eth_block_number()(provider.reader({ chain_id: 1 }));
+const block = await eth_blockNumber()(provider.reader({ chain_id: "eip155:1" }));
 
 // tier 3: signables via provider.signer
-const hash = await eth_send_transaction({ to, value })(
-  provider.signer({ chain_id: 1 }),
+const hash = await eth_sendTransaction({ to, value })(
+  provider.signer({ chain_id: "eip155:1" }),
 );
 ```
 

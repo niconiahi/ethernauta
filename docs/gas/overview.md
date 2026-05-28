@@ -40,7 +40,7 @@ EIP-1559 spec constants and arithmetic (`INITIAL_BASE_FEE`, `BASE_FEE_MAX_CHANGE
 ```ts
 import { create_reader } from "@ethernauta/transport";
 import { estimate_1559_fees, buffer_gas_limit } from "@ethernauta/gas";
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const reader = create_reader([eip155_1]);
 const ctx = reader({ chain_id: eip155_1.chain_id });
@@ -68,7 +68,7 @@ OP-stack, Arbitrum, and zkSync each get their own coarse helper. They orchestrat
 ```ts
 import { create_reader } from "@ethernauta/transport";
 import { calculate_gas_op_stack } from "@ethernauta/gas";
-import { eip155_8453 } from "@ethernauta/chain";
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453";
 
 const reader = create_reader([eip155_8453]);
 
@@ -88,7 +88,7 @@ Four reads run in parallel where they're independent: `eth_feeHistory` + `eth_ge
 
 ```ts
 import { calculate_gas_arbitrum } from "@ethernauta/gas";
-import { eip155_42161 } from "@ethernauta/chain";
+import { eip155_42161 } from "@ethernauta/chain/eip155-42161";
 
 const fees = await calculate_gas_arbitrum({
   tx: { to: recipient, input: calldata },
@@ -103,7 +103,7 @@ One call to `NodeInterface.gasEstimateComponents` at the predeploy `0x00…C8`. 
 
 ```ts
 import { calculate_gas_zksync } from "@ethernauta/gas";
-import { eip155_324 } from "@ethernauta/chain";
+import { eip155_324 } from "@ethernauta/chain/eip155-324";
 
 const fees = await calculate_gas_zksync({
   tx: { to: recipient, value, input: "0x" },

@@ -15,16 +15,16 @@ The library deliberately doesn't ship `useBalance`, `useEnsName`, `useContractRe
 
 ```tsx
 import { useProvider } from "@ethernauta/react";
-import { eth_get_balance } from "@ethernauta/eth";
+import { eth_getBalance } from "@ethernauta/eth";
 import { useQuery } from "@tanstack/react-query";
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 function Balance({ address }: { address: Address }) {
   const provider = useProvider({ key: "wallet" });
 
   const { data: balance } = useQuery({
     queryKey: ["balance", address, eip155_1.chain_id],
-    queryFn: () => eth_get_balance({ address, block: "latest" })(
+    queryFn: () => eth_getBalance({ address, block: "latest" })(
       provider!.reader({ chain_id: eip155_1.chain_id }),
     ),
     enabled: !!provider,
@@ -42,15 +42,15 @@ If the read doesn't need a wallet, skip the hook entirely:
 
 ```tsx
 import { create_reader } from "@ethernauta/transport";
-import { eth_block_number } from "@ethernauta/eth";
-import { eip155_1 } from "@ethernauta/chain";
+import { eth_blockNumber } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const reader = create_reader([eip155_1]);
 
 function GlobalBlock() {
   const { data } = useQuery({
     queryKey: ["block", eip155_1.chain_id],
-    queryFn: () => eth_block_number()(reader({ chain_id: eip155_1.chain_id })),
+    queryFn: () => eth_blockNumber()(reader({ chain_id: eip155_1.chain_id })),
   });
 
   return <p>{data?.toString()}</p>;
@@ -151,14 +151,14 @@ function ProviderListeners() {
 ## Signing
 
 ```tsx
-import { eth_send_transaction } from "@ethernauta/eth";
+import { eth_sendTransaction } from "@ethernauta/eth";
 
 function SendButton() {
   const provider = useProvider({ key: "wallet" });
 
   async function send() {
     if (!provider) return;
-    const hash = await eth_send_transaction({ to, value, input: "0x" })(
+    const hash = await eth_sendTransaction({ to, value, input: "0x" })(
       provider.signer({ chain_id: eip155_1.chain_id }),
     );
     return hash;

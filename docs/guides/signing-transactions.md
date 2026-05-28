@@ -15,12 +15,12 @@ The wallet implements `eth_sendTransaction`. One round trip, the wallet handles 
 
 ```ts
 import { create_signer } from "@ethernauta/transport";
-import { eth_send_transaction } from "@ethernauta/eth";
-import { eip155_1 } from "@ethernauta/chain";
+import { eth_sendTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const signer = create_signer([eip155_1]);
 
-const hash = await eth_send_transaction({
+const hash = await eth_sendTransaction({
   to: "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045",
   value: "0x16345785D8A0000",
   input: "0x",
@@ -45,12 +45,12 @@ The wallet implements `eth_signTransaction` and returns the signed bytes; the da
 
 ```ts
 import { create_signer, create_writer } from "@ethernauta/transport";
-import { eth_sign_transaction, eth_send_raw_transaction } from "@ethernauta/eth";
+import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth";
 
 const signer = create_signer([eip155_1]);
 const writer = create_writer([eip155_1]);
 
-const signed = await eth_sign_transaction({
+const signed = await eth_signTransaction({
   to: recipient,
   value,
   input: "0x",
@@ -58,7 +58,7 @@ const signed = await eth_sign_transaction({
 
 // inspect, log, persist `signed` here if you want
 
-const hash = await eth_send_raw_transaction(signed)(
+const hash = await eth_sendRawTransaction(signed)(
   writer({ chain_id: eip155_1.chain_id }),
 );
 ```
@@ -73,12 +73,12 @@ What you can do that path 1 can't:
 
 ```ts
 // path 1 for low-risk
-const quick_hash = await eth_send_transaction(...)(signer(...));
+const quick_hash = await eth_sendTransaction(...)(signer(...));
 
 // path 2 for the bridge call
-const signed_bytes = await eth_sign_transaction(...)(signer(...));
+const signed_bytes = await eth_signTransaction(...)(signer(...));
 await log_to_audit(signed_bytes);
-const broadcast_hash = await eth_send_raw_transaction(signed_bytes)(writer(...));
+const broadcast_hash = await eth_sendRawTransaction(signed_bytes)(writer(...));
 ```
 
 The two paths share the same signer; the only difference is which `eth_*` method gets called.

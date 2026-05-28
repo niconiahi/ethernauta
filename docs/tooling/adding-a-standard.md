@@ -49,11 +49,11 @@ Hard rule 1 in CLAUDE.md: **every value-bearing type is a Valibot schema first, 
 
 ```ts
 import * as v from "valibot";
-import { addressSchema, uint256Schema } from "@ethernauta/core";
+import { AddressSchema, Uint256Schema } from "@ethernauta/core";
 
 export const payloadSchema = v.object({
-  account: addressSchema,
-  amount: uint256Schema,
+  account: AddressSchema,
+  amount: Uint256Schema,
 });
 
 export type Payload = v.InferOutput<typeof payloadSchema>;

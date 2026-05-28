@@ -22,11 +22,11 @@ The dapp calls a wallet-implemented RPC method (`eth_sendTransaction`, `personal
 
 ```ts
 import { create_signer } from "@ethernauta/transport";
-import { eth_send_transaction } from "@ethernauta/eth";
+import { eth_sendTransaction } from "@ethernauta/eth";
 
 const signer = create_signer([eip155_1]);
 
-const hash = await eth_send_transaction({
+const hash = await eth_sendTransaction({
   to: recipient,
   value: amount,
   input: "0x",
@@ -43,12 +43,12 @@ The dapp asks the wallet only for the signed bytes (`eth_signTransaction`), then
 
 ```ts
 import { create_signer, create_writer } from "@ethernauta/transport";
-import { eth_sign_transaction, eth_send_raw_transaction } from "@ethernauta/eth";
+import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth";
 
 const signer = create_signer([eip155_1]);
 const writer = create_writer([eip155_1]);
 
-const signed = await eth_sign_transaction({
+const signed = await eth_signTransaction({
   to: recipient,
   value: amount,
   input: "0x",
@@ -56,7 +56,7 @@ const signed = await eth_sign_transaction({
 
 // inspect, log, persist `signed` here if you want
 
-const hash = await eth_send_raw_transaction(signed)(
+const hash = await eth_sendRawTransaction(signed)(
   writer({ chain_id: eip155_1.chain_id }),
 );
 ```

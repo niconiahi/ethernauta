@@ -28,7 +28,7 @@ ethernauta abi --in ./erc20.abi.json --out ./generated/
 
 **Outputs:** One `.ts` per method, kebab-cased filename (`balance-of.ts`, `transfer-from.ts`). Each file exports a curried method returning `Callable<T>` (for reads) or `Signable<Hash32>` (for writes).
 
-The generator preserves ABI casing in the **signature string** used for selector computation (`balanceOf(address)`, `transferFrom(address,address,uint256)`) while the TS function names follow the project's snake_case convention (`balance_of`, `transfer_from`).
+The generator preserves ABI casing in the **signature string** used for selector computation (`balanceOf(address)`, `transferFrom(address,address,uint256)`) while the TS function names follow the project's snake_case convention (`balanceOf`, `transferFrom`).
 
 ## `ethernauta registry`
 

@@ -11,16 +11,17 @@ Chain reads do not require a wallet. They go through a `Readable<T>` resolver bu
 
 ```ts
 import { create_reader } from "@ethernauta/transport";
-import { eth_block_number, eth_get_balance, eth_call } from "@ethernauta/eth";
-import { eip155_1, eip155_11155111 } from "@ethernauta/chain";
+import { eth_blockNumber, eth_getBalance, eth_call } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111";
 
 const reader = create_reader([eip155_1, eip155_11155111]);
 
-const block_number = await eth_block_number()(
+const block_number = await eth_blockNumber()(
   reader({ chain_id: eip155_1.chain_id }),
 );
 
-const balance = await eth_get_balance({
+const balance = await eth_getBalance({
   address: holder,
   block: "latest",
 })(reader({ chain_id: eip155_1.chain_id }));
@@ -31,11 +32,11 @@ The two-call shape — `method(args)(resolver(...))` — is **never collapsed**.
 ## Reading across multiple chains
 
 ```ts
-const mainnet_block = await eth_block_number()(
+const mainnet_block = await eth_blockNumber()(
   reader({ chain_id: eip155_1.chain_id }),
 );
 
-const sepolia_block = await eth_block_number()(
+const sepolia_block = await eth_blockNumber()(
   reader({ chain_id: eip155_11155111.chain_id }),
 );
 ```
@@ -52,9 +53,9 @@ const multicall = create_multicall([eip155_1]);
 const [block, balance, code] = await multicall({
   chain_id: eip155_1.chain_id,
 }).all([
-  eth_block_number(),
-  eth_get_balance({ address, block: "latest" }),
-  eth_get_code({ address, block: "latest" }),
+  eth_blockNumber(),
+  eth_getBalance({ address, block: "latest" }),
+  eth_getCode({ address, block: "latest" }),
 ]);
 ```
 
@@ -65,7 +66,7 @@ Three reads, one HTTP request. The transport packs them into a JSON-RPC batch.
 The chain definitions in `@ethernauta/chain` carry public RPC URLs. Override the `rpc` field for a private endpoint:
 
 ```ts
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const reader = create_reader([
   { ...eip155_1, rpc: ["https://my-private-rpc.example.com"] },
@@ -81,7 +82,7 @@ import { create_provider } from "@ethernauta/transport";
 
 const provider = create_provider(window.ethereum);
 
-const block = await eth_block_number()(
+const block = await eth_blockNumber()(
   provider.reader({ chain_id: eip155_1.chain_id }),
 );
 ```

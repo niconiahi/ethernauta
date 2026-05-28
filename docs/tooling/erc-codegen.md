@@ -40,7 +40,7 @@ Each generated `packages/erc/src/<n>/methods/<method>.ts` follows this shape:
 // auto-generated — do not edit
 import { make_codec, parse_abi } from "@ethernauta/abi";
 import type { Callable } from "@ethernauta/transport";
-import { addressSchema, uint256Schema } from "@ethernauta/core";
+import { AddressSchema, Uint256Schema } from "@ethernauta/core";
 
 const fragment = parse_abi(["function transfer(address to, uint256 amount) returns (bool)"])[0];
 const codec = make_codec(fragment);

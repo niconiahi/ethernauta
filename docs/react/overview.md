@@ -23,7 +23,7 @@ Returns `null` until the EIP-6963 announce dance resolves the persisted wallet.
 
 ```tsx
 import { useProvider } from "@ethernauta/react";
-import { eth_get_balance } from "@ethernauta/eth";
+import { eth_getBalance } from "@ethernauta/eth";
 
 function Balance({ address }) {
   const provider = useProvider({ key: "wallet" });
@@ -34,8 +34,8 @@ function Balance({ address }) {
 
   // provider.reader / provider.signer are ready to use
   // no create_provider call needed — the hook did it
-  const balance = await eth_get_balance({ address, block: "latest" })(
-    provider.reader({ chain_id: 1 }),
+  const balance = await eth_getBalance({ address, block: "latest" })(
+    provider.reader({ chain_id: "eip155:1" }),
   );
 
   return <p>{balance.toString()}</p>;
@@ -131,7 +131,7 @@ Once persisted, `useProvider({ key: "wallet" })` starts yielding the wrapped res
 
 ```tsx
 import { useProvider } from "@ethernauta/react";
-import { eth_get_balance } from "@ethernauta/eth";
+import { eth_getBalance } from "@ethernauta/eth";
 import { useQuery } from "@tanstack/react-query";
 
 function Balance({ address }) {
@@ -139,8 +139,8 @@ function Balance({ address }) {
 
   const { data } = useQuery({
     queryKey: ["balance", address, 1],
-    queryFn: () => eth_get_balance({ address, block: "latest" })(
-      provider!.reader({ chain_id: 1 }),
+    queryFn: () => eth_getBalance({ address, block: "latest" })(
+      provider!.reader({ chain_id: "eip155:1" }),
     ),
     enabled: !!provider,
   });

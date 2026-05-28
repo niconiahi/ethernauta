@@ -16,7 +16,8 @@ pnpm add @ethernauta/chain
 ## The shape of a chain
 
 ```ts
-import { eip155_1, type Chain } from "@ethernauta/chain";
+import type { Chain } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 eip155_1
 // {
@@ -32,21 +33,19 @@ eip155_1
 // }
 ```
 
-The full `Chain` schema is exported (`chainSchema`); inferred type is `Chain`. Adjunct types: `NativeCurrency`, `Explorer`, `Bridge`, `Parent`, `EnsRegistry`, `Feature`, `ShortName`, `RedFlagSchema`.
+The full `Chain` schema is exported (`ChainSchema`); inferred type is `Chain`. Adjunct types: `NativeCurrency`, `Explorer`, `Bridge`, `Parent`, `EnsRegistry`, `Feature`, `ShortName`, `RedFlagSchema`.
 
 ## Naming convention
 
 Every chain is exported as `eip155_<chain_id>`:
 
 ```ts
-import {
-  eip155_1,         // Ethereum Mainnet
-  eip155_10,        // OP Mainnet
-  eip155_137,       // Polygon
-  eip155_8453,      // Base
-  eip155_42161,     // Arbitrum One
-  eip155_11155111,  // Sepolia
-} from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";          // Ethereum Mainnet
+import { eip155_10 } from "@ethernauta/chain/eip155-10";        // OP Mainnet
+import { eip155_137 } from "@ethernauta/chain/eip155-137";      // Polygon
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453";    // Base
+import { eip155_42161 } from "@ethernauta/chain/eip155-42161";  // Arbitrum One
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"; // Sepolia
 ```
 
 The name disambiguates testnets, L2s, sidechains, and forks unambiguously. Chain ID is the only thing that's ever truly identifying.
@@ -55,16 +54,18 @@ The name disambiguates testnets, L2s, sidechains, and forks unambiguously. Chain
 
 ```ts
 import { create_reader } from "@ethernauta/transport";
-import { eth_block_number } from "@ethernauta/eth";
-import { eip155_1, eip155_8453, eip155_42161 } from "@ethernauta/chain";
+import { eth_blockNumber } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453";
+import { eip155_42161 } from "@ethernauta/chain/eip155-42161";
 
 const reader = create_reader([eip155_1, eip155_8453, eip155_42161]);
 
 // pick at call time
-const eth_block = await eth_block_number()(
+const eth_block = await eth_blockNumber()(
   reader({ chain_id: eip155_1.chain_id }),
 );
-const base_block = await eth_block_number()(
+const base_block = await eth_blockNumber()(
   reader({ chain_id: eip155_8453.chain_id }),
 );
 ```
@@ -84,7 +85,7 @@ The reader doesn't fetch any chain it wasn't told about. The list you pass is th
 ## Picking a custom RPC
 
 ```ts
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const my_chain = {
   ...eip155_1,

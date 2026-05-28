@@ -17,7 +17,7 @@ import {
   wait_for_receipt,
   watch_transaction,
 } from "@ethernauta/transaction";
-import { eip155_1 } from "@ethernauta/chain";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const store = create_store({ namespace: "my-dapp", backend: localStorage });
 const tracker = create_tracker([eip155_1], { store });
@@ -26,9 +26,9 @@ const tracker = create_tracker([eip155_1], { store });
 ## After broadcasting
 
 ```ts
-import { eth_send_raw_transaction } from "@ethernauta/eth";
+import { eth_sendRawTransaction } from "@ethernauta/eth";
 
-const hash = await eth_send_raw_transaction(signed)(writer);
+const hash = await eth_sendRawTransaction(signed)(writer);
 
 await register_transaction({
   hash,
@@ -97,4 +97,4 @@ The `registry` export is the in-memory mirror; the `Store` is the persistent bac
 ## See also
 
 - [@ethernauta/transaction](/transaction/overview) — full surface.
-- [@ethernauta/eth → eth_get_transaction_receipt](/eth/overview) — the underlying read.
+- [@ethernauta/eth → eth_getTransactionReceipt](/eth/overview) — the underlying read.

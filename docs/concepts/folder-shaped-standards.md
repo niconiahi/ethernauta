@@ -31,7 +31,7 @@ The `index.ts` carries the spec link and the public re-exports:
 
 ```ts
 // https://eips.ethereum.org/EIPS/eip-712
-export { typedDataSchema, type TypedData } from "./schemas/typed-data";
+export { TypedDataSchema, type TypedData } from "./schemas/typed-data";
 export { hash_typed_data } from "./utils/hash-typed-data";
 export { sign_typed_data } from "./utils/sign-typed-data";
 ```
@@ -54,7 +54,7 @@ Helpers whose definition is **not** spec-defined. Examples:
 
 - Hex / bytes conversion → `@ethernauta/utils`.
 - Generic ABI codec primitives → `@ethernauta/abi`.
-- Primitive Valibot schemas (`addressSchema`, `bytes32Schema`) → `@ethernauta/core`.
+- Primitive Valibot schemas (`AddressSchema`, `Bytes32Schema`) → `@ethernauta/core`.
 - Generic RLP encoding → `@ethernauta/utils`.
 
 The rubric: **could this helper be reused by a future standard that doesn't exist yet?** If yes, it belongs in an un-numbered package. If it only makes sense in the context of one specific spec, it belongs in that spec's folder.

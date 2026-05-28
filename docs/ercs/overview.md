@@ -10,9 +10,9 @@ order: 1
 Token standards and contract-interface standards. Each lives at `@ethernauta/erc/<n>`, with method bindings generated from the canonical ABI. Most are `Callable<T>` reads or `Signable<T>` writes.
 
 ```ts
-import { transfer, balance_of } from "@ethernauta/erc/20";
+import { transfer, balanceOf } from "@ethernauta/erc/20";
 import { tokens_of_owner } from "@ethernauta/erc/721/extensions/enumerable";
-import { balance_of_batch } from "@ethernauta/erc/1155";
+import { balanceOfBatch } from "@ethernauta/erc/1155";
 ```
 
 ## What's shipped

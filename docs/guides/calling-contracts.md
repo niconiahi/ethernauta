@@ -15,20 +15,20 @@ The ERC bindings in `@ethernauta/erc/*` already wrap the read methods. Use them 
 
 ```ts
 import { create_contract } from "@ethernauta/transport";
-import { balance_of, decimals, symbol } from "@ethernauta/erc/20";
-import { eip155_1 } from "@ethernauta/chain";
+import { balanceOf, decimals, symbol } from "@ethernauta/erc/20";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
 const contract = create_contract([eip155_1]);
 const ctx = contract({ chain_id: eip155_1.chain_id, contract: usdc });
 
 const [bal, dec, sym] = await Promise.all([
-  balance_of({ owner: holder })(ctx),
+  balanceOf({ owner: holder })(ctx),
   decimals()(ctx),
   symbol()(ctx),
 ]);
 ```
 
-The contract address is bound at `contract({ chain_id, contract })` time; the method is bound at `balance_of(...)`. Each call resolves to a single `eth_call` with the right calldata.
+The contract address is bound at `contract({ chain_id, contract })` time; the method is bound at `balanceOf(...)`. Each call resolves to a single `eth_call` with the right calldata.
 
 ## Reads — raw `eth_call`
 
@@ -75,15 +75,15 @@ The signer fills in nonce / gas / fees. The dapp only specifies the call.
 To inspect or persist the signed bytes before broadcast (see [signing transactions](/guides/signing-transactions)):
 
 ```ts
-import { eth_sign_transaction, eth_send_raw_transaction } from "@ethernauta/eth";
+import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth";
 
-const signed = await eth_sign_transaction({
+const signed = await eth_signTransaction({
   to: usdc,
   input: encoded_approve_calldata,
   value: "0x0",
 })(signer({ chain_id: eip155_1.chain_id }));
 
-const hash = await eth_send_raw_transaction(signed)(
+const hash = await eth_sendRawTransaction(signed)(
   writer({ chain_id: eip155_1.chain_id }),
 );
 ```
