@@ -11,17 +11,17 @@ import type { SpawnHandle } from "./spawn-anvil"
 // allow-violation: R1-capability-shape
 export type AwaitReadyOptions = {
   handle: SpawnHandle
-  timeoutMs?: number
-  pollMs?: number
+  timeout_ms?: number
+  poll_ms?: number
 }
 
 export async function await_ready(
   options: AwaitReadyOptions,
 ): Promise<void> {
   const handle = options.handle
-  const timeoutMs = options.timeoutMs ?? 10_000
-  const pollMs = options.pollMs ?? 50
-  const deadline = Date.now() + timeoutMs
+  const timeout_ms = options.timeout_ms ?? 10_000
+  const poll_ms = options.poll_ms ?? 50
+  const deadline = Date.now() + timeout_ms
   const url = `http://127.0.0.1:${handle.port}`
   while (Date.now() < deadline) {
     if (handle.child.exitCode !== null) {
@@ -45,11 +45,11 @@ export async function await_ready(
     } catch {
       // anvil not yet up; loop
     }
-    await sleep(pollMs)
+    await sleep(poll_ms)
   }
   handle.kill()
   throw new Error(
-    `anvil did not become ready on port ${handle.port} within ${timeoutMs}ms\n` +
+    `anvil did not become ready on port ${handle.port} within ${timeout_ms}ms\n` +
       handle.stderr(),
   )
 }

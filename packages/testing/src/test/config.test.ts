@@ -12,11 +12,11 @@ describe("ForkConfigSchema", () => {
     ).not.toThrow()
   })
 
-  it("accepts a fork with an optional blockNumber", () => {
+  it("accepts a fork with an optional block_number", () => {
     expect(() =>
       parse(ForkConfigSchema, {
         url: "https://sepolia.example.com",
-        blockNumber: 12345n,
+        block_number: 12345n,
       }),
     ).not.toThrow()
   })
@@ -48,7 +48,7 @@ describe("TestConfigSchema — fork slot", () => {
       parse(TestConfigSchema, {
         fork: {
           url: "https://sepolia.example.com",
-          blockNumber: 100n,
+          block_number: 100n,
         },
       }),
     ).not.toThrow()

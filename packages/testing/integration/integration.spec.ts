@@ -1,6 +1,6 @@
 // End-to-end demonstration of the two-files-total consumer
 // experience promised in 01-scope.md. The companion
-// `vitest.config.mjs` registers `ethernautaAnvil()`; this file
+// `vitest.config.mjs` registers `ethernauta_anvil()`; this file
 // only imports `anvil` from the package root and composes it
 // through both M3 seams.
 
@@ -75,7 +75,7 @@ describe("plugin integration — default isolation", () => {
 describe("plugin integration — without_isolation opt-out", () => {
   without_isolation()
 
-  let blockBefore = ""
+  let block_before = ""
 
   beforeAll(async () => {
     const response = await transport([
@@ -84,7 +84,7 @@ describe("plugin integration — without_isolation opt-out", () => {
     ])
     const body = parse(ResponseSchema, response)
     if ("error" in body) throw new Error(body.error.message)
-    blockBefore = parse(UintSchema, body.result)
+    block_before = parse(UintSchema, body.result)
   })
 
   it("test 1: mines a block, raising the block number", async () => {
@@ -101,9 +101,9 @@ describe("plugin integration — without_isolation opt-out", () => {
     ])
     const body = parse(ResponseSchema, response)
     if ("error" in body) throw new Error(body.error.message)
-    const blockAfter = parse(UintSchema, body.result)
-    expect(BigInt(blockAfter)).toBeGreaterThan(
-      BigInt(blockBefore),
+    const block_after = parse(UintSchema, body.result)
+    expect(BigInt(block_after)).toBeGreaterThan(
+      BigInt(block_before),
     )
   })
 })

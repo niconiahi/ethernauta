@@ -8,7 +8,7 @@ import type { SpawnHandle } from "./spawn-anvil"
 // resource.
 
 const cleanups = new Map<number, SpawnHandle>()
-let nextId = 1
+let next_id = 1
 let registered = false
 
 function dispatch(signal: NodeJS.Signals | "exit"): void {
@@ -35,8 +35,8 @@ export function register_cleanup(
   handle: SpawnHandle,
 ): () => void {
   ensure_registered()
-  const id = nextId
-  nextId += 1
+  const id = next_id
+  next_id += 1
   cleanups.set(id, handle)
   return () => {
     cleanups.delete(id)

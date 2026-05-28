@@ -22,7 +22,7 @@ exactly these:
 | Subpath | Exports | Imported from |
 |---|---|---|
 | `@ethernauta/testing` | `anvil()`, `anvil_account`, `anvil_accounts`, `create_testing_provider`, `without_isolation`, `TestConfigSchema`, `ForkConfigSchema` | Test files |
-| `@ethernauta/testing/vitest` | `ethernautaAnvil()` plugin | `vitest.config.ts` only |
+| `@ethernauta/testing/vitest` | `ethernauta_anvil()` plugin | `vitest.config.ts` only |
 | `@ethernauta/testing/anvil` | Anvil RPC method bindings (`evm_snapshot`, `evm_revert`, `evm_mine`, `evm_increaseTime`, `anvil_impersonateAccount`, `anvil_setBalance`, `anvil_setStorageAt`, `anvil_setCode`, `anvil_dumpState`, `anvil_loadState`) | Tests that drive anvil state directly |
 
 The split between `/` and `/vitest` is intentional: importing
@@ -81,16 +81,16 @@ flag in `src/spawner/spawn-anvil.ts`. The first-class set
 
 | Option | Anvil flag |
 |---|---|
-| `chainId: number` | `--chain-id` |
+| `chain_id: number` | `--chain-id` |
 | `accounts: number` | `--accounts` |
 | `mnemonic: string` | `--mnemonic` |
-| `blockTime: number` | `--block-time` |
-| `baseFee: bigint` | `--base-fee` |
+| `block_time: number` | `--block-time` |
+| `base_fee: bigint` | `--base-fee` |
 | `hardfork: string` | `--hardfork` |
 | `fork.url: string` (valibot `url()` validated) | `--fork-url` |
-| `fork.blockNumber: bigint` | `--fork-block-number` |
+| `fork.block_number: bigint` | `--fork-block-number` |
 | `port: number` | `--port` (default: kernel-picked) |
-| `extraArgs: string[]` | appended verbatim |
+| `extra_args: string[]` | appended verbatim |
 | `isolate: boolean` (default `true`) | (plugin-only — no anvil flag) |
 
 Adding a first-class option = one field in the schema + one
@@ -104,7 +104,7 @@ Plugin runs in main vitest process. Setup file runs in each
 worker. Options pass via the `ETHERNAUTA_ANVIL_OPTIONS` env
 var, serialised with [devalue](https://github.com/Rich-Harris/devalue)
 because `JSON.stringify` cannot represent the bigint slots
-(`baseFee`, `fork.blockNumber`). The setup file `parse`s the
+(`base_fee`, `fork.block_number`). The setup file `parse`s the
 deserialised value against `TestConfigSchema` again at the
 boundary.
 
@@ -154,7 +154,7 @@ Concretely:
 | Lifecycle | Per-test setup/teardown, snapshot/revert | Long-lived fork per `(chain_id, block_number)`, reused |
 | Assertion | `expect(...)` | A `SimulationResult` rendered in UI |
 | Cache | Irrelevant (fresh fork each test) | Central to the value |
-| Plugin? | Yes (`ethernautaAnvil()`) | No (runtime API) |
+| Plugin? | Yes (`ethernauta_anvil()`) | No (runtime API) |
 
 The shared layer is the anvil RPC method bindings (`evm_*`,
 `anvil_*`) and the spawner. v1 of the testing plan keeps that

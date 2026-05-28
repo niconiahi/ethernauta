@@ -1,5 +1,5 @@
 // Module-level shared state that the vitest plugin
-// (`ethernautaAnvil()`, Phase 5) writes during its per-worker
+// (`ethernauta_anvil()`, Phase 5) writes during its per-worker
 // setup file and that the rest of the package reads per-call.
 // Two values live here: the endpoint URL (consumed by `test()`)
 // and the mnemonic anvil was spawned with (consumed by the
@@ -17,10 +17,10 @@ export const DEFAULT_ANVIL_MNEMONIC =
   "test test test test test test test test test test test junk"
 
 export const NO_PLUGIN_MESSAGE =
-  "[ethernauta] anvil() called without the ethernautaAnvil() vitest plugin — add it to `vitest.config.ts`."
+  "[ethernauta] anvil() called without the ethernauta_anvil() vitest plugin — add it to `vitest.config.ts`."
 
 export const NO_MNEMONIC_MESSAGE =
-  "[ethernauta] account helpers called without the ethernautaAnvil() vitest plugin — add it to `vitest.config.ts`."
+  "[ethernauta] account helpers called without the ethernauta_anvil() vitest plugin — add it to `vitest.config.ts`."
 
 export function set_endpoint(url: string): void {
   endpoint = url

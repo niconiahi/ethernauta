@@ -27,9 +27,9 @@ import { pick_free_port } from "../spawner/pick-free-port"
 import type { SpawnHandle } from "../spawner/spawn-anvil"
 import { spawn_anvil } from "../spawner/spawn-anvil"
 
-const isEnabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
-const forkUrl = process.env.ETHERNAUTA_TEST_FORK_URL ?? ""
-const enabled = isEnabled && forkUrl.length > 0
+const is_enabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
+const fork_url = process.env.ETHERNAUTA_TEST_FORK_URL ?? ""
+const enabled = is_enabled && fork_url.length > 0
 
 // WETH9 on Sepolia. Verified via Etherscan — the address has
 // code at every Sepolia block, so a working fork must expose
@@ -48,10 +48,10 @@ describe.skipIf(!enabled)("fork mode — sepolia", () => {
     const port = await pick_free_port()
     handle = spawn_anvil({
       port,
-      fork: { url: forkUrl },
-      extraArgs: ["--silent"],
+      fork: { url: fork_url },
+      extra_args: ["--silent"],
     })
-    await await_ready({ handle, timeoutMs: 30_000 })
+    await await_ready({ handle, timeout_ms: 30_000 })
     transport = http(`http://127.0.0.1:${port}`)
   }, 60_000)
 

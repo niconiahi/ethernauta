@@ -37,20 +37,20 @@ import { evm_snapshot } from "./evm-snapshot"
 // Gated by `ETHERNAUTA_TEST_ANVIL=1`. The block is skipped in
 // normal `pnpm test` runs because anvil is not available in CI
 // and the spawn-and-wait cost is meaningful.
-const isEnabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
+const is_enabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
 
-describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
+describe.skipIf(!is_enabled)("anvil RPC bindings", () => {
   let handle: SpawnHandle
-  let resolvedReader: ResolvedReader
-  let resolvedWriter: ResolvedWriter
+  let resolved_reader: ResolvedReader
+  let resolved_writer: ResolvedWriter
 
   beforeAll(async () => {
     const port = await pick_free_port()
-    handle = spawn_anvil({ port, extraArgs: ["--silent"] })
-    await await_ready({ handle, timeoutMs: 10_000 })
+    handle = spawn_anvil({ port, extra_args: ["--silent"] })
+    await await_ready({ handle, timeout_ms: 10_000 })
     const transport = http(`http://127.0.0.1:${port}`)
-    resolvedReader = [[transport], { chain_id: "eip155:31337" }]
-    resolvedWriter = [[transport], { chain_id: "eip155:31337" }]
+    resolved_reader = [[transport], { chain_id: "eip155:31337" }]
+    resolved_writer = [[transport], { chain_id: "eip155:31337" }]
   })
 
   afterAll(() => {
@@ -58,24 +58,24 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
   })
 
   it("evm_snapshot returns a hex id and evm_revert consumes it", async () => {
-    const id = await evm_snapshot()(resolvedReader)
+    const id = await evm_snapshot()(resolved_reader)
     expect(id.startsWith("0x")).toBe(true)
-    const ok = await evm_revert([id])(resolvedWriter)
+    const ok = await evm_revert([id])(resolved_writer)
     expect(ok).toBe(true)
   })
 
   it("evm_mine returns the placeholder \"0x0\"", async () => {
-    const result = await evm_mine()(resolvedWriter)
+    const result = await evm_mine()(resolved_writer)
     expect(result).toBe("0x0")
   })
 
   it("evm_increaseTime returns the new timestamp as bigint", async () => {
     const seconds = parse(UintSchema, "0x3c")
-    const newTimestamp = await evm_increaseTime([
+    const new_timestamp = await evm_increaseTime([
       seconds,
-    ])(resolvedWriter)
-    expect(typeof newTimestamp).toBe("bigint")
-    expect(newTimestamp).toBeGreaterThan(0n)
+    ])(resolved_writer)
+    expect(typeof new_timestamp).toBe("bigint")
+    expect(new_timestamp).toBeGreaterThan(0n)
   })
 
   it("anvil_impersonateAccount returns null", async () => {
@@ -85,7 +85,7 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
     )
     const result = await anvil_impersonateAccount([
       address,
-    ])(resolvedWriter)
+    ])(resolved_writer)
     expect(result).toBeNull()
   })
 
@@ -98,7 +98,7 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
     const result = await anvil_setBalance([
       address,
       balance,
-    ])(resolvedWriter)
+    ])(resolved_writer)
     expect(result).toBeNull()
   })
 
@@ -113,7 +113,7 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
       address,
       slot,
       value,
-    ])(resolvedWriter)
+    ])(resolved_writer)
     expect(result).toBe(true)
   })
 
@@ -126,16 +126,16 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
     const result = await anvil_setCode([
       address,
       code,
-    ])(resolvedWriter)
+    ])(resolved_writer)
     expect(result).toBeNull()
   })
 
   it("anvil_dumpState round-trips through anvil_loadState", async () => {
-    const dumped = await anvil_dumpState()(resolvedReader)
+    const dumped = await anvil_dumpState()(resolved_reader)
     expect(dumped.startsWith("0x")).toBe(true)
     const loaded = await anvil_loadState([
       dumped,
-    ])(resolvedWriter)
+    ])(resolved_writer)
     expect(loaded).toBe(true)
   })
 })

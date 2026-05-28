@@ -44,17 +44,17 @@ import {
 } from "./endpoint-store"
 import { anvil } from "./test"
 
-const isEnabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
+const is_enabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
 
-describe.skipIf(!isEnabled)(
+describe.skipIf(!is_enabled)(
   "anvil() — M3 coverage on a live node",
   () => {
     let handle: SpawnHandle
 
     beforeAll(async () => {
       const port = await pick_free_port()
-      handle = spawn_anvil({ port, extraArgs: ["--silent"] })
-      await await_ready({ handle, timeoutMs: 10_000 })
+      handle = spawn_anvil({ port, extra_args: ["--silent"] })
+      await await_ready({ handle, timeout_ms: 10_000 })
       set_endpoint(`http://127.0.0.1:${port}`)
       set_mnemonic(DEFAULT_ANVIL_MNEMONIC)
     })
@@ -73,8 +73,8 @@ describe.skipIf(!isEnabled)(
       ])
       const body = parse(ResponseSchema, response)
       if ("error" in body) throw new Error(body.error.message)
-      const blockNumber = parse(UintSchema, body.result)
-      expect(blockNumber.startsWith("0x")).toBe(true)
+      const block_number = parse(UintSchema, body.result)
+      expect(block_number.startsWith("0x")).toBe(true)
     })
 
     it("path 1: create_provider(create_testing_provider(anvil())).signer signs an eth_sendTransaction", async () => {
@@ -122,10 +122,10 @@ describe.skipIf(!isEnabled)(
       const [transports] = resolver.reader({
         chain_id: "eip155:31337",
       })
-      const txHash = await eth_sendRawTransaction([
+      const tx_hash = await eth_sendRawTransaction([
         signed,
       ])([transports, { chain_id: "eip155:31337" }])
-      expect(txHash.startsWith("0x")).toBe(true)
+      expect(tx_hash.startsWith("0x")).toBe(true)
     })
   },
 )

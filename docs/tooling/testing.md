@@ -36,9 +36,9 @@ startup with the same one-liner.
 ```ts
 // vitest.config.ts — one line, set-and-forget
 import { defineConfig } from "vitest/config"
-import { ethernautaAnvil } from "@ethernauta/testing/vitest"
+import { ethernauta_anvil } from "@ethernauta/testing/vitest"
 
-export default defineConfig({ plugins: [ethernautaAnvil()] })
+export default defineConfig({ plugins: [ethernauta_anvil()] })
 ```
 
 ```ts
@@ -79,10 +79,10 @@ id; reads return the upstream's state at the fork block.
 ```ts
 export default defineConfig({
   plugins: [
-    ethernautaAnvil({
+    ethernauta_anvil({
       fork: {
         url: "https://sepolia.gateway.tenderly.co",
-        blockNumber: 7_000_000n,
+        block_number: 7_000_000n,
       },
     }),
   ],
@@ -102,7 +102,7 @@ Two ways to opt out:
 
 ```ts
 // Suite-wide — set at plugin construction
-ethernautaAnvil({ isolate: false })
+ethernauta_anvil({ isolate: false })
 ```
 
 ```ts
@@ -136,11 +136,11 @@ const all = anvil_accounts()                  // canonical 10
 const more = anvil_accounts(20)               // arbitrary count
 ```
 
-Each `AnvilAccount` is `{ address, privateKey }`. The
-`privateKey` is a raw 32-byte `Uint8Array`; the `address` is
+Each `AnvilAccount` is `{ address, private_key }`. The
+`private_key` is a raw 32-byte `Uint8Array`; the `address` is
 the Ethereum address derived via `keccak256(uncompressed_pubkey)[-20:]`.
 
-A custom mnemonic (passed via `ethernautaAnvil({ mnemonic: ... })`)
+A custom mnemonic (passed via `ethernauta_anvil({ mnemonic: ... })`)
 flows through — the helper reads from the same shared state
 the plugin sets.
 
@@ -150,21 +150,21 @@ The plugin's options are passed straight to the anvil CLI:
 
 | Option | Anvil flag |
 |---|---|
-| `chainId` | `--chain-id <N>` |
+| `chain_id` | `--chain-id <N>` |
 | `accounts` | `--accounts <N>` |
 | `mnemonic` | `--mnemonic <phrase>` |
-| `blockTime` | `--block-time <seconds>` |
-| `baseFee` | `--base-fee <wei>` |
+| `block_time` | `--block-time <seconds>` |
+| `base_fee` | `--base-fee <wei>` |
 | `hardfork` | `--hardfork <name>` |
 | `fork.url` | `--fork-url <url>` |
-| `fork.blockNumber` | `--fork-block-number <N>` |
+| `fork.block_number` | `--fork-block-number <N>` |
 | `port` | `--port <N>` (default: kernel-picked) |
 
 For anything not yet wired as a first-class option, use the
-`extraArgs: string[]` escape hatch:
+`extra_args: string[]` escape hatch:
 
 ```ts
-ethernautaAnvil({ extraArgs: ["--silent", "--gas-limit", "30000000"] })
+ethernauta_anvil({ extra_args: ["--silent", "--gas-limit", "30000000"] })
 ```
 
 Any flag a second consumer asks for graduates to first-class.
@@ -189,7 +189,7 @@ That's the whole CI story. We do not automate around it.
 | Subpath | Exports |
 |---|---|
 | `@ethernauta/testing` | `anvil()`, `anvil_account`, `anvil_accounts`, `create_testing_provider`, `without_isolation`, config schemas |
-| `@ethernauta/testing/vitest` | `ethernautaAnvil()` plugin |
+| `@ethernauta/testing/vitest` | `ethernauta_anvil()` plugin |
 | `@ethernauta/testing/anvil` | Anvil RPC bindings (`evm_*`, `anvil_*`) |
 
 ## What `@ethernauta/testing` is not

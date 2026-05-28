@@ -49,7 +49,7 @@ describe("anvil_account / anvil_accounts", () => {
     expect(account.address.toLowerCase()).toBe(
       ANVIL_DEFAULT_ADDRESSES[0]?.toLowerCase(),
     )
-    expect(account.privateKey.length).toBe(32)
+    expect(account.private_key.length).toBe(32)
   })
 
   it("anvil_account(5) returns the 6th derived account", () => {

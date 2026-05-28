@@ -1,3 +1,3 @@
 // https://book.getfoundry.sh/reference/anvil/#custom-methods
 
-export * from "./method"
+export * from "./methods"

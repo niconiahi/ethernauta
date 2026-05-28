@@ -21,14 +21,14 @@ import { ForkConfigSchema } from "../test/config"
 
 export const SpawnConfigSchema = object({
   port: number(),
-  chainId: optional(number()),
+  chain_id: optional(number()),
   accounts: optional(number()),
   mnemonic: optional(string()),
-  blockTime: optional(number()),
-  baseFee: optional(bigint()),
+  block_time: optional(number()),
+  base_fee: optional(bigint()),
   hardfork: optional(string()),
   fork: optional(ForkConfigSchema),
-  extraArgs: optional(array(string())),
+  extra_args: optional(array(string())),
 })
 export type SpawnConfig = InferOutput<typeof SpawnConfigSchema>
 
@@ -49,8 +49,8 @@ export function build_anvil_args(
   config: SpawnConfig,
 ): string[] {
   const args: string[] = ["--port", String(config.port)]
-  if (config.chainId !== undefined) {
-    args.push("--chain-id", String(config.chainId))
+  if (config.chain_id !== undefined) {
+    args.push("--chain-id", String(config.chain_id))
   }
   if (config.accounts !== undefined) {
     args.push("--accounts", String(config.accounts))
@@ -58,26 +58,26 @@ export function build_anvil_args(
   if (config.mnemonic !== undefined) {
     args.push("--mnemonic", config.mnemonic)
   }
-  if (config.blockTime !== undefined) {
-    args.push("--block-time", String(config.blockTime))
+  if (config.block_time !== undefined) {
+    args.push("--block-time", String(config.block_time))
   }
-  if (config.baseFee !== undefined) {
-    args.push("--base-fee", config.baseFee.toString())
+  if (config.base_fee !== undefined) {
+    args.push("--base-fee", config.base_fee.toString())
   }
   if (config.hardfork !== undefined) {
     args.push("--hardfork", config.hardfork)
   }
   if (config.fork !== undefined) {
     args.push("--fork-url", config.fork.url)
-    if (config.fork.blockNumber !== undefined) {
+    if (config.fork.block_number !== undefined) {
       args.push(
         "--fork-block-number",
-        config.fork.blockNumber.toString(),
+        config.fork.block_number.toString(),
       )
     }
   }
-  if (config.extraArgs !== undefined) {
-    args.push(...config.extraArgs)
+  if (config.extra_args !== undefined) {
+    args.push(...config.extra_args)
   }
   return args
 }
@@ -90,9 +90,9 @@ export function spawn_anvil(
   const child = spawn("anvil", args, {
     stdio: ["ignore", "ignore", "pipe"],
   })
-  let stderrBuffer = ""
+  let stderr_buffer = ""
   child.stderr?.on("data", (chunk: Buffer) => {
-    stderrBuffer += chunk.toString("utf8")
+    stderr_buffer += chunk.toString("utf8")
   })
   let killed = false
   function kill(signal: NodeJS.Signals = "SIGTERM"): void {
@@ -107,7 +107,7 @@ export function spawn_anvil(
   return {
     port: config.port,
     child,
-    stderr: () => stderrBuffer,
+    stderr: () => stderr_buffer,
     kill,
   }
 }

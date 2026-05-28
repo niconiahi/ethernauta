@@ -11,9 +11,9 @@ import { spawn_anvil } from "./spawn-anvil"
 // Gated by `ETHERNAUTA_TEST_ANVIL=1`. Spawn → query → kill
 // round-trip — the Phase 2 exit criterion in standalone form.
 
-const isEnabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
+const is_enabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
 
-describe.skipIf(!isEnabled)("spawner round-trip", () => {
+describe.skipIf(!is_enabled)("spawner round-trip", () => {
   it("spawns anvil, answers eth_blockNumber, and kills cleanly", async () => {
     const detection = await detect_foundry()
     if (detection.status === "missing") {
@@ -24,10 +24,10 @@ describe.skipIf(!isEnabled)("spawner round-trip", () => {
     const port = await pick_free_port()
     const handle = spawn_anvil({
       port,
-      extraArgs: ["--silent"],
+      extra_args: ["--silent"],
     })
     try {
-      await await_ready({ handle, timeoutMs: 10_000 })
+      await await_ready({ handle, timeout_ms: 10_000 })
       const response = await fetch(
         `http://127.0.0.1:${port}`,
         {
@@ -45,8 +45,8 @@ describe.skipIf(!isEnabled)("spawner round-trip", () => {
       if ("error" in body) {
         throw new Error(body.error.message)
       }
-      const blockNumber = parse(UintSchema, body.result)
-      expect(blockNumber.startsWith("0x")).toBe(true)
+      const block_number = parse(UintSchema, body.result)
+      expect(block_number.startsWith("0x")).toBe(true)
     } finally {
       handle.kill()
     }

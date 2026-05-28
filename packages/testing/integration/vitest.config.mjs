@@ -9,11 +9,11 @@
 // `@ethernauta/*` imports resolve via the workspace symlinks to
 // dist files, identical to what published consumers see.
 
-import { ethernautaAnvil } from "@ethernauta/testing/vitest"
+import { ethernauta_anvil } from "@ethernauta/testing/vitest"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
-  plugins: [ethernautaAnvil()],
+  plugins: [ethernauta_anvil()],
   test: {
     include: ["./integration/integration.spec.ts"],
     testTimeout: 30_000,

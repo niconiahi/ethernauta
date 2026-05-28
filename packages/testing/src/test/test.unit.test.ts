@@ -28,14 +28,14 @@ describe("anvil()", () => {
     set_endpoint("http://127.0.0.1:41723")
     expect(
       anvil({
-        chainId: 31337,
+        chain_id: 31337,
         accounts: 10,
         mnemonic: "test test test",
-        blockTime: 1,
-        baseFee: 1_000_000_000n,
+        block_time: 1,
+        base_fee: 1_000_000_000n,
         hardfork: "cancun",
         port: 41723,
-        extraArgs: ["--silent"],
+        extra_args: ["--silent"],
         isolate: true,
       }),
     ).toBe("http://127.0.0.1:41723")

@@ -73,7 +73,7 @@ Match the task at hand against this table **before** you start planning. If a sk
 | Add or modify an EIP | `skills/eip/SKILL.md` | Adding a new `packages/eip/src/<n>/` folder, or changing one of `191`, `712`, `1102`, `1193`, `1271`, `2255`, `3085`, `3326`, `4337`, `4361`, `5792`, `6492`, `6963`, `7702` |
 | Add or modify an ERC | `skills/erc/SKILL.md` | Adding a new `packages/erc/src/<n>/` folder, generating method bindings, wiring an extension, regenerating the selector registry |
 | Touch the wallet extension | `skills/wallet/SKILL.md` | Anything under `packages/wallet/` — message envelope, view routing, vault, new RPC method handler, popup view |
-| Write a vitest-anvil test against the library | `skills/testing/SKILL.md` | The `ethernautaAnvil()` plugin, `anvil()`, `create_testing_provider`, account derivation, snapshot/revert isolation, or anything else under `packages/testing/` |
+| Write a vitest-anvil test against the library | `skills/testing/SKILL.md` | The `ethernauta_anvil()` plugin, `anvil()`, `create_testing_provider`, account derivation, snapshot/revert isolation, or anything else under `packages/testing/` |
 | Write a helper function anywhere | `skills/utils/SKILL.md` | Decide "utils vs colocated" using the rubric. Default to colocation |
 | Build a dapp consuming `@ethernauta/*` | `skills/ethernauta/SKILL.md` | Factories / resolvers / methods, chain wiring, reads, contract calls, sign + broadcast, transaction tracking, EIP-6963 discovery, error shapes |
 

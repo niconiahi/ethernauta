@@ -10,10 +10,10 @@ import { TestConfigSchema } from "../test/config"
 
 import { OPTIONS_ENV_VAR } from "./constants"
 
-// `ethernautaAnvil()` is the only consumer-facing entry to the
+// `ethernauta_anvil()` is the only consumer-facing entry to the
 // vitest plugin. It validates options at the boundary, stashes
 // them in an env var (devalue-encoded so bigint fields like
-// `baseFee` and `fork.blockNumber` survive the worker-boundary
+// `base_fee` and `fork.block_number` survive the worker-boundary
 // roundtrip), and injects the worker-scoped `setup.js` file
 // into vitest's `setupFiles`. The setup file then spawns one
 // anvil per worker, sets the endpoint, and registers the
@@ -31,7 +31,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 // build produces the same layout under `dist/`.
 const SETUP_FILE = join(here, "setup.js")
 
-export function ethernautaAnvil(
+export function ethernauta_anvil(
   _options: TestConfig = {},
 ): Plugin {
   const options = parse(TestConfigSchema, _options)

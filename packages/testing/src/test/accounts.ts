@@ -22,7 +22,7 @@ import { get_mnemonic } from "./endpoint-store"
 
 export const AnvilAccountSchema = object({
   address: AddressSchema,
-  privateKey: instance(Uint8Array),
+  private_key: instance(Uint8Array),
 })
 export type AnvilAccount = InferOutput<typeof AnvilAccountSchema>
 
@@ -57,10 +57,10 @@ function derive_at(
   master: HDKey,
   index: number,
 ): AnvilAccount {
-  const privateKey = parse(
+  const private_key = parse(
     instance(Uint8Array),
     derive_private_key(master, `m/44'/60'/0'/0/${index}`),
   )
-  const address = private_key_to_address(privateKey)
-  return { address, privateKey }
+  const address = private_key_to_address(private_key)
+  return { address, private_key }
 }

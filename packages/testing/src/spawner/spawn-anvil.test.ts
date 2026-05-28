@@ -13,11 +13,11 @@ describe("build_anvil_args", () => {
   it("translates first-class overrides into anvil CLI flags", () => {
     const args = build_anvil_args({
       port: 9000,
-      chainId: 1337,
+      chain_id: 1337,
       accounts: 20,
       mnemonic: "test test test",
-      blockTime: 2,
-      baseFee: 1_000_000_000n,
+      block_time: 2,
+      base_fee: 1_000_000_000n,
       hardfork: "cancun",
     })
     expect(args).toEqual([
@@ -38,12 +38,12 @@ describe("build_anvil_args", () => {
     ])
   })
 
-  it("threads fork.url and fork.blockNumber", () => {
+  it("threads fork.url and fork.block_number", () => {
     const args = build_anvil_args({
       port: 9001,
       fork: {
         url: "https://sepolia.example.com",
-        blockNumber: 12345n,
+        block_number: 12345n,
       },
     })
     expect(args).toEqual([
@@ -69,10 +69,10 @@ describe("build_anvil_args", () => {
     ])
   })
 
-  it("appends extraArgs verbatim", () => {
+  it("appends extra_args verbatim", () => {
     const args = build_anvil_args({
       port: 9003,
-      extraArgs: ["--silent", "--gas-limit", "30000000"],
+      extra_args: ["--silent", "--gas-limit", "30000000"],
     })
     expect(args).toEqual([
       "--port",
