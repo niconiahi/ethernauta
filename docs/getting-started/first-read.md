@@ -10,21 +10,31 @@ order: 3
 A chain read. No wallet required. Ten lines.
 
 ```ts
-import { create_reader } from "@ethernauta/transport";
+import { parse } from "valibot";
+import { AddressSchema } from "@ethernauta/core";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_blockNumber, eth_getBalance } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111";
 
-const reader = create_reader([eip155_1, eip155_11155111]);
+const MAINNET = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: eip155_11155111.chainId });
+
+const reader = create_reader([
+  { chainId: MAINNET, transports: [http("https://ethereum-rpc.publicnode.com")] },
+  { chainId: SEPOLIA, transports: [http("https://ethereum-sepolia-rpc.publicnode.com")] },
+]);
 
 const number = await eth_blockNumber()(
-  reader({ chain_id: eip155_1.chain_id }),
+  reader({ chain_id: MAINNET }),
 );
+void number;
 
-const balance = await eth_getBalance({
-  address: "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045",
-  block: "latest",
-})(reader({ chain_id: eip155_1.chain_id }));
+const vitalik = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045");
+const balance = await eth_getBalance([vitalik, "latest"])(
+  reader({ chain_id: MAINNET }),
+);
+void balance;
 ```
 
 ## What just happened
@@ -42,13 +52,28 @@ The two-call shape — `method(args)(resolver(...))` — is **never collapsed.**
 ## Different chains, same call shape
 
 ```ts
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eth_blockNumber } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111";
+
+const MAINNET = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const SEPOLIA = encode_chain_id({ namespace: "eip155", reference: eip155_11155111.chainId });
+
+const reader = create_reader([
+  { chainId: MAINNET, transports: [http("https://ethereum-rpc.publicnode.com")] },
+  { chainId: SEPOLIA, transports: [http("https://ethereum-sepolia-rpc.publicnode.com")] },
+]);
+
 const mainnet_block = await eth_blockNumber()(
-  reader({ chain_id: eip155_1.chain_id }),
+  reader({ chain_id: MAINNET }),
 );
+void mainnet_block;
 
 const sepolia_block = await eth_blockNumber()(
-  reader({ chain_id: eip155_11155111.chain_id }),
+  reader({ chain_id: SEPOLIA }),
 );
+void sepolia_block;
 ```
 
 One reader, many chains. The `chain_id` argument picks the RPC at call time.
