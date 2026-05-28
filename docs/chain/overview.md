@@ -19,16 +19,15 @@ pnpm add @ethernauta/chain
 import type { Chain } from "@ethernauta/chain";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-eip155_1
+const mainnet: Chain = eip155_1;
+void mainnet;
 // {
-//   chain_id: 1,
+//   chainId: 1,
 //   name: "Ethereum Mainnet",
-//   short_name: "eth",
-//   native_currency: { name: "Ether", symbol: "ETH", decimals: 18 },
+//   shortName: "eth",
+//   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
 //   rpc: ["https://eth.llamarpc.com", ...],
 //   explorers: [{ name: "Etherscan", url: "...", standard: "EIP3091" }],
-//   ens: { registry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" },
-//   features: ["EIP1559"],
 //   ...
 // }
 ```
@@ -46,6 +45,13 @@ import { eip155_137 } from "@ethernauta/chain/eip155-137";      // Polygon
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453";    // Base
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161";  // Arbitrum One
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"; // Sepolia
+
+void eip155_1;
+void eip155_10;
+void eip155_137;
+void eip155_8453;
+void eip155_42161;
+void eip155_11155111;
 ```
 
 The name disambiguates testnets, L2s, sidechains, and forks unambiguously. Chain ID is the only thing that's ever truly identifying.
@@ -53,21 +59,31 @@ The name disambiguates testnets, L2s, sidechains, and forks unambiguously. Chain
 ## Using a chain with a resolver
 
 ```ts
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_blockNumber } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453";
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161";
 
-const reader = create_reader([eip155_1, eip155_8453, eip155_42161]);
+const MAINNET = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const BASE = encode_chain_id({ namespace: "eip155", reference: eip155_8453.chainId });
+const ARB = encode_chain_id({ namespace: "eip155", reference: eip155_42161.chainId });
+
+const reader = create_reader([
+  { chainId: MAINNET, transports: [http("https://ethereum-rpc.publicnode.com")] },
+  { chainId: BASE, transports: [http("https://base-rpc.publicnode.com")] },
+  { chainId: ARB, transports: [http("https://arbitrum-one-rpc.publicnode.com")] },
+]);
 
 // pick at call time
 const eth_block = await eth_blockNumber()(
-  reader({ chain_id: eip155_1.chain_id }),
+  reader({ chain_id: MAINNET }),
 );
+void eth_block;
 const base_block = await eth_blockNumber()(
-  reader({ chain_id: eip155_8453.chain_id }),
+  reader({ chain_id: BASE }),
 );
+void base_block;
 ```
 
 The reader doesn't fetch any chain it wasn't told about. The list you pass is the resolver's universe.
@@ -85,14 +101,15 @@ The reader doesn't fetch any chain it wasn't told about. The list you pass is th
 ## Picking a custom RPC
 
 ```ts
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const my_chain = {
-  ...eip155_1,
-  rpc: ["https://my-private-rpc.example.com"],
-};
+const MAINNET = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
 
-const reader = create_reader([my_chain]);
+const reader = create_reader([
+  { chainId: MAINNET, transports: [http("https://my-private-rpc.example.com")] },
+]);
+void reader;
 ```
 
 `Chain` is a plain object. Override what you need. The schema is permissive — the only required fields are `chain_id`, `name`, `rpc`.
