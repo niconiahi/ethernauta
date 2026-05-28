@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@ethernauta/testing",
+  "type": "module",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niconiahi/ethernauta"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./vitest": {
+      "import": "./dist/vitest/index.js",
+      "types": "./dist/vitest/index.d.ts"
+    },
+    "./anvil": {
+      "import": "./dist/anvil/index.js",
+      "types": "./dist/anvil/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest"
+  },
+  "dependencies": {
+    "@ethernauta/core": "workspace:*",
+    "@ethernauta/transport": "workspace:*"
+  },
+  "peerDependencies": {
+    "valibot": "^1.1.0",
+    "vitest": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tsdown": "^0.13.3",
+    "valibot": "1.1.0"
+  }
+}
