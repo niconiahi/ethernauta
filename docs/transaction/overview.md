@@ -20,11 +20,16 @@ A `Tracker` is a `Reader` plus a `Store`. The store persists pending transaction
 ## Setting up
 
 ```ts
-import { create_tracker, create_store } from "@ethernauta/transaction";
+import { create_tracker, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const store = create_store({ namespace: "my-dapp", backend: localStorage });
-const tracker = create_tracker([eip155_1], { store });
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
 ```
 
 `create_store` accepts any `Storage`-like backend — `localStorage`, `sessionStorage`, or your own implementation of the `Store` interface.
@@ -32,14 +37,22 @@ const tracker = create_tracker([eip155_1], { store });
 ## Registering a broadcast
 
 ```ts
-import { register_transaction, set_transaction } from "@ethernauta/transaction";
+import { create_tracker, register_transaction, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-// after broadcasting, register the hash with metadata
-await register_transaction({
-  hash,
-  chain_id: eip155_1.chain_id,
-  meta: { intent: "approve USDC" },
-})(tracker({ chain_id: eip155_1.chain_id }));
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+
+const hash = parse(Hash32Schema, "0x" + "00".repeat(32));
+
+// after broadcasting, register the hash
+await register_transaction(hash)(tracker({ chain_id: CHAIN_ID }));
 ```
 
 Stored as a `PendingTransaction`. Re-running the dapp later will pick it up on tracker construction.
@@ -49,10 +62,21 @@ Stored as a `PendingTransaction`. Re-running the dapp later will pick it up on t
 ## Waiting for a receipt
 
 ```ts
-import { wait_for_receipt } from "@ethernauta/transaction";
+import { create_tracker, wait_for_receipt, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const receipt = await wait_for_receipt({ hash })(
-  tracker({ chain_id: eip155_1.chain_id }),
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const hash = parse(Hash32Schema, "0x" + "00".repeat(32));
+
+const receipt = await wait_for_receipt([hash])(
+  tracker({ chain_id: CHAIN_ID }),
 );
 // → ConfirmedReceipt
 ```
@@ -62,17 +86,24 @@ Polls `eth_getTransactionReceipt` at the tracker's interval, resolves when the r
 ## Watching with a callback
 
 ```ts
-import { watch_transaction } from "@ethernauta/transaction";
+import { create_tracker, watch_transaction, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const unsubscribe = watch_transaction({
-  hash,
-  on_receipt: (receipt) => {
-    console.log("mined", receipt);
-  },
-  on_error: (err) => {
-    console.log("dropped or replaced", err);
-  },
-})(tracker({ chain_id: eip155_1.chain_id }));
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const hash = parse(Hash32Schema, "0x" + "00".repeat(32));
+
+const unsubscribe = watch_transaction(hash, (transaction) => {
+  console.log("status:", transaction.status);
+})(tracker({ chain_id: CHAIN_ID }));
+
+void unsubscribe;
 ```
 
 Returns a `Watchable` — an unsubscribe function. Use when you want side effects on receipt arrival rather than awaiting.
