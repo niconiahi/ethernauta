@@ -18,7 +18,7 @@ curl -L https://foundry.paradigm.xyz | bash && foundryup
 ```ts
 // vitest.config.ts
 import { defineConfig } from "vitest/config"
-import { ethernauta_anvil } from "@ethernauta/testing/vitest"
+import { ethernauta_anvil } from "@ethernauta/testing"
 
 export default defineConfig({ plugins: [ethernauta_anvil()] })
 ```
@@ -49,10 +49,9 @@ const account = anvil_account(0)
 
 Full docs land in Phase 8.
 
-## Subpaths
+## Exports
 
-| Subpath | Exports |
-|---|---|
-| `@ethernauta/testing` | `anvil()`, account helpers, lifecycle types |
-| `@ethernauta/testing/vitest` | `ethernauta_anvil()` vitest plugin, `without_isolation()` |
-| `@ethernauta/testing/anvil` | Anvil RPC method bindings (`evm_*`, `anvil_*`) |
+Everything ships from the package root — `anvil()`, account
+helpers, lifecycle types, the `ethernauta_anvil()` vitest plugin,
+`without_isolation()`, and the anvil RPC method bindings
+(`evm_*`, `anvil_*`).

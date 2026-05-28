@@ -15,14 +15,6 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./vitest": {
-      "import": "./dist/vitest/index.js",
-      "types": "./dist/vitest/index.d.ts"
-    },
-    "./anvil": {
-      "import": "./dist/anvil/index.js",
-      "types": "./dist/anvil/index.d.ts"
     }
   },
   "files": [

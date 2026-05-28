@@ -36,7 +36,7 @@ startup with the same one-liner.
 ```ts
 // vitest.config.ts — one line, set-and-forget
 import { defineConfig } from "vitest/config"
-import { ethernauta_anvil } from "@ethernauta/testing/vitest"
+import { ethernauta_anvil } from "@ethernauta/testing"
 
 export default defineConfig({ plugins: [ethernauta_anvil()] })
 ```
@@ -62,7 +62,7 @@ const reader = create_reader([
 // path 1 (wallet-shape) — same call site as production's
 // `create_provider(window.ethereum)`, only the provider source
 // differs.
-const resolver = create_provider(create_testing_provider(anvil()))
+const provider = create_provider(create_testing_provider(anvil()))
 const account = anvil_account(0)
 ```
 
@@ -77,6 +77,9 @@ Pass a fork URL to the plugin. Anvil adopts the upstream's chain
 id; reads return the upstream's state at the fork block.
 
 ```ts
+import { defineConfig } from "vitest/config"
+import { ethernauta_anvil } from "@ethernauta/testing"
+
 export default defineConfig({
   plugins: [
     ethernauta_anvil({
@@ -102,6 +105,8 @@ Two ways to opt out:
 
 ```ts
 // Suite-wide — set at plugin construction
+import { ethernauta_anvil } from "@ethernauta/testing"
+
 ethernauta_anvil({ isolate: false })
 ```
 
@@ -109,18 +114,28 @@ ethernauta_anvil({ isolate: false })
 // Per-describe — for blocks that deliberately accumulate
 // state (deploy once, read many)
 import { without_isolation } from "@ethernauta/testing"
+import { beforeAll, describe, it } from "vitest"
 
-describe("read battery", () => {
-  without_isolation()
+declare function deploy_contract(): Promise<void>
+declare function read_balance(account: string): Promise<bigint>
+
+describe("read battery", async () => {
+  await without_isolation()
 
   beforeAll(deploy_contract)
-  it("balanceOf alice", ...)
-  it("balanceOf bob", ...)
+  it("balanceOf alice", async () => { await read_balance("alice") })
+  it("balanceOf bob", async () => { await read_balance("bob") })
 })
 ```
 
-`without_isolation()` restores the previous value on
-`afterAll`, so nesting works.
+`without_isolation()` is async — it dynamic-imports `vitest`
+inside its body so the root barrel stays free of top-level
+`"vitest"` references (otherwise importing `ethernauta_anvil`
+from the same barrel inside `vitest.config.ts` would trip
+vitest's "no vitest inside config" guard). Call it with
+`await` from inside an `async` `describe` callback. It
+restores the previous isolation value on `afterAll`, so
+nesting works.
 
 ## Account / signer helpers
 
@@ -164,6 +179,8 @@ For anything not yet wired as a first-class option, use the
 `extra_args: string[]` escape hatch:
 
 ```ts
+import { ethernauta_anvil } from "@ethernauta/testing"
+
 ethernauta_anvil({ extra_args: ["--silent", "--gas-limit", "30000000"] })
 ```
 
@@ -184,13 +201,13 @@ before `pnpm test`:
 
 That's the whole CI story. We do not automate around it.
 
-## Subpath map
+## Exports
 
-| Subpath | Exports |
-|---|---|
-| `@ethernauta/testing` | `anvil()`, `anvil_account`, `anvil_accounts`, `create_testing_provider`, `without_isolation`, config schemas |
-| `@ethernauta/testing/vitest` | `ethernauta_anvil()` plugin |
-| `@ethernauta/testing/anvil` | Anvil RPC bindings (`evm_*`, `anvil_*`) |
+Everything ships from the package root — `anvil()`,
+`anvil_account`, `anvil_accounts`, `create_testing_provider`,
+`without_isolation`, the config schemas, the
+`ethernauta_anvil()` vitest plugin, and the anvil RPC
+bindings (`evm_*`, `anvil_*`). No subpaths.
 
 ## What `@ethernauta/testing` is not
 

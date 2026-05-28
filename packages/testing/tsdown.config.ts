@@ -3,9 +3,7 @@ import { defineConfig } from "tsdown"
 export default defineConfig({
   entry: [
     "./src/index.ts",
-    "./src/vitest/index.ts",
     "./src/vitest/setup.ts",
-    "./src/anvil/index.ts",
   ],
   clean: true,
   format: ["esm"],

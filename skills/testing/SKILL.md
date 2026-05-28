@@ -1,6 +1,6 @@
 ---
 name: testing
-description: How @ethernauta/testing works — the vitest plugin's lifecycle ownership model, the three subpaths, the seam where consumers compose with create_provider, and the boundary against the (separate) simulation product. Read this before extending the testing utility or shipping a Jest/Mocha adapter.
+description: How @ethernauta/testing works — the vitest plugin's lifecycle ownership model, the single root barrel, the seam where consumers compose with create_provider, and the boundary against the (separate) simulation product. Read this before extending the testing utility or shipping a Jest/Mocha adapter.
 ---
 
 # `@ethernauta/testing`
@@ -14,23 +14,40 @@ freshly spawned anvil — pre-funded accounts, per-test
 isolation, optional fork mode — with anvil's lifecycle fully
 owned by the plugin.
 
-## The three subpaths
+## The single root barrel
 
-Decided in `01-scope.md`. The package's `package.json` exports
-exactly these:
+`package.json` exposes exactly one entry — `@ethernauta/testing`
+— and every public symbol re-exports from there:
 
-| Subpath | Exports | Imported from |
+| Surface | Symbols | Imported from |
 |---|---|---|
-| `@ethernauta/testing` | `anvil()`, `anvil_account`, `anvil_accounts`, `create_testing_provider`, `without_isolation`, `TestConfigSchema`, `ForkConfigSchema` | Test files |
-| `@ethernauta/testing/vitest` | `ethernauta_anvil()` plugin | `vitest.config.ts` only |
-| `@ethernauta/testing/anvil` | Anvil RPC method bindings (`evm_snapshot`, `evm_revert`, `evm_mine`, `evm_increaseTime`, `anvil_impersonateAccount`, `anvil_setBalance`, `anvil_setStorageAt`, `anvil_setCode`, `anvil_dumpState`, `anvil_loadState`) | Tests that drive anvil state directly |
+| Transport / accounts / config | `anvil()`, `anvil_account`, `anvil_accounts`, `create_testing_provider`, `without_isolation`, `TestConfigSchema`, `ForkConfigSchema` | Test files |
+| Vitest plugin | `ethernauta_anvil()` | `vitest.config.ts` |
+| Anvil RPC method bindings | `evm_snapshot`, `evm_revert`, `evm_mine`, `evm_increaseTime`, `anvil_impersonateAccount`, `anvil_setBalance`, `anvil_setStorageAt`, `anvil_setCode`, `anvil_dumpState`, `anvil_loadState` | Tests that drive anvil state directly |
 
-The split between `/` and `/vitest` is intentional: importing
-the plugin subpath pulls in nothing from `vitest` itself
-(otherwise vitest's "no vitest inside config" guard trips). Any
-hook that *uses* vitest (`without_isolation` calls
-`beforeAll`/`afterAll`) lives at the root subpath, alongside
-`anvil()`.
+`vitest.config.ts` does `import { ethernauta_anvil } from
+"@ethernauta/testing"` and must not transitively pull in
+`vitest` itself (vitest's "no vitest inside config" guard
+throws at config load if the bundled config evaluates any
+`import "vitest"`). Bundlers do not strip side-effecting
+imports here — esbuild's config-load path bundles the barrel
+eagerly and `sideEffects: false` is not enough.
+
+The only module in the source tree that needs `vitest` at
+runtime is `src/test/without-isolation.ts` (it calls
+`beforeAll` / `afterAll`). It resolves them lazily, inside the
+function body, via `const { afterAll, beforeAll } = await
+import("vitest")`. That makes `without_isolation` async — call
+sites use it as `await without_isolation()` inside an `async`
+`describe` callback. The plugin's own setup file
+(`src/vitest/setup.ts`) does top-level-import `vitest`, but it
+is never reached from `src/index.ts`; vitest loads it by file
+path via the plugin-injected `setupFiles` entry.
+
+Rule of thumb: any new module reachable from `src/index.ts`
+must not top-level-import `"vitest"`. If it needs vitest
+hooks, dynamic-import them inside the function that uses
+them.
 
 ## Lifecycle ownership — ours, not the user's
 

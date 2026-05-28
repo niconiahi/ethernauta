@@ -9,7 +9,7 @@
 // `@ethernauta/*` imports resolve via the workspace symlinks to
 // dist files, identical to what published consumers see.
 
-import { ethernauta_anvil } from "@ethernauta/testing/vitest"
+import { ethernauta_anvil } from "@ethernauta/testing"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({

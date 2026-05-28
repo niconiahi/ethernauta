@@ -12,13 +12,11 @@ import { beforeAll, describe, expect, it } from "vitest"
 import {
   anvil,
   anvil_account,
+  anvil_setBalance,
   create_testing_provider,
+  evm_mine,
   without_isolation,
 } from "@ethernauta/testing"
-import {
-  anvil_setBalance,
-  evm_mine,
-} from "@ethernauta/testing/anvil"
 
 const transport = http(anvil())
 const resolver = create_provider(create_testing_provider(anvil()))
@@ -72,8 +70,8 @@ describe("plugin integration — default isolation", () => {
   })
 })
 
-describe("plugin integration — without_isolation opt-out", () => {
-  without_isolation()
+describe("plugin integration — without_isolation opt-out", async () => {
+  await without_isolation()
 
   let block_before = ""
 
