@@ -65,6 +65,7 @@ export default [
     ),
     route("eip-6963", "./routes/examples/eip-6963.mdx"),
     route("eip-1193", "./routes/examples/eip-1193.mdx"),
+    route("emitter", "./routes/examples/emitter.mdx"),
     route(
       "provider-reads",
       "./routes/examples/provider-reads.mdx",

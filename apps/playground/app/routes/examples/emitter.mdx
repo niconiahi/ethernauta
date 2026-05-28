@@ -1,0 +1,77 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/emitter/demo.tsx?highlighted"
+import { EmitterDemo } from "../../examples/emitter/demo"
+
+# Standalone EIP-1193 emitter
+
+`create_emitter()` is the in-memory primitive the
+Ethernauta wallet uses to build the `on / removeListener /
+emit` surface of its 1193 provider. Dapps almost never
+construct one directly — they consume the wallet's
+provider — but the primitive is exported so you can:
+
+- Build a test fixture provider that emits scripted events.
+- Compose your own 1193-shaped object in non-wallet code
+  (a hosted relay, an injected adapter, an extension's
+  in-page bridge).
+- Understand exactly what the event semantics are: no
+  filtering, no batching, no async — `emit` is a sync fan
+  out to every currently-registered listener.
+
+<EmitterDemo />
+
+<GithubLink path="apps/playground/app/examples/emitter/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />
+
+## What the events mean
+
+The five 1193-standard event names and their payload
+shapes (per `eventMapSchema` in
+`packages/eip/src/1193/events.ts`):
+
+| Event              | Payload                       | When wallets fire it                                  |
+| ------------------ | ----------------------------- | ----------------------------------------------------- |
+| `accountsChanged`  | `string[]` (addresses)        | User picks a different account, disconnects, connects |
+| `chainChanged`     | `string` (hex chain id)       | User switches to a different chain                    |
+| `connect`          | `{ chainId: string }`         | Provider becomes ready                                |
+| `disconnect`      | `ProviderRpcError`            | Provider loses its connection                         |
+| `message`          | `EthSubscription` / generic  | Subscription push (rare for wallets)                  |
+
+This demo wires `accountsChanged` and `chainChanged`
+because they're the two events real dapps subscribe to.
+The others follow the same shape — fire them yourself in
+the console if you want to see them flow through the same
+emitter.
+
+## How dapps actually subscribe
+
+Against a real wallet you don't touch the emitter
+directly — you call `provider.on(event, listener)` (or
+the `watch_accounts` / `watch_chain` helpers, which do
+the same with payload validation):
+
+```ts
+import { watch_accounts, watch_chain } from "@ethernauta/eip/1193"
+import { discover_providers } from "@ethernauta/eip/6963"
+
+const [detail] = await discover_providers()
+if (!detail) throw new Error("no wallet")
+
+const unsubscribe_accounts = watch_accounts(detail.provider, (accounts) => {
+  console.log("accounts now:", accounts)
+})
+const unsubscribe_chain = watch_chain(detail.provider, (chain_id) => {
+  console.log("chain now:", chain_id)
+})
+
+// later — tear down
+unsubscribe_accounts()
+unsubscribe_chain()
+```
+
+See the [EIP-1193 provider demo](/examples/eip-1193) for
+that flow against the actual wallet you have installed.
