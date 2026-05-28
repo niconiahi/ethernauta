@@ -6,13 +6,7 @@ import type {
   ResolvedReader,
   Response,
 } from "@ethernauta/transport"
-import {
-  array,
-  object,
-  parse,
-  string,
-  unknown as UnknownSchema,
-} from "valibot"
+import { array, object, parse, string } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { get_contract_events } from "./get-contract-events"
@@ -42,7 +36,7 @@ function fake_transport(_result: unknown): {
 const FilterParamsSchema = array(
   object({
     address: string(),
-    topics: array(UnknownSchema()),
+    topics: array(string()),
   }),
 )
 
