@@ -2,19 +2,20 @@ import { sveltekit } from "@sveltejs/kit/vite"
 import { existsSync, statSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import { extname, resolve } from "node:path"
-import { defineConfig } from "vite"
+import { type Plugin, defineConfig } from "vite"
 
-function serve_pagefind() {
-  const mime = {
-    ".js": "application/javascript",
-    ".css": "text/css",
-    ".json": "application/json",
-    ".wasm": "application/wasm",
-    ".pagefind": "application/octet-stream",
-    ".pf_meta": "application/octet-stream",
-    ".pf_index": "application/octet-stream",
-    ".pf_fragment": "application/octet-stream",
-  }
+const MIME: Record<string, string> = {
+  ".js": "application/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".wasm": "application/wasm",
+  ".pagefind": "application/octet-stream",
+  ".pf_meta": "application/octet-stream",
+  ".pf_index": "application/octet-stream",
+  ".pf_fragment": "application/octet-stream",
+}
+
+function serve_pagefind(): Plugin {
   return {
     name: "serve-pagefind-from-build",
     configureServer(server) {
@@ -25,7 +26,7 @@ function serve_pagefind() {
           next()
           return
         }
-        const path_only = req.url.split("?")[0]
+        const path_only = req.url.split("?")[0] ?? ""
         const relative = path_only.slice(
           "/pagefind/".length,
         )
@@ -43,7 +44,7 @@ function serve_pagefind() {
           const ext = extname(file)
           res.setHeader(
             "Content-Type",
-            mime[ext] ?? "application/octet-stream",
+            MIME[ext] ?? "application/octet-stream",
           )
           res.setHeader("Cache-Control", "no-cache")
           res.end(data)

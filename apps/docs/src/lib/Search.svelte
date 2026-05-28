@@ -1,51 +1,52 @@
-<script>
+<script lang="ts">
 import { onMount } from "svelte"
+import { array, parse, safeParse, string } from "valibot"
 
 const STORAGE_KEY = "ethernauta-docs-recents"
 const MAX_RECENTS = 5
 
-let dialog
-let container
+const RecentsSchema = array(string())
+
+let dialog: HTMLDialogElement
+let container: HTMLDivElement
 let unavailable = $state(false)
 let initialized = false
-let pagefind_ui
+let pagefind_ui: PagefindUI | null = null
 let query = $state("")
-let recents = $state([])
+let recents = $state<string[]>([])
 
-function strip_html(url) {
+function strip_html(url: string): string {
   return url.replace(/\.html(#|$)/, "$1")
 }
 
-function load_recents() {
+function load_recents(): string[] {
   if (typeof localStorage === "undefined") {
     return []
   }
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) {
+    return []
+  }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      return []
-    }
-    const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed)) {
-      return []
-    }
-    return parsed.filter(
-      (entry) => typeof entry === "string",
-    )
+    const result = safeParse(RecentsSchema, JSON.parse(raw))
+    return result.success ? result.output : []
   } catch {
     return []
   }
 }
 
-function save_recents(items) {
+function save_recents(items: string[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(parse(RecentsSchema, items)),
+    )
   } catch {
     // quota exceeded or storage disabled
   }
 }
 
-function add_recent(value) {
+function add_recent(value: string): void {
   const trimmed = value.trim()
   if (!trimmed) {
     return
@@ -58,13 +59,13 @@ function add_recent(value) {
   save_recents(next)
 }
 
-function remove_recent(value) {
+function remove_recent(value: string): void {
   const next = recents.filter((r) => r !== value)
   recents = next
   save_recents(next)
 }
 
-async function ensure_pagefind() {
+async function ensure_pagefind(): Promise<void> {
   if (initialized) {
     return
   }
@@ -103,7 +104,7 @@ async function ensure_pagefind() {
   }
 }
 
-async function open() {
+async function open(): Promise<void> {
   await ensure_pagefind()
   recents = load_recents()
   dialog.showModal()
@@ -113,9 +114,12 @@ async function open() {
   })
 }
 
-function handle_dialog_click(event) {
+function handle_dialog_click(event: MouseEvent): void {
   if (event.target === dialog) {
     dialog.close()
+    return
+  }
+  if (!(event.target instanceof Element)) {
     return
   }
   const link = event.target.closest("a")
@@ -125,20 +129,20 @@ function handle_dialog_click(event) {
   }
 }
 
-function handle_dialog_input(event) {
+function handle_dialog_input(event: Event): void {
   if (event.target instanceof HTMLInputElement) {
     query = event.target.value
   }
 }
 
-function handle_dialog_close() {
+function handle_dialog_close(): void {
   query = ""
   if (pagefind_ui) {
     pagefind_ui.triggerSearch("")
   }
 }
 
-function select_recent(value) {
+function select_recent(value: string): void {
   if (!pagefind_ui) {
     return
   }
@@ -149,13 +153,13 @@ function select_recent(value) {
   })
 }
 
-function delete_recent(event, value) {
+function delete_recent(event: MouseEvent, value: string): void {
   event.stopPropagation()
   remove_recent(value)
 }
 
 onMount(() => {
-  function handle_keydown(event) {
+  function handle_keydown(event: KeyboardEvent): void {
     const is_open = dialog?.open
     const is_shortcut =
       (event.metaKey || event.ctrlKey) &&
