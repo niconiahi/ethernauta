@@ -37,7 +37,7 @@ export type SpawnConfig = InferOutput<typeof SpawnConfigSchema>
 // library that has no JSON shape and a closure-backed `stderr()`
 // accumulator. Per `skills/conventions/SKILL.md`'s exemption for
 // generic transport shapes, this is a hand-rolled type.
-
+// allow-violation: R1-capability-shape
 export type SpawnHandle = {
   port: number
   child: ChildProcess

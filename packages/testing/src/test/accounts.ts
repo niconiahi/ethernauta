@@ -7,7 +7,7 @@
 // file records the mnemonic in use via `set_mnemonic`; the
 // helpers read it here.
 
-import type { Address } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   HDKey,
   derive_private_key,
@@ -15,13 +15,16 @@ import {
   private_key_to_address,
   seed_to_master_key,
 } from "@ethernauta/crypto"
+import type { InferOutput } from "valibot"
+import { instance, object, parse } from "valibot"
 
 import { get_mnemonic } from "./endpoint-store"
 
-export type AnvilAccount = {
-  address: Address
-  privateKey: Uint8Array
-}
+export const AnvilAccountSchema = object({
+  address: AddressSchema,
+  privateKey: instance(Uint8Array),
+})
+export type AnvilAccount = InferOutput<typeof AnvilAccountSchema>
 
 // Anvil pre-funds 10 accounts by default; the consumer can
 // override via `accounts: N` at plugin construction. The
@@ -54,9 +57,9 @@ function derive_at(
   master: HDKey,
   index: number,
 ): AnvilAccount {
-  const privateKey = derive_private_key(
-    master,
-    `m/44'/60'/0'/0/${index}`,
+  const privateKey = parse(
+    instance(Uint8Array),
+    derive_private_key(master, `m/44'/60'/0'/0/${index}`),
   )
   const address = private_key_to_address(privateKey)
   return { address, privateKey }

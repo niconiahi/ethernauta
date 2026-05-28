@@ -8,6 +8,7 @@ import type { SpawnHandle } from "./spawn-anvil"
 // became ready (wrong fork URL, port collision, missing binary
 // permissions, …).
 
+// allow-violation: R1-capability-shape
 export type AwaitReadyOptions = {
   handle: SpawnHandle
   timeoutMs?: number
