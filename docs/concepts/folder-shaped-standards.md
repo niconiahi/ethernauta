@@ -31,9 +31,9 @@ The `index.ts` carries the spec link and the public re-exports:
 
 ```ts
 // https://eips.ethereum.org/EIPS/eip-712
-export { TypedDataSchema, type TypedData } from "./schemas/typed-data";
-export { hash_typed_data } from "./utils/hash-typed-data";
-export { sign_typed_data } from "./utils/sign-typed-data";
+export { TypedDataSchema, type TypedData } from "@ethernauta/eip/712";
+export { hash_typed_data } from "@ethernauta/eip/712";
+export { eth_signTypedData_v4 } from "@ethernauta/eip/712";
 ```
 
 `packages/eip/package.json` declares each subpath as an export, so `@ethernauta/eip/712` imports it.
