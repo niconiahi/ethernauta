@@ -22,13 +22,30 @@ import {
   create_reader,
   create_writer,
   create_signer,
-  create_contract,
+  contract,
+  encode_chain_id,
+  http,
 } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453";
+import { AddressSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const reader = create_reader([eip155_1, eip155_8453]);
-const writer = create_writer([eip155_1]);
-const signer = create_signer([eip155_1]);
-const contract = create_contract([eip155_1]);
+const CHAIN_ID_1 = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const CHAIN_ID_8453 = encode_chain_id({ namespace: "eip155", reference: eip155_8453.chainId });
+
+const reader = create_reader([
+  { chainId: CHAIN_ID_1, transports: [http("https://ethereum-rpc.publicnode.com")] },
+  { chainId: CHAIN_ID_8453, transports: [http("https://base-rpc.publicnode.com")] },
+]);
+const writer = create_writer([
+  { chainId: CHAIN_ID_1, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const signer = create_signer([
+  { chainId: CHAIN_ID_1, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const token = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const ctx = contract({ chain_id: CHAIN_ID_1, to: token });
 ```
 
 Each factory accepts a `Chain[]` and returns a function `({ chain_id, ... }) => ResolvedX`. Pass the resolved object as the second curried argument to any method.
@@ -38,9 +55,8 @@ Each factory accepts a `Chain[]` and returns a function `({ chain_id, ... }) => 
 ```ts
 import { http } from "@ethernauta/transport";
 
-const transport = http({
-  urls: ["https://eth.llamarpc.com", "https://cloudflare-eth.com"],
-  retry: { attempts: 3, backoff: "exponential" },
+const transport = http("https://eth.llamarpc.com", {
+  retry: { attempts: 3 },
   batch: { window_ms: 50, max_size: 100 },
 });
 ```
@@ -58,9 +74,7 @@ Used internally by `create_reader` / `create_writer` / `create_contract`. Expose
 ```ts
 import { websocket } from "@ethernauta/transport";
 
-const transport = websocket({
-  url: "wss://eth.llamarpc.com/ws",
-});
+const transport = websocket("wss://eth.llamarpc.com/ws");
 ```
 
 For subscription-based methods (`eth_newHeads`, `eth_newPendingTransactions`). HTTP can't carry subscriptions; switch to WebSocket when you need long-lived push updates.
@@ -68,14 +82,29 @@ For subscription-based methods (`eth_newHeads`, `eth_newPendingTransactions`). H
 ## Multicall
 
 ```ts
-import { create_multicall } from "@ethernauta/transport";
-import { eth_getBalance, eth_blockNumber } from "@ethernauta/eth";
+import {
+  create_multicall,
+  contract,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport";
+import { balanceOf } from "@ethernauta/erc/20";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const multicall = create_multicall([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
 
-const [block, balance] = await multicall({ chain_id: eip155_1.chain_id }).all([
-  eth_blockNumber(),
-  eth_getBalance({ address, block: "latest" }),
+const multicall = create_multicall([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const token = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const holder = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+
+const tokenCtx = contract({ chain_id: CHAIN_ID, to: token });
+const [balance] = await multicall([
+  balanceOf([holder])(tokenCtx),
 ]);
 ```
 
@@ -86,32 +115,56 @@ For on-chain `Multicall3`-style aggregation (where the contract aggregates calls
 ## Contract binding
 
 ```ts
-import { create_contract, contract } from "@ethernauta/transport";
+import {
+  contract,
+  create_reader,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport";
 import { balanceOf } from "@ethernauta/erc/20";
+import { eth_call } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, type Bytes } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const c = create_contract([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
-const balance = await balanceOf({ owner: holder })(
-  c({ chain_id: eip155_1.chain_id, contract: token_address }),
+const token_address = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const holder = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+
+const callable = balanceOf([holder])(contract({ chain_id: CHAIN_ID, to: token_address }));
+const result_bytes: Bytes = await eth_call([{ to: callable.to, input: callable.data }])(
+  reader({ chain_id: CHAIN_ID }),
 );
+const balance = callable.decode(result_bytes);
 ```
 
-`create_contract` produces a `Callable`-shaped resolver. The `contract` address is bound at resolver-construction time; ERC method bindings consume it implicitly via `eth_call`.
-
-`contract` (lowercase) is the lower-level primitive that binds a callable to an address; `create_contract` is the factory.
+`contract({ chain_id, to })` builds a `ContractContext`. ERC method bindings consume it and return a `Callable<T>` — execute by passing the callable's `.data` through `eth_call` and decoding the response with `.decode`.
 
 ## EIP-1193 provider adapter
 
 ```ts
-import { create_provider, create_injected_transport, create_injected_signer } from "@ethernauta/transport";
+import { create_provider } from "@ethernauta/transport";
+import { eth_blockNumber, eth_sendTransaction } from "@ethernauta/eth";
+import type { Provider } from "@ethernauta/eip/1193";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const provider = create_provider(window.ethereum);
+declare const injected: Provider;
+const provider = create_provider(injected);
 
 // reads through the provider
 const block = await eth_blockNumber()(provider.reader({ chain_id: "eip155:1" }));
 
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
+
 // signing through the provider
-const hash = await eth_sendTransaction({ to, value })(
+const hash = await eth_sendTransaction([{ to, value, input }])(
   provider.signer({ chain_id: "eip155:1" }),
 );
 ```
