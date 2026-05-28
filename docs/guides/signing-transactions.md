@@ -14,17 +14,24 @@ There are **two first-class signing paths**, and the library does not force a ch
 The wallet implements `eth_sendTransaction`. One round trip, the wallet handles nonce / gas, the dapp gets back a transaction hash.
 
 ```ts
-import { create_signer } from "@ethernauta/transport";
+import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_sendTransaction } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const signer = create_signer([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
-const hash = await eth_sendTransaction({
-  to: "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045",
-  value: "0x16345785D8A0000",
-  input: "0x",
-})(signer({ chain_id: eip155_1.chain_id }));
+const to = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045");
+const value = parse(UintSchema, "0x16345785D8A0000");
+const input = parse(BytesSchema, "0x");
+
+const hash = await eth_sendTransaction([{ to, value, input }])(
+  signer({ chain_id: CHAIN_ID }),
+);
 ```
 
 What the wallet does in the background:
@@ -44,22 +51,36 @@ What the wallet does in the background:
 The wallet implements `eth_signTransaction` and returns the signed bytes; the dapp broadcasts them via a `Writable<T>` against any public RPC.
 
 ```ts
-import { create_signer, create_writer } from "@ethernauta/transport";
+import {
+  create_signer,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport";
 import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const signer = create_signer([eip155_1]);
-const writer = create_writer([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const writer = create_writer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
-const signed = await eth_signTransaction({
-  to: recipient,
-  value,
-  input: "0x",
-})(signer({ chain_id: eip155_1.chain_id }));
+const recipient = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045");
+const value = parse(UintSchema, "0x16345785D8A0000");
+
+const signed = await eth_signTransaction([{ to: recipient, value, input: parse(BytesSchema, "0x") }])(
+  signer({ chain_id: CHAIN_ID }),
+);
 
 // inspect, log, persist `signed` here if you want
 
-const hash = await eth_sendRawTransaction(signed)(
-  writer({ chain_id: eip155_1.chain_id }),
+const hash = await eth_sendRawTransaction([signed])(
+  writer({ chain_id: CHAIN_ID }),
 );
 ```
 
@@ -72,13 +93,51 @@ What you can do that path 1 can't:
 ## Same wallet, different choice per call
 
 ```ts
+import {
+  create_signer,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport";
+import {
+  eth_sendTransaction,
+  eth_signTransaction,
+  eth_sendRawTransaction,
+} from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema, type Bytes } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const writer = create_writer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const to = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045");
+const value = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
+
+declare function log_to_audit(_bytes: Bytes): Promise<void>;
+
 // path 1 for low-risk
-const quick_hash = await eth_sendTransaction(...)(signer(...));
+const quick_hash = await eth_sendTransaction([{ to, value, input }])(
+  signer({ chain_id: CHAIN_ID }),
+);
 
 // path 2 for the bridge call
-const signed_bytes = await eth_signTransaction(...)(signer(...));
+const signed_bytes = await eth_signTransaction([{ to, value, input }])(
+  signer({ chain_id: CHAIN_ID }),
+);
 await log_to_audit(signed_bytes);
-const broadcast_hash = await eth_sendRawTransaction(signed_bytes)(writer(...));
+const broadcast_hash = await eth_sendRawTransaction([signed_bytes])(
+  writer({ chain_id: CHAIN_ID }),
+);
+
+void quick_hash;
+void broadcast_hash;
 ```
 
 The two paths share the same signer; the only difference is which `eth_*` method gets called.
