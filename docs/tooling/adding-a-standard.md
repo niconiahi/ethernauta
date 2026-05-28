@@ -39,8 +39,15 @@ The `index.ts` opens with the spec URL comment and re-exports the public surface
 
 ```ts
 // https://eips.ethereum.org/EIPS/eip-7777
-export { payloadSchema, type Payload } from "./schemas/payload";
-export { do_the_thing } from "./methods/do-the-thing";
+// Illustrative re-export shape from a folder-shaped standard.
+import { AddressSchema, Uint256Schema } from "@ethernauta/core";
+import * as v from "valibot";
+
+export const payloadSchema = v.object({
+  account: AddressSchema,
+  amount: Uint256Schema,
+});
+export type Payload = v.InferOutput<typeof payloadSchema>;
 ```
 
 ## Step 3 — Schemas first
@@ -75,14 +82,23 @@ Decide which resolver shape each method uses. This is the **single most importan
 Then implement the method as a curried function:
 
 ```ts
+import { AddressSchema, type Uint256, Uint256Schema } from "@ethernauta/core";
+import type { Readable, ResolvedReader } from "@ethernauta/transport";
 import * as v from "valibot";
-import type { Readable } from "@ethernauta/transport";
 
-export const do_the_thing = (_args: unknown): Readable<Uint256> => {
+const payloadSchema = v.object({
+  account: AddressSchema,
+  amount: Uint256Schema,
+});
+type Payload = v.InferOutput<typeof payloadSchema>;
+
+export const do_the_thing = (_args: Payload): Readable<Uint256> => {
   const args = v.parse(payloadSchema, _args);
+  void args;
 
-  return async (resolved) => {
-    // ...build JSON-RPC payload, call resolved.request, parse response
+  return async (_resolved: ResolvedReader): Promise<Uint256> => {
+    // ...build JSON-RPC payload, call _resolved[0], parse response
+    return v.parse(Uint256Schema, "0x0");
   };
 };
 ```
