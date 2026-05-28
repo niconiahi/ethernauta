@@ -16,6 +16,7 @@ const highlighter = await createHighlighter({
     "html",
     "css",
     "md",
+    "yaml",
   ],
 })
 
