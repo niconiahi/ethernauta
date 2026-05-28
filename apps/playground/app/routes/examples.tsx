@@ -1,6 +1,8 @@
+import "./examples.css"
 import { MDXProvider } from "@mdx-js/react"
 import { NavLink, Outlet } from "react-router"
 
+import { GithubLink } from "../components/github-link"
 import { MDX_COMPONENTS } from "../components/mdx"
 
 const ERC_EXAMPLES = [
@@ -58,6 +60,10 @@ const EIP_EXAMPLES = [
     to: "/examples/eip-1193",
     title: "EIP-1193 provider",
   },
+  {
+    to: "/examples/emitter",
+    title: "EIP-1193 emitter",
+  },
 ] as const
 
 const OTHER_EXAMPLES = [
@@ -100,60 +106,30 @@ const SECTIONS = [
 
 export default function ExamplesLayout() {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "max-content minmax(0, 1fr)",
-        background: "var(--bg)",
-      }}
-    >
-      <aside
-        style={{
-          borderRight: "1px solid var(--border)",
-          padding: "32px 16px",
-          background: "var(--surface)",
-        }}
-      >
-        {SECTIONS.map((section, i) => (
+    <div className="examples-layout">
+      <aside className="examples-sidebar">
+        <GithubLink
+          label="Star on GitHub"
+          className="examples-sidebar-github"
+        />
+        {SECTIONS.map((section) => (
           <div
             key={section.heading}
-            style={{ marginTop: i === 0 ? 0 : 24 }}
+            className="examples-section"
           >
-            <h2
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: "var(--text)",
-                margin: "0 0 12px",
-              }}
-            >
+            <h2 className="examples-section-title">
               {section.heading}
             </h2>
-            <nav
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-              }}
-            >
+            <nav className="examples-nav">
               {section.items.map((e) => (
                 <NavLink
                   key={e.to}
                   to={e.to}
-                  style={({ isActive }) => ({
-                    padding: "8px 12px",
-                    borderRadius: 6,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    textDecoration: "none",
-                    whiteSpace: "nowrap",
-                    color: isActive
-                      ? "var(--active-text)"
-                      : "var(--text)",
-                    background: isActive
-                      ? "var(--active-bg)"
-                      : "transparent",
-                  })}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "examples-nav-link is-active"
+                      : "examples-nav-link"
+                  }
                 >
                   {e.title}
                 </NavLink>
@@ -162,7 +138,7 @@ export default function ExamplesLayout() {
           </div>
         ))}
       </aside>
-      <main style={{ padding: "48px 64px" }}>
+      <main className="examples-main">
         <MDXProvider components={MDX_COMPONENTS}>
           <Outlet />
         </MDXProvider>

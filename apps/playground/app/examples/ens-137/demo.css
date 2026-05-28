@@ -1,0 +1,43 @@
+.ens-137-root {
+  display: grid;
+  gap: 24px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.ens-137-section {
+  display: grid;
+  gap: 8px;
+}
+
+.ens-137-heading {
+  margin: 0;
+}
+
+.ens-137-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ens-137-input {
+  flex: 1;
+  padding: 6px;
+}
+
+.ens-137-input.is-mono {
+  font-family: monospace;
+}
+
+.ens-137-dl {
+  margin: 0;
+}
+
+.ens-137-reverse-result {
+  margin: 0;
+}
+
+.ens-137-error {
+  color: crimson;
+  margin: 0;
+}

@@ -1,0 +1,58 @@
+.delegate-7702-root {
+  margin-top: 24px;
+}
+
+.delegate-7702-rows {
+  margin-bottom: 24px;
+}
+
+.delegate-7702-error {
+  color: var(--danger);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.delegate-7702-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.delegate-7702-explorer-link {
+  font-size: 14px;
+  color: var(--active-bg);
+  align-self: center;
+}
+
+.delegate-7702-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+.delegate-7702-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.delegate-7702-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.delegate-7702-row-value {
+  font-family: inherit;
+  color: var(--text);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delegate-7702-row-value.is-mono {
+  font-family: monospace;
+}

@@ -1,0 +1,71 @@
+.nft-introspection-root {
+  margin: 16px 0 24px;
+}
+
+.nft-introspection-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.nft-introspection-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nft-introspection-header-value {
+  font-family: monospace;
+}
+
+.nft-introspection-loading {
+  margin: 12px 0 0;
+  color: var(--text-muted);
+}
+
+.nft-introspection-error {
+  margin: 12px 0 0;
+  color: var(--danger);
+}
+
+.nft-introspection-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.nft-introspection-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.nft-introspection-row-value {
+  font-family: inherit;
+  color: var(--text);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nft-introspection-row-value.is-mono {
+  font-family: monospace;
+}
+
+.nft-introspection-row-value.is-success {
+  color: var(--success);
+}
+
+.nft-introspection-row-value.is-muted {
+  color: var(--text-muted);
+}

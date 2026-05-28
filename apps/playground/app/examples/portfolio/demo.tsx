@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { addressSchema } from "@ethernauta/core"
 import {
@@ -127,97 +128,36 @@ export function PortfolioDemo() {
   }, [run])
 
   return (
-    <div style={{ margin: "16px 0 24px" }}>
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          padding: 24,
-          marginBottom: 16,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "10px 0",
-            borderBottom: "1px solid var(--border)",
-            fontSize: 12,
-            color: "var(--text-muted)",
-            textTransform: "uppercase",
-            letterSpacing: 0.5,
-          }}
-        >
+    <div className="portfolio-root">
+      <div className="portfolio-card">
+        <div className="portfolio-header">
           <span>Holder</span>
-          <span style={{ fontFamily: "monospace" }}>
+          <span className="portfolio-header-value">
             vitalik.eth
           </span>
         </div>
         {loading && (
-          <p
-            style={{
-              margin: "12px 0 0",
-              color: "var(--text-muted)",
-              fontSize: 14,
-            }}
-          >
-            Loading…
-          </p>
+          <p className="portfolio-loading">Loading…</p>
         )}
         {error && (
-          <p
-            style={{
-              margin: "12px 0 0",
-              color: "var(--danger)",
-              fontSize: 14,
-            }}
-          >
-            {error}
-          </p>
+          <p className="portfolio-error">{error}</p>
         )}
         {holdings?.map((h) => (
-          <div
-            key={h.symbol}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "10px 0",
-              borderBottom: "1px solid var(--border)",
-              fontSize: 14,
-            }}
-          >
-            <span style={{ color: "var(--text-muted)" }}>
+          <div key={h.symbol} className="portfolio-row">
+            <span className="portfolio-row-label">
               {h.symbol}
             </span>
-            <span
-              style={{
-                fontFamily: "monospace",
-                color: "var(--text)",
-              }}
-            >
+            <span className="portfolio-row-value">
               {format(h.balance, h.decimals)}
             </span>
           </div>
         ))}
         {elapsed_ms !== null && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "10px 0",
-              fontSize: 14,
-            }}
-          >
-            <span style={{ color: "var(--text-muted)" }}>
+          <div className="portfolio-footer">
+            <span className="portfolio-row-label">
               Roundtrip
             </span>
-            <span
-              style={{
-                fontFamily: "monospace",
-                color: "var(--text)",
-              }}
-            >
+            <span className="portfolio-row-value">
               {elapsed_ms} ms · {TOKENS.length * 3} reads ·
               1 RPC call
             </span>

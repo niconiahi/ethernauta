@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   address,
   bytes,
@@ -280,8 +281,8 @@ export function UserOp4337Demo() {
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
-      <div style={{ marginBottom: 24 }}>
+    <div className="user-op-4337-root">
+      <div className="user-op-4337-rows">
         <Row
           label="Network"
           value={`${eip155_11155111.name} (chain ${eip155_11155111.chainId})`}
@@ -330,24 +331,11 @@ export function UserOp4337Demo() {
         onChange={set_target}
       />
       {error && (
-        <p
-          style={{
-            color: "var(--danger)",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
-        >
+        <p className="user-op-4337-error">
           {error}
         </p>
       )}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-          marginBottom: 16,
-        }}
-      >
+      <div className="user-op-4337-actions">
         {!owner && <SignInHint />}
         {bundler_url && (
           <Button
@@ -397,28 +385,11 @@ export function UserOp4337Demo() {
           )}
       </div>
       {op && signed_op && (
-        <details
-          style={{
-            marginTop: 24,
-            padding: 12,
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            fontSize: 13,
-          }}
-        >
-          <summary style={{ cursor: "pointer" }}>
+        <details className="user-op-4337-details">
+          <summary className="user-op-4337-summary">
             Signed UserOperation
           </summary>
-          <pre
-            style={{
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-all",
-              fontSize: 12,
-              fontFamily: "monospace",
-              marginTop: 12,
-            }}
-          >
+          <pre className="user-op-4337-pre">
             {JSON.stringify(signed_op, null, 2)}
           </pre>
         </details>
@@ -439,17 +410,8 @@ function Field({
   placeholder?: string
 }) {
   return (
-    <label
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-        marginBottom: 12,
-      }}
-    >
-      <span
-        style={{ fontSize: 13, color: "var(--text-muted)" }}
-      >
+    <label className="user-op-4337-field">
+      <span className="user-op-4337-field-label">
         {label}
       </span>
       <input
@@ -458,13 +420,7 @@ function Field({
         onChange={(e) =>
           onChange(e.currentTarget.value.trim())
         }
-        style={{
-          fontFamily: "monospace",
-          fontSize: 13,
-          padding: "8px 10px",
-          border: "1px solid var(--border)",
-          borderRadius: 6,
-        }}
+        className="user-op-4337-field-input"
       />
     </label>
   )
@@ -480,33 +436,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="user-op-4337-row">
+      <span className="user-op-4337-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "user-op-4337-row-value is-mono"
+            : "user-op-4337-row-value"
+        }
       >
         {value}
       </span>

@@ -1,0 +1,87 @@
+.stealth-5564-root {
+  margin-top: 24px;
+}
+
+.stealth-5564-heading {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.stealth-5564-heading.is-spaced {
+  margin: 24px 0 8px;
+}
+
+.stealth-5564-meta-row {
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.stealth-5564-generated {
+  margin-top: 16px;
+}
+
+.stealth-5564-match {
+  margin-top: 12px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.stealth-5564-error {
+  color: var(--danger);
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.stealth-5564-footnote {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 24px;
+}
+
+.stealth-5564-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.stealth-5564-field-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stealth-5564-field-input {
+  font-family: monospace;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.stealth-5564-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.stealth-5564-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.stealth-5564-row-value {
+  font-family: inherit;
+  color: var(--text);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+.stealth-5564-row-value.is-mono {
+  font-family: monospace;
+}

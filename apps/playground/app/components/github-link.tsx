@@ -1,30 +1,36 @@
 import { ButtonLink } from "./button"
 
-const REPO_BLOB =
-  "https://github.com/niconiahi/ethernauta/blob/main/"
+export const REPO_URL = "https://github.com/niconiahi/ethernauta"
+const REPO_BLOB = `${REPO_URL}/blob/main/`
 
 export function GithubLink({
   path,
   label = "View on GitHub",
+  className,
 }: {
-  path: string
+  // Path inside the repo (e.g. "apps/playground/.../demo.tsx"). When
+  // omitted, links to the repo root — for header / sidebar use.
+  path?: string
   label?: string
+  className?: string
 }) {
+  const href = path ? `${REPO_BLOB}${path}` : REPO_URL
   return (
     <ButtonLink
       variant="ghost"
-      href={`${REPO_BLOB}${path}`}
+      href={href}
       target="_blank"
       rel="noreferrer noopener"
       aria-label={label}
       title={label}
+      className={className}
     >
       <svg
         viewBox="0 0 24 24"
-        width="18"
-        height="18"
+        width="22"
+        height="22"
         aria-hidden="true"
-        style={{ marginRight: 8 }}
+        style={{ marginRight: 10 }}
       >
         <path
           fill="currentColor"

@@ -1,3 +1,4 @@
+import "./demo.css"
 // Each button below fires the same Readable method twice:
 // `method()(provider.reader({ chain_id }))`. The transport
 // is the user's selected EIP-1193 wallet — same call shape
@@ -75,16 +76,7 @@ export function ProviderReadsDemo() {
 
   if (!provider) {
     return (
-      <div
-        style={{
-          padding: 16,
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          fontSize: 14,
-          color: "var(--text-muted)",
-        }}
-      >
+      <div className="provider-reads-empty">
         Pick a wallet first (try the <code>EIP-6963</code>{" "}
         example).
       </div>
@@ -92,16 +84,7 @@ export function ProviderReadsDemo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 12,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
+    <div className="provider-reads-root">
       <ReadRow
         label="eth_blockNumber"
         result={results.eth_blockNumber}
@@ -172,7 +155,7 @@ export function ProviderReadsDemo() {
         }
       />
       {!owner && (
-        <div style={{ marginTop: 4 }}>
+        <div className="provider-reads-sign-in-hint">
           <SignInHint />
         </div>
       )}
@@ -196,44 +179,17 @@ function ReadRow({
   onClick: () => void
 }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr auto",
-        alignItems: "center",
-        gap: 12,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 4,
-          overflow: "hidden",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "monospace",
-            fontSize: 14,
-            color: "var(--text)",
-          }}
-        >
+    <div className="provider-reads-row">
+      <div className="provider-reads-row-text">
+        <span className="provider-reads-row-label">
           {label}
         </span>
         <span
-          style={{
-            fontFamily: "monospace",
-            fontSize: 13,
-            color: error
-              ? "var(--danger)"
-              : "var(--text-muted)",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
+          className={
+            error
+              ? "provider-reads-row-value is-error"
+              : "provider-reads-row-value"
+          }
         >
           {error ?? result ?? "—"}
         </span>

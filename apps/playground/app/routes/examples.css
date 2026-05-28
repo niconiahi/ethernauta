@@ -1,0 +1,56 @@
+.examples-layout {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  background: var(--bg);
+}
+
+.examples-sidebar {
+  border-right: 1px solid var(--border);
+  padding: 32px 16px;
+  background: var(--surface);
+}
+
+.examples-sidebar-github {
+  width: 100%;
+  height: 42px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.examples-section + .examples-section {
+  margin-top: 24px;
+}
+
+.examples-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.examples-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.examples-nav-link {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--text);
+  background: transparent;
+}
+
+.examples-nav-link.is-active {
+  color: var(--active-text);
+  background: var(--active-bg);
+}
+
+.examples-main {
+  padding: 48px 64px;
+}

@@ -1,0 +1,40 @@
+.verify-1271-root {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.verify-1271-error {
+  color: crimson;
+  margin: 0;
+}
+
+.verify-1271-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.verify-1271-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.verify-1271-row-label {
+  color: var(--text-muted);
+}
+
+.verify-1271-row-value {
+  font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.verify-1271-row-value.is-mono {
+  font-family: monospace;
+}

@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
@@ -134,50 +135,21 @@ export function NftIntrospectionDemo() {
   }, [run])
 
   return (
-    <div style={{ margin: "16px 0 24px" }}>
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          padding: 24,
-          marginBottom: 16,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "10px 0",
-            borderBottom: "1px solid var(--border)",
-            fontSize: 12,
-            color: "var(--text-muted)",
-            textTransform: "uppercase",
-            letterSpacing: 0.5,
-          }}
-        >
+    <div className="nft-introspection-root">
+      <div className="nft-introspection-card">
+        <div className="nft-introspection-header">
           <span>Contract</span>
-          <span style={{ fontFamily: "monospace" }}>
+          <span className="nft-introspection-header-value">
             BAYC
           </span>
         </div>
         {loading && (
-          <p
-            style={{
-              margin: "12px 0 0",
-              color: "var(--text-muted)",
-            }}
-          >
+          <p className="nft-introspection-loading">
             Loading…
           </p>
         )}
         {error && (
-          <p
-            style={{
-              margin: "12px 0 0",
-              color: "var(--danger)",
-            }}
-          >
+          <p className="nft-introspection-error">
             {error}
           </p>
         )}
@@ -231,39 +203,21 @@ function Row({
   ok?: boolean
   mono?: boolean
 }) {
+  const value_class =
+    ok === false
+      ? "nft-introspection-row-value is-muted"
+      : ok === true
+        ? "nft-introspection-row-value is-success"
+        : "nft-introspection-row-value"
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="nft-introspection-row">
+      <span className="nft-introspection-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color:
-            ok === false
-              ? "var(--text-muted)"
-              : ok === true
-                ? "var(--success)"
-                : "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono ? `${value_class} is-mono` : value_class
+        }
       >
         {value}
       </span>

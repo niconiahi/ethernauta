@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   check_stealth_address,
   compute_view_tag,
@@ -138,8 +139,8 @@ export function Stealth5564Demo() {
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
-      <h3 style={{ fontSize: 16, marginBottom: 8 }}>
+    <div className="stealth-5564-root">
+      <h3 className="stealth-5564-heading">
         Recipient
       </h3>
       <Field
@@ -165,7 +166,7 @@ export function Stealth5564Demo() {
       >
         Randomize recipient
       </Button>
-      <div style={{ marginTop: 16, marginBottom: 24 }}>
+      <div className="stealth-5564-meta-row">
         <Row
           label="Recipient meta-address"
           value={meta_hex}
@@ -173,7 +174,7 @@ export function Stealth5564Demo() {
         />
       </div>
 
-      <h3 style={{ fontSize: 16, marginBottom: 8 }}>
+      <h3 className="stealth-5564-heading">
         Sender — derive a stealth address
       </h3>
       <Field
@@ -186,7 +187,7 @@ export function Stealth5564Demo() {
         Generate stealth address
       </Button>
       {generated && (
-        <div style={{ marginTop: 16 }}>
+        <div className="stealth-5564-generated">
           <Row
             label="Stealth address"
             value={generated.stealth_address}
@@ -205,7 +206,7 @@ export function Stealth5564Demo() {
         </div>
       )}
 
-      <h3 style={{ fontSize: 16, margin: "24px 0 8px" }}>
+      <h3 className="stealth-5564-heading is-spaced">
         Recipient — check an announcement
       </h3>
       <Field
@@ -220,34 +221,16 @@ export function Stealth5564Demo() {
         Recover stealth address
       </Button>
       {match_result && (
-        <p
-          style={{
-            marginTop: 12,
-            fontFamily: "monospace",
-            fontSize: 13,
-          }}
-        >
+        <p className="stealth-5564-match">
           {match_result}
         </p>
       )}
       {error && (
-        <p
-          style={{
-            color: "var(--danger)",
-            fontSize: 14,
-            marginTop: 12,
-          }}
-        >
+        <p className="stealth-5564-error">
           {error}
         </p>
       )}
-      <p
-        style={{
-          fontSize: 12,
-          color: "var(--text-muted)",
-          marginTop: 24,
-        }}
-      >
+      <p className="stealth-5564-footnote">
         All math runs in-browser. Nothing is broadcast.
         Privates above are demo data — replace with a real
         wallet integration before relying on this.
@@ -268,17 +251,8 @@ function Field({
   placeholder?: string
 }) {
   return (
-    <label
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-        marginBottom: 12,
-      }}
-    >
-      <span
-        style={{ fontSize: 13, color: "var(--text-muted)" }}
-      >
+    <label className="stealth-5564-field">
+      <span className="stealth-5564-field-label">
         {label}
       </span>
       <input
@@ -287,13 +261,7 @@ function Field({
         onChange={(e) =>
           onChange(e.currentTarget.value.trim())
         }
-        style={{
-          fontFamily: "monospace",
-          fontSize: 12,
-          padding: "8px 10px",
-          border: "1px solid var(--border)",
-          borderRadius: 6,
-        }}
+        className="stealth-5564-field-input"
       />
     </label>
   )
@@ -309,34 +277,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="stealth-5564-row">
+      <span className="stealth-5564-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          maxWidth: "60%",
-        }}
+        className={
+          mono
+            ? "stealth-5564-row-value is-mono"
+            : "stealth-5564-row-value"
+        }
       >
         {value}
       </span>

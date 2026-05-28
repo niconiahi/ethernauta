@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { addressSchema } from "@ethernauta/core"
 import {
@@ -97,30 +98,13 @@ export function MulticallDemo() {
   }, [run])
 
   return (
-    <div style={{ margin: "16px 0 24px" }}>
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          padding: 24,
-          marginBottom: 16,
-        }}
-      >
+    <div className="multicall-root">
+      <div className="multicall-card">
         {loading && (
-          <p
-            style={{
-              margin: 0,
-              color: "var(--text-muted)",
-            }}
-          >
-            Loading…
-          </p>
+          <p className="multicall-loading">Loading…</p>
         )}
         {error && (
-          <p style={{ margin: 0, color: "var(--danger)" }}>
-            {error}
-          </p>
+          <p className="multicall-error">{error}</p>
         )}
         {snapshot && (
           <>
@@ -156,26 +140,9 @@ function Row({
   value: string
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span style={{ color: "var(--text-muted)" }}>
-        {label}
-      </span>
-      <span
-        style={{
-          fontFamily: "monospace",
-          color: "var(--text)",
-        }}
-      >
-        {value}
-      </span>
+    <div className="multicall-row">
+      <span className="multicall-row-label">{label}</span>
+      <span className="multicall-row-value">{value}</span>
     </div>
   )
 }

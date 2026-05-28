@@ -1,0 +1,65 @@
+.gas-estimate-empty {
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.gas-estimate-card {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.gas-estimate-error {
+  color: var(--danger);
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.gas-estimate-knob-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.gas-estimate-knob-label {
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.gas-estimate-knob-input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.gas-estimate-result-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.gas-estimate-result-label {
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.gas-estimate-result-value {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+}

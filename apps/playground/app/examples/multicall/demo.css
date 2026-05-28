@@ -1,0 +1,38 @@
+.multicall-root {
+  margin: 16px 0 24px;
+}
+
+.multicall-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.multicall-loading {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.multicall-error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.multicall-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.multicall-row-label {
+  color: var(--text-muted);
+}
+
+.multicall-row-value {
+  font-family: monospace;
+  color: var(--text);
+}

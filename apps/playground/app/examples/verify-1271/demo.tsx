@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
@@ -95,16 +96,7 @@ export function Verify1271Demo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
+    <div className="verify-1271-root">
       <Row label="Message" value={MESSAGE} />
       <Row label="Chain" value="Sepolia" />
       {owner && <Row label="Owner" value={owner} mono />}
@@ -118,11 +110,11 @@ export function Verify1271Demo() {
         />
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>
+        <p className="verify-1271-error">
           {error}
         </p>
       )}
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="verify-1271-actions">
         {!owner && <SignInHint />}
         {owner && (
           <Button onClick={sign_and_verify} disabled={busy}>
@@ -161,24 +153,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-        fontSize: 14,
-      }}
-    >
-      <span style={{ color: "var(--text-muted)" }}>
+    <div className="verify-1271-row">
+      <span className="verify-1271-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "verify-1271-row-value is-mono"
+            : "verify-1271-row-value"
+        }
       >
         {value}
       </span>

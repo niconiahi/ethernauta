@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   addressSchema,
@@ -138,8 +139,8 @@ export function CrossChain7683Demo() {
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
-      <div style={{ marginBottom: 24 }}>
+    <div className="cross-chain-7683-root">
+      <div className="cross-chain-7683-rows">
         <Row
           label="Origin"
           value={`${eip155_11155111.name} (USDC)`}
@@ -171,20 +172,8 @@ export function CrossChain7683Demo() {
           />
         )}
       </div>
-      <label
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 6,
-          marginBottom: 16,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 13,
-            color: "var(--text-muted)",
-          }}
-        >
+      <label className="cross-chain-7683-field">
+        <span className="cross-chain-7683-field-label">
           Origin settler (verifyingContract)
         </span>
         <input
@@ -192,33 +181,15 @@ export function CrossChain7683Demo() {
           onChange={(e) =>
             set_settler(e.currentTarget.value)
           }
-          style={{
-            fontFamily: "monospace",
-            fontSize: 13,
-            padding: "8px 10px",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-          }}
+          className="cross-chain-7683-field-input"
         />
       </label>
       {error && (
-        <p
-          style={{
-            color: "var(--danger)",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
-        >
+        <p className="cross-chain-7683-error">
           {error}
         </p>
       )}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="cross-chain-7683-button-row">
         {!user && <SignInHint />}
         {user && (
           <Button onClick={sign_order} disabled={loading}>
@@ -231,40 +202,17 @@ export function CrossChain7683Demo() {
         )}
       </div>
       {order && signature && (
-        <details
-          style={{
-            marginTop: 24,
-            padding: 12,
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            fontSize: 13,
-          }}
-        >
-          <summary style={{ cursor: "pointer" }}>
+        <details className="cross-chain-7683-details">
+          <summary className="cross-chain-7683-summary">
             Submission payload (paste into a relayer)
           </summary>
-          <pre
-            style={{
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-all",
-              fontSize: 12,
-              fontFamily: "monospace",
-              marginTop: 12,
-            }}
-          >
+          <pre className="cross-chain-7683-pre">
             {JSON.stringify({ order, signature }, null, 2)}
           </pre>
         </details>
       )}
       {!user && (
-        <p
-          style={{
-            fontSize: 13,
-            color: "var(--text-muted)",
-            marginTop: 12,
-          }}
-        >
+        <p className="cross-chain-7683-hint">
           Needs the Ethernauta extension. The signature is
           real EIP-712 against the settler you paste —
           submission via `openFor()` is up to a relayer.
@@ -284,33 +232,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="cross-chain-7683-row">
+      <span className="cross-chain-7683-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "cross-chain-7683-row-value is-mono"
+            : "cross-chain-7683-row-value"
+        }
       >
         {value}
       </span>

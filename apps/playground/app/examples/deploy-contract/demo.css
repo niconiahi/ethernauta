@@ -1,0 +1,58 @@
+.deploy-contract-root {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.deploy-contract-error {
+  color: crimson;
+  margin: 0;
+}
+
+.deploy-contract-section {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.deploy-contract-section-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+
+.deploy-contract-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.deploy-contract-row.is-highlight {
+  padding: 4px 6px;
+  background: var(--surface-strong);
+  border-radius: 4px;
+}
+
+.deploy-contract-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.deploy-contract-row-value {
+  font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deploy-contract-row-value.is-mono {
+  font-family: monospace;
+}

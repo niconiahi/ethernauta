@@ -1,3 +1,4 @@
+import "./demo.css"
 import { addressSchema } from "@ethernauta/core"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
@@ -78,72 +79,33 @@ function Picker({
   }, [])
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
-      <p
-        style={{
-          margin: 0,
-          color: "var(--text-muted)",
-          fontSize: 14,
-        }}
-      >
+    <div className="eip-1193-root">
+      <p className="eip-1193-description">
         <code>useProviderDetail({"{ key }"})</code>{" "}
         rehydrates the previously-picked wallet from{" "}
         <code>localStorage</code>. Pick one below — the
         choice persists across reloads.
       </p>
       {providers.length === 0 ? (
-        <p
-          style={{ margin: 0, color: "var(--text-muted)" }}
-        >
+        <p className="eip-1193-empty">
           No EIP-1193 providers detected. Install MetaMask,
           Brave, or Ethernauta to exercise the demo.
         </p>
       ) : (
-        <ul
-          style={{
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-            display: "grid",
-            gap: 8,
-          }}
-        >
+        <ul className="eip-1193-providers">
           {providers.map((p) => (
             <li
               key={p.info.uuid}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-                padding: 8,
-                border: "1px solid var(--border)",
-                borderRadius: 6,
-              }}
+              className="eip-1193-provider-item"
             >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
+              <span className="eip-1193-provider-info">
                 {p.info.icon ? (
                   <img
                     src={p.info.icon}
                     alt=""
                     width={24}
                     height={24}
-                    style={{ borderRadius: 4 }}
+                    className="eip-1193-provider-icon"
                   />
                 ) : null}
                 <strong>{p.info.name}</strong>
@@ -259,23 +221,8 @@ function Connected({
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
-      <p
-        style={{
-          margin: 0,
-          color: "var(--text-muted)",
-          fontSize: 14,
-        }}
-      >
+    <div className="eip-1193-root">
+      <p className="eip-1193-description">
         <code>create_provider(provider_detail)</code> wraps
         the picked EIP-1193 provider into a single factory
         exposing <code>.signer({"{ chain_id }"})</code> for{" "}
@@ -285,16 +232,7 @@ function Connected({
         shape as <code>create_reader(CHAINS)</code> — only
         the transport-construction line differs.
       </p>
-      <div
-        style={{
-          padding: 12,
-          border: "1px solid var(--border)",
-          borderRadius: 6,
-          display: "grid",
-          gap: 4,
-          fontSize: 13,
-        }}
-      >
+      <div className="eip-1193-summary">
         <Row
           label="Chain id (hex)"
           value={chain_id_hex ?? ""}
@@ -310,7 +248,7 @@ function Connected({
           mono
         />
       </div>
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="eip-1193-actions">
         {accounts.length === 0 ? (
           <Button onClick={connect}>Connect</Button>
         ) : null}
@@ -330,23 +268,14 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 8,
-      }}
-    >
-      <span style={{ color: "var(--text-muted)" }}>
-        {label}
-      </span>
+    <div className="eip-1193-row">
+      <span className="eip-1193-row-label">{label}</span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "eip-1193-row-value is-mono"
+            : "eip-1193-row-value"
+        }
       >
         {value}
       </span>

@@ -4,6 +4,7 @@
 // L2 demos (op-stack / arbitrum / zksync) import their own family
 // helper from `@ethernauta/gas`; there is no central dispatcher.
 
+import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import type { Uint } from "@ethernauta/core"
 import { estimate_1559_fees } from "@ethernauta/gas"
@@ -37,16 +38,7 @@ export function GasEstimateDemo() {
 
   if (!provider) {
     return (
-      <div
-        style={{
-          padding: 16,
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          fontSize: 14,
-          color: "var(--text-muted)",
-        }}
-      >
+      <div className="gas-estimate-empty">
         Pick a wallet first (try the <code>EIP-6963</code>{" "}
         example).
       </div>
@@ -75,16 +67,7 @@ export function GasEstimateDemo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
+    <div className="gas-estimate-card">
       <KnobRow
         label="base_fee_multiplier"
         value={multiplier}
@@ -114,13 +97,7 @@ export function GasEstimateDemo() {
       />
       <ResultRow label="max_fee_per_gas" value={max_fee} />
       {error && (
-        <div
-          style={{
-            color: "var(--danger)",
-            fontFamily: "monospace",
-            fontSize: 13,
-          }}
-        >
+        <div className="gas-estimate-error">
           {error}
         </div>
       )}
@@ -144,17 +121,8 @@ function KnobRow({
   onChange: (_value: number) => void
 }) {
   return (
-    <label
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr auto",
-        alignItems: "center",
-        gap: 12,
-      }}
-    >
-      <span
-        style={{ fontFamily: "monospace", fontSize: 14 }}
-      >
+    <label className="gas-estimate-knob-row">
+      <span className="gas-estimate-knob-label">
         {label}
       </span>
       <input
@@ -166,14 +134,7 @@ function KnobRow({
         onChange={(e) =>
           onChange(Number(e.currentTarget.value))
         }
-        style={{
-          width: 80,
-          padding: "6px 8px",
-          border: "1px solid var(--border)",
-          borderRadius: 4,
-          fontFamily: "monospace",
-          fontSize: 14,
-        }}
+        className="gas-estimate-knob-input"
       />
     </label>
   )
@@ -187,32 +148,11 @@ function ResultRow({
   value: Uint | null
 }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr auto",
-        alignItems: "center",
-        gap: 12,
-        padding: "10px 0",
-        borderTop: "1px solid var(--border)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: "monospace",
-          fontSize: 14,
-          color: "var(--text)",
-        }}
-      >
+    <div className="gas-estimate-result-row">
+      <span className="gas-estimate-result-label">
         {label}
       </span>
-      <span
-        style={{
-          fontFamily: "monospace",
-          fontSize: 13,
-          color: "var(--text-muted)",
-        }}
-      >
+      <span className="gas-estimate-result-value">
         {value
           ? `${value} (${hex_to_bigint(value).toLocaleString("en-US")})`
           : "—"}

@@ -1,0 +1,71 @@
+.vaults-root {
+  margin: 16px 0 24px;
+}
+
+.vaults-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.vaults-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.vaults-card-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.vaults-loading {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.vaults-error {
+  color: var(--danger);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.vaults-elapsed {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 16px;
+  font-family: monospace;
+}
+
+.vaults-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.vaults-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.vaults-row-value {
+  font-family: inherit;
+  color: var(--text);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vaults-row-value.is-mono {
+  font-family: monospace;
+}

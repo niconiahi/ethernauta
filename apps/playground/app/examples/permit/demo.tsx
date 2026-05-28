@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
@@ -160,16 +161,8 @@ export function PermitDemo() {
   }
 
   return (
-    <div style={{ margin: "16px 0 24px" }}>
-      <div
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          padding: 24,
-          marginBottom: 16,
-        }}
-      >
+    <div className="permit-root">
+      <div className="permit-card">
         <Row label="Token" value="USDC (mainnet)" />
         <Row label="Spender" value={SPENDER} mono />
         <Row
@@ -203,23 +196,11 @@ export function PermitDemo() {
         )}
       </div>
       {error && (
-        <p
-          style={{
-            color: "var(--danger)",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
-        >
+        <p className="permit-error">
           {error}
         </p>
       )}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="permit-button-row">
         {!owner && <SignInHint />}
         {owner && (
           <Button onClick={sign_permit} disabled={loading}>
@@ -232,13 +213,7 @@ export function PermitDemo() {
         )}
       </div>
       {!owner && (
-        <p
-          style={{
-            fontSize: 13,
-            color: "var(--text-muted)",
-            marginTop: 12,
-          }}
-        >
+        <p className="permit-hint">
           Needs an EIP-6963 wallet — Ethernauta, MetaMask,
           or any compliant wallet — connected via the
           header's Connect wallet button.
@@ -258,33 +233,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="permit-row">
+      <span className="permit-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "permit-row-value is-mono"
+            : "permit-row-value"
+        }
       >
         {value}
       </span>

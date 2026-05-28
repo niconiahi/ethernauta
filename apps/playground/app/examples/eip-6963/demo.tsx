@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   ANNOUNCE_EVENT,
   clear_provider_detail,
@@ -100,23 +101,8 @@ export function Eip6963Demo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
-      <p
-        style={{
-          margin: 0,
-          color: "var(--text-muted)",
-          fontSize: 14,
-        }}
-      >
+    <div className="eip-6963-root">
+      <p className="eip-6963-description">
         Wallets announce themselves via{" "}
         <code>eip6963:announceProvider</code>; a dapp
         dispatches <code>eip6963:requestProvider</code> to
@@ -126,23 +112,14 @@ export function Eip6963Demo() {
         <code>get_provider_detail</code> without the user
         picking again.
       </p>
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="eip-6963-actions">
         <Button onClick={rediscover}>Re-discover</Button>
         {picked_rdns && (
           <Button onClick={forget}>Forget wallet</Button>
         )}
       </div>
       {picked_rdns && (
-        <div
-          style={{
-            padding: 12,
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            display: "grid",
-            gap: 4,
-            fontSize: 13,
-          }}
-        >
+        <div className="eip-6963-summary">
           <Row
             label="Persisted rdns"
             value={picked_rdns}
@@ -157,64 +134,34 @@ export function Eip6963Demo() {
         </div>
       )}
       {providers.length === 0 ? (
-        <p
-          style={{ margin: 0, color: "var(--text-muted)" }}
-        >
+        <p className="eip-6963-empty">
           No EIP-6963 providers announced yet. Install
           MetaMask, Brave, or Ethernauta and re-discover.
         </p>
       ) : (
-        <ul
-          style={{
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-            display: "grid",
-            gap: 8,
-          }}
-        >
+        <ul className="eip-6963-providers">
           {providers.map((p) => (
             <li
               key={p.info.uuid}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-                padding: 8,
-                border:
-                  picked_rdns === p.info.rdns
-                    ? "2px solid var(--active-bg)"
-                    : "1px solid var(--border)",
-                borderRadius: 6,
-              }}
+              className={
+                picked_rdns === p.info.rdns
+                  ? "eip-6963-provider-item is-picked"
+                  : "eip-6963-provider-item"
+              }
             >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
+              <span className="eip-6963-provider-info">
                 {p.info.icon ? (
                   <img
                     src={p.info.icon}
                     alt=""
                     width={24}
                     height={24}
-                    style={{ borderRadius: 4 }}
+                    className="eip-6963-provider-icon"
                   />
                 ) : null}
                 <span>
                   <strong>{p.info.name}</strong>
-                  <span
-                    style={{
-                      color: "var(--text-muted)",
-                      marginLeft: 6,
-                      fontFamily: "monospace",
-                      fontSize: 12,
-                    }}
-                  >
+                  <span className="eip-6963-provider-rdns">
                     {p.info.rdns}
                   </span>
                 </span>
@@ -238,23 +185,14 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 8,
-      }}
-    >
-      <span style={{ color: "var(--text-muted)" }}>
-        {label}
-      </span>
+    <div className="eip-6963-row">
+      <span className="eip-6963-row-label">{label}</span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "eip-6963-row-value is-mono"
+            : "eip-6963-row-value"
+        }
       >
         {value}
       </span>

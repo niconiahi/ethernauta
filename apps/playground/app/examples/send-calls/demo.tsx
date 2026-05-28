@@ -1,3 +1,4 @@
+import "./demo.css"
 // EIP-5792 standard surface. Sends a batch through the
 // user-picked EIP-1193 provider via `wallet_sendCalls`,
 // then polls `wallet_getCallsStatus`. Works against any
@@ -137,14 +138,7 @@ export function SendCallsDemo() {
           ))}
         </>
       )}
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          flexWrap: "wrap",
-          marginTop: 16,
-        }}
-      >
+      <div className="send-calls-button-row">
         <Button onClick={send_batch}>Send batch</Button>
         {batch_id && (
           <Button variant="secondary" onClick={poll_status}>

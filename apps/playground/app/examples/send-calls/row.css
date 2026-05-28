@@ -1,0 +1,28 @@
+.send-calls-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.send-calls-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.send-calls-row-value {
+  font-family: inherit;
+  color: var(--text);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.send-calls-row-value.is-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+}

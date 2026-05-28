@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   addressSchema,
@@ -151,46 +152,20 @@ export function VaultsDemo() {
   }, [run])
 
   return (
-    <div style={{ margin: "16px 0 24px" }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 16,
-          marginBottom: 16,
-        }}
-      >
+    <div className="vaults-root">
+      <div className="vaults-grid">
         {(snapshots ?? VAULTS).map((v, i) => {
           const s = snapshots ? snapshots[i] : null
           return (
             <div
               key={"label" in v ? v.label : i}
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                padding: 20,
-              }}
+              className="vaults-card"
             >
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-muted)",
-                  textTransform: "uppercase",
-                  letterSpacing: 0.5,
-                  marginBottom: 8,
-                }}
-              >
+              <div className="vaults-card-label">
                 {v.label}
               </div>
               {loading && !s && (
-                <p
-                  style={{
-                    margin: 0,
-                    color: "var(--text-muted)",
-                    fontSize: 14,
-                  }}
-                >
+                <p className="vaults-loading">
                   Loading…
                 </p>
               )}
@@ -225,25 +200,12 @@ export function VaultsDemo() {
         })}
       </div>
       {error && (
-        <p
-          style={{
-            color: "var(--danger)",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
-        >
+        <p className="vaults-error">
           {error}
         </p>
       )}
       {elapsed_ms !== null && (
-        <p
-          style={{
-            color: "var(--text-muted)",
-            fontSize: 13,
-            margin: "0 0 16px",
-            fontFamily: "monospace",
-          }}
-        >
+        <p className="vaults-elapsed">
           {elapsed_ms} ms · {VAULTS.length * 6} reads · 1
           RPC call
         </p>
@@ -265,33 +227,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 8,
-        padding: "6px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 13,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="vaults-row">
+      <span className="vaults-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "vaults-row-value is-mono"
+            : "vaults-row-value"
+        }
       >
         {value}
       </span>

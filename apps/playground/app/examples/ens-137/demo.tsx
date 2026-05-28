@@ -1,3 +1,4 @@
+import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { addressSchema } from "@ethernauta/core"
 import {
@@ -126,27 +127,19 @@ export function Ens137Demo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 24,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-      }}
-    >
-      <section style={{ display: "grid", gap: 8 }}>
-        <h4 style={{ margin: 0 }}>
+    <div className="ens-137-root">
+      <section className="ens-137-section">
+        <h4 className="ens-137-heading">
           Forward: name → address
         </h4>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="ens-137-input-row">
           <input
             type="text"
             value={name}
             onChange={(e) =>
               set_name(e.currentTarget.value)
             }
-            style={{ flex: 1, padding: 6 }}
+            className="ens-137-input"
           />
           <Button
             onClick={lookup_forward}
@@ -156,7 +149,7 @@ export function Ens137Demo() {
           </Button>
         </div>
         {forward && (
-          <dl style={{ margin: 0 }}>
+          <dl className="ens-137-dl">
             <dt>address</dt>
             <dd>
               <code>{forward.address ?? "(none)"}</code>
@@ -181,22 +174,18 @@ export function Ens137Demo() {
         )}
       </section>
 
-      <section style={{ display: "grid", gap: 8 }}>
-        <h4 style={{ margin: 0 }}>
+      <section className="ens-137-section">
+        <h4 className="ens-137-heading">
           Reverse: address → name
         </h4>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="ens-137-input-row">
           <input
             type="text"
             value={address}
             onChange={(e) =>
               set_address(e.currentTarget.value)
             }
-            style={{
-              flex: 1,
-              padding: 6,
-              fontFamily: "monospace",
-            }}
+            className="ens-137-input is-mono"
           />
           <Button
             onClick={lookup_reverse}
@@ -206,7 +195,7 @@ export function Ens137Demo() {
           </Button>
         </div>
         {reverse && (
-          <p style={{ margin: 0 }}>
+          <p className="ens-137-reverse-result">
             <code>
               {reverse.name ?? "(no reverse record)"}
             </code>
@@ -215,7 +204,7 @@ export function Ens137Demo() {
       </section>
 
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>
+        <p className="ens-137-error">
           {error}
         </p>
       )}

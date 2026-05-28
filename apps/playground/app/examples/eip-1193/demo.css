@@ -1,0 +1,82 @@
+.eip-1193-root {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.eip-1193-description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.eip-1193-empty {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.eip-1193-providers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.eip-1193-provider-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.eip-1193-provider-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eip-1193-provider-icon {
+  border-radius: 4px;
+}
+
+.eip-1193-summary {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.eip-1193-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.eip-1193-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.eip-1193-row-label {
+  color: var(--text-muted);
+}
+
+.eip-1193-row-value {
+  font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eip-1193-row-value.is-mono {
+  font-family: monospace;
+}

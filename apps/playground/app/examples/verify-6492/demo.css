@@ -1,0 +1,36 @@
+.verify-6492-root {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.verify-6492-error {
+  color: crimson;
+  margin: 0;
+}
+
+.verify-6492-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.verify-6492-row-label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.verify-6492-row-value {
+  font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.verify-6492-row-value.is-mono {
+  font-family: monospace;
+}

@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   type Address,
   addressSchema,
@@ -73,16 +74,7 @@ export function Verify6492Demo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
+    <div className="verify-6492-root">
       <Row label="Magic bytes" value={MAGIC_BYTES} mono />
       <Row label="factory" value={FACTORY} mono />
       <Row label="factoryData" value={FACTORY_DATA} mono />
@@ -132,7 +124,7 @@ export function Verify6492Demo() {
         </>
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>
+        <p className="verify-6492-error">
           {error}
         </p>
       )}
@@ -153,29 +145,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="verify-6492-row">
+      <span className="verify-6492-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "verify-6492-row-value is-mono"
+            : "verify-6492-row-value"
+        }
       >
         {value}
       </span>

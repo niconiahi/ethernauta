@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   type AbiCodec,
   address,
@@ -103,23 +104,8 @@ export function EventDecodingDemo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 16,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
-      <p
-        style={{
-          margin: 0,
-          color: "var(--text-muted)",
-          fontSize: 14,
-        }}
-      >
+    <div className="event-decoding-root">
+      <p className="event-decoding-description">
         Decodes the last few blocks of <code>Transfer</code>{" "}
         events on USDC mainnet via{" "}
         <code>get_contract_events</code>.
@@ -130,45 +116,20 @@ export function EventDecodingDemo() {
         </Button>
       </div>
       {range && (
-        <p
-          style={{
-            margin: 0,
-            fontSize: 13,
-            color: "var(--text-muted)",
-          }}
-        >
+        <p className="event-decoding-range">
           Blocks {range} — {rows.length} shown
         </p>
       )}
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>
-          {error}
-        </p>
+        <p className="event-decoding-error">{error}</p>
       )}
       {rows.length > 0 && (
-        <table
-          style={{
-            fontFamily: "monospace",
-            fontSize: 12,
-            width: "100%",
-            borderCollapse: "collapse",
-          }}
-        >
+        <table className="event-decoding-table">
           <thead>
-            <tr
-              style={{
-                textAlign: "left",
-                color: "var(--text-muted)",
-              }}
-            >
-              <th style={{ padding: "4px 8px" }}>from</th>
-              <th style={{ padding: "4px 8px" }}>to</th>
-              <th
-                style={{
-                  padding: "4px 8px",
-                  textAlign: "right",
-                }}
-              >
+            <tr className="event-decoding-thead">
+              <th className="event-decoding-cell">from</th>
+              <th className="event-decoding-cell">to</th>
+              <th className="event-decoding-cell is-right">
                 value (USDC)
               </th>
             </tr>
@@ -178,22 +139,15 @@ export function EventDecodingDemo() {
               <tr
                 // biome-ignore lint/suspicious/noArrayIndexKey: display-only, never reordered
                 key={i}
-                style={{
-                  borderTop: "1px solid var(--border)",
-                }}
+                className="event-decoding-row"
               >
-                <td style={{ padding: "4px 8px" }}>
+                <td className="event-decoding-cell">
                   {trunc(r.from)}
                 </td>
-                <td style={{ padding: "4px 8px" }}>
+                <td className="event-decoding-cell">
                   {trunc(r.to)}
                 </td>
-                <td
-                  style={{
-                    padding: "4px 8px",
-                    textAlign: "right",
-                  }}
-                >
+                <td className="event-decoding-cell is-right">
                   {format_usdc(r.value)}
                 </td>
               </tr>

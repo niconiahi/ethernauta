@@ -1,0 +1,49 @@
+.event-decoding-root {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.event-decoding-description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.event-decoding-range {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.event-decoding-error {
+  color: crimson;
+  margin: 0;
+}
+
+.event-decoding-table {
+  font-family: monospace;
+  font-size: 12px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.event-decoding-thead {
+  text-align: left;
+  color: var(--text-muted);
+}
+
+.event-decoding-cell {
+  padding: 4px 8px;
+}
+
+.event-decoding-cell.is-right {
+  text-align: right;
+}
+
+.event-decoding-row {
+  border-top: 1px solid var(--border);
+}

@@ -3,6 +3,7 @@
 // gasEstimateComponents(to, false, data) — the Nitro node hands back
 // the L2 execution + L1 batch-posting split in one shot.
 
+import "./demo.css"
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
 import { addressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_arbitrum } from "@ethernauta/gas"
@@ -67,7 +68,7 @@ export function GasEstimateArbitrumDemo() {
   }
 
   return (
-    <div style={CARD}>
+    <div className="gas-estimate-arbitrum-card">
       <Button onClick={run} disabled={in_flight}>
         {in_flight
           ? "Estimating…"
@@ -85,7 +86,7 @@ export function GasEstimateArbitrumDemo() {
         label="l2_base_fee"
         value={fees?.l2_base_fee ?? null}
       />
-      {error && <div style={ERROR}>{error}</div>}
+      {error && <div className="gas-estimate-arbitrum-error">{error}</div>}
     </div>
   )
 }
@@ -98,9 +99,9 @@ function ResultRow({
   value: Uint | null
 }) {
   return (
-    <div style={RESULT_ROW}>
-      <span style={MONO}>{label}</span>
-      <span style={RESULT_VALUE}>
+    <div className="gas-estimate-arbitrum-result-row">
+      <span className="gas-estimate-arbitrum-mono">{label}</span>
+      <span className="gas-estimate-arbitrum-result-value">
         {value
           ? `${value} (${hex_to_bigint(value).toLocaleString("en-US")})`
           : "—"}
@@ -108,34 +109,3 @@ function ResultRow({
     </div>
   )
 }
-
-const CARD = {
-  display: "grid",
-  gap: 16,
-  padding: 16,
-  border: "1px solid var(--border)",
-  borderRadius: 8,
-  background: "var(--surface)",
-} as const
-const RESULT_ROW = {
-  display: "grid",
-  gridTemplateColumns: "1fr auto",
-  alignItems: "center",
-  gap: 12,
-  padding: "10px 0",
-  borderTop: "1px solid var(--border)",
-} as const
-const MONO = {
-  fontFamily: "monospace",
-  fontSize: 14,
-} as const
-const RESULT_VALUE = {
-  fontFamily: "monospace",
-  fontSize: 13,
-  color: "var(--text-muted)",
-} as const
-const ERROR = {
-  color: "var(--danger)",
-  fontFamily: "monospace",
-  fontSize: 13,
-} as const

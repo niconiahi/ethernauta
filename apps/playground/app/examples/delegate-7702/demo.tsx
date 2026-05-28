@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   address,
   array,
@@ -132,8 +133,8 @@ export function Delegate7702Demo() {
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
-      <div style={{ marginBottom: 24 }}>
+    <div className="delegate-7702-root">
+      <div className="delegate-7702-rows">
         <Row
           label="Network"
           value={`${eip155_11155111.name} (chain ${eip155_11155111.chainId})`}
@@ -152,23 +153,11 @@ export function Delegate7702Demo() {
         )}
       </div>
       {error && (
-        <p
-          style={{
-            color: "var(--danger)",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
-        >
+        <p className="delegate-7702-error">
           {error}
         </p>
       )}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="delegate-7702-actions">
         {!owner && <SignInHint />}
         {owner && (
           <Button onClick={run_batch} disabled={loading}>
@@ -184,24 +173,14 @@ export function Delegate7702Demo() {
             href={`https://sepolia.etherscan.io/tx/${tx_hash}`}
             target="_blank"
             rel="noreferrer"
-            style={{
-              fontSize: 14,
-              color: "var(--active-bg)",
-              alignSelf: "center",
-            }}
+            className="delegate-7702-explorer-link"
           >
             View on Sepolia Etherscan ↗
           </a>
         )}
       </div>
       {!owner && (
-        <p
-          style={{
-            fontSize: 13,
-            color: "var(--text-muted)",
-            marginTop: 12,
-          }}
-        >
+        <p className="delegate-7702-hint">
           Needs the Ethernauta extension installed and
           Sepolia ETH in the connected account.
         </p>
@@ -220,33 +199,16 @@ function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "10px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 14,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="delegate-7702-row">
+      <span className="delegate-7702-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "delegate-7702-row-value is-mono"
+            : "delegate-7702-row-value"
+        }
       >
         {value}
       </span>

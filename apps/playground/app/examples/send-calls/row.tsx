@@ -1,3 +1,5 @@
+import "./row.css"
+
 export function Row({
   label,
   value,
@@ -8,36 +10,16 @@ export function Row({
   mono?: boolean
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-        padding: "8px 0",
-        borderBottom: "1px solid var(--border)",
-        fontSize: 13,
-      }}
-    >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <div className="send-calls-row">
+      <span className="send-calls-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono
-            ? "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-            : "inherit",
-          color: "var(--text)",
-          textAlign: "right",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          minWidth: 0,
-        }}
+        className={
+          mono
+            ? "send-calls-row-value is-mono"
+            : "send-calls-row-value"
+        }
       >
         {value}
       </span>

@@ -5,6 +5,7 @@
 // which OP-stack chain the provider is on. The chain is wired into
 // the `provider.reader({ chain_id })` resolver, not into the helper.
 
+import "./demo.css"
 import type { Chain } from "@ethernauta/chain"
 import { eip155_10 } from "@ethernauta/chain/eip155-10"
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
@@ -105,7 +106,7 @@ export function GasEstimateOpStackDemo() {
   }
 
   return (
-    <div style={CARD}>
+    <div className="gas-estimate-op-stack-card">
       <ChainPicker
         chains={CHAINS}
         value={chain_idx}
@@ -148,7 +149,7 @@ export function GasEstimateOpStackDemo() {
         label="l1_fee"
         value={fees?.l1_fee ?? null}
       />
-      {error && <div style={ERROR}>{error}</div>}
+      {error && <div className="gas-estimate-op-stack-error">{error}</div>}
     </div>
   )
 }
@@ -163,27 +164,17 @@ function ChainPicker({
   onChange: (_value: number) => void
 }) {
   return (
-    <div style={{ display: "flex", gap: 8 }}>
+    <div className="gas-estimate-op-stack-picker">
       {chains.map((entry, i) => (
         <button
           type="button"
           key={entry.label}
           onClick={() => onChange(i)}
-          style={{
-            padding: "8px 12px",
-            border:
-              i === value
-                ? "2px solid var(--text)"
-                : "1px solid var(--border)",
-            borderRadius: 4,
-            background:
-              i === value
-                ? "var(--surface-strong)"
-                : "var(--surface)",
-            fontFamily: "monospace",
-            fontSize: 14,
-            cursor: "pointer",
-          }}
+          className={
+            i === value
+              ? "gas-estimate-op-stack-picker-button is-active"
+              : "gas-estimate-op-stack-picker-button"
+          }
         >
           {entry.label}
         </button>
@@ -208,8 +199,8 @@ function KnobRow({
   onChange: (_value: number) => void
 }) {
   return (
-    <label style={KNOB_ROW}>
-      <span style={MONO}>{label}</span>
+    <label className="gas-estimate-op-stack-knob-row">
+      <span className="gas-estimate-op-stack-mono">{label}</span>
       <input
         type="number"
         value={value}
@@ -219,7 +210,7 @@ function KnobRow({
         onChange={(e) =>
           onChange(Number(e.currentTarget.value))
         }
-        style={INPUT}
+        className="gas-estimate-op-stack-input"
       />
     </label>
   )
@@ -233,9 +224,9 @@ function ResultRow({
   value: Uint | null
 }) {
   return (
-    <div style={RESULT_ROW}>
-      <span style={MONO}>{label}</span>
-      <span style={RESULT_VALUE}>
+    <div className="gas-estimate-op-stack-result-row">
+      <span className="gas-estimate-op-stack-mono">{label}</span>
+      <span className="gas-estimate-op-stack-result-value">
         {value
           ? `${value} (${hex_to_bigint(value).toLocaleString("en-US")})`
           : "—"}
@@ -243,48 +234,3 @@ function ResultRow({
     </div>
   )
 }
-
-const CARD = {
-  display: "grid",
-  gap: 16,
-  padding: 16,
-  border: "1px solid var(--border)",
-  borderRadius: 8,
-  background: "var(--surface)",
-} as const
-const KNOB_ROW = {
-  display: "grid",
-  gridTemplateColumns: "1fr auto",
-  alignItems: "center",
-  gap: 12,
-} as const
-const RESULT_ROW = {
-  display: "grid",
-  gridTemplateColumns: "1fr auto",
-  alignItems: "center",
-  gap: 12,
-  padding: "10px 0",
-  borderTop: "1px solid var(--border)",
-} as const
-const MONO = {
-  fontFamily: "monospace",
-  fontSize: 14,
-} as const
-const INPUT = {
-  width: 80,
-  padding: "6px 8px",
-  border: "1px solid var(--border)",
-  borderRadius: 4,
-  fontFamily: "monospace",
-  fontSize: 14,
-} as const
-const RESULT_VALUE = {
-  fontFamily: "monospace",
-  fontSize: 13,
-  color: "var(--text-muted)",
-} as const
-const ERROR = {
-  color: "var(--danger)",
-  fontFamily: "monospace",
-  fontSize: 13,
-} as const

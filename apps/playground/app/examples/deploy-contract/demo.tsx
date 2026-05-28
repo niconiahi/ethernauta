@@ -1,3 +1,4 @@
+import "./demo.css"
 import {
   type Address,
   addressSchema,
@@ -64,16 +65,7 @@ export function DeployContractDemo() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 12,
-        padding: 16,
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        background: "var(--surface)",
-      }}
-    >
+    <div className="deploy-contract-root">
       <Section title="CREATE">
         <Row label="from" value={CREATE_FROM} mono />
         <Row
@@ -107,7 +99,7 @@ export function DeployContractDemo() {
         )}
       </Section>
       {error && (
-        <p style={{ color: "crimson", margin: 0 }}>
+        <p className="deploy-contract-error">
           {error}
         </p>
       )}
@@ -126,16 +118,8 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section
-      style={{
-        display: "grid",
-        gap: 4,
-        padding: 12,
-        border: "1px solid var(--border)",
-        borderRadius: 6,
-      }}
-    >
-      <h4 style={{ margin: "0 0 4px", fontSize: 14 }}>
+    <section className="deploy-contract-section">
+      <h4 className="deploy-contract-section-title">
         {title}
       </h4>
       {children}
@@ -156,33 +140,21 @@ function Row({
 }) {
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-        fontSize: 13,
-        padding: highlight ? "4px 6px" : 0,
-        background: highlight
-          ? "var(--surface-strong)"
-          : "transparent",
-        borderRadius: highlight ? 4 : 0,
-      }}
+      className={
+        highlight
+          ? "deploy-contract-row is-highlight"
+          : "deploy-contract-row"
+      }
     >
-      <span
-        style={{
-          color: "var(--text-muted)",
-          whiteSpace: "nowrap",
-        }}
-      >
+      <span className="deploy-contract-row-label">
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? "monospace" : "inherit",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
+        className={
+          mono
+            ? "deploy-contract-row-value is-mono"
+            : "deploy-contract-row-value"
+        }
       >
         {value}
       </span>
