@@ -10,7 +10,8 @@ order: 2
 Every method in Ethernauta is a curried function:
 
 ```ts
-method(args)(resolved_transport) // → Promise<T>
+// shape only — see the blocks below for runnable examples.
+declare function method(args: unknown): (resolved_transport: unknown) => Promise<unknown>;
 ```
 
 The **first call** binds the method's parameters. The **second call** binds the transport. The two are never collapsed — that's a hard rule (M3 in the project maxims).
@@ -29,13 +30,17 @@ Plus a fifth that the `@ethernauta/transaction` package layers on top:
 ## Readable\<T\>
 
 ```ts
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_blockNumber } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
 
-const reader = create_reader([chain1, chain2]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
 const block = await eth_blockNumber()(
-  reader({ chain_id: chain1.chain_id }),
+  reader({ chain_id: CHAIN_ID }),
 );
 ```
 
@@ -44,13 +49,20 @@ Backed by an HTTP transport that picks an RPC URL from the chain definition. Rea
 ## Writable\<T\>
 
 ```ts
-import { create_writer } from "@ethernauta/transport";
+import { create_writer, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_sendRawTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const writer = create_writer([chain1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const writer = create_writer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const signed_bytes = parse(BytesSchema, "0x");
 
-const hash = await eth_sendRawTransaction(signed_bytes)(
-  writer({ chain_id: chain1.chain_id }),
+const hash = await eth_sendRawTransaction([signed_bytes])(
+  writer({ chain_id: CHAIN_ID }),
 );
 ```
 
@@ -59,17 +71,28 @@ Same HTTP transport, but reserved for methods that broadcast. Only `eth_sendRawT
 ## Signable\<T\>
 
 ```ts
-import { create_signer } from "@ethernauta/transport";
-import { eth_sendTransaction, personal_sign } from "@ethernauta/eth";
+import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import { eth_sendTransaction } from "@ethernauta/eth";
+import { personal_sign } from "@ethernauta/eip/191";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const signer = create_signer([chain1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
+const account = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 
-const hash = await eth_sendTransaction({ to, value, input })(
-  signer({ chain_id: chain1.chain_id }),
+const hash = await eth_sendTransaction([{ to, value, input }])(
+  signer({ chain_id: CHAIN_ID }),
 );
 
-const signature = await personal_sign({ message, account })(
-  signer({ chain_id: chain1.chain_id }),
+const signature = await personal_sign(["hello", account])(
+  signer({ chain_id: CHAIN_ID }),
 );
 ```
 
@@ -78,32 +101,54 @@ The **only** shape that requires a wallet. The signer wraps a 1193 provider (the
 ## Callable\<T\>
 
 ```ts
-import { create_contract } from "@ethernauta/transport";
+import { contract, create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { balanceOf } from "@ethernauta/erc/20";
+import { eth_call } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const contract = create_contract([chain1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const token_address = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const holder = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 
-const balance = await balanceOf({ address: holder })(
-  contract({ chain_id: chain1.chain_id, contract: token_address }),
+const callable = balanceOf([holder])(
+  contract({ chain_id: CHAIN_ID, to: token_address }),
 );
+const result_bytes = await eth_call([
+  { to: callable.to, input: callable.data },
+])(reader({ chain_id: CHAIN_ID }));
+const balance = callable.decode(result_bytes);
 ```
 
-A specialization of `Readable` for ABI-decoded contract reads. The resolver carries a `contract` address; the method binds `function selector + args + return decoder` automatically. ERC method bindings (`@ethernauta/erc/20/methods/balance-of`, etc.) all return `Callable<T>`.
+A specialization of `Readable` for ABI-decoded contract reads. The `Callable<T>` returned by an ERC binding carries the calldata + a `decode` function; you pass it through `eth_call` and then decode the bytes. ERC method bindings (`@ethernauta/erc/20/methods/balance-of`, etc.) all return `Callable<T>`.
 
 ## Trackable\<T\>
 
 ```ts
-import { create_tracker, wait_for_receipt, watch_transaction } from "@ethernauta/transaction";
+import { create_tracker, wait_for_receipt, watch_transaction, window_store } from "@ethernauta/transaction";
+import { encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { Hash32Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const tracker = create_tracker([chain1], { store });
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const tracker = create_tracker(
+  [{ chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] }],
+  { store: window_store },
+);
+const hash = parse(Hash32Schema, "0x" + "0".repeat(64));
 
-const receipt = await wait_for_receipt({ hash })(
-  tracker({ chain_id: chain1.chain_id }),
+const receipt = await wait_for_receipt([hash])(
+  tracker({ chain_id: CHAIN_ID }),
 );
 
-const unsubscribe = watch_transaction({ hash, on_receipt })(
-  tracker({ chain_id: chain1.chain_id }),
-);
+const unsubscribe = watch_transaction(hash, (_transaction) => {
+  // react to mined transaction
+})(tracker({ chain_id: CHAIN_ID }));
 ```
 
 The tracker carries a `Store` (typically `localStorage`-backed) so pending transactions survive page reloads. Layered on top of `Readable<T>`.
