@@ -19,12 +19,24 @@ This is the package that lets you verify a signature **without caring** whether 
 
 ```ts
 import { verify_message } from "@ethernauta/crypto";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const signer = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const signature = parse(BytesSchema, "0x");
 
 const ok = await verify_message({
   address: signer,
   message: "Hello, world",
   signature,
-})(reader({ chain_id: eip155_1.chain_id }));
+})(reader({ chain_id: CHAIN_ID }));
 ```
 
 `verify_message` tries EOA recovery, then EIP-1271 if the address has code. `verify_message_deployed` is EIP-1271-only; `verify_message_universal` adds EIP-6492 (works for not-yet-deployed accounts).
@@ -33,12 +45,31 @@ const ok = await verify_message({
 
 ```ts
 import { verify_typed_data } from "@ethernauta/crypto";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema } from "@ethernauta/core";
+import type { TypedData } from "@ethernauta/eip/712";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const signer = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const signature = parse(BytesSchema, "0x");
+const typedData: TypedData = {
+  domain: { name: "Example", version: "1", chainId: 1 },
+  types: { Mail: [{ name: "from", type: "address" }] },
+  primaryType: "Mail",
+  message: { from: signer },
+};
 
 const ok = await verify_typed_data({
   address: signer,
-  typed_data,
+  typedData,
   signature,
-})(reader({ chain_id: eip155_1.chain_id }));
+})(reader({ chain_id: CHAIN_ID }));
 ```
 
 Same pattern: `verify_typed_data` is the convenience entry, `verify_typed_data_deployed` and `verify_typed_data_universal` are the lower tiers.
@@ -47,16 +78,29 @@ Same pattern: `verify_typed_data` is the convenience entry, `verify_typed_data_d
 
 ```ts
 import { verify_siwe_message } from "@ethernauta/crypto";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const message = "example.com wants you to sign in...";
+const signature = parse(BytesSchema, "0x");
+const domain = "example.com";
+const nonce = "abc123";
 
 const result = await verify_siwe_message({
-  message,        // the SIWE message string
+  message,
   signature,
-  domain,
-  nonce,
-})(reader({ chain_id: eip155_1.chain_id }));
+  expected: { domain, nonce },
+})(reader({ chain_id: CHAIN_ID }));
 
-if (result.valid) {
-  console.log("address:", result.address);
+if (result.ok) {
+  console.log("address:", result.fields.address);
 } else {
   console.log("reason:", result.reason);
   // ↑ VerifySiweMessageFailureReason
@@ -72,12 +116,13 @@ For when the dapp owns a private key (server-side flows, key-derived accounts, t
 ```ts
 import {
   sign_digest,
-  sign_typed_data,
-  personal_sign_message,
   signature_to_hex,
 } from "@ethernauta/crypto";
 
-const signature = sign_digest({ digest, private_key });
+const digest = new Uint8Array(32);
+const private_key = new Uint8Array(32);
+
+const signature = sign_digest(digest, private_key);
 const hex = signature_to_hex(signature);
 ```
 
@@ -92,8 +137,13 @@ const hex = signature_to_hex(signature);
 
 ```ts
 import { recover_address } from "@ethernauta/crypto";
+import { Hash32Schema, Bytes65Schema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const address = recover_address({ digest, signature });
+const digest = parse(Hash32Schema, "0x" + "00".repeat(32));
+const signature = parse(Bytes65Schema, "0x" + "00".repeat(65));
+
+const address = recover_address(digest, signature);
 ```
 
 `recover_address` is the inverse of `sign_digest` — given the digest that was signed and the signature, return the address whose private key signed it.
@@ -106,11 +156,11 @@ import {
   seed_to_master_key,
   derive_private_key,
   private_key_to_address,
-  type HDKey,
+  HDKey,
 } from "@ethernauta/crypto";
 
-const seed = await mnemonic_to_seed("twelve word mnemonic ...");
-const master = seed_to_master_key(seed);
+const seed = mnemonic_to_seed("twelve word mnemonic ...");
+const master: HDKey = seed_to_master_key(seed);
 const account = derive_private_key(master, "m/44'/60'/0'/0/0");
 const address = private_key_to_address(account);
 ```
@@ -124,6 +174,7 @@ Used by the wallet's vault to derive addresses from the encrypted mnemonic. Expo
 ```ts
 import { keccak_256 } from "@ethernauta/crypto";
 
+const bytes = new Uint8Array([0x01, 0x02, 0x03]);
 const hash = keccak_256(bytes);  // → Uint8Array(32)
 ```
 
