@@ -87,7 +87,14 @@ This is hard rule 10 in CLAUDE.md and the reason for the four-tier split: tier 3
 From the dapp side, all of this is just 1193:
 
 ```ts
+import type { Provider } from "@ethernauta/eip/1193";
+
+declare const provider: Provider;
+const method = "eth_blockNumber";
+const params: readonly unknown[] = [];
+
 const result = await provider.request({ method, params });
+void result;
 ```
 
 The four-tier routing is the wallet's internal organization. The dapp only sees: "this method returns a value" or "this method opens a popup" or "this method is unsupported (4200)."
@@ -95,17 +102,27 @@ The four-tier routing is the wallet's internal organization. The dapp only sees:
 For a tighter dapp-facing API, the library wraps the provider in resolvers:
 
 ```ts
+import { parse } from "valibot";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import type { Provider } from "@ethernauta/eip/1193";
+import { eth_blockNumber, eth_sendTransaction } from "@ethernauta/eth";
 import { create_provider } from "@ethernauta/transport";
 
-const provider = create_provider(eip1193);
+declare const eip1193: Provider;
+const adapter = create_provider(eip1193);
 
-// tier 2: chain reads via provider.reader
-const block = await eth_blockNumber()(provider.reader({ chain_id: "eip155:1" }));
+// tier 2: chain reads via adapter.reader
+const block = await eth_blockNumber()(adapter.reader({ chain_id: "eip155:1" }));
+void block;
 
-// tier 3: signables via provider.signer
-const hash = await eth_sendTransaction({ to, value })(
-  provider.signer({ chain_id: "eip155:1" }),
+// tier 3: signables via adapter.signer
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x16345785D8A0000");
+const input = parse(BytesSchema, "0x");
+const hash = await eth_sendTransaction([{ to, value, input }])(
+  adapter.signer({ chain_id: "eip155:1" }),
 );
+void hash;
 ```
 
 The resolver shapes ([Concepts → resolver shapes](/concepts/resolver-shapes)) map directly onto the tier split: `Reader` over tier 2, `Signer` over tier 3, `Writer` over public RPC (skipping the wallet entirely — see [Two paths](/concepts/two-paths)).
