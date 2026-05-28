@@ -1,6 +1,6 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { AddressSchema } from "@ethernauta/core"
+import { AddressSchema, Uint256Schema } from "@ethernauta/core"
 import {
   balanceOf,
   decimals,
@@ -21,6 +21,7 @@ import {
   object,
   parse,
   string,
+  tuple,
 } from "valibot"
 import { Button } from "../../components/button"
 
@@ -69,6 +70,13 @@ const HoldingSchema = object({
 })
 type Holding = InferOutput<typeof HoldingSchema>
 
+// Per-token slice: [symbol(), decimals(), balanceOf({account})]
+const TokenCallResultsSchema = tuple([
+  string(),
+  Uint256Schema,
+  Uint256Schema,
+])
+
 export function PortfolioDemo() {
   const [holdings, set_holdings] = useState<
     Holding[] | null
@@ -93,25 +101,21 @@ export function PortfolioDemo() {
           symbol()(ctx),
           decimals()(ctx),
           balanceOf({ account: owner })(ctx),
-        ] as const
+        ]
       })
       const start = performance.now()
-      const results = await multicall(calls as never)
+      const results = await multicall(calls)
       set_elapsed_ms(Math.round(performance.now() - start))
       const next: Holding[] = TOKENS.map((_, i) => {
-        const r = results as unknown as readonly [
-          string,
-          `0x${string}`,
-          `0x${string}`,
-        ][]
-        const sym = r[i * 3] as unknown as string
-        const dec = r[i * 3 + 1] as unknown as `0x${string}`
-        const bal = r[i * 3 + 2] as unknown as `0x${string}`
-        return {
+        const [sym, dec_hex, bal_hex] = parse(
+          TokenCallResultsSchema,
+          results.slice(i * 3, i * 3 + 3),
+        )
+        return parse(HoldingSchema, {
           symbol: sym,
-          decimals: hex_to_number(dec),
-          balance: BigInt(bal),
-        }
+          decimals: hex_to_number(dec_hex),
+          balance: BigInt(bal_hex),
+        })
       })
       set_holdings(next)
     } catch (e) {

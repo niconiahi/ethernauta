@@ -1,13 +1,9 @@
 import "./demo.css"
-import {
-  type AbiCodec,
-  address,
-  uint256,
-} from "@ethernauta/abi"
+import { address, uint256 } from "@ethernauta/abi"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
   AddressSchema,
-  type Uint256,
+  Uint256Schema,
   UintSchema,
 } from "@ethernauta/core"
 import {
@@ -70,11 +66,7 @@ export function EventDecodingDemo() {
       const head = BigInt(head_hex)
       const from = head - 3n
       const to = head
-      const args: readonly AbiCodec<unknown>[] = [
-        address(),
-        address(),
-        uint256(),
-      ] as readonly AbiCodec<unknown>[]
+      const args = [address(), address(), uint256()]
       const decoded = await get_contract_events({
         address: parse(AddressSchema, USDC),
         name: "Transfer",
@@ -92,7 +84,7 @@ export function EventDecodingDemo() {
           parse(RowSchema, {
             from: d.args[0],
             to: d.args[1],
-            value: BigInt(d.args[2] as Uint256),
+            value: BigInt(parse(Uint256Schema, d.args[2])),
           }),
         ),
       )

@@ -28,6 +28,7 @@ import {
   object,
   parse,
   string,
+  tuple,
 } from "valibot"
 import { Button } from "../../components/button"
 
@@ -68,11 +69,24 @@ const SnapshotSchema = object({
   ),
   name: string(),
   total_supply: bigint(),
-  owner_of_1: string(),
+  owner_of_1: AddressSchema,
   token_uri_1: string(),
   elapsed_ms: number(),
 })
 type Snapshot = InferOutput<typeof SnapshotSchema>
+
+// Result tuple matches the call order built inside `run()`:
+// [...INTERFACES.length × supportsInterface, name, totalSupply, ownerOf, tokenURI]
+const CallResultsSchema = tuple([
+  boolean(),     // supportsInterface — ERC-721
+  boolean(),     // supportsInterface — ERC-721 Metadata
+  boolean(),     // supportsInterface — ERC-721 Enumerable
+  boolean(),     // supportsInterface — ERC-2981 Royalty
+  string(),      // name()
+  Uint256Schema, // totalSupply()
+  AddressSchema, // ownerOf(1)
+  string(),      // tokenURI(1)
+])
 
 export function NftIntrospectionDemo() {
   const [snapshot, set_snapshot] =
@@ -103,24 +117,39 @@ export function NftIntrospectionDemo() {
         tokenURI({ tokenId: parse(Uint256Schema, "0x1") })(
           ctx,
         ),
-      ] as never)
+      ])
       const elapsed_ms = Math.round(
         performance.now() - start,
       )
-      const r = results as unknown as readonly unknown[]
-      set_snapshot({
-        interfaces: INTERFACES.map((i, idx) => ({
-          label: i.label,
-          supported: r[idx] as boolean,
-        })),
-        name: r[INTERFACES.length] as string,
-        total_supply: BigInt(
-          r[INTERFACES.length + 1] as `0x${string}`,
-        ),
-        owner_of_1: r[INTERFACES.length + 2] as string,
-        token_uri_1: r[INTERFACES.length + 3] as string,
-        elapsed_ms,
-      })
+      const [
+        supports_721,
+        supports_metadata,
+        supports_enumerable,
+        supports_royalty,
+        nft_name,
+        total_supply_hex,
+        owner_of_1,
+        token_uri_1,
+      ] = parse(CallResultsSchema, results)
+      const supports = [
+        supports_721,
+        supports_metadata,
+        supports_enumerable,
+        supports_royalty,
+      ]
+      set_snapshot(
+        parse(SnapshotSchema, {
+          interfaces: INTERFACES.map((i, idx) => ({
+            label: i.label,
+            supported: supports[idx],
+          })),
+          name: nft_name,
+          total_supply: BigInt(total_supply_hex),
+          owner_of_1,
+          token_uri_1,
+          elapsed_ms,
+        }),
+      )
     } catch (e) {
       set_error(
         e instanceof Error ? e.message : "Unknown error",

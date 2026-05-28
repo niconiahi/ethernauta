@@ -1,4 +1,5 @@
 import "./demo.css"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import {
   check_stealth_address,
   compute_view_tag,
@@ -13,14 +14,13 @@ import {
   type InferOutput,
   number,
   object,
+  parse,
   string,
 } from "valibot"
 import { Button } from "../../components/button"
 
-function hex_to_bytes_local(
-  _hex: `0x${string}`,
-): Uint8Array {
-  const stripped = _hex.toLowerCase().replace(/^0x/, "")
+function hex_to_bytes_local(hex: Bytes): Uint8Array {
+  const stripped = hex.toLowerCase().replace(/^0x/, "")
   const out = new Uint8Array(stripped.length / 2)
   for (let i = 0; i < out.length; i++) {
     out[i] = Number.parseInt(
@@ -31,14 +31,14 @@ function hex_to_bytes_local(
   return out
 }
 
-function random_32_bytes_hex(): `0x${string}` {
+function random_32_bytes_hex(): Bytes {
   const bytes = new Uint8Array(32)
   crypto.getRandomValues(bytes)
   let hex = "0x"
   for (const b of bytes) {
     hex += b.toString(16).padStart(2, "0")
   }
-  return hex as `0x${string}`
+  return parse(BytesSchema, hex)
 }
 
 const GeneratedSchema = object({
@@ -49,11 +49,11 @@ const GeneratedSchema = object({
 type Generated = InferOutput<typeof GeneratedSchema>
 
 export function Stealth5564Demo() {
-  const [spending_priv, set_spending_priv] = useState(() =>
-    random_32_bytes_hex(),
+  const [spending_priv, set_spending_priv] = useState<string>(
+    () => random_32_bytes_hex(),
   )
-  const [viewing_priv, set_viewing_priv] = useState(() =>
-    random_32_bytes_hex(),
+  const [viewing_priv, set_viewing_priv] = useState<string>(
+    () => random_32_bytes_hex(),
   )
   const [meta_input, set_meta_input] = useState<string>("")
   const [generated, set_generated] =
@@ -68,10 +68,10 @@ export function Stealth5564Demo() {
     try {
       return derive_meta_address({
         spending_private_key: hex_to_bytes_local(
-          spending_priv as `0x${string}`,
+          parse(BytesSchema, spending_priv),
         ),
         viewing_private_key: hex_to_bytes_local(
-          viewing_priv as `0x${string}`,
+          parse(BytesSchema, viewing_priv),
         ),
       })
     } catch {
@@ -90,7 +90,7 @@ export function Stealth5564Demo() {
     try {
       const parsed = meta_input
         ? parse_stealth_meta_address(
-            meta_input as `0x${string}`,
+            parse(BytesSchema, meta_input),
           )
         : meta
       if (!parsed) throw new Error("no meta-address")
@@ -117,9 +117,9 @@ export function Stealth5564Demo() {
       return
     }
     try {
-      const ephemeral_hex = scan_input as `0x${string}`
+      const ephemeral_hex = parse(BytesSchema, scan_input)
       const viewing_bytes = hex_to_bytes_local(
-        viewing_priv as `0x${string}`,
+        parse(BytesSchema, viewing_priv),
       )
       const tag = compute_view_tag({
         viewing_private_key: viewing_bytes,
@@ -144,16 +144,12 @@ export function Stealth5564Demo() {
       <Field
         label="Spending private key"
         value={spending_priv}
-        onChange={(v) =>
-          set_spending_priv(v as `0x${string}`)
-        }
+        onChange={set_spending_priv}
       />
       <Field
         label="Viewing private key"
         value={viewing_priv}
-        onChange={(v) =>
-          set_viewing_priv(v as `0x${string}`)
-        }
+        onChange={set_viewing_priv}
       />
       <Button
         variant="secondary"

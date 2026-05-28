@@ -2,7 +2,7 @@ import "./demo.css"
 import {
   ANNOUNCE_EVENT,
   clear_provider_detail,
-  type EIP6963AnnounceProviderEvent,
+  Eip6963ProviderDetailSchema,
   type EIP6963ProviderDetail,
   get_provider_detail,
   REQUEST_EVENT,
@@ -10,6 +10,7 @@ import {
   set_provider_detail,
 } from "@ethernauta/eip/6963"
 import { useEffect, useState } from "react"
+import { safeParse } from "valibot"
 import { Button } from "../../components/button"
 
 const PICKED_KEY =
@@ -39,9 +40,13 @@ export function Eip6963Demo() {
 
   useEffect(() => {
     function on_announce(event: Event) {
-      const detail = (event as EIP6963AnnounceProviderEvent)
-        .detail
-      if (!detail?.info?.rdns) return
+      if (!(event instanceof CustomEvent)) return
+      const parsed = safeParse(
+        Eip6963ProviderDetailSchema,
+        event.detail,
+      )
+      if (!parsed.success) return
+      const detail = parsed.output
       set_providers((current) => {
         if (
           current.some(

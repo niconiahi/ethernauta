@@ -28,6 +28,7 @@ import {
   object,
   parse,
   string,
+  tuple,
 } from "valibot"
 import { Button } from "../../components/button"
 
@@ -76,11 +77,22 @@ const VaultSnapshotSchema = object({
   total_supply: bigint(),
   total_assets: bigint(),
   assets_per_share: bigint(),
-  asset_address: string(),
+  asset_address: AddressSchema,
   underlying: string(),
   underlying_decimals: number(),
 })
 type VaultSnapshot = InferOutput<typeof VaultSnapshotSchema>
+
+// Each multicall slice (one vault, 6 reads). Matches the call
+// order built inside `run()` below.
+const VaultCallResultsSchema = tuple([
+  string(),       // symbol()
+  Uint256Schema,  // decimals()
+  Uint256Schema,  // totalSupply()
+  Uint256Schema,  // totalAssets()
+  Uint256Schema,  // convertToAssets(1e18)
+  AddressSchema,  // asset()
+])
 
 export function VaultsDemo() {
   const [snapshots, set_snapshots] = useState<
@@ -108,34 +120,36 @@ export function VaultsDemo() {
           totalAssets()(ctx),
           convertToAssets({ shares: ONE_SHARE })(ctx),
           asset()(ctx),
-        ] as const
+        ]
       })
       const start = performance.now()
-      const results = await multicall(calls as never)
+      const results = await multicall(calls)
       set_elapsed_ms(Math.round(performance.now() - start))
-      const r = results as unknown as readonly unknown[]
       set_snapshots(
         VAULTS.map((v, i) => {
           const base = i * 6
-          return {
+          const [
+            sym,
+            dec_hex,
+            total_supply_hex,
+            total_assets_hex,
+            assets_per_share_hex,
+            asset_addr,
+          ] = parse(
+            VaultCallResultsSchema,
+            results.slice(base, base + 6),
+          )
+          return parse(VaultSnapshotSchema, {
             label: v.label,
-            symbol: r[base] as string,
-            decimals: Number(
-              BigInt(r[base + 1] as `0x${string}`),
-            ),
-            total_supply: BigInt(
-              r[base + 2] as `0x${string}`,
-            ),
-            total_assets: BigInt(
-              r[base + 3] as `0x${string}`,
-            ),
-            assets_per_share: BigInt(
-              r[base + 4] as `0x${string}`,
-            ),
-            asset_address: r[base + 5] as string,
+            symbol: sym,
+            decimals: Number(BigInt(dec_hex)),
+            total_supply: BigInt(total_supply_hex),
+            total_assets: BigInt(total_assets_hex),
+            assets_per_share: BigInt(assets_per_share_hex),
+            asset_address: asset_addr,
             underlying: v.underlying,
             underlying_decimals: v.underlying_decimals,
-          }
+          })
         }),
       )
     } catch (e) {
