@@ -11,7 +11,7 @@ Token standards and contract-interface standards. Each lives at `@ethernauta/erc
 
 ```ts
 import { transfer, balanceOf } from "@ethernauta/erc/20";
-import { tokens_of_owner } from "@ethernauta/erc/721/extensions/enumerable";
+import { tokenOfOwnerByIndex } from "@ethernauta/erc/721/extensions/enumerable";
 import { balanceOfBatch } from "@ethernauta/erc/1155";
 ```
 
