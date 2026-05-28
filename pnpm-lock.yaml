@@ -516,6 +516,9 @@ importers:
       '@ethernauta/transport':
         specifier: workspace:*
         version: link:../transport
+      devalue:
+        specifier: ^5.8.1
+        version: 5.8.1
       vitest:
         specifier: ^3.0.0
         version: 3.2.4(@edge-runtime/vm@5.0.0)(@types/debug@4.1.13)(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)

@@ -36,11 +36,13 @@
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "test:integration": "vitest --config ./integration/vitest.config.mjs"
   },
   "dependencies": {
     "@ethernauta/core": "workspace:*",
-    "@ethernauta/transport": "workspace:*"
+    "@ethernauta/transport": "workspace:*",
+    "devalue": "^5.8.1"
   },
   "peerDependencies": {
     "valibot": "^1.1.0",
