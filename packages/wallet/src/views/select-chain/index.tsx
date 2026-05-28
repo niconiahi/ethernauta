@@ -54,7 +54,9 @@ export function SelectChain() {
           }}
         />
         {error && (
-          <p className="text-xs text-[var(--danger)]">{error}</p>
+          <p className="text-xs text-[var(--danger)]">
+            {error}
+          </p>
         )}
         <Button type="submit">Switch</Button>
         <Button

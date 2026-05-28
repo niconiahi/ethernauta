@@ -98,7 +98,9 @@ export function SelectAccount() {
         })}
       </ul>
       {error && (
-        <p className="text-xs text-[var(--danger)]">{error}</p>
+        <p className="text-xs text-[var(--danger)]">
+          {error}
+        </p>
       )}
       <div className="flex flex-col gap-2">
         <Button

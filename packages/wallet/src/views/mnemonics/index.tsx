@@ -39,7 +39,9 @@ export function Mnemonics() {
         }}
       />
       {error ? (
-        <p className="text-[var(--danger)] text-sm">{error}</p>
+        <p className="text-[var(--danger)] text-sm">
+          {error}
+        </p>
       ) : null}
       <Button
         onClick={async () => {
