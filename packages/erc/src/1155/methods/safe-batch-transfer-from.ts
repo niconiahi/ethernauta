@@ -7,10 +7,10 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -41,23 +41,23 @@ export const SAFE_BATCH_TRANSFER_FROM_SIGNATURE = {
   names: ["from", "to", "ids", "values", "data"],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    addressSchema,
-    addressSchema,
-    v_array(uint256Schema),
-    v_array(uint256Schema),
-    bytesSchema,
+    AddressSchema,
+    AddressSchema,
+    v_array(Uint256Schema),
+    v_array(Uint256Schema),
+    BytesSchema,
   ]),
   object({
-    from: addressSchema,
-    to: addressSchema,
-    ids: v_array(uint256Schema),
-    values: v_array(uint256Schema),
-    data: bytesSchema,
+    from: AddressSchema,
+    to: AddressSchema,
+    ids: v_array(Uint256Schema),
+    values: v_array(Uint256Schema),
+    data: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function safeBatchTransferFrom(
   _parameters: Parameters,
@@ -70,7 +70,7 @@ export function safeBatchTransferFrom(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -98,8 +98,8 @@ export function safeBatchTransferFrom(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: SAFE_BATCH_TRANSFER_FROM_SIGNATURE,
         },

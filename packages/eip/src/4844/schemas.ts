@@ -1,7 +1,7 @@
 // https://eips.ethereum.org/EIPS/eip-4844
 import {
-  bytes48Schema,
-  hash32Schema,
+  Bytes48Schema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { array, custom, object } from "valibot"
@@ -19,34 +19,34 @@ function isBlob(input: unknown): boolean {
     /^0x[0-9a-f]+$/.test(input)
   )
 }
-export const blobSchema = custom<`0x${string}`>(isBlob)
-export type Blob = InferOutput<typeof blobSchema>
+export const BlobSchema = custom<`0x${string}`>(isBlob)
+export type Blob = InferOutput<typeof BlobSchema>
 
 // KZG commitment and proof are both compressed G1 points (48 bytes).
-export const kzgCommitmentSchema = bytes48Schema
+export const KzgCommitmentSchema = Bytes48Schema
 export type KzgCommitment = InferOutput<
-  typeof kzgCommitmentSchema
+  typeof KzgCommitmentSchema
 >
 
-export const kzgProofSchema = bytes48Schema
-export type KzgProof = InferOutput<typeof kzgProofSchema>
+export const KzgProofSchema = Bytes48Schema
+export type KzgProof = InferOutput<typeof KzgProofSchema>
 
 // Network-form blob sidecar: blobs + their commitments + their proofs.
 // Same shape that gets gossiped alongside a type-3 transaction in the
 // mempool.
-export const blobSidecarSchema = object({
-  blobs: array(blobSchema),
-  commitments: array(kzgCommitmentSchema),
-  proofs: array(kzgProofSchema),
+export const BlobSidecarSchema = object({
+  blobs: array(BlobSchema),
+  commitments: array(KzgCommitmentSchema),
+  proofs: array(KzgProofSchema),
 })
 export type BlobSidecar = InferOutput<
-  typeof blobSidecarSchema
+  typeof BlobSidecarSchema
 >
 
 // Versioned hash of a commitment: sha256(commitment)[1:] prefixed with
 // the version byte 0x01. The transaction body carries these (NOT the raw
 // commitments) under `blobVersionedHashes`.
-export const blobVersionedHashSchema = hash32Schema
+export const BlobVersionedHashSchema = Hash32Schema
 export type BlobVersionedHash = InferOutput<
-  typeof blobVersionedHashSchema
+  typeof BlobVersionedHashSchema
 >

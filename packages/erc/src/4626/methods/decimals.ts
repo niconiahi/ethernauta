@@ -4,7 +4,7 @@ import {
   uint8,
 } from "@ethernauta/abi"
 import type { Bytes, Uint8 } from "@ethernauta/core"
-import { bytesSchema, uint8Schema } from "@ethernauta/core"
+import { BytesSchema, Uint8Schema } from "@ethernauta/core"
 import type {
   Callable,
   ContractContext,
@@ -31,13 +31,13 @@ export function decimals() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint8 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint8Schema, decoded)
+        return parse(Uint8Schema, decoded)
       },
     }
   }

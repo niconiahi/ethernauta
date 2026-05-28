@@ -8,9 +8,9 @@ export * from "./schemas"
 export * from "./to-blobs"
 export {
   type Transaction4844Signed,
-  transaction4844SignedSchema,
+  Transaction4844SignedSchema,
 } from "./transaction-signed"
 export {
   type Transaction4844Unsigned,
-  transaction4844UnsignedSchema,
+  Transaction4844UnsignedSchema,
 } from "./transaction-unsigned"

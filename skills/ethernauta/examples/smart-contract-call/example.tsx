@@ -2,7 +2,7 @@
 // Taken from animatronik's dapp.add.tsx mint flow.
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
-import { addressSchema } from "@ethernauta/eth"
+import { AddressSchema } from "@ethernauta/eth"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
   create_signer,
@@ -56,7 +56,7 @@ export function MintButton({
     set_error(null)
     try {
       // Validate the contract address at the boundary.
-      const to = parse(addressSchema, contract_address)
+      const to = parse(AddressSchema, contract_address)
 
       // Signable: signer({ chain_id, to }) — `to` is the
       // contract address, supplied here, not baked into mint().

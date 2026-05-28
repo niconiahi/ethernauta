@@ -4,7 +4,7 @@ import {
   string_,
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
-import { bytesSchema } from "@ethernauta/core"
+import { BytesSchema } from "@ethernauta/core"
 import type {
   Callable,
   ContractContext,
@@ -31,7 +31,7 @@ export function CLOCK_MODE() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): string => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

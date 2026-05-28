@@ -9,11 +9,11 @@ import {
   unknown,
 } from "valibot"
 import type { Call } from "./call"
-import { callSchema } from "./call"
+import { CallSchema } from "./call"
 import type { Parameters, Response } from "./json-rpc"
-import { requestSchema, responseSchema } from "./json-rpc"
+import { RequestSchema, ResponseSchema } from "./json-rpc"
 
-const subscriptionNotificationSchema = object({
+const SubscriptionNotificationSchema = object({
   jsonrpc: literal("2.0"),
   method: literal("eth_subscription"),
   params: object({
@@ -22,12 +22,12 @@ const subscriptionNotificationSchema = object({
   }),
 })
 export type SubscriptionNotification = InferOutput<
-  typeof subscriptionNotificationSchema
+  typeof SubscriptionNotificationSchema
 >
 
 export type Unsubscribe = () => Promise<void>
 
-export const websocketTransportSchema = object({
+export const WebsocketTransportSchema = object({
   call: custom<(_call: Call) => Promise<Response>>(
     (value) => typeof value === "function",
   ),
@@ -42,10 +42,10 @@ export const websocketTransportSchema = object({
   ),
 })
 export type WebsocketTransport = InferOutput<
-  typeof websocketTransportSchema
+  typeof WebsocketTransportSchema
 >
 
-const pendingSchema = object({
+const PendingSchema = object({
   resolve: custom<(_response: Response) => void>(
     (value) => typeof value === "function",
   ),
@@ -53,16 +53,16 @@ const pendingSchema = object({
     (value) => typeof value === "function",
   ),
 })
-type Pending = InferOutput<typeof pendingSchema>
+type Pending = InferOutput<typeof PendingSchema>
 
-const subscriptionSchema = object({
-  call: callSchema,
+const SubscriptionSchema = object({
+  call: CallSchema,
   on_notification: custom<(_data: unknown) => void>(
     (value) => typeof value === "function",
   ),
   server_id: nullable(string()),
 })
-type Subscription = InferOutput<typeof subscriptionSchema>
+type Subscription = InferOutput<typeof SubscriptionSchema>
 
 export function websocket(url: string): WebsocketTransport {
   let socket: WebSocket | null = null
@@ -147,7 +147,7 @@ export function websocket(url: string): WebsocketTransport {
       !("id" in raw)
     ) {
       const notification = parse(
-        subscriptionNotificationSchema,
+        SubscriptionNotificationSchema,
         raw,
       )
       const client_id = server_to_client.get(
@@ -159,7 +159,7 @@ export function websocket(url: string): WebsocketTransport {
       sub.on_notification(notification.params.result)
       return
     }
-    const response = parse(responseSchema, raw)
+    const response = parse(ResponseSchema, raw)
     const id = String(response.id)
     const p = pending.get(id)
     if (!p) return
@@ -181,7 +181,7 @@ export function websocket(url: string): WebsocketTransport {
   ): Promise<Response> {
     const [method, params] = call
     const id = next_id()
-    const request = parse(requestSchema, {
+    const request = parse(RequestSchema, {
       jsonrpc: "2.0",
       id,
       method,

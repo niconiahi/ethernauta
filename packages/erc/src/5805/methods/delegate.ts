@@ -4,9 +4,9 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -24,11 +24,11 @@ export const DELEGATE_SIGNATURE = {
   names: ["delegatee"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema]),
-  object({ delegatee: addressSchema }),
+const ParametersSchema = union([
+  tuple([AddressSchema]),
+  object({ delegatee: AddressSchema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function delegate(
   _parameters: Parameters,
@@ -41,7 +41,7 @@ export function delegate(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.delegatee] as const)
@@ -57,8 +57,8 @@ export function delegate(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: DELEGATE_SIGNATURE,
         },

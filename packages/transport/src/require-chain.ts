@@ -8,14 +8,14 @@ import {
 
 import type { Http } from "./http"
 
-export const chainEntrySchema = object({
+export const ChainEntrySchema = object({
   chainId: string(),
   transports: array(
     custom<Http>((value) => typeof value === "function"),
   ),
 })
 export type ChainEntry = InferOutput<
-  typeof chainEntrySchema
+  typeof ChainEntrySchema
 >
 
 export function require_chain(

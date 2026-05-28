@@ -5,10 +5,10 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -26,11 +26,11 @@ export const TRANSFER_SIGNATURE = {
   names: ["to", "value"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema, uint256Schema]),
-  object({ to: addressSchema, value: uint256Schema }),
+const ParametersSchema = union([
+  tuple([AddressSchema, Uint256Schema]),
+  object({ to: AddressSchema, value: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function transfer(
   _parameters: Parameters,
@@ -43,7 +43,7 @@ export function transfer(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.to, parameters.value] as const)
@@ -59,8 +59,8 @@ export function transfer(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: TRANSFER_SIGNATURE,
         },

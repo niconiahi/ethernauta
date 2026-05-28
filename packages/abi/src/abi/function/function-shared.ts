@@ -9,9 +9,9 @@ import {
   union,
   variant,
 } from "valibot"
-import { tupleSchema, typeSchema } from "../shared"
+import { TupleSchema, TypeSchema } from "../shared"
 
-export const stateMutabilitySchema = union([
+export const StateMutabilitySchema = union([
   literal("pure"), // specified to not read blockchain state
   literal("view"), // specified to not modify the blockchain state
   literal("payable"), // function does not accept Ether
@@ -31,36 +31,36 @@ export type AbiInput = {
   type: string
   components?: AbiInput[]
 }
-export const abiInputSchema: GenericSchema<AbiInput> = lazy(
+export const AbiInputSchema: GenericSchema<AbiInput> = lazy(
   () =>
     variant("type", [
       object({
         name: string(),
-        type: typeSchema,
+        type: TypeSchema,
       }),
       object({
         name: string(),
         type: union([literal("tuple"), literal("tuple[]")]),
-        components: array(abiInputSchema),
+        components: array(AbiInputSchema),
       }),
     ]),
 )
 
-export const function_tupleSchema = object({
-  ...tupleSchema.entries,
-  components: array(abiInputSchema),
+export const Function_tupleSchema = object({
+  ...TupleSchema.entries,
+  components: array(AbiInputSchema),
 })
-export const function_inputSchema = variant("type", [
+export const Function_inputSchema = variant("type", [
   object({
     name: string(),
-    type: typeSchema,
+    type: TypeSchema,
   }),
-  function_tupleSchema,
+  Function_tupleSchema,
 ])
 export type FunctionInput = InferOutput<
-  typeof function_inputSchema
+  typeof Function_inputSchema
 >
-export const function_outputSchema = function_inputSchema
+export const Function_outputSchema = Function_inputSchema
 export type FunctionOutput = InferOutput<
-  typeof function_outputSchema
+  typeof Function_outputSchema
 >

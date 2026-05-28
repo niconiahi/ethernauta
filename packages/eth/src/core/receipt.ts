@@ -1,13 +1,13 @@
 // https://github.com/ethereum/execution-apis/blob/main/src/eth/transaction.yaml
 
 import {
-  addressSchema,
-  byteSchema,
-  bytes32Schema,
-  bytes256Schema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  Bytes32Schema,
+  Bytes256Schema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import {
@@ -18,38 +18,38 @@ import {
   optional,
 } from "valibot"
 
-export const logSchema = object({
+export const LogSchema = object({
   removed: boolean(),
-  logIndex: uintSchema,
-  transactionIndex: uintSchema,
-  transactionHash: hash32Schema,
-  blockHash: hash32Schema,
-  blockNumber: uintSchema,
-  address: addressSchema,
-  data: bytesSchema,
-  topics: array(bytes32Schema),
+  logIndex: UintSchema,
+  transactionIndex: UintSchema,
+  transactionHash: Hash32Schema,
+  blockHash: Hash32Schema,
+  blockNumber: UintSchema,
+  address: AddressSchema,
+  data: BytesSchema,
+  topics: array(Bytes32Schema),
 })
-export type Log = InferOutput<typeof logSchema>
+export type Log = InferOutput<typeof LogSchema>
 
-export const receiptInfoSchema = object({
-  blockHash: hash32Schema,
-  blockNumber: uintSchema,
-  from: addressSchema,
-  cumulativeGasUsed: uintSchema,
-  gasUsed: uintSchema,
-  logs: array(logSchema),
-  logsBloom: bytes256Schema,
-  transactionHash: hash32Schema,
-  transactionIndex: uintSchema,
-  effectiveGasPrice: uintSchema,
-  type: optional(byteSchema), // might not be present in all receipts
-  to: nullable(addressSchema),
-  blobGasUsed: optional(uintSchema), // only for blob transactions
-  root: optional(hash32Schema), // only for pre-Byzantium transactions
-  status: optional(uintSchema), // only for post-Byzantium transactions
-  blobGasPrice: optional(uintSchema), // only for blob transactions
-  contractAddress: nullable(addressSchema),
+export const ReceiptInfoSchema = object({
+  blockHash: Hash32Schema,
+  blockNumber: UintSchema,
+  from: AddressSchema,
+  cumulativeGasUsed: UintSchema,
+  gasUsed: UintSchema,
+  logs: array(LogSchema),
+  logsBloom: Bytes256Schema,
+  transactionHash: Hash32Schema,
+  transactionIndex: UintSchema,
+  effectiveGasPrice: UintSchema,
+  type: optional(ByteSchema), // might not be present in all receipts
+  to: nullable(AddressSchema),
+  blobGasUsed: optional(UintSchema), // only for blob transactions
+  root: optional(Hash32Schema), // only for pre-Byzantium transactions
+  status: optional(UintSchema), // only for post-Byzantium transactions
+  blobGasPrice: optional(UintSchema), // only for blob transactions
+  contractAddress: nullable(AddressSchema),
 })
 export type ReceiptInfo = InferOutput<
-  typeof receiptInfoSchema
+  typeof ReceiptInfoSchema
 >

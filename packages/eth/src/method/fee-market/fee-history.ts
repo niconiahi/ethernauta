@@ -1,9 +1,9 @@
-import { ratioSchema, uintSchema } from "@ethernauta/core"
+import { RatioSchema, UintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   array,
@@ -16,36 +16,36 @@ import {
   tuple,
   union,
 } from "valibot"
-import { blockNumberOrTagSchema } from "../../core/block"
+import { BlockNumberOrTagSchema } from "../../core/block"
 
-const percentileSchema = pipe(
+const PercentileSchema = pipe(
   number(),
   minValue(0),
   maxValue(100),
 )
-const rewardPercentilesSchema = array(percentileSchema)
-const parametersSchema = union([
+const RewardPercentilesSchema = array(PercentileSchema)
+const ParametersSchema = union([
   tuple([
-    uintSchema,
-    blockNumberOrTagSchema,
-    rewardPercentilesSchema,
+    UintSchema,
+    BlockNumberOrTagSchema,
+    RewardPercentilesSchema,
   ]),
   object({
-    blockCount: uintSchema,
-    newestBlock: blockNumberOrTagSchema,
-    rewardPercentiles: rewardPercentilesSchema,
+    blockCount: UintSchema,
+    newestBlock: BlockNumberOrTagSchema,
+    rewardPercentiles: RewardPercentilesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
-const rewardSchema = array(uintSchema)
-const feeHistoryResultsSchema = object({
-  oldestBlock: uintSchema,
-  baseFeePerGas: array(uintSchema),
-  gasUsedRatio: array(ratioSchema),
-  reward: array(rewardSchema),
+type Parameters = InferOutput<typeof ParametersSchema>
+const RewardSchema = array(UintSchema)
+const FeeHistoryResultsSchema = object({
+  oldestBlock: UintSchema,
+  baseFeePerGas: array(UintSchema),
+  gasUsedRatio: array(RatioSchema),
+  reward: array(RewardSchema),
 })
 export type FeeHistoryResults = InferOutput<
-  typeof feeHistoryResultsSchema
+  typeof FeeHistoryResultsSchema
 >
 /**
  * @returns Fee history for the returned block range. This can be a subsection of the requested range if not all blocks are available
@@ -58,8 +58,8 @@ export function eth_feeHistory(
     _context,
   ]: ResolvedReader): Promise<FeeHistoryResults> => {
     const method = "eth_feeHistory"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -67,7 +67,7 @@ export function eth_feeHistory(
       throw new Error(response.error.message)
     }
     const result = parse(
-      feeHistoryResultsSchema,
+      FeeHistoryResultsSchema,
       response.result,
     )
     return result

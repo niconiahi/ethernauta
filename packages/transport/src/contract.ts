@@ -1,6 +1,6 @@
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
@@ -8,12 +8,12 @@ import { object, parse } from "valibot"
 
 import {
   type ChainId,
-  chainIdSchema,
+  ChainIdSchema,
 } from "./chain/chain-id"
 
 export const ContractContextSchema = object({
-  chain_id: chainIdSchema,
-  to: addressSchema,
+  chain_id: ChainIdSchema,
+  to: AddressSchema,
 })
 export type ContractContext = InferOutput<
   typeof ContractContextSchema

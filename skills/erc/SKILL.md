@@ -66,7 +66,7 @@ export function balanceOf(
   _parameters: Parameters,
 ): (_context: ContractContext) => Callable<Uint256> {
   return (_context: ContractContext): Callable<Uint256> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters : [parameters.account]
     const calldata = encode_function_call({
@@ -80,7 +80,7 @@ export function balanceOf(
       data: bytes_to_hex(calldata),
       decode: (_result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(OUTPUT_CODECS, _result)
-        return parse(uint256Schema, decoded)
+        return parse(Uint256Schema, decoded)
       },
     }
   }
@@ -100,7 +100,7 @@ export function transfer(
   return async ([signer, _context]: ResolvedSigner): Promise<Bytes> => {
     if (!_context.to)
       throw new Error("contract Signable requires a 'to' on the signer resolver")
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? parameters : [parameters.to, parameters.value]
     const calldata = encode_function_call({
@@ -129,11 +129,11 @@ Same as everywhere else in the workspace: schema first, type via `InferOutput`, 
 The recurring shape for parameterized methods is a `union(tuple, object)` — see `packages/erc/src/20/methods/transfer.ts:30-34` and `packages/erc/src/137/methods/addr.ts:36-40`:
 
 ```ts
-const parametersSchema = union([
-  tuple([addressSchema, uint256Schema]),
-  object({ to: addressSchema, value: uint256Schema }),
+const ParametersSchema = union([
+  tuple([AddressSchema, Uint256Schema]),
+  object({ to: AddressSchema, value: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 ```
 
 This is what gives `@ethernauta/erc` consumers the freedom to call `transfer(["0x...", value])` or `transfer({ to: "0x...", value })` interchangeably. **Match this exactly in every new method file** — anything else is a regression in the public API.
@@ -156,7 +156,7 @@ The script walks `packages/erc/src/**` for `<METHOD>_SIGNATURE` exports and rebu
 2. **Generate the bindings.** The CLI command is in `packages/cli/`. Either run codegen or, for small ABIs, hand-write the method files following the template in `packages/erc/src/20/methods/`. Each method must:
    - Export the function (`camelCase`, matching the ABI).
    - Export the `<METHOD>_SIGNATURE` constant.
-   - Declare a `parametersSchema` as `union(tuple, object)` if the method takes args.
+   - Declare a `ParametersSchema` as `union(tuple, object)` if the method takes args.
    - Use `encode_function_call` from `@ethernauta/abi` for input encoding.
    - Use `decode_function_result` from `@ethernauta/abi` for output decoding.
    - Return either `(context) => Callable<T>` (view/pure) or `Signable<Bytes>` (state-changing).

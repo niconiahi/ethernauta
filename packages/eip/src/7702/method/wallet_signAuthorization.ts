@@ -17,7 +17,7 @@ import { parse } from "valibot"
 import {
   type AuthorizationParameter,
   type AuthorizationSigned,
-  authorizationSignedSchema,
+  AuthorizationSignedSchema,
 } from "../authorization"
 
 export function wallet_signAuthorization(
@@ -29,7 +29,7 @@ export function wallet_signAuthorization(
       _parameters,
     )
     return parse(
-      authorizationSignedSchema,
+      AuthorizationSignedSchema,
       JSON.parse(result),
     )
   }

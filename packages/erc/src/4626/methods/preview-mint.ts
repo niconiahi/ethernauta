@@ -5,8 +5,8 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes, Uint256 } from "@ethernauta/core"
 import {
-  bytesSchema,
-  uint256Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -24,15 +24,15 @@ export const PREVIEW_MINT_SIGNATURE = {
   names: ["shares"],
 }
 
-const parametersSchema = union([
-  tuple([uint256Schema]),
-  object({ shares: uint256Schema }),
+const ParametersSchema = union([
+  tuple([Uint256Schema]),
+  object({ shares: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function previewMint(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.shares] as const)
@@ -44,13 +44,13 @@ export function previewMint(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint256Schema, decoded)
+        return parse(Uint256Schema, decoded)
       },
     }
   }

@@ -1,6 +1,6 @@
 import {
-  bytes32Schema,
-  bytesSchema,
+  Bytes32Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -120,20 +120,20 @@ describe("decode_event_log", () => {
       indexed: [true, true, false],
       topics: [
         parse(
-          bytes32Schema,
+          Bytes32Schema,
           "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
         ),
         parse(
-          bytes32Schema,
+          Bytes32Schema,
           "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         ),
         parse(
-          bytes32Schema,
+          Bytes32Schema,
           "0x000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
         ),
       ],
       data: parse(
-        bytesSchema,
+        BytesSchema,
         "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
       ),
     })
@@ -147,7 +147,7 @@ describe("decode_event_log", () => {
 
   it("returns the topic hash for indexed reference types", () => {
     const string_hash = parse(
-      bytes32Schema,
+      Bytes32Schema,
       "0x1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8",
     )
     const topic0 = event_topic_hash("Note", [string_()])
@@ -156,7 +156,7 @@ describe("decode_event_log", () => {
       args: [string_()],
       indexed: [true],
       topics: [topic0, string_hash],
-      data: parse(bytesSchema, "0x"),
+      data: parse(BytesSchema, "0x"),
     })
     expect(result.args).toEqual([string_hash])
   })
@@ -168,12 +168,12 @@ describe("decode_event_log", () => {
       indexed: [true, false],
       topics: [
         parse(
-          bytes32Schema,
+          Bytes32Schema,
           "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         ),
       ],
       data: parse(
-        bytesSchema,
+        BytesSchema,
         "0x000000000000000000000000000000000000000000000000000000000000002a",
       ),
       anonymous: true,

@@ -15,24 +15,24 @@ import type { Provider } from "../1193"
 
 export type { Provider } from "../1193"
 
-export const eip6963ProviderInfoSchema = object({
+export const Eip6963ProviderInfoSchema = object({
   uuid: string(),
   name: string(),
   icon: string(),
   rdns: string(),
 })
 export type EIP6963ProviderInfo = InferOutput<
-  typeof eip6963ProviderInfoSchema
+  typeof Eip6963ProviderInfoSchema
 >
 
-export const eip6963ProviderDetailSchema = object({
-  info: eip6963ProviderInfoSchema,
+export const Eip6963ProviderDetailSchema = object({
+  info: Eip6963ProviderInfoSchema,
   provider: custom<Provider>(
     (value) => value != null && typeof value === "object",
   ),
 })
 export type EIP6963ProviderDetail = InferOutput<
-  typeof eip6963ProviderDetailSchema
+  typeof Eip6963ProviderDetailSchema
 >
 
 // DOM-class extensions: intersection types preserve the named
@@ -70,12 +70,12 @@ export function announce(
   window.addEventListener(REQUEST_EVENT, dispatch)
 }
 
-export const discoverOptionsSchema = object({
+export const DiscoverOptionsSchema = object({
   target: optional(instance(EventTarget)),
   ms: optional(number()),
 })
 export type DiscoverOptions = InferOutput<
-  typeof discoverOptionsSchema
+  typeof DiscoverOptionsSchema
 >
 
 /**
@@ -100,7 +100,7 @@ export function discover_providers(
       // payload at all.
       if (!(event instanceof CustomEvent)) return
       const parsed = safeParse(
-        eip6963ProviderDetailSchema,
+        Eip6963ProviderDetailSchema,
         event.detail,
       )
       if (!parsed.success) return
@@ -169,15 +169,15 @@ export function web_storage(
   }
 }
 
-export const setProviderDetailOptionsSchema = object({
+export const SetProviderDetailOptionsSchema = object({
   store: custom<Store>(
     (value) => value != null && typeof value === "object",
   ),
   key: string(),
-  provider_detail: eip6963ProviderDetailSchema,
+  provider_detail: Eip6963ProviderDetailSchema,
 })
 export type SetProviderDetailOptions = InferOutput<
-  typeof setProviderDetailOptionsSchema
+  typeof SetProviderDetailOptionsSchema
 >
 
 /**
@@ -195,14 +195,14 @@ export function set_provider_detail(
   )
 }
 
-export const clearProviderDetailOptionsSchema = object({
+export const ClearProviderDetailOptionsSchema = object({
   store: custom<Store>(
     (value) => value != null && typeof value === "object",
   ),
   key: string(),
 })
 export type ClearProviderDetailOptions = InferOutput<
-  typeof clearProviderDetailOptionsSchema
+  typeof ClearProviderDetailOptionsSchema
 >
 
 /**
@@ -216,7 +216,7 @@ export function clear_provider_detail(
   options.store.remove(options.key)
 }
 
-export const getProviderDetailOptionsSchema = object({
+export const GetProviderDetailOptionsSchema = object({
   store: custom<Store>(
     (value) => value != null && typeof value === "object",
   ),
@@ -225,7 +225,7 @@ export const getProviderDetailOptionsSchema = object({
   ms: optional(number()),
 })
 export type GetProviderDetailOptions = InferOutput<
-  typeof getProviderDetailOptionsSchema
+  typeof GetProviderDetailOptionsSchema
 >
 
 /**

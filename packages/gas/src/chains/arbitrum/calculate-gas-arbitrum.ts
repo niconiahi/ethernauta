@@ -5,10 +5,10 @@
 // hands back all four numbers in one shot — no separate L1-fee read.
 
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
   type Uint,
-  uintSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_call } from "@ethernauta/eth"
 import type {
@@ -21,31 +21,31 @@ import { literal, object, optional, parse } from "valibot"
 import { gasEstimateComponents } from "./node-interface/methods/gas-estimate-components"
 import { NODE_INTERFACE_PREDEPLOY } from "./predeploy"
 
-export const calculateGasArbitrumParametersSchema = object({
+export const CalculateGasArbitrumParametersSchema = object({
   tx: object({
-    to: addressSchema,
-    input: optional(bytesSchema),
+    to: AddressSchema,
+    input: optional(BytesSchema),
   }),
 })
 export type CalculateGasArbitrumParameters = InferOutput<
-  typeof calculateGasArbitrumParametersSchema
+  typeof CalculateGasArbitrumParametersSchema
 >
 
-export const calculateGasArbitrumFeesSchema = object({
+export const CalculateGasArbitrumFeesSchema = object({
   kind: literal("arbitrum"),
-  gas_estimate: uintSchema,
-  l1_base_fee_estimate: uintSchema,
-  l2_base_fee: uintSchema,
+  gas_estimate: UintSchema,
+  l1_base_fee_estimate: UintSchema,
+  l2_base_fee: UintSchema,
 })
 export type CalculateGasArbitrumFees = InferOutput<
-  typeof calculateGasArbitrumFeesSchema
+  typeof CalculateGasArbitrumFeesSchema
 >
 
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 function to_compact_uint(_padded: `0x${string}`): Uint {
   return parse(
-    uintSchema,
+    UintSchema,
     `0x${BigInt(_padded).toString(16)}`,
   )
 }
@@ -57,7 +57,7 @@ export function calculate_gas_arbitrum(
     resolved: ResolvedReader,
   ): Promise<CalculateGasArbitrumFees> => {
     const parameters = parse(
-      calculateGasArbitrumParametersSchema,
+      CalculateGasArbitrumParametersSchema,
       _parameters,
     )
     const input = parameters.tx.input ?? EMPTY_BYTES
@@ -77,7 +77,7 @@ export function calculate_gas_arbitrum(
     ])(resolved)
     const [gas_estimate, _gas_l1, base_fee, l1_base_fee] =
       callable.decode(result)
-    return parse(calculateGasArbitrumFeesSchema, {
+    return parse(CalculateGasArbitrumFeesSchema, {
       kind: "arbitrum",
       gas_estimate: to_compact_uint(gas_estimate),
       l1_base_fee_estimate: to_compact_uint(l1_base_fee),

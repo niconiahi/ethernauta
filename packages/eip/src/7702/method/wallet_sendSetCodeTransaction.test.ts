@@ -1,7 +1,7 @@
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   ResolvedSigner,
@@ -10,16 +10,16 @@ import type {
 import { parse } from "valibot"
 import { describe, expect, it, vi } from "vitest"
 import {
-  sendSetCodeTransactionParametersSchema,
+  SendSetCodeTransactionParametersSchema,
   wallet_sendSetCodeTransaction,
 } from "./wallet_sendSetCodeTransaction"
 
 const BATCH_EXECUTOR = parse(
-  addressSchema,
+  AddressSchema,
   "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
 )
 const EOA = parse(
-  addressSchema,
+  AddressSchema,
   "0x1234567890123456789012345678901234567890",
 )
 const TX_HASH =
@@ -27,10 +27,10 @@ const TX_HASH =
 
 const VALID = {
   to: EOA,
-  data: parse(bytesSchema, "0x"),
+  data: parse(BytesSchema, "0x"),
   delegations: [
     {
-      chainId: parse(uintSchema, "0xaa36a7"),
+      chainId: parse(UintSchema, "0xaa36a7"),
       address: BATCH_EXECUTOR,
     },
   ],
@@ -44,7 +44,7 @@ function mock_signer(result: string): ResolvedSigner {
 describe("wallet_sendSetCodeTransaction.ts", () => {
   it("should accept the minimal happy-path params", () => {
     expect(() =>
-      parse(sendSetCodeTransactionParametersSchema, VALID),
+      parse(SendSetCodeTransactionParametersSchema, VALID),
     ).not.toThrow()
   })
 
@@ -56,14 +56,14 @@ describe("wallet_sendSetCodeTransaction.ts", () => {
       data: "0xa9059cbb" as const,
     }
     expect(() =>
-      parse(sendSetCodeTransactionParametersSchema, full),
+      parse(SendSetCodeTransactionParametersSchema, full),
     ).not.toThrow()
   })
 
   it("should reject when delegations is missing", () => {
     const bad = { to: EOA }
     expect(() =>
-      parse(sendSetCodeTransactionParametersSchema, bad),
+      parse(SendSetCodeTransactionParametersSchema, bad),
     ).toThrow()
   })
 
@@ -75,14 +75,14 @@ describe("wallet_sendSetCodeTransaction.ts", () => {
       ],
     }
     expect(() =>
-      parse(sendSetCodeTransactionParametersSchema, bad),
+      parse(SendSetCodeTransactionParametersSchema, bad),
     ).toThrow()
   })
 
   it("should reject when data is not 0x-prefixed even-length hex", () => {
     const bad = { ...VALID, data: "0xabc" }
     expect(() =>
-      parse(sendSetCodeTransactionParametersSchema, bad),
+      parse(SendSetCodeTransactionParametersSchema, bad),
     ).toThrow()
   })
 
@@ -91,11 +91,11 @@ describe("wallet_sendSetCodeTransaction.ts", () => {
     await wallet_sendSetCodeTransaction(VALID)(resolved)
     expect(resolved[0]).toHaveBeenCalledWith(
       "wallet_sendSetCodeTransaction",
-      parse(sendSetCodeTransactionParametersSchema, VALID),
+      parse(SendSetCodeTransactionParametersSchema, VALID),
     )
   })
 
-  it("returns the tx hash narrowed via hash32Schema", async () => {
+  it("returns the tx hash narrowed via Hash32Schema", async () => {
     const out = await wallet_sendSetCodeTransaction(VALID)(
       mock_signer(TX_HASH),
     )

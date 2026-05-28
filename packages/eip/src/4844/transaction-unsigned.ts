@@ -1,30 +1,30 @@
 // https://eips.ethereum.org/EIPS/eip-4844
 
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
-import { accessListSchema } from "@ethernauta/eip/2930"
+import { AccessListSchema } from "@ethernauta/eip/2930"
 import type { InferOutput } from "valibot"
 import { array, object } from "valibot"
 
-export const transaction4844UnsignedSchema = object({
-  type: byteSchema,
-  nonce: uintSchema,
-  to: addressSchema,
-  gas: uintSchema,
-  value: uintSchema,
-  input: bytesSchema,
-  maxPriorityFeePerGas: uintSchema,
-  maxFeePerGas: uintSchema,
-  maxFeePerBlobGas: uintSchema,
-  accessList: accessListSchema,
-  blobVersionedHashes: array(hash32Schema),
-  chainId: uintSchema,
+export const Transaction4844UnsignedSchema = object({
+  type: ByteSchema,
+  nonce: UintSchema,
+  to: AddressSchema,
+  gas: UintSchema,
+  value: UintSchema,
+  input: BytesSchema,
+  maxPriorityFeePerGas: UintSchema,
+  maxFeePerGas: UintSchema,
+  maxFeePerBlobGas: UintSchema,
+  accessList: AccessListSchema,
+  blobVersionedHashes: array(Hash32Schema),
+  chainId: UintSchema,
 })
 export type Transaction4844Unsigned = InferOutput<
-  typeof transaction4844UnsignedSchema
+  typeof Transaction4844UnsignedSchema
 >

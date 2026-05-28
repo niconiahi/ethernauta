@@ -6,9 +6,9 @@ import {
 } from "@ethernauta/abi"
 import type { Address, Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -26,15 +26,15 @@ export const OWNER_OF_SIGNATURE = {
   names: ["tokenId"],
 }
 
-const parametersSchema = union([
-  tuple([uint256Schema]),
-  object({ tokenId: uint256Schema }),
+const ParametersSchema = union([
+  tuple([Uint256Schema]),
+  object({ tokenId: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function ownerOf(_parameters: Parameters) {
   return (context: ContractContext): Callable<Address> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.tokenId] as const)
@@ -46,13 +46,13 @@ export function ownerOf(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Address => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(addressSchema, decoded)
+        return parse(AddressSchema, decoded)
       },
     }
   }

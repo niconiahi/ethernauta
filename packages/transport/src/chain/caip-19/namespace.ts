@@ -7,7 +7,7 @@ function isNamespace(input: unknown): boolean {
     /^[-a-z0-9]{3,8}$/.test(input)
   )
 }
-const caip19_namespaceSchema = custom<string>(isNamespace)
+const Caip19_namespaceSchema = custom<string>(isNamespace)
 export type caip19_Namespace = InferOutput<
-  typeof caip19_namespaceSchema
+  typeof Caip19_namespaceSchema
 >

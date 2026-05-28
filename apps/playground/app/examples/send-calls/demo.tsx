@@ -6,9 +6,9 @@ import "./demo.css"
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   type CallsStatus,
@@ -32,7 +32,7 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 })
 
 const SEPOLIA_CHAIN_REF_HEX = parse(
-  uintSchema,
+  UintSchema,
   `0x${eip155_11155111.chainId.toString(16)}`,
 )
 
@@ -40,17 +40,17 @@ const SEPOLIA_CHAIN_REF_HEX = parse(
 // wallet sequenced the batch and posted both transactions.
 const CALLS = [
   parse(
-    addressSchema,
+    AddressSchema,
     "0x1111111111111111111111111111111111111111",
   ),
   parse(
-    addressSchema,
+    AddressSchema,
     "0x2222222222222222222222222222222222222222",
   ),
 ].map((to) => ({
   to,
-  value: parse(uintSchema, "0x0"),
-  data: parse(bytesSchema, "0x"),
+  value: parse(UintSchema, "0x0"),
+  data: parse(BytesSchema, "0x"),
 }))
 
 const NETWORK_LABEL = `${eip155_11155111.name} (chain ${eip155_11155111.chainId})`
@@ -82,7 +82,7 @@ export function SendCallsDemo() {
       {
         version: "2.0.0",
         chainId: SEPOLIA_CHAIN_REF_HEX,
-        from: parse(addressSchema, owner),
+        from: parse(AddressSchema, owner),
         atomicRequired: false,
         calls: CALLS,
       },

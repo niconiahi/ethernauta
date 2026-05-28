@@ -8,5 +8,5 @@ function isAssetId(input: unknown): boolean {
     /^[-:/a-zA-Z0-9]{13,148}$/.test(input)
   )
 }
-export const assetIdSchema = custom<string>(isAssetId)
-export type AssetId = InferOutput<typeof assetIdSchema>
+export const AssetIdSchema = custom<string>(isAssetId)
+export type AssetId = InferOutput<typeof AssetIdSchema>

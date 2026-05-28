@@ -1,9 +1,9 @@
 import "./demo.css"
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes,
-  bytesSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   is_wrapped_signature,
@@ -21,15 +21,15 @@ import { Button } from "../../components/button"
 // the 1271 verifier of that account would accept once
 // deployed.
 const FACTORY: Address = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000FA01",
 )
 const FACTORY_DATA: Bytes = parse(
-  bytesSchema,
+  BytesSchema,
   "0xdeadbeefcafebabe",
 )
 const INNER_SIGNATURE: Bytes = parse(
-  bytesSchema,
+  BytesSchema,
   `0x${"42".repeat(65)}`,
 )
 

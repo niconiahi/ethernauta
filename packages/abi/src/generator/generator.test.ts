@@ -43,7 +43,7 @@ describe("generator.ts", () => {
       expect(file).toContain("chain_id: context.chain_id")
       expect(file).toContain("to: context.to")
       expect(file).toContain(
-        "data: parse(bytesSchema, bytes_to_hex(calldata))",
+        "data: parse(BytesSchema, bytes_to_hex(calldata))",
       )
       expect(file).toContain("decode_function_result")
     } finally {
@@ -144,12 +144,12 @@ describe("generator.ts", () => {
       expect(file).toContain(
         "OUTPUT_CODECS = [array(uint256())] as const",
       )
-      // parametersSchema wraps each leaf schema in v_array(...)
+      // ParametersSchema wraps each leaf schema in v_array(...)
       expect(file).toContain(
-        "tuple([v_array(addressSchema), v_array(uint256Schema)])",
+        "tuple([v_array(AddressSchema), v_array(Uint256Schema)])",
       )
       expect(file).toContain(
-        "object({ accounts: v_array(addressSchema), ids: v_array(uint256Schema) })",
+        "object({ accounts: v_array(AddressSchema), ids: v_array(Uint256Schema) })",
       )
       // Selector signature: canonical form preserves the [] suffix.
       expect(file).toContain(
@@ -157,9 +157,9 @@ describe("generator.ts", () => {
       )
       // Return type: Uint256[]
       expect(file).toContain("Callable<Uint256[]>")
-      // Decode path validates with v_array(uint256Schema).
+      // Decode path validates with v_array(Uint256Schema).
       expect(file).toContain(
-        "parse(v_array(uint256Schema), decoded)",
+        "parse(v_array(Uint256Schema), decoded)",
       )
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
@@ -209,12 +209,12 @@ describe("generator.ts", () => {
       expect(file).toContain(
         'signature: "open((uint32,bytes32,bytes))"',
       )
-      // parametersSchema uses valibot `object` for the struct schema.
+      // ParametersSchema uses valibot `object` for the struct schema.
       expect(file).toContain(
-        "tuple([object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema })])",
+        "tuple([object({ fillDeadline: Uint32Schema, orderDataType: Bytes32Schema, orderData: BytesSchema })])",
       )
       expect(file).toContain(
-        "object({ order: object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema }) })",
+        "object({ order: object({ fillDeadline: Uint32Schema, orderDataType: Bytes32Schema, orderData: BytesSchema }) })",
       )
       // Object form values extraction uses parameters.<name> by top-level input name.
       expect(file).toContain("[parameters.order]")
@@ -259,7 +259,7 @@ describe("generator.ts", () => {
         "Callable<[Uint64, Uint64, Uint64][]>",
       )
       expect(file).toContain(
-        "parse(v_array(tuple([uint64Schema, uint64Schema, uint64Schema])), decoded)",
+        "parse(v_array(tuple([Uint64Schema, Uint64Schema, Uint64Schema])), decoded)",
       )
       expect(file).toContain("fixed_array,")
     } finally {
@@ -377,7 +377,7 @@ describe("generator.ts", () => {
       )
       // Decode validates with object({...maxSpent: v_array(object({...}))}).
       expect(file).toContain(
-        "v_array(object({ token: bytes32Schema, amount: uint256Schema }))",
+        "v_array(object({ token: Bytes32Schema, amount: Uint256Schema }))",
       )
       // Canonical signature only recurses INPUT components for the selector;
       // the output side doesn't show in the signature string.
@@ -435,7 +435,7 @@ describe("generator.ts", () => {
         } from "@ethernauta/abi"
         import type { InferOutput } from "valibot"
         import { object, parse, tuple, union } from "valibot"
-        import { bytes32Schema, bytesSchema, uint32Schema, uintSchema } from "@ethernauta/core"
+        import { Bytes32Schema, BytesSchema, Uint32Schema, UintSchema } from "@ethernauta/core"
 
         const PARAM_CODECS = [abi_tuple({ fillDeadline: uint32(), orderDataType: bytes32(), orderData: bytes() })] as const
 
@@ -444,17 +444,17 @@ describe("generator.ts", () => {
           names: ["order"],
         }
 
-        const parametersSchema = union([
-          tuple([object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema })]),
-          object({ order: object({ fillDeadline: uint32Schema, orderDataType: bytes32Schema, orderData: bytesSchema }) }),
+        const ParametersSchema = union([
+          tuple([object({ fillDeadline: Uint32Schema, orderDataType: Bytes32Schema, orderData: BytesSchema })]),
+          object({ order: object({ fillDeadline: Uint32Schema, orderDataType: Bytes32Schema, orderData: BytesSchema }) }),
         ])
-        type Parameters = InferOutput<typeof parametersSchema>
+        type Parameters = InferOutput<typeof ParametersSchema>
 
         export function open(_parameters: Parameters): Signable<Bytes> {
           return async ([signer, context]: ResolvedSigner): Promise<Bytes> => {
             if (!context.to)
               throw new Error("contract Signable requires a 'to' on the signer resolver")
-            const parameters = parse(parametersSchema, _parameters)
+            const parameters = parse(ParametersSchema, _parameters)
             const values = Array.isArray(parameters)
               ? ([parameters[0]] as const)
               : ([parameters.order] as const)
@@ -470,8 +470,8 @@ describe("generator.ts", () => {
             return eth_signTransaction(
               [{
                 to: context.to,
-                value: parse(uintSchema, "0x0"),
-                input: parse(bytesSchema, bytes_to_hex(calldata)),
+                value: parse(UintSchema, "0x0"),
+                input: parse(BytesSchema, bytes_to_hex(calldata)),
                 _ethernauta: {
                   function: OPEN_SIGNATURE,
                 },
@@ -522,7 +522,7 @@ describe("generator.ts", () => {
         import type { InferOutput } from "valibot"
         import { object, parse, tuple, union, array as v_array } from "valibot"
         import type { Uint256 } from "@ethernauta/core"
-        import { addressSchema, bytesSchema, uint256Schema } from "@ethernauta/core"
+        import { AddressSchema, BytesSchema, Uint256Schema } from "@ethernauta/core"
 
         const PARAM_CODECS = [array(address()), array(uint256())] as const
         const OUTPUT_CODECS = [array(uint256())] as const
@@ -532,15 +532,15 @@ describe("generator.ts", () => {
           names: ["accounts", "ids"],
         }
 
-        const parametersSchema = union([
-          tuple([v_array(addressSchema), v_array(uint256Schema)]),
-          object({ accounts: v_array(addressSchema), ids: v_array(uint256Schema) }),
+        const ParametersSchema = union([
+          tuple([v_array(AddressSchema), v_array(Uint256Schema)]),
+          object({ accounts: v_array(AddressSchema), ids: v_array(Uint256Schema) }),
         ])
-        type Parameters = InferOutput<typeof parametersSchema>
+        type Parameters = InferOutput<typeof ParametersSchema>
 
         export function balanceOfBatch(_parameters: Parameters) {
           return (context: ContractContext): Callable<Uint256[]> => {
-            const parameters = parse(parametersSchema, _parameters)
+            const parameters = parse(ParametersSchema, _parameters)
             const values = Array.isArray(parameters)
               ? ([parameters[0], parameters[1]] as const)
               : ([parameters.accounts, parameters.ids] as const)
@@ -552,13 +552,13 @@ describe("generator.ts", () => {
             return {
               chain_id: context.chain_id,
               to: context.to,
-              data: parse(bytesSchema, bytes_to_hex(calldata)),
+              data: parse(BytesSchema, bytes_to_hex(calldata)),
               decode: (result: Bytes): Uint256[] => {
                 const [decoded] = decode_function_result(
                   OUTPUT_CODECS,
                   result,
                 )
-                return parse(v_array(uint256Schema), decoded)
+                return parse(v_array(Uint256Schema), decoded)
               },
             }
           }

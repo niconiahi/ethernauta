@@ -1,7 +1,7 @@
 // https://eips.ethereum.org/EIPS/eip-55
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
 } from "@ethernauta/core"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { parse } from "valibot"
@@ -9,7 +9,7 @@ import { parse } from "valibot"
 export function to_checksum_address(
   _address: Address,
 ): Address {
-  const address = parse(addressSchema, _address)
+  const address = parse(AddressSchema, _address)
   const lower = address.slice(2).toLowerCase()
   const hash = keccak_256(new TextEncoder().encode(lower))
   let out = "0x"
@@ -23,5 +23,5 @@ export function to_checksum_address(
         ? ch.toUpperCase()
         : ch
   }
-  return parse(addressSchema, out)
+  return parse(AddressSchema, out)
 }

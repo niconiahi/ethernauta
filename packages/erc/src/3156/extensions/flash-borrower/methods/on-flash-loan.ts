@@ -6,10 +6,10 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -34,23 +34,23 @@ export const ON_FLASH_LOAN_SIGNATURE = {
   names: ["initiator", "token", "amount", "fee", "data"],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    addressSchema,
-    addressSchema,
-    uint256Schema,
-    uint256Schema,
-    bytesSchema,
+    AddressSchema,
+    AddressSchema,
+    Uint256Schema,
+    Uint256Schema,
+    BytesSchema,
   ]),
   object({
-    initiator: addressSchema,
-    token: addressSchema,
-    amount: uint256Schema,
-    fee: uint256Schema,
-    data: bytesSchema,
+    initiator: AddressSchema,
+    token: AddressSchema,
+    amount: Uint256Schema,
+    fee: Uint256Schema,
+    data: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function onFlashLoan(
   _parameters: Parameters,
@@ -63,7 +63,7 @@ export function onFlashLoan(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -91,8 +91,8 @@ export function onFlashLoan(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: ON_FLASH_LOAN_SIGNATURE,
         },

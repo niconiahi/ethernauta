@@ -11,7 +11,7 @@ import { extname, join, resolve } from "node:path"
 import simpleGit from "simple-git"
 import { parse } from "valibot"
 
-import { chainSchema } from "../src/chain"
+import { ChainSchema } from "../src/chain"
 
 export function runIndexer(): void {
   const git = simpleGit()
@@ -73,7 +73,7 @@ export function runIndexer(): void {
                     try {
                       const jsonData = JSON.parse(data)
                       const chain = parse(
-                        chainSchema,
+                        ChainSchema,
                         jsonData,
                       )
 

@@ -7,19 +7,19 @@ import {
   ELASTICITY_MULTIPLIER,
 } from "./constants"
 
-export const calculateBaseFeeInputSchema = object({
+export const CalculateBaseFeeInputSchema = object({
   parent_gas_used: bigint(),
   parent_gas_limit: bigint(),
   parent_base_fee_per_gas: bigint(),
 })
 export type CalculateBaseFeeInput = InferOutput<
-  typeof calculateBaseFeeInputSchema
+  typeof CalculateBaseFeeInputSchema
 >
 
 export function calculate_base_fee(
   _input: CalculateBaseFeeInput,
 ): bigint {
-  const input = parse(calculateBaseFeeInputSchema, _input)
+  const input = parse(CalculateBaseFeeInputSchema, _input)
   const parent_gas_target =
     input.parent_gas_limit / ELASTICITY_MULTIPLIER
   if (input.parent_gas_used === parent_gas_target) {

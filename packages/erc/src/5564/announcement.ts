@@ -14,8 +14,8 @@
 
 import {
   type Bytes,
-  bytesSchema,
-  hash32Schema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -32,20 +32,20 @@ import {
 const EVENT_SIGNATURE =
   "Announcement(uint256,address,address,bytes,bytes)"
 
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 export const ANNOUNCEMENT_EVENT_TOPIC = parse(
-  hash32Schema,
+  Hash32Schema,
   bytes_to_hex(
     keccak_256(new TextEncoder().encode(EVENT_SIGNATURE)),
   ),
 )
 
-export const metadataSchema = object({
+export const MetadataSchema = object({
   view_tag: number(),
-  body: bytesSchema,
+  body: BytesSchema,
 })
-export type Metadata = InferOutput<typeof metadataSchema>
+export type Metadata = InferOutput<typeof MetadataSchema>
 
 export function encode_metadata({
   view_tag,
@@ -55,7 +55,7 @@ export function encode_metadata({
   const out = new Uint8Array(1 + body_bytes.length)
   out[0] = view_tag & 0xff
   out.set(body_bytes, 1)
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }
 
 export function decode_metadata(_bytes: Bytes): Metadata {
@@ -65,7 +65,7 @@ export function decode_metadata(_bytes: Bytes): Metadata {
   }
   return {
     view_tag: buf[0] ?? 0,
-    body: parse(bytesSchema, bytes_to_hex(buf.slice(1))),
+    body: parse(BytesSchema, bytes_to_hex(buf.slice(1))),
   }
 }
 

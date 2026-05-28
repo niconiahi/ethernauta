@@ -1,17 +1,17 @@
 import {
-  addressSchema,
-  uint64Schema,
-  uint256Schema,
+  AddressSchema,
+  Uint64Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { object } from "valibot"
 
-export const withdrawalSchema = object({
-  index: uint64Schema,
-  validatorIndex: uint64Schema,
-  address: addressSchema,
-  amount: uint256Schema,
+export const WithdrawalSchema = object({
+  index: Uint64Schema,
+  validatorIndex: Uint64Schema,
+  address: AddressSchema,
+  amount: Uint256Schema,
 })
 export type Withdrawal = InferOutput<
-  typeof withdrawalSchema
+  typeof WithdrawalSchema
 >

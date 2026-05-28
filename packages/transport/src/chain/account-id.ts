@@ -8,5 +8,5 @@ function isAccountId(input: unknown): boolean {
     /^[-:a-zA-Z0-9]{7,106}$/.test(input)
   )
 }
-export const accountIdSchema = custom<string>(isAccountId)
-export type AccountId = InferOutput<typeof accountIdSchema>
+export const AccountIdSchema = custom<string>(isAccountId)
+export type AccountId = InferOutput<typeof AccountIdSchema>

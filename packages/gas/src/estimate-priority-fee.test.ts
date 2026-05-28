@@ -1,5 +1,5 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import {
   encode_chain_id,
   type ResolvedReader,
@@ -14,7 +14,7 @@ const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_1.chainId,
 })
-const BLOCK_COUNT_4 = parse(uintSchema, "0x4")
+const BLOCK_COUNT_4 = parse(UintSchema, "0x4")
 
 describe("estimate_priority_fee", () => {
   it("averages a uniform reward column", async () => {

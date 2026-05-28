@@ -1,7 +1,7 @@
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 // EOA path moved to @ethernauta/crypto/verify-message-deployed; this file
 // now only covers the on-chain `isValidSignature` branch.
@@ -30,7 +30,7 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const CONTRACT_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000c0de",
 )
 const CHAIN_ID = "eip155:1"
@@ -48,7 +48,7 @@ function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }
 
 function resolved_with(transport: Http): ResolvedReader {
@@ -70,7 +70,7 @@ function err_response(message: string) {
 const DIGEST = keccak_256(
   new TextEncoder().encode("verify-hash"),
 )
-const HASH = parse(hash32Schema, bytes_to_hex(DIGEST))
+const HASH = parse(Hash32Schema, bytes_to_hex(DIGEST))
 
 describe("verify-hash.ts — contract path", () => {
   const wrong_signature = sign_to_hex(

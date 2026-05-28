@@ -1,8 +1,8 @@
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   encode_chain_id,
@@ -50,11 +50,11 @@ describe("calculate_gas_op_stack", () => {
     const fees = await calculate_gas_op_stack({
       tx: {
         to: parse(
-          addressSchema,
+          AddressSchema,
           "0x0000000000000000000000000000000000000001",
         ),
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, "0x"),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, "0x"),
       },
       base_fee_multiplier: 1.5,
       priority_percentile: 10,

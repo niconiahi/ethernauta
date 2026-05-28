@@ -14,10 +14,10 @@ import {
 
 import { get_ens_text } from "./get-ens-text"
 
-const parametersSchema = object({
+const ParametersSchema = object({
   name: string(),
 })
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function get_ens_avatar(
   _parameters: Parameters,
@@ -25,7 +25,7 @@ export function get_ens_avatar(
   return async (
     _resolved: ResolvedReader,
   ): Promise<AvatarResult | null> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const raw = await get_ens_text({
       name: parameters.name,
       key: "avatar",

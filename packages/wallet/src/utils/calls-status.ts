@@ -8,7 +8,7 @@
 import {
   type Hash32,
   type Uint,
-  uintSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   CALLS_STATUS,
@@ -31,11 +31,11 @@ import { CHAINS, get_chain, get_reader } from "./chain"
 
 const CALLS_STATUS_VERSION = "2.0.0"
 const STATUS_SUCCESS = parse(
-  uintSchema,
+  UintSchema,
   RECEIPT_STATUS.SUCCESS,
 )
 const STATUS_REVERTED = parse(
-  uintSchema,
+  UintSchema,
   RECEIPT_STATUS.REVERTED,
 )
 
@@ -46,7 +46,7 @@ function to_chain_ref(chain_id_hex: Uint): number {
 export function compose_capabilities(): Capabilities {
   const capabilities: Capabilities = {}
   for (const chain of CHAINS) {
-    const key = parse(uintSchema, number_to_hex(chain.id))
+    const key = parse(UintSchema, number_to_hex(chain.id))
     capabilities[key] = {
       atomic: { status: "unsupported" },
     }

@@ -1,4 +1,4 @@
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   array,
   type InferOutput,
@@ -13,11 +13,11 @@ import {
   unknown,
 } from "valibot"
 
-import { chainIdSchema } from "./chain/chain-id"
+import { ChainIdSchema } from "./chain/chain-id"
 
 export const SignContextSchema = object({
-  chain_id: chainIdSchema,
-  to: optional(addressSchema),
+  chain_id: ChainIdSchema,
+  to: optional(AddressSchema),
 })
 export type SignContext = InferOutput<
   typeof SignContextSchema
@@ -36,19 +36,19 @@ export type SignContext = InferOutput<
  * `keccak(signature)[0:4]` matches `input[0:4]` before
  * trusting the names.
  */
-export const functionSignatureSchema = object({
+export const FunctionSignatureSchema = object({
   signature: string(),
   names: array(string()),
 })
 export type FunctionSignature = InferOutput<
-  typeof functionSignatureSchema
+  typeof FunctionSignatureSchema
 >
 
-export const ethernautaContextSchema = object({
-  function: optional(functionSignatureSchema),
+export const EthernautaContextSchema = object({
+  function: optional(FunctionSignatureSchema),
 })
 export type EthernautaContext = InferOutput<
-  typeof ethernautaContextSchema
+  typeof EthernautaContextSchema
 >
 
 export type Signer = (
@@ -66,7 +66,7 @@ const ERROR_CODE = {
   USER_REJECTED_REQUEST: 4001,
 } as const
 
-const signTransactionRequestSchema = object({
+const SignTransactionRequestSchema = object({
   id: string(),
   type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
   method: string(),
@@ -76,35 +76,35 @@ const signTransactionRequestSchema = object({
   ),
 })
 
-const signTransactionResponseSchema = object({
+const SignTransactionResponseSchema = object({
   id: string(),
   type: literal("ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"),
   signed_transaction: string(),
 })
 
-const signTypedDataResponseSchema = object({
+const SignTypedDataResponseSchema = object({
   id: string(),
   type: literal("ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"),
   signature: string(),
 })
 
-const transactionRejectedResponseSchema = object({
+const TransactionRejectedResponseSchema = object({
   id: string(),
   type: literal("ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"),
 })
 
-const nativeExtensionCloseResponseSchema = object({
+const NativeExtensionCloseResponseSchema = object({
   id: string(),
   type: literal(
     "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE",
   ),
 })
 
-const signerResponseSchema = union([
-  signTransactionResponseSchema,
-  signTypedDataResponseSchema,
-  transactionRejectedResponseSchema,
-  nativeExtensionCloseResponseSchema,
+const SignerResponseSchema = union([
+  SignTransactionResponseSchema,
+  SignTypedDataResponseSchema,
+  TransactionRejectedResponseSchema,
+  NativeExtensionCloseResponseSchema,
 ])
 
 export function create_signer(
@@ -127,7 +127,7 @@ export function create_signer(
           "message",
           function handler(event) {
             const parsed = safeParse(
-              signerResponseSchema,
+              SignerResponseSchema,
               event.data,
             )
             if (!parsed.success) return
@@ -165,7 +165,7 @@ export function create_signer(
           },
         )
         const request = parse(
-          signTransactionRequestSchema,
+          SignTransactionRequestSchema,
           {
             type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
             id,

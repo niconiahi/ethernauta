@@ -1,11 +1,11 @@
 import { array, literal, object } from "valibot"
 import {
-  function_inputSchema,
-  stateMutabilitySchema,
+  Function_inputSchema,
+  StateMutabilitySchema,
 } from "./function-shared"
 
-export const constructorSchema = object({
+export const ConstructorSchema = object({
   type: literal("constructor"),
-  inputs: array(function_inputSchema),
-  stateMutability: stateMutabilitySchema,
+  inputs: array(Function_inputSchema),
+  stateMutability: StateMutabilitySchema,
 })

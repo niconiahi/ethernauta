@@ -7,5 +7,5 @@ function isChainId(input: unknown): boolean {
     /^[-:a-zA-Z0-9]{5,41}$/.test(input)
   )
 }
-export const chainIdSchema = custom<string>(isChainId)
-export type ChainId = InferOutput<typeof chainIdSchema>
+export const ChainIdSchema = custom<string>(isChainId)
+export type ChainId = InferOutput<typeof ChainIdSchema>

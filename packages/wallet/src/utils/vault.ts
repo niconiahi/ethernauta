@@ -7,13 +7,13 @@ import {
   string,
 } from "valibot"
 
-export const vaultRecordSchema = object({
+export const VaultRecordSchema = object({
   salt: string(),
   iv: string(),
   cipher: string(),
 })
 export type VaultRecord = InferOutput<
-  typeof vaultRecordSchema
+  typeof VaultRecordSchema
 >
 
 const PBKDF2_CONFIG = {
@@ -159,7 +159,7 @@ export async function get_vault(
           return
         }
         const vaultRecord = parse(
-          vaultRecordSchema,
+          VaultRecordSchema,
           request.result,
         )
         resolve(vaultRecord)

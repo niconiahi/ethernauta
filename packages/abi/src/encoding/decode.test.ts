@@ -1,8 +1,8 @@
 import {
-  addressSchema,
-  bytesSchema,
-  uint8Schema,
-  uint256Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint8Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
@@ -89,11 +89,11 @@ describe("decode.ts", () => {
         args: [address(), string_(), uint8()] as const,
         values: [
           parse(
-            addressSchema,
+            AddressSchema,
             "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           ),
           "hi",
-          parse(uint8Schema, "0x2a"),
+          parse(Uint8Schema, "0x2a"),
         ],
       })
       const hex = strip_selector(calldata)
@@ -112,11 +112,11 @@ describe("decode.ts", () => {
   describe("decode_function_call", () => {
     it("should round-trip transfer(address,uint256)", () => {
       const to = parse(
-        addressSchema,
+        AddressSchema,
         "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
       )
       const value = parse(
-        uint256Schema,
+        Uint256Schema,
         "0xde0b6b3a7640000",
       )
       const calldata = encode_function_call({
@@ -135,15 +135,15 @@ describe("decode.ts", () => {
 
     it("should round-trip a signature with bytes", () => {
       const from = parse(
-        addressSchema,
+        AddressSchema,
         "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
       )
       const to = parse(
-        addressSchema,
+        AddressSchema,
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       )
-      const token_id = parse(uint256Schema, "0x7")
-      const data = parse(bytesSchema, "0xdeadbeef")
+      const token_id = parse(Uint256Schema, "0x7")
+      const data = parse(BytesSchema, "0xdeadbeef")
       const calldata = encode_function_call({
         name: "safeTransferFrom",
         args: [

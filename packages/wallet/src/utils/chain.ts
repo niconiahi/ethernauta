@@ -16,21 +16,21 @@ import {
   tupleWithRest,
 } from "valibot"
 
-export const chainSchema = object({
+export const ChainSchema = object({
   id: number(),
   name: string(),
   rpc_url: string(),
 })
-export type Chain = InferOutput<typeof chainSchema>
+export type Chain = InferOutput<typeof ChainSchema>
 
 // Non-empty tuple — `CHAINS[0]` types as `Chain` (not `Chain | undefined`)
 // so `selected_chain` can be initialised without a guard.
-const chainsSchema = tupleWithRest(
-  [chainSchema],
-  chainSchema,
+const ChainsSchema = tupleWithRest(
+  [ChainSchema],
+  ChainSchema,
 )
 
-export const CHAINS = parse(chainsSchema, [
+export const CHAINS = parse(ChainsSchema, [
   {
     id: eip155_11155111.chainId,
     name: eip155_11155111.name,

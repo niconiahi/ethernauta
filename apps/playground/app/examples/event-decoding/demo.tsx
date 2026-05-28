@@ -6,9 +6,9 @@ import {
 } from "@ethernauta/abi"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
-  addressSchema,
+  AddressSchema,
   type Uint256,
-  uintSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   eth_blockNumber,
@@ -47,12 +47,12 @@ const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
 // USDC — high-volume Transfer events, every block.
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 
-const rowSchema = object({
-  from: addressSchema,
-  to: addressSchema,
+const RowSchema = object({
+  from: AddressSchema,
+  to: AddressSchema,
   value: bigint(),
 })
-type Row = InferOutput<typeof rowSchema>
+type Row = InferOutput<typeof RowSchema>
 
 export function EventDecodingDemo() {
   const [rows, set_rows] = useState<Row[]>([])
@@ -76,20 +76,20 @@ export function EventDecodingDemo() {
         uint256(),
       ] as readonly AbiCodec<unknown>[]
       const decoded = await get_contract_events({
-        address: parse(addressSchema, USDC),
+        address: parse(AddressSchema, USDC),
         name: "Transfer",
         args,
         indexed: [true, true, false],
         fromBlock: parse(
-          uintSchema,
+          UintSchema,
           `0x${from.toString(16)}`,
         ),
-        toBlock: parse(uintSchema, `0x${to.toString(16)}`),
+        toBlock: parse(UintSchema, `0x${to.toString(16)}`),
       })(ctx)
       set_range(`${from} → ${to}`)
       set_rows(
         decoded.slice(0, 12).map((d) =>
-          parse(rowSchema, {
+          parse(RowSchema, {
             from: d.args[0],
             to: d.args[1],
             value: BigInt(d.args[2] as Uint256),

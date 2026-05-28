@@ -19,7 +19,7 @@ import type {
   Hash32,
   Uint,
 } from "@ethernauta/core"
-import { hash32Schema } from "@ethernauta/core"
+import { Hash32Schema } from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -101,7 +101,7 @@ export function inner_user_op_hash(
     keccak_bytes(op.paymasterAndData),
   )
   return parse(
-    hash32Schema,
+    Hash32Schema,
     bytes_to_hex(keccak_256(encoded)),
   )
 }
@@ -124,7 +124,7 @@ export function get_user_op_hash({
     uint_to_32(chainId),
   )
   return parse(
-    hash32Schema,
+    Hash32Schema,
     bytes_to_hex(keccak_256(encoded)),
   )
 }

@@ -7,8 +7,8 @@ function isBytes256(input: unknown): boolean {
     /^0x[0-9a-f]{512}$/.test(input)
   )
 }
-export const bytes256Schema = pipe(
+export const Bytes256Schema = pipe(
   custom<`0x${string}`>(isBytes256),
   brand("Bytes256"),
 )
-export type Bytes256 = InferOutput<typeof bytes256Schema>
+export type Bytes256 = InferOutput<typeof Bytes256Schema>

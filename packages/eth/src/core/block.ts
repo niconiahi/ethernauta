@@ -1,10 +1,10 @@
 import {
-  addressSchema,
-  bytes8Schema,
-  bytes256Schema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  Bytes8Schema,
+  Bytes256Schema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import {
@@ -15,70 +15,70 @@ import {
   union,
 } from "valibot"
 import { TransactionInfoSchema } from "./transaction"
-import { withdrawalSchema } from "./withdrawal"
+import { WithdrawalSchema } from "./withdrawal"
 
-export const blockTagSchema = union([
+export const BlockTagSchema = union([
   literal("earliest"),
   literal("finalized"),
   literal("safe"),
   literal("latest"),
   literal("pending"),
 ])
-export type BlockTag = InferOutput<typeof blockTagSchema>
+export type BlockTag = InferOutput<typeof BlockTagSchema>
 
-export const blockNumberOrTagSchema = union([
-  uintSchema,
-  blockTagSchema,
+export const BlockNumberOrTagSchema = union([
+  UintSchema,
+  BlockTagSchema,
 ])
 export type BlockNumberOrTag = InferOutput<
-  typeof blockNumberOrTagSchema
+  typeof BlockNumberOrTagSchema
 >
 
-export const blockNumberOrTagOrHashSchema = union([
-  uintSchema,
-  blockTagSchema,
-  hash32Schema,
+export const BlockNumberOrTagOrHashSchema = union([
+  UintSchema,
+  BlockTagSchema,
+  Hash32Schema,
 ])
 export type BlockNumberOrTagOrHash = InferOutput<
-  typeof blockNumberOrTagOrHashSchema
+  typeof BlockNumberOrTagOrHashSchema
 >
 
-export const blockSchema = object({
-  hash: hash32Schema,
-  parentHash: hash32Schema,
-  sha3Uncles: hash32Schema,
-  miner: addressSchema,
-  stateRoot: hash32Schema,
-  transactionsRoot: hash32Schema,
-  receiptsRoot: hash32Schema,
-  logsBloom: bytes256Schema,
-  difficulty: optional(uintSchema),
-  number: uintSchema,
-  gasLimit: uintSchema,
-  gasUsed: uintSchema,
-  timestamp: uintSchema,
-  extraData: bytesSchema,
-  mixHash: hash32Schema,
-  nonce: bytes8Schema,
-  totalDifficulty: optional(uintSchema),
-  baseFeePerGas: optional(uintSchema),
-  withdrawalsRoot: optional(hash32Schema),
-  blobGasUsed: optional(uintSchema),
-  excessBlobGas: optional(uintSchema),
-  parentBeaconBlockRoot: optional(hash32Schema),
-  size: uintSchema,
+export const BlockSchema = object({
+  hash: Hash32Schema,
+  parentHash: Hash32Schema,
+  sha3Uncles: Hash32Schema,
+  miner: AddressSchema,
+  stateRoot: Hash32Schema,
+  transactionsRoot: Hash32Schema,
+  receiptsRoot: Hash32Schema,
+  logsBloom: Bytes256Schema,
+  difficulty: optional(UintSchema),
+  number: UintSchema,
+  gasLimit: UintSchema,
+  gasUsed: UintSchema,
+  timestamp: UintSchema,
+  extraData: BytesSchema,
+  mixHash: Hash32Schema,
+  nonce: Bytes8Schema,
+  totalDifficulty: optional(UintSchema),
+  baseFeePerGas: optional(UintSchema),
+  withdrawalsRoot: optional(Hash32Schema),
+  blobGasUsed: optional(UintSchema),
+  excessBlobGas: optional(UintSchema),
+  parentBeaconBlockRoot: optional(Hash32Schema),
+  size: UintSchema,
   transactions: union([
-    array(hash32Schema),
+    array(Hash32Schema),
     array(TransactionInfoSchema),
   ]),
-  withdrawals: optional(array(withdrawalSchema)),
-  uncles: array(hash32Schema),
+  withdrawals: optional(array(WithdrawalSchema)),
+  uncles: array(Hash32Schema),
 })
-export type Block = InferOutput<typeof blockSchema>
+export type Block = InferOutput<typeof BlockSchema>
 
-export const badBlockSchema = object({
-  block: blockSchema,
-  hash: hash32Schema,
-  rlp: bytesSchema,
+export const BadBlockSchema = object({
+  block: BlockSchema,
+  hash: Hash32Schema,
+  rlp: BytesSchema,
 })
-export type BadBlock = InferOutput<typeof badBlockSchema>
+export type BadBlock = InferOutput<typeof BadBlockSchema>

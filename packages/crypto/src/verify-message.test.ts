@@ -11,8 +11,8 @@
 // known key + mocked `eth_getCode`.
 
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { MAGIC_BYTES } from "@ethernauta/eip/6492"
@@ -44,11 +44,11 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 const OTHER_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x1234567890123456789012345678901234567890",
 )
 const CHAIN_ID = "eip155:1"
@@ -78,7 +78,7 @@ function personal_sign(
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }
 
 describe("verify_message_deployed — EOA branch", () => {
@@ -194,7 +194,7 @@ describe("verify_message_deployed — EOA branch", () => {
     const result = await verify_message_deployed({
       address: ADDRESS,
       message: "hello",
-      signature: parse(bytesSchema, "0xdeadbeef"),
+      signature: parse(BytesSchema, "0xdeadbeef"),
     })(resolved_with(transport))
     expect(result).toBe(false)
   })
@@ -225,7 +225,7 @@ describe("verify_message — router on the 6492 wrap suffix", () => {
     // simulating the validator — never the EOA `eth_getCode`
     // probe.
     const wrapped = `0x${"00".repeat(96)}${MAGIC_BYTES.slice(2)}`
-    const signature = parse(bytesSchema, wrapped)
+    const signature = parse(BytesSchema, wrapped)
     const transport = vi
       .fn<Http>()
       .mockResolvedValue(ok("0x"))

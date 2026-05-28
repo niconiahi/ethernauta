@@ -1,29 +1,29 @@
 // https://eips.ethereum.org/EIPS/eip-7683
 
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint32Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint32Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { array, type InferOutput, object } from "valibot"
 
-export const outputSchema = object({
-  token: bytes32Schema,
-  amount: uint256Schema,
-  recipient: bytes32Schema,
-  chainId: uint256Schema,
+export const OutputSchema = object({
+  token: Bytes32Schema,
+  amount: Uint256Schema,
+  recipient: Bytes32Schema,
+  chainId: Uint256Schema,
 })
-export type Output = InferOutput<typeof outputSchema>
+export type Output = InferOutput<typeof OutputSchema>
 
-export const fillInstructionSchema = object({
-  destinationChainId: uint256Schema,
-  destinationSettler: bytes32Schema,
-  originData: bytesSchema,
+export const FillInstructionSchema = object({
+  destinationChainId: Uint256Schema,
+  destinationSettler: Bytes32Schema,
+  originData: BytesSchema,
 })
 export type FillInstruction = InferOutput<
-  typeof fillInstructionSchema
+  typeof FillInstructionSchema
 >
 
 // Per the ERC-7683 ABI:
@@ -32,39 +32,39 @@ export type FillInstruction = InferOutput<
 //            uint32 openDeadline, uint32 fillDeadline, bytes32, bytes), ...)
 // `openDeadline` / `fillDeadline` are unix-second uint32 timestamps;
 // `nonce` / `originChainId` are uint256.
-export const onchainCrossChainOrderSchema = object({
-  fillDeadline: uint32Schema,
-  orderDataType: bytes32Schema,
-  orderData: bytesSchema,
+export const OnchainCrossChainOrderSchema = object({
+  fillDeadline: Uint32Schema,
+  orderDataType: Bytes32Schema,
+  orderData: BytesSchema,
 })
 export type OnchainCrossChainOrder = InferOutput<
-  typeof onchainCrossChainOrderSchema
+  typeof OnchainCrossChainOrderSchema
 >
 
-export const gaslessCrossChainOrderSchema = object({
-  originSettler: addressSchema,
-  user: addressSchema,
-  nonce: uint256Schema,
-  originChainId: uint256Schema,
-  openDeadline: uint32Schema,
-  fillDeadline: uint32Schema,
-  orderDataType: bytes32Schema,
-  orderData: bytesSchema,
+export const GaslessCrossChainOrderSchema = object({
+  originSettler: AddressSchema,
+  user: AddressSchema,
+  nonce: Uint256Schema,
+  originChainId: Uint256Schema,
+  openDeadline: Uint32Schema,
+  fillDeadline: Uint32Schema,
+  orderDataType: Bytes32Schema,
+  orderData: BytesSchema,
 })
 export type GaslessCrossChainOrder = InferOutput<
-  typeof gaslessCrossChainOrderSchema
+  typeof GaslessCrossChainOrderSchema
 >
 
-export const resolvedCrossChainOrderSchema = object({
-  user: addressSchema,
-  originChainId: uint256Schema,
-  openDeadline: uint32Schema,
-  fillDeadline: uint32Schema,
-  orderId: bytes32Schema,
-  maxSpent: array(outputSchema),
-  minReceived: array(outputSchema),
-  fillInstructions: array(fillInstructionSchema),
+export const ResolvedCrossChainOrderSchema = object({
+  user: AddressSchema,
+  originChainId: Uint256Schema,
+  openDeadline: Uint32Schema,
+  fillDeadline: Uint32Schema,
+  orderId: Bytes32Schema,
+  maxSpent: array(OutputSchema),
+  minReceived: array(OutputSchema),
+  fillInstructions: array(FillInstructionSchema),
 })
 export type ResolvedCrossChainOrder = InferOutput<
-  typeof resolvedCrossChainOrderSchema
+  typeof ResolvedCrossChainOrderSchema
 >

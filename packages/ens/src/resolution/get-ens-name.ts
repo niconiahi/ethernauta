@@ -2,7 +2,7 @@
 // resolution: address -> name, with forward verification.
 
 import type { Address } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   addr,
   get_registry_address,
@@ -20,11 +20,11 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse } from "valibot"
 
-const parametersSchema = object({
-  address: addressSchema,
-  registry: optional(addressSchema),
+const ParametersSchema = object({
+  address: AddressSchema,
+  registry: optional(AddressSchema),
 })
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function get_ens_name(
   _parameters: Parameters,
@@ -33,7 +33,7 @@ export function get_ens_name(
     transports,
     context,
   ]: ResolvedReader): Promise<string | null> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const registry = get_registry_address(
       context.chain_id,
       parameters.registry,

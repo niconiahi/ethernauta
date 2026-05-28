@@ -1,9 +1,9 @@
 import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
-  addressSchema,
+  AddressSchema,
   type Bytes,
-  bytesSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { verify_message_deployed } from "@ethernauta/crypto"
 import { personal_sign } from "@ethernauta/eip/191"
@@ -40,7 +40,7 @@ const MESSAGE = "Verify me with EIP-1271"
 export function Verify1271Demo() {
   const session = use_session()
   const owner = session
-    ? parse(addressSchema, session.address)
+    ? parse(AddressSchema, session.address)
     : null
   const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [signature, set_signature] = useState<Bytes | null>(
@@ -60,7 +60,7 @@ export function Verify1271Demo() {
       const raw_sig = await personal_sign([MESSAGE, owner])(
         provider.signer({ chain_id: SEPOLIA_CHAIN_ID }),
       )
-      const sig = parse(bytesSchema, raw_sig)
+      const sig = parse(BytesSchema, raw_sig)
       set_signature(sig)
       const ok = await verify_message_deployed({
         address: owner,
@@ -140,7 +140,7 @@ function flip_last_byte(hex: Bytes): Bytes {
   const byte = (Number.parseInt(last, 16) ^ 0x01)
     .toString(16)
     .padStart(2, "0")
-  return parse(bytesSchema, `0x${body.slice(0, -2)}${byte}`)
+  return parse(BytesSchema, `0x${body.slice(0, -2)}${byte}`)
 }
 
 function Row({

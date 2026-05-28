@@ -27,7 +27,7 @@ export {
   create_provider,
   type Provider,
   type RequestArguments,
-  requestArgumentsSchema,
+  RequestArgumentsSchema,
   type SignableHandler,
 } from "./provider"
 export { watch_accounts, watch_chain } from "./watch"

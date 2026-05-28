@@ -23,10 +23,10 @@ import {
 } from "valibot"
 import type { Uint256, Uint64 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-  uint64Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
+  Uint64Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [address(), bool(), bytes()] as const
@@ -41,15 +41,15 @@ export const GAS_ESTIMATE_L1_COMPONENT_SIGNATURE = {
   names: ["to", "contractCreation", "data"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema, boolean(), bytesSchema]),
+const ParametersSchema = union([
+  tuple([AddressSchema, boolean(), BytesSchema]),
   object({
-    to: addressSchema,
+    to: AddressSchema,
     contractCreation: boolean(),
-    data: bytesSchema,
+    data: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function gasEstimateL1Component(
   _parameters: Parameters,
@@ -57,7 +57,7 @@ export function gasEstimateL1Component(
   return (
     context: ContractContext,
   ): Callable<[Uint64, Uint256, Uint256]> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -77,7 +77,7 @@ export function gasEstimateL1Component(
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): [Uint64, Uint256, Uint256] => {
@@ -86,9 +86,9 @@ export function gasEstimateL1Component(
           result,
         )
         return [
-          parse(uint64Schema, decoded[0]),
-          parse(uint256Schema, decoded[1]),
-          parse(uint256Schema, decoded[2]),
+          parse(Uint64Schema, decoded[0]),
+          parse(Uint256Schema, decoded[1]),
+          parse(Uint256Schema, decoded[2]),
         ]
       },
     }

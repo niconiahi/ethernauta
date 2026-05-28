@@ -7,9 +7,9 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  bytes32Schema,
-  bytesSchema,
-  uint256Schema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -27,15 +27,15 @@ export const ADDR_SIGNATURE = {
   names: ["node", "coinType"],
 }
 
-const parametersSchema = union([
-  tuple([bytes32Schema, uint256Schema]),
-  object({ node: bytes32Schema, coinType: uint256Schema }),
+const ParametersSchema = union([
+  tuple([Bytes32Schema, Uint256Schema]),
+  object({ node: Bytes32Schema, coinType: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function addr(_parameters: Parameters) {
   return (context: ContractContext): Callable<Bytes> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.node, parameters.coinType] as const)
@@ -47,13 +47,13 @@ export function addr(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Bytes => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(bytesSchema, decoded)
+        return parse(BytesSchema, decoded)
       },
     }
   }

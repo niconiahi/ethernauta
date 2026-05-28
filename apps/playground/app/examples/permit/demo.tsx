@@ -1,9 +1,9 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { eth_signTypedData_v4 } from "@ethernauta/eip/712"
 import {
@@ -42,7 +42,7 @@ const MAINNET_CHAIN_ID = encode_chain_id({
 
 // USDC on mainnet — EIP-2612 permit support since v2.2.
 const USDC = parse(
-  addressSchema,
+  AddressSchema,
   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
 )
 
@@ -50,7 +50,7 @@ const USDC = parse(
 // recognisable spender devs reach for first when explaining
 // "approve once, swap later" flows.
 const SPENDER = parse(
-  addressSchema,
+  AddressSchema,
   "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
 )
 
@@ -66,16 +66,16 @@ const CHAINS = [
 ]
 const multicall = create_multicall(CHAINS)
 
-const signedPermitSchema = object({
-  owner: addressSchema,
-  spender: addressSchema,
+const SignedPermitSchema = object({
+  owner: AddressSchema,
+  spender: AddressSchema,
   value: bigint(),
   nonce: bigint(),
   deadline: bigint(),
-  domain_separator: bytes32Schema,
-  signature: bytesSchema,
+  domain_separator: Bytes32Schema,
+  signature: BytesSchema,
 })
-type SignedPermit = InferOutput<typeof signedPermitSchema>
+type SignedPermit = InferOutput<typeof SignedPermitSchema>
 
 export function PermitDemo() {
   const session = use_session()
@@ -106,7 +106,7 @@ export function PermitDemo() {
         chain_id: MAINNET_CHAIN_ID,
         to: USDC,
       })
-      const owner_address = parse(addressSchema, owner)
+      const owner_address = parse(AddressSchema, owner)
       const [domain_separator_hex, nonce_hex] =
         await multicall([
           DOMAIN_SEPARATOR()(ctx),

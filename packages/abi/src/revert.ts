@@ -1,4 +1,4 @@
-import { type Bytes, bytesSchema } from "@ethernauta/core"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -18,18 +18,18 @@ import { string_, uint256 } from "./leaves"
 const ERROR_SELECTOR = "0x08c379a0"
 const PANIC_SELECTOR = "0x4e487b71"
 
-export const revertReasonSchema = union([
+export const RevertReasonSchema = union([
   object({ kind: literal("empty") }),
   object({ kind: literal("error"), reason: string() }),
   object({ kind: literal("panic"), code: bigint() }),
   object({
     kind: literal("custom"),
-    selector: bytesSchema,
-    data: bytesSchema,
+    selector: BytesSchema,
+    data: BytesSchema,
   }),
 ])
 export type RevertReason = InferOutput<
-  typeof revertReasonSchema
+  typeof RevertReasonSchema
 >
 
 export function decode_revert_reason(
@@ -50,7 +50,7 @@ export function decode_revert_reason(
   }
   return {
     kind: "custom",
-    selector: parse(bytesSchema, selector_hex),
-    data: parse(bytesSchema, bytes_to_hex(payload)),
+    selector: parse(BytesSchema, selector_hex),
+    data: parse(BytesSchema, bytes_to_hex(payload)),
   }
 }

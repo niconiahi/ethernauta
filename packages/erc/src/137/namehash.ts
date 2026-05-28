@@ -2,7 +2,7 @@
 
 import {
   type Bytes32,
-  bytes32Schema,
+  Bytes32Schema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -11,7 +11,7 @@ import { parse } from "valibot"
 export function namehash(_name: string): Bytes32 {
   let node = new Uint8Array(32)
   if (_name.length === 0) {
-    return parse(bytes32Schema, bytes_to_hex(node))
+    return parse(Bytes32Schema, bytes_to_hex(node))
   }
   const labels = _name.split(".")
   for (const label of labels.slice().reverse()) {
@@ -22,7 +22,7 @@ export function namehash(_name: string): Bytes32 {
     concat.set(label_hash, 32)
     node = new Uint8Array(keccak_256(concat))
   }
-  return parse(bytes32Schema, bytes_to_hex(node))
+  return parse(Bytes32Schema, bytes_to_hex(node))
 }
 
 // Reverse-lookup node: keccak256-derived from a

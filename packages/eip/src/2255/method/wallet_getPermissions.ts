@@ -8,7 +8,7 @@ import { array, parse } from "valibot"
 
 import {
   type Permission,
-  permissionSchema,
+  PermissionSchema,
 } from "../permission"
 
 export function wallet_getPermissions(): Signable<
@@ -20,7 +20,7 @@ export function wallet_getPermissions(): Signable<
       undefined,
     )
     return parse(
-      array(permissionSchema),
+      array(PermissionSchema),
       JSON.parse(result),
     )
   }

@@ -1,32 +1,32 @@
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  hash32Schema,
-  uint64Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Hash32Schema,
+  Uint64Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { array, object } from "valibot"
 
-const storageProofSchema = object({
-  key: bytes32Schema,
-  value: uint256Schema,
-  proof: array(bytesSchema),
+const StorageProofSchema = object({
+  key: Bytes32Schema,
+  value: Uint256Schema,
+  proof: array(BytesSchema),
 })
 export type StorageProof = InferOutput<
-  typeof storageProofSchema
+  typeof StorageProofSchema
 >
 
-export const accountProofSchema = object({
-  address: addressSchema,
-  accountProof: array(bytesSchema),
-  balance: uint256Schema,
-  codeHash: hash32Schema,
-  nonce: uint64Schema,
-  storageHash: hash32Schema,
-  storageProof: array(storageProofSchema),
+export const AccountProofSchema = object({
+  address: AddressSchema,
+  accountProof: array(BytesSchema),
+  balance: Uint256Schema,
+  codeHash: Hash32Schema,
+  nonce: Uint64Schema,
+  storageHash: Hash32Schema,
+  storageProof: array(StorageProofSchema),
 })
 export type AccountProof = InferOutput<
-  typeof accountProofSchema
+  typeof AccountProofSchema
 >

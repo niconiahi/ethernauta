@@ -1,5 +1,5 @@
 import { address, uint256 } from "@ethernauta/abi"
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import type {
   Call,
   Http,
@@ -11,7 +11,7 @@ import {
   object,
   parse,
   string,
-  unknown as unknownSchema,
+  unknown as UnknownSchema,
 } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -39,21 +39,21 @@ function fake_transport(_result: unknown): {
   return { http, captured }
 }
 
-const filterParamsSchema = array(
+const FilterParamsSchema = array(
   object({
     address: string(),
-    topics: array(unknownSchema()),
+    topics: array(UnknownSchema()),
   }),
 )
 
 const CONTRACT = parse(
-  addressSchema,
+  AddressSchema,
   "0xcccccccccccccccccccccccccccccccccccccccc",
 )
 const FROM = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 const TO = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-const FROM_BLOCK = parse(uintSchema, "0x0")
-const TO_BLOCK = parse(uintSchema, "0x1")
+const FROM_BLOCK = parse(UintSchema, "0x0")
+const TO_BLOCK = parse(UintSchema, "0x1")
 const TRANSFER_TOPIC0 =
   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 const FROM_PADDED =
@@ -95,7 +95,7 @@ describe("get_contract_events", () => {
     if (!captured.call) return
     expect(captured.call[0]).toBe("eth_getLogs")
     const params = parse(
-      filterParamsSchema,
+      FilterParamsSchema,
       captured.call[1],
     )
     expect(params[0]?.address).toBe(CONTRACT)
@@ -123,7 +123,7 @@ describe("get_contract_events", () => {
     })(resolved)
 
     const params = parse(
-      filterParamsSchema,
+      FilterParamsSchema,
       captured.call?.[1],
     )
     expect(params[0]?.topics).toEqual([

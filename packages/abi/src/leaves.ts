@@ -1,6 +1,6 @@
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes,
   type Bytes4,
   type Bytes8,
@@ -8,13 +8,13 @@ import {
   type Bytes48,
   type Bytes65,
   type Bytes256,
-  bytes4Schema,
-  bytes8Schema,
-  bytes32Schema,
-  bytes48Schema,
-  bytes65Schema,
-  bytes256Schema,
-  bytesSchema,
+  Bytes4Schema,
+  Bytes8Schema,
+  Bytes32Schema,
+  Bytes48Schema,
+  Bytes65Schema,
+  Bytes256Schema,
+  BytesSchema,
   type Uint8,
   type Uint16,
   type Uint24,
@@ -29,20 +29,20 @@ import {
   type Uint192,
   type Uint224,
   type Uint256,
-  uint8Schema,
-  uint16Schema,
-  uint24Schema,
-  uint32Schema,
-  uint40Schema,
-  uint48Schema,
-  uint56Schema,
-  uint64Schema,
-  uint96Schema,
-  uint128Schema,
-  uint160Schema,
-  uint192Schema,
-  uint224Schema,
-  uint256Schema,
+  Uint8Schema,
+  Uint16Schema,
+  Uint24Schema,
+  Uint32Schema,
+  Uint40Schema,
+  Uint48Schema,
+  Uint56Schema,
+  Uint64Schema,
+  Uint96Schema,
+  Uint128Schema,
+  Uint160Schema,
+  Uint192Schema,
+  Uint224Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -92,7 +92,7 @@ export function address(): AbiCodec<Address> {
   return {
     signature: "address",
     is_dynamic: false,
-    schema: addressSchema,
+    schema: AddressSchema,
     encode: (_value) => {
       const hex = _value.slice(2)
       const bytes = new Uint8Array(20)
@@ -106,7 +106,7 @@ export function address(): AbiCodec<Address> {
     },
     decode: (_data, _pos) => {
       const slice = _data.slice(_pos + 12, _pos + 32)
-      return parse(addressSchema, bytes_to_hex(slice))
+      return parse(AddressSchema, bytes_to_hex(slice))
     },
   }
 }
@@ -155,7 +155,7 @@ export function bytes(): AbiCodec<Bytes> {
   return {
     signature: "bytes",
     is_dynamic: true,
-    schema: bytesSchema,
+    schema: BytesSchema,
     encode: (_value) => {
       const buf = hex_to_bytes(_value)
       const padded = pad_right_32(buf)
@@ -167,7 +167,7 @@ export function bytes(): AbiCodec<Bytes> {
     decode: (_data, _pos) => {
       const len = Number(read_uint256(_data, _pos))
       return parse(
-        bytesSchema,
+        BytesSchema,
         bytes_to_hex(
           _data.slice(_pos + 32, _pos + 32 + len),
         ),
@@ -219,27 +219,27 @@ function make_bytes_fixed<T extends `0x${string}`>(
 }
 
 export function bytes4(): AbiCodec<Bytes4> {
-  return make_bytes_fixed(4, "bytes4", bytes4Schema)
+  return make_bytes_fixed(4, "bytes4", Bytes4Schema)
 }
 
 export function bytes8(): AbiCodec<Bytes8> {
-  return make_bytes_fixed(8, "bytes8", bytes8Schema)
+  return make_bytes_fixed(8, "bytes8", Bytes8Schema)
 }
 
 export function bytes32(): AbiCodec<Bytes32> {
-  return make_bytes_fixed(32, "bytes32", bytes32Schema)
+  return make_bytes_fixed(32, "bytes32", Bytes32Schema)
 }
 
 export function bytes48(): AbiCodec<Bytes48> {
-  return make_bytes_fixed(48, "bytes48", bytes48Schema)
+  return make_bytes_fixed(48, "bytes48", Bytes48Schema)
 }
 
 export function bytes65(): AbiCodec<Bytes65> {
-  return make_bytes_fixed(65, "bytes65", bytes65Schema)
+  return make_bytes_fixed(65, "bytes65", Bytes65Schema)
 }
 
 export function bytes256(): AbiCodec<Bytes256> {
-  return make_bytes_fixed(256, "bytes256", bytes256Schema)
+  return make_bytes_fixed(256, "bytes256", Bytes256Schema)
 }
 
 // ---------------------------------------------------------------- uintN
@@ -263,61 +263,61 @@ function make_uint<T extends `0x${string}`>(
 }
 
 export function uint8(): AbiCodec<Uint8> {
-  return make_uint("uint8", uint8Schema)
+  return make_uint("uint8", Uint8Schema)
 }
 
 export function uint16(): AbiCodec<Uint16> {
-  return make_uint("uint16", uint16Schema)
+  return make_uint("uint16", Uint16Schema)
 }
 
 export function uint24(): AbiCodec<Uint24> {
-  return make_uint("uint24", uint24Schema)
+  return make_uint("uint24", Uint24Schema)
 }
 
 export function uint32(): AbiCodec<Uint32> {
-  return make_uint("uint32", uint32Schema)
+  return make_uint("uint32", Uint32Schema)
 }
 
 export function uint40(): AbiCodec<Uint40> {
-  return make_uint("uint40", uint40Schema)
+  return make_uint("uint40", Uint40Schema)
 }
 
 export function uint48(): AbiCodec<Uint48> {
-  return make_uint("uint48", uint48Schema)
+  return make_uint("uint48", Uint48Schema)
 }
 
 export function uint56(): AbiCodec<Uint56> {
-  return make_uint("uint56", uint56Schema)
+  return make_uint("uint56", Uint56Schema)
 }
 
 export function uint64(): AbiCodec<Uint64> {
-  return make_uint("uint64", uint64Schema)
+  return make_uint("uint64", Uint64Schema)
 }
 
 export function uint96(): AbiCodec<Uint96> {
-  return make_uint("uint96", uint96Schema)
+  return make_uint("uint96", Uint96Schema)
 }
 
 export function uint128(): AbiCodec<Uint128> {
-  return make_uint("uint128", uint128Schema)
+  return make_uint("uint128", Uint128Schema)
 }
 
 export function uint160(): AbiCodec<Uint160> {
-  return make_uint("uint160", uint160Schema)
+  return make_uint("uint160", Uint160Schema)
 }
 
 export function uint192(): AbiCodec<Uint192> {
-  return make_uint("uint192", uint192Schema)
+  return make_uint("uint192", Uint192Schema)
 }
 
 export function uint224(): AbiCodec<Uint224> {
-  return make_uint("uint224", uint224Schema)
+  return make_uint("uint224", Uint224Schema)
 }
 
 export function uint256(): AbiCodec<Uint256> {
-  return make_uint("uint256", uint256Schema)
+  return make_uint("uint256", Uint256Schema)
 }
 
 export function uint(): AbiCodec<Uint256> {
-  return make_uint("uint256", uint256Schema)
+  return make_uint("uint256", Uint256Schema)
 }

@@ -2,7 +2,7 @@ import {
   encode_chain_id,
   type ResolvedReader,
 } from "@ethernauta/transport"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -31,11 +31,11 @@ describe("zks_estimate_fee", () => {
     ]
     const fee = await zks_estimate_fee({
       from: parse(
-        addressSchema,
+        AddressSchema,
         "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
       ),
       to: parse(
-        addressSchema,
+        AddressSchema,
         "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
       ),
     })(resolved)

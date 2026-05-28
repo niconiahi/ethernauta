@@ -7,5 +7,5 @@ function isReference(input: unknown): boolean {
     /^[-a-zA-Z0-9]{1,32}$/.test(input)
   )
 }
-const referenceSchema = custom<string>(isReference)
-export type Reference = InferOutput<typeof referenceSchema>
+const ReferenceSchema = custom<string>(isReference)
+export type Reference = InferOutput<typeof ReferenceSchema>

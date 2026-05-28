@@ -35,17 +35,17 @@ type StorableAccounts = InferOutput<
   typeof StorableAccountsSchema
 >
 
-export const accountSchema = object({
+export const AccountSchema = object({
   index: number(),
   address: string(),
   key: custom<HDKey>(
     (value) => value != null && typeof value === "object",
   ),
 })
-export type Account = InferOutput<typeof accountSchema>
+export type Account = InferOutput<typeof AccountSchema>
 
-const accountsStateSchema = object({
-  list: array(accountSchema),
+const AccountsStateSchema = object({
+  list: array(AccountSchema),
   active_index: number(),
   master: nullable(
     custom<HDKey>(
@@ -53,7 +53,7 @@ const accountsStateSchema = object({
     ),
   ),
 })
-type AccountsState = InferOutput<typeof accountsStateSchema>
+type AccountsState = InferOutput<typeof AccountsStateSchema>
 
 const EMPTY_KEY = new HDKey({
   privateKey: new Uint8Array(32).fill(1),
@@ -184,7 +184,7 @@ export async function set_active_index(
 ): Promise<void> {
   const state = accounts.value
   const account = parse(
-    accountSchema,
+    AccountSchema,
     state.list.find((a) => a.index === index),
   )
   const next: AccountsState = {

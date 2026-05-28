@@ -1,7 +1,7 @@
 import {
   type Bytes32,
-  bytes32Schema,
-  bytesSchema,
+  Bytes32Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -27,11 +27,11 @@ import { decode_sequence } from "../sequence"
 // eth_getLogs / eth_getFilterLogs returns. Strict on the
 // two fields decoding actually consumes; the full Log type
 // in @ethernauta/eth keeps metadata (blockNumber, txHash…).
-export const eventLogSchema = object({
-  topics: array(bytes32Schema),
-  data: bytesSchema,
+export const EventLogSchema = object({
+  topics: array(Bytes32Schema),
+  data: BytesSchema,
 })
-export type EventLog = InferOutput<typeof eventLogSchema>
+export type EventLog = InferOutput<typeof EventLogSchema>
 
 // Topic list returned by encode_event_topics — suitable for
 // eth_getLogs `topics`. `null` is a wildcard slot. Topics carry
@@ -39,11 +39,11 @@ export type EventLog = InferOutput<typeof eventLogSchema>
 // but topic1..N are the head-encoding of indexed static values
 // (raw, not hashes). Bytes32 is the type that covers both shapes;
 // Hash32 would be wrong for non-hash topics.
-export const eventTopicsSchema = array(
-  nullable(bytes32Schema),
+export const EventTopicsSchema = array(
+  nullable(Bytes32Schema),
 )
 export type EventTopics = InferOutput<
-  typeof eventTopicsSchema
+  typeof EventTopicsSchema
 >
 
 // Decoded log. `args` is positional in the SAME order as the
@@ -51,27 +51,27 @@ export type EventTopics = InferOutput<
 // (string / bytes / dynamic arrays / tuples) the value is the
 // 32-byte topic hash — the original value cannot be recovered
 // from the log.
-export const decodedEventLogSchema = object({
+export const DecodedEventLogSchema = object({
   name: string(),
   args: array(unknown()),
 })
 export type DecodedEventLog = InferOutput<
-  typeof decodedEventLogSchema
+  typeof DecodedEventLogSchema
 >
 
 // Boundary schema for the non-codec parts of decode_event_log's
 // input. `args` and `indexed` are validated by length-pairing
 // inside the function; the codec list is a generic shape
 // (tolerated per the conventions skill).
-export const decodeEventLogInputSchema = object({
+export const DecodeEventLogInputSchema = object({
   name: string(),
   indexed: array(boolean()),
-  topics: array(bytes32Schema),
-  data: bytesSchema,
+  topics: array(Bytes32Schema),
+  data: BytesSchema,
   anonymous: optional(boolean()),
 })
 export type DecodeEventLogInput = InferOutput<
-  typeof decodeEventLogInputSchema
+  typeof DecodeEventLogInputSchema
 >
 
 // Boundary schema for the non-codec parts of
@@ -80,20 +80,20 @@ export type DecodeEventLogInput = InferOutput<
 // the matching indexed codec, so it's `unknown` at the schema
 // layer and the codec validates the actual value at encode
 // time via its own schema.
-export const encodeEventTopicsInputSchema = object({
+export const EncodeEventTopicsInputSchema = object({
   name: string(),
   indexed: array(boolean()),
   values: optional(array(nullable(unknown()))),
   anonymous: optional(boolean()),
 })
 export type EncodeEventTopicsInput = InferOutput<
-  typeof encodeEventTopicsInputSchema
+  typeof EncodeEventTopicsInputSchema
 >
 
 // Full 32-byte keccak256 of the canonical event signature.
 // Unlike function selectors, event topic0 is NOT truncated.
 // Returns Bytes32 — semantically a hash, but it lives in the
-// `topics` slot whose wire type is Bytes32 (see eventTopicsSchema
+// `topics` slot whose wire type is Bytes32 (see EventTopicsSchema
 // rationale above); typing it as Bytes32 lets it flow directly
 // into topic positions without re-parsing.
 export function event_topic_hash(
@@ -102,7 +102,7 @@ export function event_topic_hash(
 ): Bytes32 {
   const sig = `${_name}(${_args.map((a) => a.signature).join(",")})`
   return parse(
-    bytes32Schema,
+    Bytes32Schema,
     bytes_to_hex(keccak_256(new TextEncoder().encode(sig))),
   )
 }
@@ -128,7 +128,7 @@ function encode_indexed_topic(
   }
   if (_codec.signature === "bytes") {
     return keccak_256(
-      hex_to_bytes(parse(bytesSchema, _value)),
+      hex_to_bytes(parse(BytesSchema, _value)),
     )
   }
   return keccak_256(_codec.encode(_value))
@@ -146,7 +146,7 @@ export function encode_event_topics<
   _input: EncodeEventTopicsInput & { args: Args },
 ): EventTopics {
   const { args } = _input
-  const input = parse(encodeEventTopicsInputSchema, _input)
+  const input = parse(EncodeEventTopicsInputSchema, _input)
   const { name, indexed, values, anonymous } = input
   if (args.length !== indexed.length) {
     throw new Error(
@@ -172,7 +172,7 @@ export function encode_event_topics<
     }
     const topic = encode_indexed_topic(codec, v)
     indexed_part.push(
-      parse(bytes32Schema, bytes_to_hex(topic)),
+      parse(Bytes32Schema, bytes_to_hex(topic)),
     )
   }
   while (
@@ -202,7 +202,7 @@ export function decode_event_log<
   },
 ): DecodedEventLog {
   const { args } = _input
-  const input = parse(decodeEventLogInputSchema, _input)
+  const input = parse(DecodeEventLogInputSchema, _input)
   const { name, indexed, topics, data, anonymous } = input
   if (args.length !== indexed.length) {
     throw new Error(
@@ -244,5 +244,5 @@ export function decode_event_log<
       out.push(non_indexed_values[data_i++])
     }
   }
-  return parse(decodedEventLogSchema, { name, args: out })
+  return parse(DecodedEventLogSchema, { name, args: out })
 }

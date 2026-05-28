@@ -1,8 +1,8 @@
-import { type Hash32, hash32Schema } from "@ethernauta/core"
+import { type Hash32, Hash32Schema } from "@ethernauta/core"
 import {
   eth_blockNumber,
   eth_getTransactionReceipt,
-  receiptInfoSchema,
+  ReceiptInfoSchema,
 } from "@ethernauta/eth"
 import { hex_to_number } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
@@ -18,29 +18,29 @@ import {
 
 import type { Trackable } from "./tracker"
 
-const optionsSchema = object({
+const OptionsSchema = object({
   confirmations: optional(pipe(number())),
   poll_interval_ms: optional(pipe(number())),
   timeout_ms: optional(pipe(number())),
 })
-type Options = InferOutput<typeof optionsSchema>
+type Options = InferOutput<typeof OptionsSchema>
 
-const parametersSchema = union([
-  tuple([hash32Schema]),
-  tuple([hash32Schema, optionsSchema]),
+const ParametersSchema = union([
+  tuple([Hash32Schema]),
+  tuple([Hash32Schema, OptionsSchema]),
   object({
-    hash: hash32Schema,
-    options: optional(optionsSchema),
+    hash: Hash32Schema,
+    options: optional(OptionsSchema),
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
-export const confirmedReceiptSchema = object({
-  ...receiptInfoSchema.entries,
+export const ConfirmedReceiptSchema = object({
+  ...ReceiptInfoSchema.entries,
   confirmations: number(),
 })
 export type ConfirmedReceipt = InferOutput<
-  typeof confirmedReceiptSchema
+  typeof ConfirmedReceiptSchema
 >
 
 /**
@@ -60,7 +60,7 @@ export function wait_for_receipt(
     transports,
     context,
   ]): Promise<ConfirmedReceipt> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const { hash, options } = normalize(parameters)
     const required = options.confirmations ?? 1
     const poll_ms = options.poll_interval_ms ?? 2000
@@ -86,7 +86,7 @@ export function wait_for_receipt(
         const mined = hex_to_number(receipt.blockNumber)
         const have = current - mined + 1
         if (have >= required) {
-          return parse(confirmedReceiptSchema, {
+          return parse(ConfirmedReceiptSchema, {
             ...receipt,
             confirmations: have,
           })

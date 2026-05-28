@@ -1,7 +1,7 @@
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
-import { chainIdSchema } from "./chain/chain-id"
+import { ChainIdSchema } from "./chain/chain-id"
 import type { Http } from "./http"
 import {
   type ChainEntry,
@@ -9,7 +9,7 @@ import {
 } from "./require-chain"
 
 export const WriteContextSchema = object({
-  chain_id: chainIdSchema,
+  chain_id: ChainIdSchema,
 })
 export type WriteContext = InferOutput<
   typeof WriteContextSchema

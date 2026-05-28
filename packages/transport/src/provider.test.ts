@@ -6,7 +6,7 @@ import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { callSchema } from "./call"
+import { CallSchema } from "./call"
 import {
   create_injected_signer,
   create_injected_transport,
@@ -43,7 +43,7 @@ describe("create_injected_transport", () => {
     })
     const transport = create_injected_transport(provider)
     const response = await transport(
-      parse(callSchema, ["eth_chainId", []]),
+      parse(CallSchema, ["eth_chainId", []]),
     )
     expect(captured.last?.method).toBe("eth_chainId")
     expect("result" in response && response.result).toBe(
@@ -59,7 +59,7 @@ describe("create_injected_transport", () => {
     })
     const transport = create_injected_transport(provider)
     const response = await transport(
-      parse(callSchema, ["eth_call", []]),
+      parse(CallSchema, ["eth_call", []]),
     )
     expect("error" in response).toBe(true)
     if (!("error" in response)) return

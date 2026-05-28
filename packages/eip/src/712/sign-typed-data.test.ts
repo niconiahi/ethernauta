@@ -1,4 +1,4 @@
-import { uint256Schema } from "@ethernauta/core"
+import { Uint256Schema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import { assert_domain_chain } from "./sign-typed-data"
@@ -44,7 +44,7 @@ describe("sign-typed-data.ts — assert_domain_chain", () => {
   it("should pass when domain chainId is hex that matches", () => {
     expect(() =>
       assert_domain_chain(
-        with_domain(parse(uint256Schema, "0xaa36a7")),
+        with_domain(parse(Uint256Schema, "0xaa36a7")),
         "eip155:11155111",
       ),
     ).not.toThrow()

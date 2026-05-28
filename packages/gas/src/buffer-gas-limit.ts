@@ -1,7 +1,7 @@
-import { type Uint, uintSchema } from "@ethernauta/core"
+import { type Uint, UintSchema } from "@ethernauta/core"
 import {
   eth_estimateGas,
-  genericTransactionSchema,
+  GenericTransactionSchema,
 } from "@ethernauta/eth"
 import type {
   Readable,
@@ -17,14 +17,14 @@ import {
   pipe,
 } from "valibot"
 
-const multiplierSchema = pipe(number(), minValue(1))
+const MultiplierSchema = pipe(number(), minValue(1))
 
-export const bufferGasLimitParametersSchema = object({
-  tx: genericTransactionSchema,
-  multiplier: multiplierSchema,
+export const BufferGasLimitParametersSchema = object({
+  tx: GenericTransactionSchema,
+  multiplier: MultiplierSchema,
 })
 export type BufferGasLimitParameters = InferOutput<
-  typeof bufferGasLimitParametersSchema
+  typeof BufferGasLimitParametersSchema
 >
 
 const MULTIPLIER_PRECISION = 1_000_000n
@@ -36,7 +36,7 @@ export function buffer_gas_limit(
     resolved: ResolvedReader,
   ): Promise<Uint> => {
     const parameters = parse(
-      bufferGasLimitParametersSchema,
+      BufferGasLimitParametersSchema,
       _parameters,
     )
     const estimated = await eth_estimateGas({
@@ -54,6 +54,6 @@ export function buffer_gas_limit(
     const buffered =
       (numerator + MULTIPLIER_PRECISION - 1n) /
       MULTIPLIER_PRECISION
-    return parse(uintSchema, bigint_to_hex(buffered))
+    return parse(UintSchema, bigint_to_hex(buffered))
   }
 }

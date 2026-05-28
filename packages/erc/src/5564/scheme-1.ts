@@ -6,8 +6,8 @@
 
 import {
   type Address,
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -51,15 +51,15 @@ function bigint_to_32_bytes(value: bigint): Uint8Array {
 function point_to_address(point: Point): Address {
   const uncompressed = point.toBytes(false)
   const hash = keccak_256(uncompressed.slice(1))
-  return parse(addressSchema, bytes_to_hex(hash.slice(-20)))
+  return parse(AddressSchema, bytes_to_hex(hash.slice(-20)))
 }
 
-export const stealthMetaAddressSchema = object({
-  spending_public_key: bytesSchema,
-  viewing_public_key: bytesSchema,
+export const StealthMetaAddressSchema = object({
+  spending_public_key: BytesSchema,
+  viewing_public_key: BytesSchema,
 })
 export type StealthMetaAddress = InferOutput<
-  typeof stealthMetaAddressSchema
+  typeof StealthMetaAddressSchema
 >
 
 // Parse a concatenated stealth meta-address: 33 bytes
@@ -77,11 +77,11 @@ export function parse_stealth_meta_address(
   }
   return {
     spending_public_key: parse(
-      bytesSchema,
+      BytesSchema,
       `0x${stripped.slice(0, 66)}`,
     ),
     viewing_public_key: parse(
-      bytesSchema,
+      BytesSchema,
       `0x${stripped.slice(66, 132)}`,
     ),
   }
@@ -99,13 +99,13 @@ export function derive_meta_address(input: {
 }): StealthMetaAddress {
   return {
     spending_public_key: parse(
-      bytesSchema,
+      BytesSchema,
       bytes_to_hex(
         getPublicKey(input.spending_private_key, true),
       ),
     ),
     viewing_public_key: parse(
-      bytesSchema,
+      BytesSchema,
       bytes_to_hex(
         getPublicKey(input.viewing_private_key, true),
       ),
@@ -113,13 +113,13 @@ export function derive_meta_address(input: {
   }
 }
 
-export const generatedStealthAddressSchema = object({
-  stealth_address: addressSchema,
-  ephemeral_public_key: bytesSchema,
+export const GeneratedStealthAddressSchema = object({
+  stealth_address: AddressSchema,
+  ephemeral_public_key: BytesSchema,
   view_tag: number(),
 })
 export type GeneratedStealthAddress = InferOutput<
-  typeof generatedStealthAddressSchema
+  typeof GeneratedStealthAddressSchema
 >
 
 // Sender side: derive a one-shot recipient address from a
@@ -153,7 +153,7 @@ export function generate_stealth_address({
   return {
     stealth_address: point_to_address(stealth_point),
     ephemeral_public_key: parse(
-      bytesSchema,
+      BytesSchema,
       bytes_to_hex(ephemeral_public_key),
     ),
     view_tag,

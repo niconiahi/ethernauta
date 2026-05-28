@@ -1,6 +1,6 @@
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import { addEthereumChainParameterSchema } from "./wallet_addEthereumChain"
+import { AddEthereumChainParameterSchema } from "./wallet_addEthereumChain"
 
 describe("wallet_addEthereumChain.ts", () => {
   it("should accept a complete EIP-3085 chain parameter", () => {
@@ -16,7 +16,7 @@ describe("wallet_addEthereumChain.ts", () => {
       blockExplorerUrls: ["https://sepolia.etherscan.io"],
     }
     expect(() =>
-      parse(addEthereumChainParameterSchema, param),
+      parse(AddEthereumChainParameterSchema, param),
     ).not.toThrow()
   })
 
@@ -32,7 +32,7 @@ describe("wallet_addEthereumChain.ts", () => {
       rpcUrls: ["https://eth.llamarpc.com"],
     }
     expect(() =>
-      parse(addEthereumChainParameterSchema, param),
+      parse(AddEthereumChainParameterSchema, param),
     ).not.toThrow()
   })
 
@@ -48,7 +48,7 @@ describe("wallet_addEthereumChain.ts", () => {
       rpcUrls: ["not-a-url"],
     }
     expect(() =>
-      parse(addEthereumChainParameterSchema, param),
+      parse(AddEthereumChainParameterSchema, param),
     ).toThrow()
   })
 
@@ -64,7 +64,7 @@ describe("wallet_addEthereumChain.ts", () => {
       rpcUrls: ["https://eth.llamarpc.com"],
     }
     expect(() =>
-      parse(addEthereumChainParameterSchema, param),
+      parse(AddEthereumChainParameterSchema, param),
     ).toThrow()
   })
 
@@ -79,7 +79,7 @@ describe("wallet_addEthereumChain.ts", () => {
       rpcUrls: ["https://eth.llamarpc.com"],
     }
     expect(() =>
-      parse(addEthereumChainParameterSchema, param),
+      parse(AddEthereumChainParameterSchema, param),
     ).toThrow()
   })
 })

@@ -12,10 +12,10 @@
 // surfaces downstream as `invalid_signature`.
 
 import {
-  addressSchema,
-  bytes64Schema,
-  bytes65Schema,
-  hash32Schema,
+  AddressSchema,
+  Bytes64Schema,
+  Bytes65Schema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -37,14 +37,14 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 
 const DIGEST = keccak_256(
   new TextEncoder().encode("recover-address-vector"),
 )
-const HASH = parse(hash32Schema, bytes_to_hex(DIGEST))
+const HASH = parse(Hash32Schema, bytes_to_hex(DIGEST))
 
 function rs_bytes(): {
   r: Uint8Array
@@ -75,7 +75,7 @@ function sig65_with_v(v: number) {
   out.set(r, 0)
   out.set(s, 32)
   out[64] = v
-  return parse(bytes65Schema, bytes_to_hex(out))
+  return parse(Bytes65Schema, bytes_to_hex(out))
 }
 
 describe("recover.ts — recover_address", () => {
@@ -111,7 +111,7 @@ describe("recover.ts — recover_address", () => {
       expect(() =>
         recover_address(
           HASH,
-          parse(bytes65Schema, bytes_to_hex(out)),
+          parse(Bytes65Schema, bytes_to_hex(out)),
         ),
       ).toThrow(/invalid signature v byte/)
     })
@@ -125,7 +125,7 @@ describe("recover.ts — recover_address", () => {
       out[0] = (out[0] ?? 0) ^ 0x01
       const recovered = recover_address(
         HASH,
-        parse(bytes65Schema, bytes_to_hex(out)),
+        parse(Bytes65Schema, bytes_to_hex(out)),
       )
       expect(recovered).not.toEqual(ADDRESS)
     })
@@ -144,7 +144,7 @@ describe("recover.ts — recover_address", () => {
       out.set(s, 32)
       // recovery = 0, so the top bit of s[0] stays clear
       const signature = parse(
-        bytes64Schema,
+        Bytes64Schema,
         bytes_to_hex(out),
       )
       expect(recover_address(HASH, signature)).toEqual(
@@ -178,7 +178,7 @@ describe("recover.ts — recover_address", () => {
         )
       }
       const other_hash = parse(
-        hash32Schema,
+        Hash32Schema,
         bytes_to_hex(other_digest),
       )
       const r_hex = probe.r.toString(16).padStart(64, "0")
@@ -200,11 +200,11 @@ describe("recover.ts — recover_address", () => {
       out_long[64] = 28
       out_short[32] = (out_short[32] as number) | 0x80
       const long = parse(
-        bytes65Schema,
+        Bytes65Schema,
         bytes_to_hex(out_long),
       )
       const short = parse(
-        bytes64Schema,
+        Bytes64Schema,
         bytes_to_hex(out_short),
       )
       expect(recover_address(other_hash, long)).toEqual(

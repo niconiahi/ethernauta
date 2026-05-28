@@ -1,32 +1,32 @@
 import {
-  addressSchema,
-  bytesMax32Schema,
+  AddressSchema,
+  BytesMax32Schema,
 } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { array, object, parse, tuple, union } from "valibot"
-import { blockNumberOrTagOrHashSchema } from "../../core/block"
+import { BlockNumberOrTagOrHashSchema } from "../../core/block"
 import type { AccountProof } from "../../core/state"
-import { accountProofSchema } from "../../core/state"
+import { AccountProofSchema } from "../../core/state"
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    addressSchema,
-    array(bytesMax32Schema),
-    blockNumberOrTagOrHashSchema,
+    AddressSchema,
+    array(BytesMax32Schema),
+    BlockNumberOrTagOrHashSchema,
   ]),
   object({
-    address: addressSchema,
-    storageKeys: array(bytesMax32Schema),
-    blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
+    address: AddressSchema,
+    storageKeys: array(BytesMax32Schema),
+    blockNumberOrTagOrHash: BlockNumberOrTagOrHashSchema,
   }),
 ])
 
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns The merkle proof for a given account and optionally some storage keys
  */
@@ -38,8 +38,8 @@ export function eth_getProof(
     _context,
   ]: ResolvedReader): Promise<AccountProof> => {
     const method = "eth_getProof"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -47,7 +47,7 @@ export function eth_getProof(
       throw new Error(response.error.message)
     }
     const result = parse(
-      accountProofSchema,
+      AccountProofSchema,
       response.result,
     )
     return result

@@ -3,8 +3,8 @@
 export {
   type AccessList,
   type AccessListEntry,
-  accessListEntrySchema,
-  accessListSchema,
+  AccessListEntrySchema,
+  AccessListSchema,
 } from "./access-list"
 export {
   ACCESS_LIST_ADDRESS_COST,
@@ -13,9 +13,9 @@ export {
 } from "./constants"
 export {
   type Transaction2930Signed,
-  transaction2930SignedSchema,
+  Transaction2930SignedSchema,
 } from "./transaction-signed"
 export {
   type Transaction2930Unsigned,
-  transaction2930UnsignedSchema,
+  Transaction2930UnsignedSchema,
 } from "./transaction-unsigned"

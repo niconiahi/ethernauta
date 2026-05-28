@@ -95,7 +95,7 @@ const reason = decode_revert_reason(revert_bytes)
 // or { kind: "raw", data: "0x…" }
 ```
 
-`revertReasonSchema` is exported for callers that want to validate / parse external payloads.
+`RevertReasonSchema` is exported for callers that want to validate / parse external payloads.
 
 ### Encode and decode event topics + logs
 

@@ -7,8 +7,8 @@ function isBytes8(input: unknown): boolean {
     /^0x[0-9a-f]{16}$/.test(input)
   )
 }
-export const bytes8Schema = pipe(
+export const Bytes8Schema = pipe(
   custom<`0x${string}`>(isBytes8),
   brand("Bytes8"),
 )
-export type Bytes8 = InferOutput<typeof bytes8Schema>
+export type Bytes8 = InferOutput<typeof Bytes8Schema>

@@ -8,7 +8,7 @@ This module is an un-opinionated representation of the [Ethereum execution APIs]
 - `Writable<T>` for state mutations (`eth_sendRawTransaction`) — consumed by a writer resolver.
 - `Signable<T>` for wallet operations (`eth_signTransaction`, `eth_sign`, `eth_sendTransaction`) — consumed by a signer resolver.
 
-This package is also the canonical home of the JSON-RPC Ethereum schemas — block / receipt / generic-transaction / variant-signed-transaction. Primitive schemas (`addressSchema`, `bytesSchema`, `uintSchema`, …) live in `@ethernauta/core`; per-EIP transaction wire schemas (`transaction1559SignedSchema`, `accessListSchema`, `transaction4844UnsignedSchema`, …) live in `@ethernauta/eip/<n>` and are imported from there.
+This package is also the canonical home of the JSON-RPC Ethereum schemas — block / receipt / generic-transaction / variant-signed-transaction. Primitive schemas (`AddressSchema`, `BytesSchema`, `UintSchema`, …) live in `@ethernauta/core`; per-EIP transaction wire schemas (`Transaction1559SignedSchema`, `AccessListSchema`, `Transaction4844UnsignedSchema`, …) live in `@ethernauta/eip/<n>` and are imported from there.
 
 ## Modules
 
@@ -195,7 +195,7 @@ const interval_id = setInterval(async () => {
 
 ```ts
 import {
-  receiptInfoSchema,
+  ReceiptInfoSchema,
   RECEIPT_STATUS,
   is_post_byzantium,
   // block / transaction / withdrawal / filter schemas …
@@ -204,4 +204,4 @@ import {
 import { encode_rlp, type RLPInput } from "@ethernauta/eth"
 ```
 
-The `lib` subtree exposes the post-Byzantium receipt helper (`is_post_byzantium`, `RECEIPT_STATUS`, `receiptStatusSchema`, `postByzantiumReceiptSchema`) plus the typed RLP encoder used by transaction-builders.
+The `lib` subtree exposes the post-Byzantium receipt helper (`is_post_byzantium`, `RECEIPT_STATUS`, `ReceiptStatusSchema`, `PostByzantiumReceiptSchema`) plus the typed RLP encoder used by transaction-builders.

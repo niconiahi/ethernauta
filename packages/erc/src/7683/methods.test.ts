@@ -1,10 +1,10 @@
 import { to_selector } from "@ethernauta/abi"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint32Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint32Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -35,16 +35,16 @@ import {
 } from "./extensions/origin-settler/methods/resolve-for"
 
 const CONTRACT = parse(
-  addressSchema,
+  AddressSchema,
   "0x3333333333333333333333333333333333333333",
 )
-const FILL_DEADLINE = parse(uint32Schema, "0x65b3b3b3")
+const FILL_DEADLINE = parse(Uint32Schema, "0x65b3b3b3")
 const ORDER_DATA_TYPE = parse(
-  bytes32Schema,
+  Bytes32Schema,
   "0x0000000000000000000000000000000000000000000000000000000000000001",
 )
-const ORDER_DATA = parse(bytesSchema, "0xdeadbeef")
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const ORDER_DATA = parse(BytesSchema, "0xdeadbeef")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 const ORDER = {
   fillDeadline: FILL_DEADLINE,
@@ -54,16 +54,16 @@ const ORDER = {
 
 const GASLESS_ORDER = {
   originSettler: parse(
-    addressSchema,
+    AddressSchema,
     "0x1111111111111111111111111111111111111111",
   ),
   user: parse(
-    addressSchema,
+    AddressSchema,
     "0x2222222222222222222222222222222222222222",
   ),
-  nonce: parse(uint256Schema, "0x1"),
-  originChainId: parse(uint256Schema, "0x1"),
-  openDeadline: parse(uint32Schema, "0x65b3b3b3"),
+  nonce: parse(Uint256Schema, "0x1"),
+  originChainId: parse(Uint256Schema, "0x1"),
+  openDeadline: parse(Uint32Schema, "0x65b3b3b3"),
   fillDeadline: FILL_DEADLINE,
   orderDataType: ORDER_DATA_TYPE,
   orderData: ORDER_DATA,
@@ -159,7 +159,7 @@ describe("ERC-7683 — calldata encoding smoke tests", () => {
   it("fill returns a Signable (function), not a Callable", () => {
     const signable = fill({
       orderId: parse(
-        bytes32Schema,
+        Bytes32Schema,
         "0x0000000000000000000000000000000000000000000000000000000000000001",
       ),
       originData: EMPTY_BYTES,

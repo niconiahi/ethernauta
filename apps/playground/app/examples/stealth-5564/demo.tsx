@@ -41,12 +41,12 @@ function random_32_bytes_hex(): `0x${string}` {
   return hex as `0x${string}`
 }
 
-const generatedSchema = object({
+const GeneratedSchema = object({
   stealth_address: string(),
   ephemeral_public_key: string(),
   view_tag: number(),
 })
-type Generated = InferOutput<typeof generatedSchema>
+type Generated = InferOutput<typeof GeneratedSchema>
 
 export function Stealth5564Demo() {
   const [spending_priv, set_spending_priv] = useState(() =>

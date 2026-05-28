@@ -10,9 +10,9 @@ export {
 export { effective_gas_price } from "./effective-gas-price"
 export {
   type Transaction1559Signed,
-  transaction1559SignedSchema,
+  Transaction1559SignedSchema,
 } from "./transaction-signed"
 export {
   type Transaction1559Unsigned,
-  transaction1559UnsignedSchema,
+  Transaction1559UnsignedSchema,
 } from "./transaction-unsigned"

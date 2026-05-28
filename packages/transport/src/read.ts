@@ -1,7 +1,7 @@
-import { bytesSchema } from "@ethernauta/core"
+import { BytesSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 
-import { callSchema } from "./call"
+import { CallSchema } from "./call"
 import type { Callable } from "./contract"
 import {
   type ChainEntry,
@@ -13,7 +13,7 @@ export function create_read(
 ): <T>(_call: Callable<T>) => Promise<T> {
   return async <T>(_call: Callable<T>): Promise<T> => {
     const transports = require_chain(chains, _call.chain_id)
-    const call = parse(callSchema, [
+    const call = parse(CallSchema, [
       "eth_call",
       [{ to: _call.to, input: _call.data }, "latest"],
     ])
@@ -23,7 +23,7 @@ export function create_read(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(bytesSchema, response.result)
+    const result = parse(BytesSchema, response.result)
     return _call.decode(result)
   }
 }

@@ -9,12 +9,12 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint32Schema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint32Schema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -46,37 +46,37 @@ export const OPEN_FOR_SIGNATURE = {
   names: ["order", "signature", "originFillerData"],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
     object({
-      originSettler: addressSchema,
-      user: addressSchema,
-      nonce: uint256Schema,
-      originChainId: uint256Schema,
-      openDeadline: uint32Schema,
-      fillDeadline: uint32Schema,
-      orderDataType: bytes32Schema,
-      orderData: bytesSchema,
+      originSettler: AddressSchema,
+      user: AddressSchema,
+      nonce: Uint256Schema,
+      originChainId: Uint256Schema,
+      openDeadline: Uint32Schema,
+      fillDeadline: Uint32Schema,
+      orderDataType: Bytes32Schema,
+      orderData: BytesSchema,
     }),
-    bytesSchema,
-    bytesSchema,
+    BytesSchema,
+    BytesSchema,
   ]),
   object({
     order: object({
-      originSettler: addressSchema,
-      user: addressSchema,
-      nonce: uint256Schema,
-      originChainId: uint256Schema,
-      openDeadline: uint32Schema,
-      fillDeadline: uint32Schema,
-      orderDataType: bytes32Schema,
-      orderData: bytesSchema,
+      originSettler: AddressSchema,
+      user: AddressSchema,
+      nonce: Uint256Schema,
+      originChainId: Uint256Schema,
+      openDeadline: Uint32Schema,
+      fillDeadline: Uint32Schema,
+      orderDataType: Bytes32Schema,
+      orderData: BytesSchema,
     }),
-    signature: bytesSchema,
-    originFillerData: bytesSchema,
+    signature: BytesSchema,
+    originFillerData: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function openFor(
   _parameters: Parameters,
@@ -89,7 +89,7 @@ export function openFor(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -113,8 +113,8 @@ export function openFor(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: OPEN_FOR_SIGNATURE,
         },

@@ -70,13 +70,13 @@ function is_solidity_type(_s: string): boolean {
   return is_array_suffix_chain(suffix)
 }
 
-export const typeSchema = pipe(
+export const TypeSchema = pipe(
   string(),
   check(is_solidity_type),
 )
-export type Type = InferOutput<typeof typeSchema>
+export type Type = InferOutput<typeof TypeSchema>
 
-export const tupleSchema = object({
+export const TupleSchema = object({
   name: string(),
   type: union([literal("tuple"), literal("tuple[]")]),
 })

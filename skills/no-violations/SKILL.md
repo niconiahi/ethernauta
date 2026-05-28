@@ -61,7 +61,7 @@ const fillDeadline = "0x65b3b3b3" as Hash32
 const fillDeadline = parse(hexSchema, "0x65b3b3b3")
 
 // GOOD — value is 4 bytes, schema is bytes4
-const fillDeadline = parse(bytes4Schema, "0x65b3b3b3")
+const fillDeadline = parse(Bytes4Schema, "0x65b3b3b3")
 ```
 
 If `@ethernauta/core` doesn't already expose a narrow-enough primitive,
@@ -182,12 +182,12 @@ guard needed.
 
 ```ts
 // BAD
-const pairSchema = array(bytesSchema)
+const pairSchema = array(BytesSchema)
 const pair = parse(pairSchema, raw)
 use(pair[0]!, pair[1]!)
 
 // GOOD
-const pairSchema = tuple([bytesSchema, bytesSchema])
+const pairSchema = tuple([BytesSchema, BytesSchema])
 const pair = parse(pairSchema, raw)
 use(pair[0], pair[1])
 ```
@@ -204,18 +204,18 @@ the parsed value's static type is `[T, ...T[]]` and indexing returns
 ```ts
 import { parse, tupleWithRest } from "valibot"
 
-const nonEmptyCallsSchema = tupleWithRest(
-  [callableSchema],
-  callableSchema,
+const NonEmptyCallsSchema = tupleWithRest(
+  [CallableSchema],
+  CallableSchema,
 )
 
 // BAD — array schema + invariant in the interior
-const calls = parse(array(callableSchema), raw)
+const calls = parse(array(CallableSchema), raw)
 const [first] = calls
 invariant(first, "expected at least one call")
 
 // GOOD — non-emptiness lives in the schema; the type already says so
-const calls = parse(nonEmptyCallsSchema, raw)
+const calls = parse(NonEmptyCallsSchema, raw)
 use(calls[0])  // T, not T | undefined
 ```
 
@@ -288,16 +288,16 @@ precondition. If you can express it as a schema, do that instead.
 
 ```ts
 // BAD — interior assertion
-const tx = parse(genericTransactionSchema, raw)
+const tx = parse(GenericTransactionSchema, raw)
 invariant(tx.to, "eth_signTransaction requires a `to` address")
 use(tx.to)
 
 // GOOD — tighten the schema at the boundary
-const signableTransactionSchema = object({
-  ...genericTransactionSchema.entries,
-  to: addressSchema,  // required, narrow primitive
+const SignableTransactionSchema = object({
+  ...GenericTransactionSchema.entries,
+  to: AddressSchema,  // required, narrow primitive
 })
-const tx = parse(signableTransactionSchema, raw)
+const tx = parse(SignableTransactionSchema, raw)
 use(tx.to)  // Address, not Address | null | undefined
 ```
 
@@ -307,9 +307,9 @@ too loose?*, not *which assertion should I add?*.
 
 ### R0.5 — Core primitives are nominally branded; cross the brand only through `parse`
 
-Every hex primitive in `@ethernauta/core` (`addressSchema`,
-`bytesSchema`, `bytes4Schema`, `bytes32Schema`, `hash32Schema`,
-`uintSchema`, `uint8Schema`, …, `uint256Schema`, etc.) is wrapped in
+Every hex primitive in `@ethernauta/core` (`AddressSchema`,
+`BytesSchema`, `Bytes4Schema`, `Bytes32Schema`, `Hash32Schema`,
+`UintSchema`, `Uint8Schema`, …, `Uint256Schema`, etc.) is wrapped in
 `brand("<Name>")`. The output type is **nominally distinct** —
 `Address`, `Bytes32`, `Hash32`, `Uint256` are all `` `0x${string}` ``
 structurally, but TypeScript treats them as different types. A
@@ -339,19 +339,19 @@ const status = (receipt.status ?? "0x0") as `0x${string}`
 
 // GOOD — parse at the boundary; the brand attaches in one step
 const VITALIK = parse(
-  addressSchema,
+  AddressSchema,
   "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
 )
 
 const raw = encode_eip155_transaction_unsigned(tx, key)
 await eth_sendRawTransaction([
-  parse(bytesSchema, bytes_to_hex(raw)),
+  parse(BytesSchema, bytes_to_hex(raw)),
 ])(writer(ctx))
 
 // Hoist branded sentinels at module scope so equality compares are
 // brand-to-brand, not brand-to-raw-literal
-const STATUS_SUCCESS = parse(uintSchema, RECEIPT_STATUS.SUCCESS)
-const STATUS_REVERTED = parse(uintSchema, RECEIPT_STATUS.REVERTED)
+const STATUS_SUCCESS = parse(UintSchema, RECEIPT_STATUS.SUCCESS)
+const STATUS_REVERTED = parse(UintSchema, RECEIPT_STATUS.REVERTED)
 
 if (receipt.status === STATUS_SUCCESS) succeeded += 1
 else reverted += 1
@@ -363,7 +363,7 @@ Two corollaries that the cascade surfaces:
   fail with `TS2367: ... have no overlap`.** That's the brand working
   as designed — the literal isn't branded, so the comparison cannot be
   meaningful. Fix by hoisting a branded constant (`const ZERO_UINT =
-  parse(uintSchema, "0x0")`) and compare against that, not by widening
+  parse(UintSchema, "0x0")`) and compare against that, not by widening
   the value side back to the raw template literal.
 - **Helpers that previously returned raw `` `0x${string}` `` (e.g.
   `private_key_to_address`, `compute_deadlines`, internal selector

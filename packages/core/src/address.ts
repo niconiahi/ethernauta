@@ -7,8 +7,8 @@ function isAddress(input: unknown): boolean {
     /^0x[0-9,a-f,A-F]{40}$/.test(input)
   )
 }
-export const addressSchema = pipe(
+export const AddressSchema = pipe(
   custom<`0x${string}`>(isAddress),
   brand("Address"),
 )
-export type Address = InferOutput<typeof addressSchema>
+export type Address = InferOutput<typeof AddressSchema>

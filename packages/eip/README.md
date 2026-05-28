@@ -73,7 +73,7 @@ const signature = await personal_sign([message_hex, address])(
 ### EIP-712 — typed-data signing
 
 ```ts
-import { hash_typed_data, sign_typed_data, typedDataSchema } from "@ethernauta/eip/712"
+import { hash_typed_data, sign_typed_data, TypedDataSchema } from "@ethernauta/eip/712"
 
 const digest = hash_typed_data({ domain, types, primaryType, message })
 

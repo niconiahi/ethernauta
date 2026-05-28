@@ -15,7 +15,7 @@
 //
 // `from_blobs` is the inverse — reads the length header from the first
 // blob and slices out the original byte stream.
-import { type Bytes, bytesSchema } from "@ethernauta/core"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -27,7 +27,7 @@ import {
   BYTES_PER_FIELD_ELEMENT,
   FIELD_ELEMENTS_PER_BLOB,
 } from "./constants"
-import { type Blob, blobSchema } from "./schemas"
+import { type Blob, BlobSchema } from "./schemas"
 
 const DATA_BYTES_PER_FIELD_ELEMENT =
   BYTES_PER_FIELD_ELEMENT - 1 // 31 — leave room for the leading 0x00
@@ -36,7 +36,7 @@ const DATA_BYTES_PER_BLOB =
 const HEADER_BYTES = 4
 
 export function to_blobs(_data: Bytes): Blob[] {
-  const data = parse(bytesSchema, _data)
+  const data = parse(BytesSchema, _data)
   const raw = hex_to_bytes(data)
   const stream = new Uint8Array(HEADER_BYTES + raw.length)
   const len = raw.length
@@ -65,14 +65,14 @@ export function to_blobs(_data: Bytes): Blob[] {
       blob.set(slice, i * BYTES_PER_FIELD_ELEMENT + 1)
       cursor += DATA_BYTES_PER_FIELD_ELEMENT
     }
-    out.push(parse(blobSchema, bytes_to_hex(blob)))
+    out.push(parse(BlobSchema, bytes_to_hex(blob)))
   }
   if (out.length === 0) {
     // Empty input still produces one blob carrying the 4-byte zero
     // header — round-trip-friendly.
     const blob = new Uint8Array(BYTES_PER_BLOB)
     blob.set(stream, 1)
-    out.push(parse(blobSchema, bytes_to_hex(blob)))
+    out.push(parse(BlobSchema, bytes_to_hex(blob)))
   }
   return out
 }
@@ -83,7 +83,7 @@ export function from_blobs(_blobs: readonly Blob[]): Bytes {
   }
   const stream_parts: Uint8Array[] = []
   for (const _blob of _blobs) {
-    const blob = parse(blobSchema, _blob)
+    const blob = parse(BlobSchema, _blob)
     const bytes = hex_to_bytes(blob)
     const chunks = new Uint8Array(
       FIELD_ELEMENTS_PER_BLOB *
@@ -114,7 +114,7 @@ export function from_blobs(_blobs: readonly Blob[]): Bytes {
     )
   }
   return parse(
-    bytesSchema,
+    BytesSchema,
     bytes_to_hex(
       stream.subarray(HEADER_BYTES, HEADER_BYTES + len),
     ),

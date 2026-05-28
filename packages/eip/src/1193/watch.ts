@@ -1,14 +1,14 @@
 // https://eips.ethereum.org/EIPS/eip-1193#events
 import {
   type Address,
-  addressesSchema,
+  AddressesSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 
 import type { Provider } from "./provider"
 
 // Listen for `accountsChanged` from an EIP-1193 provider.
-// Validates the payload against `addressesSchema` at the
+// Validates the payload against `AddressesSchema` at the
 // boundary — non-conforming announcements throw, surfacing
 // wallet bugs instead of silently masking them. The
 // returned function detaches the listener.
@@ -17,7 +17,7 @@ export function watch_accounts(
   _handler: (accounts: Address[]) => void,
 ): () => void {
   function inner(_payload: string[]) {
-    const accounts = parse(addressesSchema, _payload)
+    const accounts = parse(AddressesSchema, _payload)
     _handler(accounts)
   }
   _provider.on("accountsChanged", inner)

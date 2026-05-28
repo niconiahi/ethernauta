@@ -1,6 +1,6 @@
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { build_siwe_message } from "@ethernauta/eip/4361"
@@ -27,7 +27,7 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 const CHAIN_ID = "eip155:1"
@@ -50,7 +50,7 @@ function personal_sign(message: string, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }
 
 const NOW = new Date("2024-06-01T12:00:00Z")
@@ -205,7 +205,7 @@ describe("verify.ts — verify_siwe_message", () => {
   it("should reject when the message is not SIWE-shaped", async () => {
     const result = await verify_siwe_message({
       message: "just hello",
-      signature: parse(bytesSchema, "0x00"),
+      signature: parse(BytesSchema, "0x00"),
       expected: { domain: "example.com", nonce: "x" },
       now: NOW,
     })(resolved_with(vi.fn<Http>()))

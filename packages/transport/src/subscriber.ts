@@ -7,20 +7,20 @@ import {
   string,
 } from "valibot"
 
-import { chainIdSchema } from "./chain/chain-id"
+import { ChainIdSchema } from "./chain/chain-id"
 import type {
   Unsubscribe,
   WebsocketTransport,
 } from "./websocket"
 
 export const SubscribeContextSchema = object({
-  chain_id: chainIdSchema,
+  chain_id: ChainIdSchema,
 })
 export type SubscribeContext = InferOutput<
   typeof SubscribeContextSchema
 >
 
-export const wsChainEntrySchema = object({
+export const WsChainEntrySchema = object({
   chainId: string(),
   websockets: array(
     custom<WebsocketTransport>(
@@ -29,7 +29,7 @@ export const wsChainEntrySchema = object({
   ),
 })
 export type WsChainEntry = InferOutput<
-  typeof wsChainEntrySchema
+  typeof WsChainEntrySchema
 >
 
 export type ResolvedSubscriber = [

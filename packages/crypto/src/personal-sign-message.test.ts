@@ -1,4 +1,4 @@
-import { hash32Schema } from "@ethernauta/core"
+import { Hash32Schema } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -46,7 +46,7 @@ describe("personal-sign-message.ts — personal_sign_message", () => {
     const digest = keccak_256(
       build_personal_message(message),
     )
-    const hash = parse(hash32Schema, bytes_to_hex(digest))
+    const hash = parse(Hash32Schema, bytes_to_hex(digest))
     const recovered = recover_address(hash, sig)
     const expected = private_key_to_address(PRIVATE_KEY)
     expect(recovered.toLowerCase()).toBe(

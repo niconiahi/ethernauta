@@ -1,4 +1,4 @@
-import { addressesSchema } from "@ethernauta/core"
+import { AddressesSchema } from "@ethernauta/core"
 import {
   create_provider,
   ERROR_CODE,
@@ -6,9 +6,9 @@ import {
   type Provider,
   type RequestArguments,
 } from "@ethernauta/eip/1193"
-import { addEthereumChainParametersSchema } from "@ethernauta/eip/3085"
+import { AddEthereumChainParametersSchema } from "@ethernauta/eip/3085"
 import { announce } from "@ethernauta/eip/6963"
-import { callSchema, http } from "@ethernauta/transport"
+import { CallSchema, http } from "@ethernauta/transport"
 import { parse, safeParse } from "valibot"
 import icon from "../public/icons/icon-128.png?inline"
 import {
@@ -68,7 +68,7 @@ function extract_added_chain_id(
   params: RequestArguments["params"],
 ): string | undefined {
   const result = safeParse(
-    addEthereumChainParametersSchema,
+    AddEthereumChainParametersSchema,
     params,
   )
   if (!result.success) return undefined
@@ -90,7 +90,7 @@ async function rpc_call(
       `no RPC configured for chain: ${chain_id_hex}`,
     )
   const transport = http(chain.rpc_url)
-  const call = parse(callSchema, [method, params ?? []])
+  const call = parse(CallSchema, [method, params ?? []])
   const response = await transport(call)
   if ("error" in response) {
     throw {
@@ -188,13 +188,13 @@ async function forward_to_popup(
     const next = await postmessage_and_wait({
       method: "eth_requestAccounts",
     })
-    const parsed = safeParse(addressesSchema, next)
+    const parsed = safeParse(AddressesSchema, next)
     set_accounts(parsed.success ? parsed.output : [])
     return get_permissions()
   }
   const result = await postmessage_and_wait(args)
   if (args.method === "eth_requestAccounts") {
-    const parsed = safeParse(addressesSchema, result)
+    const parsed = safeParse(AddressesSchema, result)
     set_accounts(parsed.success ? parsed.output : [])
   }
   if (args.method === "wallet_addEthereumChain") {

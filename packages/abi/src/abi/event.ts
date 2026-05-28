@@ -7,29 +7,29 @@ import {
   variant,
 } from "valibot"
 
-import { abiInputSchema } from "./function/function-shared"
-import { tupleSchema, typeSchema } from "./shared"
+import { AbiInputSchema } from "./function/function-shared"
+import { TupleSchema, TypeSchema } from "./shared"
 
 // Solidity events can declare tuple params whose components are
-// themselves tuples — reuse the recursive `abiInputSchema` from the
+// themselves tuples — reuse the recursive `AbiInputSchema` from the
 // function side. The top-level event input keeps the `indexed` flag;
 // inner components do not.
-export const event_tupleSchema = object({
-  ...tupleSchema.entries,
-  components: array(abiInputSchema),
+export const Event_tupleSchema = object({
+  ...TupleSchema.entries,
+  components: array(AbiInputSchema),
   indexed: boolean(),
 })
-export const event_inputSchema = variant("type", [
+export const Event_inputSchema = variant("type", [
   object({
     name: string(),
-    type: typeSchema,
+    type: TypeSchema,
     indexed: boolean(),
   }),
-  event_tupleSchema,
+  Event_tupleSchema,
 ])
-export const eventSchema = object({
+export const EventSchema = object({
   type: literal("event"),
   name: string(),
-  inputs: array(event_inputSchema),
+  inputs: array(Event_inputSchema),
   anonymous: boolean(),
 })

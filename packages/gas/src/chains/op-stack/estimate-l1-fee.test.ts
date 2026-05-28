@@ -1,9 +1,9 @@
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   encode_chain_id,
@@ -32,19 +32,19 @@ describe("estimate_l1_fee", () => {
     ]
     const fee = await estimate_l1_fee({
       tx: {
-        type: parse(byteSchema, "0x2"),
-        chainId: parse(uintSchema, "0x2105"),
-        nonce: parse(uintSchema, "0x0"),
-        maxPriorityFeePerGas: parse(uintSchema, "0x1"),
-        maxFeePerGas: parse(uintSchema, "0x1"),
-        gas: parse(uintSchema, "0x5208"),
+        type: parse(ByteSchema, "0x2"),
+        chainId: parse(UintSchema, "0x2105"),
+        nonce: parse(UintSchema, "0x0"),
+        maxPriorityFeePerGas: parse(UintSchema, "0x1"),
+        maxFeePerGas: parse(UintSchema, "0x1"),
+        gas: parse(UintSchema, "0x5208"),
         to: parse(
-          addressSchema,
+          AddressSchema,
           "0x0000000000000000000000000000000000000001",
         ),
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, "0x"),
-        gasPrice: parse(uintSchema, "0x0"),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, "0x"),
+        gasPrice: parse(UintSchema, "0x0"),
         accessList: [],
       },
     })(resolved)

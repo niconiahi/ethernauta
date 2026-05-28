@@ -1,4 +1,4 @@
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   encode_chain_id,
   type ResolvedReader,
@@ -30,7 +30,7 @@ describe("calculate_gas_zksync", () => {
     const fees = await calculate_gas_zksync({
       tx: {
         to: parse(
-          addressSchema,
+          AddressSchema,
           "0x0000000000000000000000000000000000000001",
         ),
       },

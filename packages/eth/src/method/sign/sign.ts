@@ -1,8 +1,8 @@
 import type { Bytes65 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes65Schema,
-  bytesSchema,
+  AddressSchema,
+  Bytes65Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import type {
   ResolvedSigner,
@@ -11,14 +11,14 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = union([
-  tuple([addressSchema, bytesSchema]),
+const ParametersSchema = union([
+  tuple([AddressSchema, BytesSchema]),
   object({
-    address: addressSchema,
-    message: bytesSchema,
+    address: AddressSchema,
+    message: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns The EIP-191 signature over the provided data
  */
@@ -29,8 +29,8 @@ export function eth_sign(
     signer,
     _context,
   ]: ResolvedSigner): Promise<Bytes65> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const result = await signer("eth_sign", parameters)
-    return parse(bytes65Schema, result)
+    return parse(Bytes65Schema, result)
   }
 }

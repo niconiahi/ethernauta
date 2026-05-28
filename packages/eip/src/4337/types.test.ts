@@ -2,10 +2,10 @@ import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
-  estimateUserOperationGasResultSchema,
-  packedUserOperationSchema,
-  userOperationReceiptSchema,
-  userOperationSchema,
+  EstimateUserOperationGasResultSchema,
+  PackedUserOperationSchema,
+  UserOperationReceiptSchema,
+  UserOperationSchema,
 } from "./types"
 
 const ADDR =
@@ -14,10 +14,10 @@ const HASH =
   "0xdb9a5f2320c0a10d28bfa1c563a1bbf592665e9b5d0bf41f4a9a4a64bb1a8b22" as const
 const B32 = `0x${"00".repeat(32)}` as const
 
-describe("types.ts — userOperationSchema", () => {
+describe("types.ts — UserOperationSchema", () => {
   it("should accept a minimal RPC user op", () => {
     expect(() =>
-      parse(userOperationSchema, {
+      parse(UserOperationSchema, {
         sender: ADDR,
         nonce: "0x0",
         callData: "0x",
@@ -33,7 +33,7 @@ describe("types.ts — userOperationSchema", () => {
 
   it("should accept a paymastered user op", () => {
     expect(() =>
-      parse(userOperationSchema, {
+      parse(UserOperationSchema, {
         sender: ADDR,
         nonce: "0x0",
         factory: ADDR,
@@ -55,7 +55,7 @@ describe("types.ts — userOperationSchema", () => {
 
   it("should reject when sender is malformed", () => {
     expect(() =>
-      parse(userOperationSchema, {
+      parse(UserOperationSchema, {
         sender: "0x123",
         nonce: "0x0",
         callData: "0x",
@@ -70,10 +70,10 @@ describe("types.ts — userOperationSchema", () => {
   })
 })
 
-describe("types.ts — packedUserOperationSchema", () => {
+describe("types.ts — PackedUserOperationSchema", () => {
   it("should accept the canonical EntryPoint shape", () => {
     expect(() =>
-      parse(packedUserOperationSchema, {
+      parse(PackedUserOperationSchema, {
         sender: ADDR,
         nonce: "0x0",
         initCode: "0x",
@@ -88,10 +88,10 @@ describe("types.ts — packedUserOperationSchema", () => {
   })
 })
 
-describe("types.ts — estimateUserOperationGasResultSchema", () => {
+describe("types.ts — EstimateUserOperationGasResultSchema", () => {
   it("should accept a base estimate result", () => {
     expect(() =>
-      parse(estimateUserOperationGasResultSchema, {
+      parse(EstimateUserOperationGasResultSchema, {
         preVerificationGas: "0x100",
         verificationGasLimit: "0x100",
         callGasLimit: "0x100",
@@ -101,7 +101,7 @@ describe("types.ts — estimateUserOperationGasResultSchema", () => {
 
   it("should accept paymaster fields when present", () => {
     expect(() =>
-      parse(estimateUserOperationGasResultSchema, {
+      parse(EstimateUserOperationGasResultSchema, {
         preVerificationGas: "0x100",
         verificationGasLimit: "0x100",
         callGasLimit: "0x100",
@@ -112,10 +112,10 @@ describe("types.ts — estimateUserOperationGasResultSchema", () => {
   })
 })
 
-describe("types.ts — userOperationReceiptSchema", () => {
+describe("types.ts — UserOperationReceiptSchema", () => {
   it("should accept a minimal receipt", () => {
     expect(() =>
-      parse(userOperationReceiptSchema, {
+      parse(UserOperationReceiptSchema, {
         userOpHash: HASH,
         entryPoint: ADDR,
         sender: ADDR,

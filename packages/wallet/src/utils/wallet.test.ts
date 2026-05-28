@@ -53,13 +53,13 @@ function reset_accounts_signal() {
   }
 }
 
-const chromeStubSchema = object({
+const ChromeStubSchema = object({
   store: record(string(), unknown()),
   send_message: custom<ReturnType<typeof vi.fn>>(
     (value) => typeof value === "function",
   ),
 })
-type ChromeStub = InferOutput<typeof chromeStubSchema>
+type ChromeStub = InferOutput<typeof ChromeStubSchema>
 
 function stub_chrome(): ChromeStub {
   const store: Record<string, unknown> = {}

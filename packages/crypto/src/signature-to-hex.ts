@@ -18,7 +18,7 @@
 
 import {
   type Bytes65,
-  bytes65Schema,
+  Bytes65Schema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import type { RecoveredSignature } from "@noble/secp256k1"
@@ -38,5 +38,5 @@ export function signature_to_hex(
     )
   }
   out[64] = 27 + signature.recovery
-  return parse(bytes65Schema, bytes_to_hex(out))
+  return parse(Bytes65Schema, bytes_to_hex(out))
 }

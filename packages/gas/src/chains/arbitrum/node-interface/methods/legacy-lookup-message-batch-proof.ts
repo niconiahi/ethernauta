@@ -28,11 +28,11 @@ import type {
   Uint256,
 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint256Schema,
-  uint64Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint256Schema,
+  Uint64Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256(), uint64()] as const
@@ -54,11 +54,11 @@ export const LEGACY_LOOKUP_MESSAGE_BATCH_PROOF_SIGNATURE = {
   names: ["batchNum", "index"],
 }
 
-const parametersSchema = union([
-  tuple([uint256Schema, uint64Schema]),
-  object({ batchNum: uint256Schema, index: uint64Schema }),
+const ParametersSchema = union([
+  tuple([Uint256Schema, Uint64Schema]),
+  object({ batchNum: Uint256Schema, index: Uint64Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function legacyLookupMessageBatchProof(
   _parameters: Parameters,
@@ -78,7 +78,7 @@ export function legacyLookupMessageBatchProof(
       Bytes,
     ]
   > => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.batchNum, parameters.index] as const)
@@ -90,7 +90,7 @@ export function legacyLookupMessageBatchProof(
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): [
@@ -109,15 +109,15 @@ export function legacyLookupMessageBatchProof(
           result,
         )
         return [
-          parse(v_array(bytes32Schema), decoded[0]),
-          parse(uint256Schema, decoded[1]),
-          parse(addressSchema, decoded[2]),
-          parse(addressSchema, decoded[3]),
-          parse(uint256Schema, decoded[4]),
-          parse(uint256Schema, decoded[5]),
-          parse(uint256Schema, decoded[6]),
-          parse(uint256Schema, decoded[7]),
-          parse(bytesSchema, decoded[8]),
+          parse(v_array(Bytes32Schema), decoded[0]),
+          parse(Uint256Schema, decoded[1]),
+          parse(AddressSchema, decoded[2]),
+          parse(AddressSchema, decoded[3]),
+          parse(Uint256Schema, decoded[4]),
+          parse(Uint256Schema, decoded[5]),
+          parse(Uint256Schema, decoded[6]),
+          parse(Uint256Schema, decoded[7]),
+          parse(BytesSchema, decoded[8]),
         ]
       },
     }

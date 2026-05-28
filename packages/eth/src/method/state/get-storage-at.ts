@@ -1,36 +1,36 @@
 import type { Uint } from "@ethernauta/core"
 import {
-  addressSchema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { blockNumberOrTagOrHashSchema } from "../../core/block"
+import { BlockNumberOrTagOrHashSchema } from "../../core/block"
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    addressSchema,
-    uint256Schema,
-    blockNumberOrTagOrHashSchema,
+    AddressSchema,
+    Uint256Schema,
+    BlockNumberOrTagOrHashSchema,
   ]),
-  tuple([addressSchema, uint256Schema]),
+  tuple([AddressSchema, Uint256Schema]),
   object({
-    address: addressSchema,
-    storageSlot: uint256Schema,
+    address: AddressSchema,
+    storageSlot: Uint256Schema,
   }),
   object({
-    address: addressSchema,
-    storageSlot: uint256Schema,
-    blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
+    address: AddressSchema,
+    storageSlot: Uint256Schema,
+    blockNumberOrTagOrHash: BlockNumberOrTagOrHashSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns The value from a storage position at a given address
  */
@@ -42,15 +42,15 @@ export function eth_getStorageAt(
     _context,
   ]: ResolvedReader): Promise<Uint> => {
     const method = "eth_getStorageAt"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(uintSchema, response.result)
+    const result = parse(UintSchema, response.result)
     return result
   }
 }

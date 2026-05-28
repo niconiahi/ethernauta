@@ -1,8 +1,8 @@
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -15,17 +15,17 @@ import {
 } from "./user-op-hash"
 
 const ZERO_HEX_64 = parse(
-  bytes32Schema,
+  Bytes32Schema,
   `0x${"00".repeat(32)}`,
 )
-const ZERO_UINT = parse(uintSchema, "0x0")
-const ONE_UINT = parse(uintSchema, "0x1")
-const SEPOLIA_CHAIN_ID = parse(uintSchema, "0xaa36a7")
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const ZERO_UINT = parse(UintSchema, "0x0")
+const ONE_UINT = parse(UintSchema, "0x1")
+const SEPOLIA_CHAIN_ID = parse(UintSchema, "0xaa36a7")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 const EMPTY_OP: UserOperation = {
   sender: parse(
-    addressSchema,
+    AddressSchema,
     "0x0000000000000000000000000000000000000001",
   ),
   nonce: ZERO_UINT,
@@ -99,7 +99,7 @@ describe("user-op-hash.ts — get_user_op_hash", () => {
     const b = get_user_op_hash({
       op: EMPTY_OP,
       entryPoint: parse(
-        addressSchema,
+        AddressSchema,
         "0x000000000000000000000000000000000000DEAD",
       ),
       chainId: ONE_UINT,
@@ -112,7 +112,7 @@ describe("user-op-hash.ts — inner_user_op_hash", () => {
   it("should hash a fully zero packed op deterministically", () => {
     const inner = inner_user_op_hash({
       sender: parse(
-        addressSchema,
+        AddressSchema,
         "0x0000000000000000000000000000000000000000",
       ),
       nonce: ZERO_UINT,

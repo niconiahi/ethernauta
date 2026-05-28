@@ -1,9 +1,9 @@
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   boolean,
@@ -13,11 +13,11 @@ import {
   union,
 } from "valibot"
 
-const parametersSchema = union([
-  tuple([uintSchema]),
-  object({ filterIdentifier: uintSchema }),
+const ParametersSchema = union([
+  tuple([UintSchema]),
+  object({ filterIdentifier: UintSchema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns A boolean representing the success or failure of the uninstall
  */
@@ -29,8 +29,8 @@ export function eth_uninstallFilter(
     _context,
   ]: ResolvedReader): Promise<boolean> => {
     const method = "eth_uninstallFilter"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )

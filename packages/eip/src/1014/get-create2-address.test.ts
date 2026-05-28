@@ -1,7 +1,7 @@
 import {
-  addressSchema,
+  AddressSchema,
   type Bytes32,
-  bytes32Schema,
+  Bytes32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -18,13 +18,13 @@ import { get_create2_address } from "./get-create2-address"
 // keccak256 of init_code as `bytecodeHash`.
 function hash_code(code_hex: string): Bytes32 {
   return parse(
-    bytes32Schema,
+    Bytes32Schema,
     bytes_to_hex(keccak_256(hex_to_bytes(code_hex))),
   )
 }
 
 const ZERO_SALT = parse(
-  bytes32Schema,
+  Bytes32Schema,
   "0x0000000000000000000000000000000000000000000000000000000000000000",
 )
 
@@ -33,7 +33,7 @@ describe("get_create2_address", () => {
     expect(
       get_create2_address({
         from: parse(
-          addressSchema,
+          AddressSchema,
           "0x0000000000000000000000000000000000000000",
         ),
         salt: ZERO_SALT,
@@ -46,7 +46,7 @@ describe("get_create2_address", () => {
     expect(
       get_create2_address({
         from: parse(
-          addressSchema,
+          AddressSchema,
           "0xdeadbeef00000000000000000000000000000000",
         ),
         salt: ZERO_SALT,
@@ -59,11 +59,11 @@ describe("get_create2_address", () => {
     expect(
       get_create2_address({
         from: parse(
-          addressSchema,
+          AddressSchema,
           "0xdeadbeef00000000000000000000000000000000",
         ),
         salt: parse(
-          bytes32Schema,
+          Bytes32Schema,
           "0x000000000000000000000000feed000000000000000000000000000000000000",
         ),
         bytecodeHash: hash_code("0x00"),
@@ -75,7 +75,7 @@ describe("get_create2_address", () => {
     expect(
       get_create2_address({
         from: parse(
-          addressSchema,
+          AddressSchema,
           "0x0000000000000000000000000000000000000000",
         ),
         salt: ZERO_SALT,
@@ -88,11 +88,11 @@ describe("get_create2_address", () => {
     expect(
       get_create2_address({
         from: parse(
-          addressSchema,
+          AddressSchema,
           "0x00000000000000000000000000000000deadbeef",
         ),
         salt: parse(
-          bytes32Schema,
+          Bytes32Schema,
           "0x00000000000000000000000000000000000000000000000000000000cafebabe",
         ),
         bytecodeHash: hash_code("0xdeadbeef"),

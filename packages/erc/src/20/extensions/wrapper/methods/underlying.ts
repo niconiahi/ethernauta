@@ -5,8 +5,8 @@ import {
 } from "@ethernauta/abi"
 import type { Address, Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -34,13 +34,13 @@ export function underlying() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Address => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(addressSchema, decoded)
+        return parse(AddressSchema, decoded)
       },
     }
   }

@@ -5,8 +5,8 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes, Bytes32 } from "@ethernauta/core"
 import {
-  bytes32Schema,
-  bytesSchema,
+  Bytes32Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -34,13 +34,13 @@ export function DOMAIN_SEPARATOR() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Bytes32 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(bytes32Schema, decoded)
+        return parse(Bytes32Schema, decoded)
       },
     }
   }

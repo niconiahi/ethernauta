@@ -1,7 +1,7 @@
-import { typedDataSchema } from "@ethernauta/eip/712"
-import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
-import { sendCallsParameterSchema } from "@ethernauta/eip/5792"
-import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
+import { TypedDataSchema } from "@ethernauta/eip/712"
+import { AddEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { SendCallsParameterSchema } from "@ethernauta/eip/5792"
+import { SendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { parse, string, tuple } from "valibot"
 import type { EthernautaRequest } from "./event"
 import {
@@ -27,7 +27,7 @@ export async function route_request(
   }
   if (request.method === "eth_signTypedData_v4") {
     const [address, typed_data] = parse(
-      tuple([string(), typedDataSchema]),
+      tuple([string(), TypedDataSchema]),
       request.params,
     )
     typed_data_request.value = {
@@ -53,7 +53,7 @@ export async function route_request(
   }
   if (request.method === "wallet_addEthereumChain") {
     const [chain] = parse(
-      tuple([addEthereumChainParameterSchema]),
+      tuple([AddEthereumChainParameterSchema]),
       request.params,
     )
     add_chain_request.value = {
@@ -65,7 +65,7 @@ export async function route_request(
   }
   if (request.method === "wallet_sendCalls") {
     const [parameter] = parse(
-      tuple([sendCallsParameterSchema]),
+      tuple([SendCallsParameterSchema]),
       request.params,
     )
     send_calls_request.value = {
@@ -77,7 +77,7 @@ export async function route_request(
   }
   if (request.method === "wallet_sendSetCodeTransaction") {
     const parameters = parse(
-      sendSetCodeTransactionParametersSchema,
+      SendSetCodeTransactionParametersSchema,
       request.params,
     )
     set_code_request.value = {

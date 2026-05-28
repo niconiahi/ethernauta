@@ -1,6 +1,6 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   balanceOf,
   decimals,
@@ -62,12 +62,12 @@ const multicall = create_multicall([
   },
 ])
 
-const holdingSchema = object({
+const HoldingSchema = object({
   symbol: string(),
   decimals: number(),
   balance: bigint(),
 })
-type Holding = InferOutput<typeof holdingSchema>
+type Holding = InferOutput<typeof HoldingSchema>
 
 export function PortfolioDemo() {
   const [holdings, set_holdings] = useState<
@@ -83,11 +83,11 @@ export function PortfolioDemo() {
     set_loading(true)
     set_error(null)
     try {
-      const owner = parse(addressSchema, OWNER)
+      const owner = parse(AddressSchema, OWNER)
       const calls = TOKENS.flatMap((t) => {
         const ctx = contract({
           chain_id: MAINNET_CHAIN_ID,
-          to: parse(addressSchema, t.address),
+          to: parse(AddressSchema, t.address),
         })
         return [
           symbol()(ctx),

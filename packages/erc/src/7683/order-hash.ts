@@ -7,7 +7,7 @@
 // domain. Confirm against the target settler before treating
 // the returned bytes32 as the on-chain orderId.
 
-import { type Hash32, hash32Schema } from "@ethernauta/core"
+import { type Hash32, Hash32Schema } from "@ethernauta/core"
 import {
   hash_typed_data,
   type TypedDataDomain,
@@ -30,5 +30,5 @@ export function hash_gasless_order({
     domain,
   })
   const digest = hash_typed_data(typed_data)
-  return parse(hash32Schema, bytes_to_hex(digest))
+  return parse(Hash32Schema, bytes_to_hex(digest))
 }

@@ -11,5 +11,5 @@ export {
   is_siwe_message,
   parse_siwe_message,
   type SiweMessage,
-  siweMessageSchema,
+  SiweMessageSchema,
 } from "./parse"

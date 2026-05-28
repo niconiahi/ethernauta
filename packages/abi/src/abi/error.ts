@@ -5,34 +5,34 @@ import {
   string,
   variant,
 } from "valibot"
-import { tupleSchema, typeSchema } from "./shared"
+import { TupleSchema, TypeSchema } from "./shared"
 
 // TODO: this is the real type in need, but I have to solve the self-recursion problem
 //       for now, tuple are allowed to be only one-dimensional
-// export const error_tupleSchema = merge([
-//   tupleSchema,
+// export const Error_tupleSchema = merge([
+//   TupleSchema,
 //   object({
-//     components: array(error_inputSchema),
+//     components: array(Error_inputSchema),
 //   }),
 // ])
 // // ```ts
 // import type { BaseSchema, Output } from "valibot";
 // import { array, merge, object, parse, recursive, string } from "valibot";
 
-// const baseCategorySchema = object({
+// const BaseCategorySchema = object({
 //   name: string(),
 // });
 
-// type Category = Output<typeof baseCategorySchema> & {
+// type Category = Output<typeof BaseCategorySchema> & {
 //   subcategories?: Category[];
 // };
 
-// const categorySchema: BaseSchema<Category> = merge([
-//   baseCategorySchema,
-//   object({ subcategories: recursive(() => array(categorySchema)) }),
+// const CategorySchema: BaseSchema<Category> = merge([
+//   BaseCategorySchema,
+//   object({ subcategories: recursive(() => array(CategorySchema)) }),
 // ]);
 
-// const result = parse(categorySchema, {
+// const result = parse(CategorySchema, {
 //   name: "People",
 //   subcategories: [
 //     {
@@ -47,24 +47,24 @@ import { tupleSchema, typeSchema } from "./shared"
 //   ],
 // });
 // ```
-export const error_tupleSchema = object({
-  ...tupleSchema.entries,
+export const Error_tupleSchema = object({
+  ...TupleSchema.entries,
   components: array(
     object({
       name: string(),
-      type: typeSchema,
+      type: TypeSchema,
     }),
   ),
 })
-export const error_inputSchema = variant("type", [
+export const Error_inputSchema = variant("type", [
   object({
     name: string(),
-    type: typeSchema,
+    type: TypeSchema,
   }),
-  error_tupleSchema,
+  Error_tupleSchema,
 ])
-export const errorSchema = object({
+export const ErrorSchema = object({
   type: literal("error"),
   name: string(),
-  inputs: array(error_inputSchema),
+  inputs: array(Error_inputSchema),
 })

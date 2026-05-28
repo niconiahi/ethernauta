@@ -11,7 +11,7 @@ import {
 } from "@ethernauta/abi"
 import { parse } from "valibot"
 import type { Uint32 } from "@ethernauta/core"
-import { bytesSchema, uint32Schema } from "@ethernauta/core"
+import { BytesSchema, Uint32Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [uint32()] as const
@@ -32,13 +32,13 @@ export function baseFeeScalar() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint32 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint32Schema, decoded)
+        return parse(Uint32Schema, decoded)
       },
     }
   }

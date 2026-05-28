@@ -3,7 +3,7 @@ import type {
   Provider,
   RequestArguments,
 } from "@ethernauta/eip/1193"
-import { requestArgumentsSchema } from "@ethernauta/eip/1193"
+import { RequestArgumentsSchema } from "@ethernauta/eip/1193"
 import type { InferOutput } from "valibot"
 import {
   custom,
@@ -33,13 +33,13 @@ import { SignContextSchema } from "./signer"
 // not standardized as a JS class, only as a property bag —
 // so we validate at the boundary instead of trusting the
 // thrown value's prototype.
-export const providerRpcErrorSchema = object({
+export const ProviderRpcErrorSchema = object({
   code: number(),
   message: string(),
   data: optional(unknown()),
 })
 export type ProviderRpcErrorShape = InferOutput<
-  typeof providerRpcErrorSchema
+  typeof ProviderRpcErrorSchema
 >
 
 // EIP-1193 USER_REJECTED_REQUEST. Mirrors
@@ -71,7 +71,7 @@ export function create_injected_transport(
       }
     } catch (error) {
       const parsed = safeParse(
-        providerRpcErrorSchema,
+        ProviderRpcErrorSchema,
         error,
       )
       if (parsed.success) {
@@ -102,13 +102,13 @@ export function create_injected_signer(
     const signer: Signer = async (method, params) => {
       try {
         const result = await _provider.request(
-          parse(requestArgumentsSchema, { method, params }),
+          parse(RequestArgumentsSchema, { method, params }),
         )
         if (typeof result === "string") return result
         return JSON.stringify(result)
       } catch (error) {
         const parsed = safeParse(
-          providerRpcErrorSchema,
+          ProviderRpcErrorSchema,
           error,
         )
         if (
@@ -139,7 +139,7 @@ export function create_injected_signer(
 //   const provider = create_provider(eip1193)
 //   eth_getBalance(addr)(provider.reader({ chain_id }))
 //   eth_sendTransaction(tx)(provider.signer({ chain_id }))
-export const providerResolverSchema = object({
+export const ProviderResolverSchema = object({
   reader: custom<(context: ReadContext) => ResolvedReader>(
     (value) => typeof value === "function",
   ),
@@ -148,7 +148,7 @@ export const providerResolverSchema = object({
   ),
 })
 export type ProviderResolver = InferOutput<
-  typeof providerResolverSchema
+  typeof ProviderResolverSchema
 >
 
 export function create_provider(

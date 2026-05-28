@@ -1,8 +1,8 @@
 import { address, uint256 } from "@ethernauta/abi"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   ResolvedSigner,
@@ -29,16 +29,16 @@ describe("deploy_contract", () => {
       { chain_id: "eip155:1" },
     ]
 
-    const bytecode = parse(bytesSchema, "0x6080604052")
+    const bytecode = parse(BytesSchema, "0x6080604052")
     const result = await deploy_contract({
       bytecode,
       args: [address(), uint256()] as const,
       values: [
         parse(
-          addressSchema,
+          AddressSchema,
           "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
         ),
-        parse(uint256Schema, "0xde0b6b3a7640000"),
+        parse(Uint256Schema, "0xde0b6b3a7640000"),
       ],
     })(resolved)
 
@@ -73,7 +73,7 @@ describe("deploy_contract", () => {
       { chain_id: "eip155:1" },
     ]
     const result = await deploy_contract({
-      bytecode: parse(bytesSchema, "0x6080604052"),
+      bytecode: parse(BytesSchema, "0x6080604052"),
       args: [] as const,
       values: [],
     })(resolved)

@@ -22,7 +22,7 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
 } from "@ethernauta/core"
 import { personal_sign } from "@ethernauta/eip/191"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
@@ -133,7 +133,7 @@ export function ConnectWalletButton({
       )
       const first = accounts[0]
       if (!first) throw new Error("no account returned")
-      const address = parse(addressSchema, first)
+      const address = parse(AddressSchema, first)
 
       const nonce_response = await fetch(
         "/api/auth/siwe/nonce",

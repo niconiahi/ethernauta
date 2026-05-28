@@ -128,7 +128,7 @@ export function encode_address_bytes32_bytes(
   return concat([head, sig_tail])
 }
 
-export const decodedAddressBytesBytesSchema = object({
+export const DecodedAddressBytesBytesSchema = object({
   address: custom<Uint8Array>(
     (value) => value instanceof Uint8Array,
   ),
@@ -140,7 +140,7 @@ export const decodedAddressBytesBytesSchema = object({
   ),
 })
 export type DecodedAddressBytesBytes = InferOutput<
-  typeof decodedAddressBytesBytesSchema
+  typeof DecodedAddressBytesBytesSchema
 >
 
 export function decode_address_bytes_bytes(

@@ -19,12 +19,12 @@ import type {
   Uint256,
 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint32Schema,
-  uint64Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint32Schema,
+  Uint64Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -92,35 +92,35 @@ export const RESOLVE_FOR_SIGNATURE = {
   names: ["order", "originFillerData"],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
     object({
-      originSettler: addressSchema,
-      user: addressSchema,
-      nonce: uint256Schema,
-      originChainId: uint256Schema,
-      openDeadline: uint32Schema,
-      fillDeadline: uint32Schema,
-      orderDataType: bytes32Schema,
-      orderData: bytesSchema,
+      originSettler: AddressSchema,
+      user: AddressSchema,
+      nonce: Uint256Schema,
+      originChainId: Uint256Schema,
+      openDeadline: Uint32Schema,
+      fillDeadline: Uint32Schema,
+      orderDataType: Bytes32Schema,
+      orderData: BytesSchema,
     }),
-    bytesSchema,
+    BytesSchema,
   ]),
   object({
     order: object({
-      originSettler: addressSchema,
-      user: addressSchema,
-      nonce: uint256Schema,
-      originChainId: uint256Schema,
-      openDeadline: uint32Schema,
-      fillDeadline: uint32Schema,
-      orderDataType: bytes32Schema,
-      orderData: bytesSchema,
+      originSettler: AddressSchema,
+      user: AddressSchema,
+      nonce: Uint256Schema,
+      originChainId: Uint256Schema,
+      openDeadline: Uint32Schema,
+      fillDeadline: Uint32Schema,
+      orderDataType: Bytes32Schema,
+      orderData: BytesSchema,
     }),
-    originFillerData: bytesSchema,
+    originFillerData: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function resolveFor(_parameters: Parameters) {
   return (
@@ -149,7 +149,7 @@ export function resolveFor(_parameters: Parameters) {
       originData: Bytes
     }[]
   }> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([
@@ -164,7 +164,7 @@ export function resolveFor(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): {
@@ -197,32 +197,32 @@ export function resolveFor(_parameters: Parameters) {
         )
         return parse(
           object({
-            user: addressSchema,
-            originChainId: uint256Schema,
-            openDeadline: uint32Schema,
-            fillDeadline: uint32Schema,
-            orderId: bytes32Schema,
+            user: AddressSchema,
+            originChainId: Uint256Schema,
+            openDeadline: Uint32Schema,
+            fillDeadline: Uint32Schema,
+            orderId: Bytes32Schema,
             maxSpent: v_array(
               object({
-                token: bytes32Schema,
-                amount: uint256Schema,
-                recipient: bytes32Schema,
-                chainId: uint256Schema,
+                token: Bytes32Schema,
+                amount: Uint256Schema,
+                recipient: Bytes32Schema,
+                chainId: Uint256Schema,
               }),
             ),
             minReceived: v_array(
               object({
-                token: bytes32Schema,
-                amount: uint256Schema,
-                recipient: bytes32Schema,
-                chainId: uint256Schema,
+                token: Bytes32Schema,
+                amount: Uint256Schema,
+                recipient: Bytes32Schema,
+                chainId: Uint256Schema,
               }),
             ),
             fillInstructions: v_array(
               object({
-                destinationChainId: uint64Schema,
-                destinationSettler: bytes32Schema,
-                originData: bytesSchema,
+                destinationChainId: Uint64Schema,
+                destinationSettler: Bytes32Schema,
+                originData: BytesSchema,
               }),
             ),
           }),

@@ -6,13 +6,13 @@
 
 import {
   type Address,
-  addressSchema,
-  byteSchema,
-  bytesSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
   type Bytes,
-  hash32Schema,
+  Hash32Schema,
   type Uint,
-  uintSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   AccessList,
@@ -35,24 +35,24 @@ import {
 } from "./authorization"
 import {
   type Transaction7702Signed,
-  transaction7702SignedSchema,
+  Transaction7702SignedSchema,
   type Transaction7702Unsigned,
-  transaction7702UnsignedSchema,
+  Transaction7702UnsignedSchema,
 } from "./transaction"
 
-const TYPE_BYTE = parse(byteSchema, "0x4")
+const TYPE_BYTE = parse(ByteSchema, "0x4")
 
 export function encode_transaction_unsigned(
   _tx: Transaction7702Unsigned,
 ): Uint8Array {
-  const tx = parse(transaction7702UnsignedSchema, _tx)
+  const tx = parse(Transaction7702UnsignedSchema, _tx)
   return prefix_type(rlp_encode(encode_body(tx)))
 }
 
 export function encode_transaction_signed(
   _tx: Transaction7702Signed,
 ): Uint8Array {
-  const tx = parse(transaction7702SignedSchema, _tx)
+  const tx = parse(Transaction7702SignedSchema, _tx)
   const body = encode_body(tx)
   body.push(BigInt(tx.yParity), BigInt(tx.r), BigInt(tx.s))
   return prefix_type(rlp_encode(body))
@@ -67,7 +67,7 @@ export function decode_transaction_unsigned(
       `decode_transaction_unsigned: expected 10 fields, got ${items.length}`,
     )
   }
-  return parse(transaction7702UnsignedSchema, {
+  return parse(Transaction7702UnsignedSchema, {
     type: TYPE_BYTE,
     ...decode_body(items),
   })
@@ -82,19 +82,19 @@ export function decode_transaction_signed(
       `decode_transaction_signed: expected 13 fields, got ${items.length}`,
     )
   }
-  return parse(transaction7702SignedSchema, {
+  return parse(Transaction7702SignedSchema, {
     type: TYPE_BYTE,
     ...decode_body(items),
     yParity: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[10])),
     ),
     r: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[11])),
     ),
     s: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[12])),
     ),
   })
@@ -168,35 +168,35 @@ function decode_body(items: RlpDecoded[]): {
 } {
   return {
     chainId: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[0])),
     ),
     nonce: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[1])),
     ),
     maxPriorityFeePerGas: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[2])),
     ),
     maxFeePerGas: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[3])),
     ),
     gas: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[4])),
     ),
     to: parse(
-      addressSchema,
+      AddressSchema,
       bytes_to_hex(expect_bytes(items[5])),
     ),
     value: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(expect_bytes(items[6])),
     ),
     input: parse(
-      bytesSchema,
+      BytesSchema,
       bytes_to_hex(expect_bytes(items[7])),
     ),
     accessList: decode_access_list(expect_list(items[8])),
@@ -218,12 +218,12 @@ function decode_access_list(
     }
     return {
       address: parse(
-        addressSchema,
+        AddressSchema,
         bytes_to_hex(expect_bytes(tuple[0])),
       ),
       storageKeys: expect_list(tuple[1]).map((key) =>
         parse(
-          hash32Schema,
+          Hash32Schema,
           bytes_to_hex(expect_bytes(key)),
         ),
       ),
@@ -243,27 +243,27 @@ function decode_authorization_list(
     }
     return {
       chainId: parse(
-        uintSchema,
+        UintSchema,
         bytes_to_uint(expect_bytes(tuple[0])),
       ),
       address: parse(
-        addressSchema,
+        AddressSchema,
         bytes_to_hex(expect_bytes(tuple[1])),
       ),
       nonce: parse(
-        uintSchema,
+        UintSchema,
         bytes_to_uint(expect_bytes(tuple[2])),
       ),
       yParity: parse(
-        uintSchema,
+        UintSchema,
         bytes_to_uint(expect_bytes(tuple[3])),
       ),
       r: parse(
-        uintSchema,
+        UintSchema,
         bytes_to_uint(expect_bytes(tuple[4])),
       ),
       s: parse(
-        uintSchema,
+        UintSchema,
         bytes_to_uint(expect_bytes(tuple[5])),
       ),
     }

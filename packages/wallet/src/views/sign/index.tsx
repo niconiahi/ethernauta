@@ -3,11 +3,11 @@ import {
   make_codec,
   to_selector,
 } from "@ethernauta/abi"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import { REGISTRY } from "@ethernauta/erc/registry"
-import { genericTransactionSchema } from "@ethernauta/eth"
+import { GenericTransactionSchema } from "@ethernauta/eth"
 import type { FunctionSignature } from "@ethernauta/transport"
-import { parametersSchema } from "@ethernauta/transport"
+import { ParametersSchema } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import type { ComponentChildren } from "preact"
 import {
@@ -67,21 +67,21 @@ function looks_like_calldata(
   )
 }
 
-const decodeEntrySchema = object({
+const DecodeEntrySchema = object({
   name: string(),
   signature: string(),
   types: pipe(array(string()), readonly()),
   param_names: pipe(array(string()), readonly()),
   source: union([literal("sidecar"), literal("bundled")]),
 })
-type DecodeEntry = InferOutput<typeof decodeEntrySchema>
+type DecodeEntry = InferOutput<typeof DecodeEntrySchema>
 
-const txSummarySchema = object({
+const TxSummarySchema = object({
   to: optional(string()),
   value: optional(string()),
   input: optional(string()),
 })
-type TxSummary = InferOutput<typeof txSummarySchema>
+type TxSummary = InferOutput<typeof TxSummarySchema>
 
 function lookup_registry(
   selector: string,
@@ -146,7 +146,7 @@ function extract_ethernauta_function():
     ? raw[0]
     : raw.transaction
   const result = safeParse(
-    genericTransactionSchema,
+    GenericTransactionSchema,
     candidate,
   )
   if (!result.success) return undefined
@@ -295,7 +295,7 @@ function Field({
 
 function Params() {
   const params = parse(
-    parametersSchema,
+    ParametersSchema,
     transaction_request.value.params,
   )
   const entries = Array.isArray(params)
@@ -317,7 +317,7 @@ function extract_tx(): TxSummary | null {
   const candidate = Array.isArray(raw)
     ? raw[0]
     : raw.transaction
-  const result = safeParse(txSummarySchema, candidate)
+  const result = safeParse(TxSummarySchema, candidate)
   if (!result.success) return null
   return result.output
 }
@@ -462,7 +462,7 @@ export function Sign() {
         <Button
           onClick={async () => {
             const address = parse(
-              addressSchema,
+              AddressSchema,
               active_account.value.address,
             )
             const key = active_account.value.key

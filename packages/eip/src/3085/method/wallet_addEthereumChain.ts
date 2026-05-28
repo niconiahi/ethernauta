@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-3085
 
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
@@ -17,8 +17,8 @@ import {
   url,
 } from "valibot"
 
-export const addEthereumChainParameterSchema = object({
-  chainId: uintSchema,
+export const AddEthereumChainParameterSchema = object({
+  chainId: UintSchema,
   chainName: string(),
   nativeCurrency: object({
     name: string(),
@@ -30,14 +30,14 @@ export const addEthereumChainParameterSchema = object({
   iconUrls: optional(array(pipe(string(), url()))),
 })
 export type AddEthereumChainParameter = InferOutput<
-  typeof addEthereumChainParameterSchema
+  typeof AddEthereumChainParameterSchema
 >
 
-export const addEthereumChainParametersSchema = tuple([
-  addEthereumChainParameterSchema,
+export const AddEthereumChainParametersSchema = tuple([
+  AddEthereumChainParameterSchema,
 ])
 export type AddEthereumChainParameters = InferOutput<
-  typeof addEthereumChainParametersSchema
+  typeof AddEthereumChainParametersSchema
 >
 
 export function wallet_addEthereumChain(

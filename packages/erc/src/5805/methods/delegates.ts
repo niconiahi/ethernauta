@@ -5,8 +5,8 @@ import {
 } from "@ethernauta/abi"
 import type { Address, Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -24,15 +24,15 @@ export const DELEGATES_SIGNATURE = {
   names: ["account"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema]),
-  object({ account: addressSchema }),
+const ParametersSchema = union([
+  tuple([AddressSchema]),
+  object({ account: AddressSchema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function delegates(_parameters: Parameters) {
   return (context: ContractContext): Callable<Address> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.account] as const)
@@ -44,13 +44,13 @@ export function delegates(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Address => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(addressSchema, decoded)
+        return parse(AddressSchema, decoded)
       },
     }
   }

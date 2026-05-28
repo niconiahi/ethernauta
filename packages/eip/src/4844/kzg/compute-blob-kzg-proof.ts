@@ -3,11 +3,11 @@ import { parse } from "valibot"
 
 import {
   type Blob,
-  blobSchema,
+  BlobSchema,
   type KzgCommitment,
   type KzgProof,
-  kzgCommitmentSchema,
-  kzgProofSchema,
+  KzgCommitmentSchema,
+  KzgProofSchema,
 } from "../schemas"
 import { get_kzg } from "./setup"
 
@@ -15,11 +15,11 @@ export async function compute_blob_kzg_proof(
   _blob: Blob,
   _commitment: KzgCommitment,
 ): Promise<KzgProof> {
-  const blob = parse(blobSchema, _blob)
-  const commitment = parse(kzgCommitmentSchema, _commitment)
+  const blob = parse(BlobSchema, _blob)
+  const commitment = parse(KzgCommitmentSchema, _commitment)
   const kzg = await get_kzg()
   return parse(
-    kzgProofSchema,
+    KzgProofSchema,
     kzg.computeBlobProof(blob, commitment),
   )
 }

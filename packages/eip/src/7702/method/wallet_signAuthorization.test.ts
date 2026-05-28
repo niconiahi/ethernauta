@@ -1,4 +1,4 @@
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signer,
@@ -12,19 +12,19 @@ import type {
 import { wallet_signAuthorization } from "./wallet_signAuthorization"
 
 const PARAM: AuthorizationParameter = {
-  chainId: parse(uintSchema, "0xaa36a7"),
+  chainId: parse(UintSchema, "0xaa36a7"),
   address: parse(
-    addressSchema,
+    AddressSchema,
     "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
   ),
-  nonce: parse(uintSchema, "0x5"),
+  nonce: parse(UintSchema, "0x5"),
 }
 
 const SIGNED: AuthorizationSigned = {
   ...PARAM,
-  yParity: parse(uintSchema, "0x1"),
-  r: parse(uintSchema, "0xabcd"),
-  s: parse(uintSchema, "0xef01"),
+  yParity: parse(UintSchema, "0x1"),
+  r: parse(UintSchema, "0xabcd"),
+  s: parse(UintSchema, "0xef01"),
 }
 
 function mock_signer(result: unknown): ResolvedSigner {

@@ -5,11 +5,11 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 
 export const GAS_PRICE_ORACLE_PREDEPLOY: Address = parse(
-  addressSchema,
+  AddressSchema,
   "0x420000000000000000000000000000000000000F",
 )

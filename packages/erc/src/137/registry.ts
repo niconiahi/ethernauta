@@ -1,7 +1,7 @@
 // https://docs.ens.domains/learn/deployments
 
 import type { Address } from "@ethernauta/core"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import type { ChainId } from "@ethernauta/transport"
 import { parse } from "valibot"
 
@@ -9,7 +9,7 @@ import { parse } from "valibot"
 // address on mainnet, Sepolia, Goerli, and Holesky via
 // deterministic deployment.
 export const ENS_REGISTRY = parse(
-  addressSchema,
+  AddressSchema,
   "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
 )
 
@@ -23,7 +23,7 @@ export function get_registry_address(
   _chain_id: ChainId,
   _override?: Address,
 ): Address {
-  if (_override) return parse(addressSchema, _override)
+  if (_override) return parse(AddressSchema, _override)
   const registry = REGISTRY_BY_CHAIN[_chain_id]
   if (!registry) {
     throw new Error(
@@ -34,6 +34,6 @@ export function get_registry_address(
 }
 
 export const ZERO_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000000",
 )

@@ -6,8 +6,8 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -31,15 +31,15 @@ export const IS_APPROVED_FOR_ALL_SIGNATURE = {
   names: ["owner", "operator"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema, addressSchema]),
-  object({ owner: addressSchema, operator: addressSchema }),
+const ParametersSchema = union([
+  tuple([AddressSchema, AddressSchema]),
+  object({ owner: AddressSchema, operator: AddressSchema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function isApprovedForAll(_parameters: Parameters) {
   return (context: ContractContext): Callable<boolean> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.owner, parameters.operator] as const)
@@ -51,7 +51,7 @@ export function isApprovedForAll(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): boolean => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

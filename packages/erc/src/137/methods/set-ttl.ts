@@ -5,10 +5,10 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  bytes32Schema,
-  bytesSchema,
-  uint64Schema,
-  uintSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint64Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -26,11 +26,11 @@ export const SET_TTL_SIGNATURE = {
   names: ["node", "ttl"],
 }
 
-const parametersSchema = union([
-  tuple([bytes32Schema, uint64Schema]),
-  object({ node: bytes32Schema, ttl: uint64Schema }),
+const ParametersSchema = union([
+  tuple([Bytes32Schema, Uint64Schema]),
+  object({ node: Bytes32Schema, ttl: Uint64Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function setTTL(
   _parameters: Parameters,
@@ -43,7 +43,7 @@ export function setTTL(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.node, parameters.ttl] as const)
@@ -59,8 +59,8 @@ export function setTTL(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: SET_TTL_SIGNATURE,
         },

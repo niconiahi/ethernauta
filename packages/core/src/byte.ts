@@ -7,8 +7,8 @@ function isByte(input: unknown): boolean {
     /^0x([0-9,a-f,A-F]?){1,2}$/.test(input)
   )
 }
-export const byteSchema = pipe(
+export const ByteSchema = pipe(
   custom<`0x${string}`>(isByte),
   brand("Byte"),
 )
-export type Byte = InferOutput<typeof byteSchema>
+export type Byte = InferOutput<typeof ByteSchema>

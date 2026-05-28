@@ -1,8 +1,8 @@
-import { typedDataSchema } from "@ethernauta/eip/712"
-import { addEthereumChainParameterSchema } from "@ethernauta/eip/3085"
-import { sendCallsParameterSchema } from "@ethernauta/eip/5792"
-import { sendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
-import { parametersSchema } from "@ethernauta/transport"
+import { TypedDataSchema } from "@ethernauta/eip/712"
+import { AddEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { SendCallsParameterSchema } from "@ethernauta/eip/5792"
+import { SendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
+import { ParametersSchema } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import {
   type InferOutput,
@@ -15,7 +15,7 @@ import type { EthernautaRequest } from "./event"
 export const TransactionSchema = object({
   id: string(),
   method: string(),
-  params: parametersSchema,
+  params: ParametersSchema,
   to: optional(string()),
 })
 export type Transaction = InferOutput<
@@ -33,7 +33,7 @@ export const connection_request = signal<{
 export const TypedDataRequestSchema = object({
   id: string(),
   address: string(),
-  typed_data: typedDataSchema,
+  typed_data: TypedDataSchema,
 })
 export type TypedDataRequest = InferOutput<
   typeof TypedDataRequestSchema
@@ -54,7 +54,7 @@ export const personal_sign_request =
 
 export const AddChainRequestSchema = object({
   id: string(),
-  chain: addEthereumChainParameterSchema,
+  chain: AddEthereumChainParameterSchema,
 })
 export type AddChainRequest = InferOutput<
   typeof AddChainRequestSchema
@@ -64,7 +64,7 @@ export const add_chain_request =
 
 export const SetCodeRequestSchema = object({
   id: string(),
-  parameters: sendSetCodeTransactionParametersSchema,
+  parameters: SendSetCodeTransactionParametersSchema,
 })
 export type SetCodeRequest = InferOutput<
   typeof SetCodeRequestSchema
@@ -74,7 +74,7 @@ export const set_code_request =
 
 export const SendCallsRequestSchema = object({
   id: string(),
-  parameter: sendCallsParameterSchema,
+  parameter: SendCallsParameterSchema,
 })
 export type SendCallsRequest = InferOutput<
   typeof SendCallsRequestSchema

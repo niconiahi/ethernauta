@@ -6,16 +6,16 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 
 export const NODE_INTERFACE_PREDEPLOY: Address = parse(
-  addressSchema,
+  AddressSchema,
   "0x00000000000000000000000000000000000000C8",
 )
 
 export const ARB_GAS_INFO_PREDEPLOY: Address = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000006C",
 )

@@ -3,19 +3,19 @@ import { parse } from "valibot"
 
 import {
   type Blob,
-  blobSchema,
+  BlobSchema,
   type KzgCommitment,
-  kzgCommitmentSchema,
+  KzgCommitmentSchema,
 } from "../schemas"
 import { get_kzg } from "./setup"
 
 export async function blob_to_kzg_commitment(
   _blob: Blob,
 ): Promise<KzgCommitment> {
-  const blob = parse(blobSchema, _blob)
+  const blob = parse(BlobSchema, _blob)
   const kzg = await get_kzg()
   return parse(
-    kzgCommitmentSchema,
+    KzgCommitmentSchema,
     kzg.blobToKzgCommitment(blob),
   )
 }

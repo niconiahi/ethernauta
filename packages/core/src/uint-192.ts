@@ -6,8 +6,8 @@ function isUint192(input: unknown): boolean {
   if (!/^0x[0-9a-f]{1,64}$/.test(input)) return false
   return BigInt(input) <= (1n << 192n) - 1n
 }
-export const uint192Schema = pipe(
+export const Uint192Schema = pipe(
   custom<`0x${string}`>(isUint192, "uint192"),
   brand("Uint192"),
 )
-export type Uint192 = InferOutput<typeof uint192Schema>
+export type Uint192 = InferOutput<typeof Uint192Schema>

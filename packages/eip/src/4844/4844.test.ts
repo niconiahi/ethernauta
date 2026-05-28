@@ -1,6 +1,6 @@
 import {
-  bytes48Schema,
-  bytesSchema,
+  Bytes48Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { sha256 } from "@noble/hashes/sha2"
@@ -19,14 +19,14 @@ import { from_blobs, to_blobs } from "./to-blobs"
 
 describe("to_blobs / from_blobs", () => {
   it("round-trips empty input", () => {
-    const data = parse(bytesSchema, "0x")
+    const data = parse(BytesSchema, "0x")
     const blobs = to_blobs(data)
     expect(blobs).toHaveLength(1)
     expect(from_blobs(blobs)).toBe(data)
   })
 
   it("round-trips short input", () => {
-    const data = parse(bytesSchema, "0xdeadbeef")
+    const data = parse(BytesSchema, "0xdeadbeef")
     const blobs = to_blobs(data)
     expect(blobs).toHaveLength(1)
     expect(from_blobs(blobs)).toBe(data)
@@ -37,7 +37,7 @@ describe("to_blobs / from_blobs", () => {
     // minus the 4-byte length header = 126_972 bytes fit in one blob.
     const payload = new Uint8Array(126_972).fill(0xab)
     const data = parse(
-      bytesSchema,
+      BytesSchema,
       `0x${"ab".repeat(payload.length)}`,
     )
     const blobs = to_blobs(data)
@@ -48,7 +48,7 @@ describe("to_blobs / from_blobs", () => {
   it("round-trips data that spills into a second blob", () => {
     const payload = new Uint8Array(200_000).fill(0x7f)
     const data = parse(
-      bytesSchema,
+      BytesSchema,
       `0x${"7f".repeat(payload.length)}`,
     )
     const blobs = to_blobs(data)
@@ -60,7 +60,7 @@ describe("to_blobs / from_blobs", () => {
 describe("commitment_to_versioned_hash", () => {
   it("prefixes sha256(commitment) with 0x01", () => {
     const commitment = parse(
-      bytes48Schema,
+      Bytes48Schema,
       `0x${"00".repeat(48)}`,
     )
     const expected = sha256(new Uint8Array(48))

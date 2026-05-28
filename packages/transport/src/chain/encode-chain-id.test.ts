@@ -1,8 +1,8 @@
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { caip2_namespaceSchema } from "./caip-2/namespace"
-import { caip2_referenceSchema } from "./caip-2/reference"
+import { Caip2_namespaceSchema } from "./caip-2/namespace"
+import { Caip2_referenceSchema } from "./caip-2/reference"
 
 import { encode_chain_id } from "./encode-chain-id"
 
@@ -11,11 +11,11 @@ describe("encode-chain-id.ts", () => {
     const _namespace = "eip155"
     const _reference = "1"
     const namespace = parse(
-      caip2_namespaceSchema,
+      Caip2_namespaceSchema,
       _namespace,
     )
     const reference = parse(
-      caip2_referenceSchema,
+      Caip2_referenceSchema,
       _reference,
     )
     const encoded = encode_chain_id({

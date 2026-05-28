@@ -5,9 +5,9 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -31,11 +31,11 @@ export const SET_APPROVAL_FOR_ALL_SIGNATURE = {
   names: ["operator", "approved"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema, boolean()]),
-  object({ operator: addressSchema, approved: boolean() }),
+const ParametersSchema = union([
+  tuple([AddressSchema, boolean()]),
+  object({ operator: AddressSchema, approved: boolean() }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function setApprovalForAll(
   _parameters: Parameters,
@@ -48,7 +48,7 @@ export function setApprovalForAll(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([
@@ -67,8 +67,8 @@ export function setApprovalForAll(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: SET_APPROVAL_FOR_ALL_SIGNATURE,
         },

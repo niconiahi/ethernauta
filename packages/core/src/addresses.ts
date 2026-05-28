@@ -1,6 +1,6 @@
 import type { InferOutput } from "valibot"
 import { array } from "valibot"
-import { addressSchema } from "./address"
+import { AddressSchema } from "./address"
 
-export const addressesSchema = array(addressSchema)
-export type Addresses = InferOutput<typeof addressesSchema>
+export const AddressesSchema = array(AddressSchema)
+export type Addresses = InferOutput<typeof AddressesSchema>

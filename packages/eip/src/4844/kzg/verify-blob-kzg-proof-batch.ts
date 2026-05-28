@@ -3,11 +3,11 @@ import { parse } from "valibot"
 
 import {
   type Blob,
-  blobSchema,
+  BlobSchema,
   type KzgCommitment,
   type KzgProof,
-  kzgCommitmentSchema,
-  kzgProofSchema,
+  KzgCommitmentSchema,
+  KzgProofSchema,
 } from "../schemas"
 import { get_kzg } from "./setup"
 
@@ -24,12 +24,12 @@ export async function verify_blob_kzg_proof_batch(
       "verify_blob_kzg_proof_batch: blobs/commitments/proofs length mismatch",
     )
   }
-  const blobs = _blobs.map((b) => parse(blobSchema, b))
+  const blobs = _blobs.map((b) => parse(BlobSchema, b))
   const commitments = _commitments.map((c) =>
-    parse(kzgCommitmentSchema, c),
+    parse(KzgCommitmentSchema, c),
   )
   const proofs = _proofs.map((p) =>
-    parse(kzgProofSchema, p),
+    parse(KzgProofSchema, p),
   )
   const kzg = await get_kzg()
   return kzg.verifyBlobProofBatch(

@@ -1,27 +1,27 @@
 import type { NotFound } from "@ethernauta/core"
 import {
-  notFoundSchema,
-  uintSchema,
+  NotFoundSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { blockNumberOrTagSchema } from "../../core/block"
+import { BlockNumberOrTagSchema } from "../../core/block"
 import type { TransactionInfo } from "../../core/transaction"
 import { TransactionInfoSchema } from "../../core/transaction"
 
-const parametersSchema = union([
-  tuple([blockNumberOrTagSchema, uintSchema]),
+const ParametersSchema = union([
+  tuple([BlockNumberOrTagSchema, UintSchema]),
   object({
-    blockNumberOrTag: blockNumberOrTagSchema,
-    transactionIndex: uintSchema,
+    blockNumberOrTag: BlockNumberOrTagSchema,
+    transactionIndex: UintSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns The transaction information or null if not found
  */
@@ -35,8 +35,8 @@ export function eth_getTransactionByBlockNumberAndIndex(
     TransactionInfo | NotFound
   > => {
     const method = "eth_getTransactionByBlockNumberAndIndex"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -45,7 +45,7 @@ export function eth_getTransactionByBlockNumberAndIndex(
     }
 
     const result = parse(
-      union([TransactionInfoSchema, notFoundSchema]),
+      union([TransactionInfoSchema, NotFoundSchema]),
       response.result,
     )
 

@@ -1,24 +1,24 @@
 // https://eips.ethereum.org/EIPS/eip-3326
 
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
 } from "@ethernauta/transport"
 import { type InferOutput, object, tuple } from "valibot"
 
-export const switchEthereumChainParameterSchema = object({
-  chainId: uintSchema,
+export const SwitchEthereumChainParameterSchema = object({
+  chainId: UintSchema,
 })
 export type SwitchEthereumChainParameter = InferOutput<
-  typeof switchEthereumChainParameterSchema
+  typeof SwitchEthereumChainParameterSchema
 >
 
-export const switchEthereumChainParametersSchema = tuple([
-  switchEthereumChainParameterSchema,
+export const SwitchEthereumChainParametersSchema = tuple([
+  SwitchEthereumChainParameterSchema,
 ])
 export type SwitchEthereumChainParameters = InferOutput<
-  typeof switchEthereumChainParametersSchema
+  typeof SwitchEthereumChainParametersSchema
 >
 
 export function wallet_switchEthereumChain(

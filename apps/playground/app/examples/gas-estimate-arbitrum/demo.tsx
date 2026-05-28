@@ -5,7 +5,7 @@
 
 import "./demo.css"
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
-import { addressSchema, type Uint } from "@ethernauta/core"
+import { AddressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_arbitrum } from "@ethernauta/gas"
 import {
   create_reader,
@@ -31,7 +31,7 @@ const reader = create_reader([
 ])
 
 const DEFAULT_TO = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000dEaD",
 )
 

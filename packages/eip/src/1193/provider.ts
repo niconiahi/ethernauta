@@ -14,7 +14,7 @@ import {
   type EventName,
 } from "./events"
 
-export const requestArgumentsSchema = object({
+export const RequestArgumentsSchema = object({
   method: string(),
   params: optional(
     custom<readonly unknown[] | object>(
@@ -24,7 +24,7 @@ export const requestArgumentsSchema = object({
   ),
 })
 export type RequestArguments = InferOutput<
-  typeof requestArgumentsSchema
+  typeof RequestArgumentsSchema
 >
 
 export type SignableHandler = (
@@ -50,13 +50,13 @@ export type Provider = Readonly<{
   ) => void
 }>
 
-export const createProviderOptionsSchema = object({
+export const CreateProviderOptionsSchema = object({
   request: custom<SignableHandler>(
     (value) => typeof value === "function",
   ),
 })
 export type CreateProviderOptions = InferOutput<
-  typeof createProviderOptionsSchema
+  typeof CreateProviderOptionsSchema
 >
 
 // The 1193 envelope. No dispatch, no state, no policy —

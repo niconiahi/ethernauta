@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-6492
 
-import { bytes32Schema } from "@ethernauta/core"
+import { Bytes32Schema } from "@ethernauta/core"
 import { parse } from "valibot"
 
 // 32-byte suffix appended to an ERC-6492-wrapped signature.
@@ -10,6 +10,6 @@ import { parse } from "valibot"
 // pre-deploy wrapper; anything else is a standard 1271 or
 // EOA signature.
 export const MAGIC_BYTES = parse(
-  bytes32Schema,
+  Bytes32Schema,
   "0x6492649264926492649264926492649264926492649264926492649264926492",
 )

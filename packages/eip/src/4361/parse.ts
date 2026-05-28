@@ -8,7 +8,7 @@
 // fall back to raw rendering — most personal_sign payloads
 // are NOT SIWE messages.
 
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   array,
   type InferOutput,
@@ -20,9 +20,9 @@ import {
   string,
 } from "valibot"
 
-export const siweMessageSchema = object({
+export const SiweMessageSchema = object({
   domain: string(),
-  address: addressSchema,
+  address: AddressSchema,
   statement: optional(string()),
   uri: string(),
   version: string(),
@@ -35,7 +35,7 @@ export const siweMessageSchema = object({
   resources: optional(array(string())),
 })
 export type SiweMessage = InferOutput<
-  typeof siweMessageSchema
+  typeof SiweMessageSchema
 >
 
 const HEADER_REGEX =
@@ -107,7 +107,7 @@ export function parse_siwe_message(
     statement,
     ...fields,
   }
-  const result = safeParse(siweMessageSchema, candidate)
+  const result = safeParse(SiweMessageSchema, candidate)
   if (!result.success) return undefined
   return result.output
 }

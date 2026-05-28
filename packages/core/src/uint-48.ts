@@ -6,8 +6,8 @@ function isUint48(input: unknown): boolean {
   if (!/^0x[0-9a-f]{1,64}$/.test(input)) return false
   return BigInt(input) <= (1n << 48n) - 1n
 }
-export const uint48Schema = pipe(
+export const Uint48Schema = pipe(
   custom<`0x${string}`>(isUint48, "uint48"),
   brand("Uint48"),
 )
-export type Uint48 = InferOutput<typeof uint48Schema>
+export type Uint48 = InferOutput<typeof Uint48Schema>

@@ -4,9 +4,9 @@ import {
   uint256,
 } from "@ethernauta/abi"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
@@ -18,19 +18,19 @@ import {
 } from "./methods"
 
 const ACCOUNT_1 = parse(
-  addressSchema,
+  AddressSchema,
   "0x1111111111111111111111111111111111111111",
 )
 const ACCOUNT_2 = parse(
-  addressSchema,
+  AddressSchema,
   "0x2222222222222222222222222222222222222222",
 )
 const CONTRACT = parse(
-  addressSchema,
+  AddressSchema,
   "0x3333333333333333333333333333333333333333",
 )
-const ID_1 = parse(uint256Schema, "0x1")
-const ID_2 = parse(uint256Schema, "0x2")
+const ID_1 = parse(Uint256Schema, "0x1")
+const ID_2 = parse(Uint256Schema, "0x2")
 
 describe("ERC-1155 balanceOfBatch — generated binding", () => {
   it("exposes the canonical signature with [] suffixes preserved", () => {
@@ -85,11 +85,11 @@ describe("ERC-1155 balanceOfBatch — generated binding", () => {
     })
 
     // Build a synthetic response: ABI-encoded (uint256[]) with values [10, 20, 30].
-    // uint256Schema preserves the full 32-byte padding on decode (so 10 -> 0x000...000a).
+    // Uint256Schema preserves the full 32-byte padding on decode (so 10 -> 0x000...000a).
     const input_values = [
-      parse(uint256Schema, "0xa"),
-      parse(uint256Schema, "0x14"),
-      parse(uint256Schema, "0x1e"),
+      parse(Uint256Schema, "0xa"),
+      parse(Uint256Schema, "0x14"),
+      parse(Uint256Schema, "0x1e"),
     ] as const
     const response_bytes = encode_function_call({
       name: "_synthetic",
@@ -99,7 +99,7 @@ describe("ERC-1155 balanceOfBatch — generated binding", () => {
     // The Callable's decode takes the hex string for the response body
     // (without the 4-byte synthetic selector that encode_function_call prepends).
     const response_body_hex = parse(
-      bytesSchema,
+      BytesSchema,
       bytes_to_hex(response_bytes.slice(4)),
     )
 

@@ -4,7 +4,7 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -16,5 +16,5 @@ export function private_key_to_address(
 ): Address {
   const public_key = getPublicKey(private_key, false)
   const hash = keccak_256(public_key.slice(1))
-  return parse(addressSchema, bytes_to_hex(hash.slice(-20)))
+  return parse(AddressSchema, bytes_to_hex(hash.slice(-20)))
 }

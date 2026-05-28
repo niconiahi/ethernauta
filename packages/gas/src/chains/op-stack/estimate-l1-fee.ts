@@ -5,10 +5,10 @@
 // submit. Output is the wei the L2 will charge for posting the
 // transaction's calldata to L1.
 
-import { bytesSchema, type Uint256 } from "@ethernauta/core"
+import { BytesSchema, type Uint256 } from "@ethernauta/core"
 import {
   encode_transaction_unsigned,
-  transaction1559UnsignedSchema,
+  Transaction1559UnsignedSchema,
 } from "@ethernauta/eip/1559"
 import { eth_call } from "@ethernauta/eth"
 import type {
@@ -22,11 +22,11 @@ import { object, parse } from "valibot"
 import { getL1Fee } from "./gas-price-oracle/methods/get-l1-fee"
 import { GAS_PRICE_ORACLE_PREDEPLOY } from "./predeploy"
 
-export const estimateL1FeeParametersSchema = object({
-  tx: transaction1559UnsignedSchema,
+export const EstimateL1FeeParametersSchema = object({
+  tx: Transaction1559UnsignedSchema,
 })
 export type EstimateL1FeeParameters = InferOutput<
-  typeof estimateL1FeeParametersSchema
+  typeof EstimateL1FeeParametersSchema
 >
 
 export function estimate_l1_fee(
@@ -36,14 +36,14 @@ export function estimate_l1_fee(
     resolved: ResolvedReader,
   ): Promise<Uint256> => {
     const parameters = parse(
-      estimateL1FeeParametersSchema,
+      EstimateL1FeeParametersSchema,
       _parameters,
     )
     const unsigned_bytes = encode_transaction_unsigned(
       parameters.tx,
     )
     const data_hex = parse(
-      bytesSchema,
+      BytesSchema,
       bytes_to_hex(unsigned_bytes),
     )
     const callable = getL1Fee({ _data: data_hex })({

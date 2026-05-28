@@ -7,7 +7,7 @@ import type {
 import { parse } from "valibot"
 import {
   type Capabilities,
-  capabilitiesSchema,
+  CapabilitiesSchema,
 } from "../capabilities"
 
 export function wallet_getCapabilities(): Signable<Capabilities> {
@@ -16,6 +16,6 @@ export function wallet_getCapabilities(): Signable<Capabilities> {
       "wallet_getCapabilities",
       undefined,
     )
-    return parse(capabilitiesSchema, JSON.parse(result))
+    return parse(CapabilitiesSchema, JSON.parse(result))
   }
 }

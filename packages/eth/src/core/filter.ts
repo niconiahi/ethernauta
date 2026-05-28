@@ -1,40 +1,40 @@
 import {
-  addressesSchema,
-  addressSchema,
-  bytes32Schema,
-  hash32Schema,
-  uintSchema,
+  AddressesSchema,
+  AddressSchema,
+  Bytes32Schema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { array, null_, object, union } from "valibot"
-import { logSchema } from "./receipt"
+import { LogSchema } from "./receipt"
 
-export const filterTopicSchema = union([
+export const FilterTopicSchema = union([
   null_(),
-  bytes32Schema,
-  array(bytes32Schema),
+  Bytes32Schema,
+  array(Bytes32Schema),
 ])
 export type FilterTopic = InferOutput<
-  typeof filterTopicSchema
+  typeof FilterTopicSchema
 >
 
-export const filterTopicsSchema = array(filterTopicSchema)
+export const FilterTopicsSchema = array(FilterTopicSchema)
 export type FilterTopics = InferOutput<
-  typeof filterTopicsSchema
+  typeof FilterTopicsSchema
 >
 
-export const filterSchema = object({
-  fromBlock: uintSchema,
-  toBlock: uintSchema,
-  address: union([addressSchema, addressesSchema]),
-  topics: filterTopicsSchema,
+export const FilterSchema = object({
+  fromBlock: UintSchema,
+  toBlock: UintSchema,
+  address: union([AddressSchema, AddressesSchema]),
+  topics: FilterTopicsSchema,
 })
-export type Filter = InferOutput<typeof filterSchema>
+export type Filter = InferOutput<typeof FilterSchema>
 
-export const filterResultsSchema = union([
-  array(hash32Schema),
-  array(logSchema),
+export const FilterResultsSchema = union([
+  array(Hash32Schema),
+  array(LogSchema),
 ])
 export type FilterResults = InferOutput<
-  typeof filterResultsSchema
+  typeof FilterResultsSchema
 >

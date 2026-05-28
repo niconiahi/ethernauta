@@ -1,13 +1,13 @@
 import type { NotFound } from "@ethernauta/core"
 import {
-  hash32Schema,
-  notFoundSchema,
+  Hash32Schema,
+  NotFoundSchema,
 } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   boolean,
@@ -17,16 +17,16 @@ import {
   union,
 } from "valibot"
 import type { Block } from "../../core/block"
-import { blockSchema } from "../../core/block"
+import { BlockSchema } from "../../core/block"
 
-const parametersSchema = union([
-  tuple([hash32Schema, boolean()]),
+const ParametersSchema = union([
+  tuple([Hash32Schema, boolean()]),
   object({
-    blockHash: hash32Schema,
+    blockHash: Hash32Schema,
     hydratedTransactions: boolean(),
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 export function eth_getBlockByHash(
   _parameters: Parameters,
 ): Readable<Block | NotFound> {
@@ -35,8 +35,8 @@ export function eth_getBlockByHash(
     _context,
   ]: ResolvedReader): Promise<Block | NotFound> => {
     const method = "eth_getBlockByHash"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -44,7 +44,7 @@ export function eth_getBlockByHash(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([blockSchema, notFoundSchema]),
+      union([BlockSchema, NotFoundSchema]),
       response.result,
     )
     return result

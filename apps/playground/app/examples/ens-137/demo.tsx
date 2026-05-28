@@ -1,6 +1,6 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   create_reader,
   encode_chain_id,
@@ -39,19 +39,19 @@ const reader = create_reader([
 
 const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
 
-const forwardSchema = object({
+const ForwardSchema = object({
   address: nullable(string()),
   avatar: nullable(string()),
   twitter: nullable(string()),
   url: nullable(string()),
   description: nullable(string()),
 })
-type Forward = InferOutput<typeof forwardSchema>
+type Forward = InferOutput<typeof ForwardSchema>
 
-const reverseSchema = object({
+const ReverseSchema = object({
   name: nullable(string()),
 })
-type Reverse = InferOutput<typeof reverseSchema>
+type Reverse = InferOutput<typeof ReverseSchema>
 
 export function Ens137Demo() {
   const [name, set_name] = useState("vitalik.eth")
@@ -116,7 +116,7 @@ export function Ens137Demo() {
         "@ethernauta/ens"
       )
       const resolved = await get_ens_name({
-        address: parse(addressSchema, address),
+        address: parse(AddressSchema, address),
       })(ctx)
       set_reverse({ name: resolved })
     } catch (e: unknown) {

@@ -18,7 +18,7 @@ import { parse } from "valibot"
 
 import {
   type Transaction1559Unsigned,
-  transaction1559UnsignedSchema,
+  Transaction1559UnsignedSchema,
 } from "./transaction-unsigned"
 
 const TX_TYPE_PREFIX = 0x02
@@ -26,7 +26,7 @@ const TX_TYPE_PREFIX = 0x02
 export function encode_transaction_unsigned(
   _tx: Transaction1559Unsigned,
 ): Uint8Array {
-  const tx = parse(transaction1559UnsignedSchema, _tx)
+  const tx = parse(Transaction1559UnsignedSchema, _tx)
   return prefix_type(rlp_encode(encode_body(tx)))
 }
 

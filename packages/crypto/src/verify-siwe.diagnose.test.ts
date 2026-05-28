@@ -5,10 +5,10 @@
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
-  addressSchema,
-  bytes65Schema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  Bytes65Schema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { build_siwe_message } from "@ethernauta/eip/4361"
@@ -44,7 +44,7 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 
@@ -71,7 +71,7 @@ function personal_sign(message: string, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytes65Schema, bytes_to_hex(out))
+  return parse(Bytes65Schema, bytes_to_hex(out))
 }
 
 const describe_live =
@@ -100,7 +100,7 @@ describe_live("SIWE live diagnose — Sepolia", () => {
 
     const prefixed = build_personal_message(message)
     const digest = keccak_256(prefixed)
-    const hash = parse(hash32Schema, bytes_to_hex(digest))
+    const hash = parse(Hash32Schema, bytes_to_hex(digest))
     console.log("DIGEST       :", hash)
 
     const local_recovered = recover_address(hash, signature)
@@ -124,7 +124,7 @@ describe_live("SIWE live diagnose — Sepolia", () => {
     const verified = await verify_message_deployed({
       address: ADDRESS,
       message,
-      signature: parse(bytesSchema, signature),
+      signature: parse(BytesSchema, signature),
     })(resolved)
     console.log("verify_msg   :", verified)
 

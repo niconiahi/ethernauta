@@ -1,9 +1,9 @@
 // https://eips.ethereum.org/EIPS/eip-4337
 
 import type { Hash32, NotFound } from "@ethernauta/core"
-import { notFoundSchema } from "@ethernauta/core"
+import { NotFoundSchema } from "@ethernauta/core"
 import {
-  callSchema,
+  CallSchema,
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
@@ -11,7 +11,7 @@ import { parse, union } from "valibot"
 
 import {
   type UserOperationByHash,
-  userOperationByHashSchema,
+  UserOperationByHashSchema,
 } from "../types"
 
 export function eth_getUserOperationByHash(
@@ -24,7 +24,7 @@ export function eth_getUserOperationByHash(
     UserOperationByHash | NotFound
   > => {
     const method = "eth_getUserOperationByHash"
-    const call = parse(callSchema, [method, [_hash]])
+    const call = parse(CallSchema, [method, [_hash]])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -32,7 +32,7 @@ export function eth_getUserOperationByHash(
       throw new Error(response.error.message)
     }
     return parse(
-      union([userOperationByHashSchema, notFoundSchema]),
+      union([UserOperationByHashSchema, NotFoundSchema]),
       response.result,
     )
   }

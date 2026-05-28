@@ -10,12 +10,12 @@ import {
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes,
-  bytesSchema,
+  BytesSchema,
   type Uint256,
-  uint256Schema,
-  uintSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { wallet_sendSetCodeTransaction } from "@ethernauta/eip/7702"
 import { useProvider } from "@ethernauta/react"
@@ -36,7 +36,7 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 // EIP-7702 expects the on-chain address as a uint256 hex of
 // the chain reference. Sepolia = 11155111 = 0xaa36a7.
 const SEPOLIA_CHAIN_REF_HEX = parse(
-  uintSchema,
+  UintSchema,
   `0x${eip155_11155111.chainId.toString(16)}`,
 )
 
@@ -44,7 +44,7 @@ const SEPOLIA_CHAIN_REF_HEX = parse(
 // Source + forge tests are in the `contracts/` package;
 // re-deploy via `forge create` if you want your own copy.
 const BATCH_EXECUTOR = parse(
-  addressSchema,
+  AddressSchema,
   "0x5AAC53e7b782CCD32A083F938AEbA843731323Ee",
 )
 
@@ -53,17 +53,17 @@ const BATCH_EXECUTOR = parse(
 // prove the batch executes atomically — not to move value.
 const TARGETS = [
   parse(
-    addressSchema,
+    AddressSchema,
     "0x1111111111111111111111111111111111111111",
   ),
   parse(
-    addressSchema,
+    AddressSchema,
     "0x2222222222222222222222222222222222222222",
   ),
 ]
 
-const ZERO_VALUE = parse(uint256Schema, "0x0")
-const ZERO_DATA = parse(bytesSchema, "0x")
+const ZERO_VALUE = parse(Uint256Schema, "0x0")
+const ZERO_DATA = parse(BytesSchema, "0x")
 
 const call_tuple = tuple({
   to: address(),
@@ -80,7 +80,7 @@ function encode_execute(
   }>,
 ): Bytes {
   return parse(
-    bytesSchema,
+    BytesSchema,
     bytes_to_hex(
       encode_function_call({
         name: "execute",
@@ -113,7 +113,7 @@ export function Delegate7702Demo() {
       }))
       const calldata = encode_execute(calls)
       const hash = await wallet_sendSetCodeTransaction({
-        to: parse(addressSchema, owner),
+        to: parse(AddressSchema, owner),
         data: calldata,
         delegations: [
           {

@@ -4,7 +4,7 @@ import {
   decode_event_log,
   encode_event_topics,
 } from "@ethernauta/abi"
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -21,23 +21,23 @@ import {
   unknown,
 } from "valibot"
 
-import { logSchema } from "../../core/receipt"
+import { LogSchema } from "../../core/receipt"
 import { eth_getLogs } from "./get-logs"
 
 // Boundary schema for the non-codec parts. `args` (the codec
 // tuple) is the conventions-skill carve-out for generic
 // transport shapes.
-export const getContractEventsInputSchema = object({
-  address: addressSchema,
+export const GetContractEventsInputSchema = object({
+  address: AddressSchema,
   name: string(),
   indexed: array(boolean()),
-  fromBlock: uintSchema,
-  toBlock: uintSchema,
+  fromBlock: UintSchema,
+  toBlock: UintSchema,
   values: optional(array(nullable(unknown()))),
   anonymous: optional(boolean()),
 })
 export type GetContractEventsInput = InferOutput<
-  typeof getContractEventsInputSchema
+  typeof GetContractEventsInputSchema
 >
 
 // Compose eth_getLogs + decode_event_log into a typed
@@ -58,7 +58,7 @@ export function get_contract_events<
   ]: ResolvedReader): Promise<DecodedEventLog[]> => {
     const { args } = _parameters
     const parameters = parse(
-      getContractEventsInputSchema,
+      GetContractEventsInputSchema,
       _parameters,
     )
     const {
@@ -81,7 +81,7 @@ export function get_contract_events<
       { address, fromBlock, toBlock, topics },
     ])([transports, _context])
     return results.map((entry) => {
-      const log = parse(logSchema, entry)
+      const log = parse(LogSchema, entry)
       return decode_event_log({
         name,
         args,

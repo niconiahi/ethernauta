@@ -1,7 +1,7 @@
 import { literal, object } from "valibot"
-import { stateMutabilitySchema } from "./function-shared"
+import { StateMutabilitySchema } from "./function-shared"
 
-export const receiveSchema = object({
+export const ReceiveSchema = object({
   type: literal("receive"),
-  stateMutability: stateMutabilitySchema,
+  stateMutability: StateMutabilitySchema,
 })

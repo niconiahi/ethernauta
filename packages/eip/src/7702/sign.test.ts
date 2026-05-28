@@ -1,8 +1,8 @@
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -25,27 +25,27 @@ const PRIVATE_KEY = hex_to_bytes(
 )
 
 const AUTH: AuthorizationParameter = {
-  chainId: parse(uintSchema, "0xaa36a7"),
+  chainId: parse(UintSchema, "0xaa36a7"),
   address: parse(
-    addressSchema,
+    AddressSchema,
     "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
   ),
-  nonce: parse(uintSchema, "0x5"),
+  nonce: parse(UintSchema, "0x5"),
 }
 
 const TX: Transaction7702Unsigned = {
-  type: parse(byteSchema, "0x4"),
-  chainId: parse(uintSchema, "0xaa36a7"),
-  nonce: parse(uintSchema, "0x4"),
-  maxPriorityFeePerGas: parse(uintSchema, "0x77359400"),
-  maxFeePerGas: parse(uintSchema, "0x6fc23ac00"),
-  gas: parse(uintSchema, "0xf4240"),
+  type: parse(ByteSchema, "0x4"),
+  chainId: parse(UintSchema, "0xaa36a7"),
+  nonce: parse(UintSchema, "0x4"),
+  maxPriorityFeePerGas: parse(UintSchema, "0x77359400"),
+  maxFeePerGas: parse(UintSchema, "0x6fc23ac00"),
+  gas: parse(UintSchema, "0xf4240"),
   to: parse(
-    addressSchema,
+    AddressSchema,
     "0x1234567890123456789012345678901234567890",
   ),
-  value: parse(uintSchema, "0x0"),
-  input: parse(bytesSchema, "0xa9059cbb"),
+  value: parse(UintSchema, "0x0"),
+  input: parse(BytesSchema, "0xa9059cbb"),
   accessList: [],
   authorizationList: [],
 }

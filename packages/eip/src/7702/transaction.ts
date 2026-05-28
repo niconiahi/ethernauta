@@ -7,39 +7,39 @@
 // `eth_sendRawTransaction` boundary.
 
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
-import { accessListSchema } from "@ethernauta/eip/2930"
+import { AccessListSchema } from "@ethernauta/eip/2930"
 import type { InferOutput } from "valibot"
 import { object } from "valibot"
-import { authorizationListSchema } from "./authorization"
+import { AuthorizationListSchema } from "./authorization"
 
-export const transaction7702UnsignedSchema = object({
-  type: byteSchema,
-  chainId: uintSchema,
-  nonce: uintSchema,
-  gas: uintSchema,
-  to: addressSchema,
-  value: uintSchema,
-  input: bytesSchema,
-  maxPriorityFeePerGas: uintSchema,
-  maxFeePerGas: uintSchema,
-  accessList: accessListSchema,
-  authorizationList: authorizationListSchema,
+export const Transaction7702UnsignedSchema = object({
+  type: ByteSchema,
+  chainId: UintSchema,
+  nonce: UintSchema,
+  gas: UintSchema,
+  to: AddressSchema,
+  value: UintSchema,
+  input: BytesSchema,
+  maxPriorityFeePerGas: UintSchema,
+  maxFeePerGas: UintSchema,
+  accessList: AccessListSchema,
+  authorizationList: AuthorizationListSchema,
 })
 export type Transaction7702Unsigned = InferOutput<
-  typeof transaction7702UnsignedSchema
+  typeof Transaction7702UnsignedSchema
 >
 
-export const transaction7702SignedSchema = object({
-  ...transaction7702UnsignedSchema.entries,
-  yParity: uintSchema,
-  r: uintSchema,
-  s: uintSchema,
+export const Transaction7702SignedSchema = object({
+  ...Transaction7702UnsignedSchema.entries,
+  yParity: UintSchema,
+  r: UintSchema,
+  s: UintSchema,
 })
 export type Transaction7702Signed = InferOutput<
-  typeof transaction7702SignedSchema
+  typeof Transaction7702SignedSchema
 >

@@ -12,18 +12,18 @@ import {
   decode_event_log,
   type EventLog,
   event_topic_hash,
-  eventLogSchema,
+  EventLogSchema,
 } from "./encoding/event"
 
 // Decoded log entry. `args` is positional in the matched event's
 // declared input order. `log` is the original wire log for traceability.
-export const decodedLogEntrySchema = object({
+export const DecodedLogEntrySchema = object({
   name: string(),
   args: array(unknown()),
-  log: eventLogSchema,
+  log: EventLogSchema,
 })
 export type DecodedLogEntry = InferOutput<
-  typeof decodedLogEntrySchema
+  typeof DecodedLogEntrySchema
 >
 
 // One event entry: same args you would pass to `decode_event_log`
@@ -48,7 +48,7 @@ export function decode_logs(
   _logs: readonly EventLog[],
 ): DecodedLogEntry[] {
   const logs = _logs.map((log) =>
-    parse(eventLogSchema, log),
+    parse(EventLogSchema, log),
   )
   const by_topic = new Map<string, EventEntry>()
   for (const entry of _entries) {

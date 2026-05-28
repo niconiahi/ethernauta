@@ -12,7 +12,7 @@ import {
 
 export {
   type FunctionSignature,
-  functionSignatureSchema,
+  FunctionSignatureSchema,
 } from "@ethernauta/transport"
 
 export const SignTransactionRequestSchema = object({

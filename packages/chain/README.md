@@ -5,7 +5,7 @@
 This module is an un-opinionated representation of the public chain catalogue:
 
 - [Ethereum chains](https://github.com/ethereum-lists/chains/tree/master/_data/chains)
-- [chain schema](https://github.com/ethereum-lists/chains/blob/master/tools/schema/chainSchema.json)
+- [chain schema](https://github.com/ethereum-lists/chains/blob/master/tools/schema/ChainSchema.json)
 
 Every chain in the upstream list is exported as a const named `eip155_<chainId>` (one file per chain). Pair the const with `encode_chain_id` from `@ethernauta/transport` to produce a [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) identifier that every Ethernauta resolver factory accepts.
 
@@ -42,7 +42,7 @@ import {
   // …500+ exports
 } from "@ethernauta/chain"
 
-// Each const exposes the upstream `chainSchema` shape:
+// Each const exposes the upstream `ChainSchema` shape:
 //   { name, shortName, chainId, networkId, nativeCurrency,
 //     rpc, explorers, … }
 ```
@@ -69,7 +69,7 @@ console.log(reference) // "11155111"
 ```ts
 import {
   type Chain,
-  chainSchema,
+  ChainSchema,
   type Feature,
   type NativeCurrency,
   type Explorer,
@@ -77,11 +77,11 @@ import {
   type Parent,
   type EnsRegistry,
   type ShortName,
-  shortNameSchema,
+  ShortNameSchema,
   type RedFlagSchema,
 } from "@ethernauta/chain"
 
-// `chainSchema` matches the upstream JSON schema and is what
+// `ChainSchema` matches the upstream JSON schema and is what
 // every `eip155_*` export validates against at build time.
 ```
 
@@ -91,4 +91,4 @@ import {
 pnpm --filter @ethernauta/chain indexer
 ```
 
-The `indexer` script pulls the latest definitions from [ethereum-lists/chains](https://github.com/ethereum-lists/chains), validates each against `chainSchema`, and writes one TS file per chain under `src/chain/eip155/`.
+The `indexer` script pulls the latest definitions from [ethereum-lists/chains](https://github.com/ethereum-lists/chains), validates each against `ChainSchema`, and writes one TS file per chain under `src/chain/eip155/`.

@@ -1,5 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   derive_private_key,
   HDKey,
@@ -73,11 +73,11 @@ const TEST_PRIVATE_KEY = new Uint8Array([
 ])
 
 const TEST_TO_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x742d35Cc6635C0532925a3b8D83C2D2d88Ca7c38",
 )
 const TARGET_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x515e9e0565fdddd4f8a9759744734154da453585",
 )
 

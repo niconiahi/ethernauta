@@ -6,11 +6,11 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint64Schema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint64Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -33,21 +33,21 @@ export const SET_RECORD_SIGNATURE = {
   names: ["node", "owner", "resolver", "ttl"],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    bytes32Schema,
-    addressSchema,
-    addressSchema,
-    uint64Schema,
+    Bytes32Schema,
+    AddressSchema,
+    AddressSchema,
+    Uint64Schema,
   ]),
   object({
-    node: bytes32Schema,
-    owner: addressSchema,
-    resolver: addressSchema,
-    ttl: uint64Schema,
+    node: Bytes32Schema,
+    owner: AddressSchema,
+    resolver: AddressSchema,
+    ttl: Uint64Schema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function setRecord(
   _parameters: Parameters,
@@ -60,7 +60,7 @@ export function setRecord(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -86,8 +86,8 @@ export function setRecord(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: SET_RECORD_SIGNATURE,
         },

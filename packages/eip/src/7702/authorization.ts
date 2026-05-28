@@ -9,7 +9,7 @@
 // Type-4 transactions carry a list of these tuples as
 // the 10th RLP field.
 
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import { hex_to_bytes, rlp_encode } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import {
@@ -22,32 +22,32 @@ import {
 export const SET_CODE_TX_TYPE = 0x04 as const
 export const SET_CODE_MAGIC = 0x05 as const
 
-export const authorizationParameterSchema = object({
-  chainId: uintSchema,
-  address: addressSchema,
-  nonce: uintSchema,
+export const AuthorizationParameterSchema = object({
+  chainId: UintSchema,
+  address: AddressSchema,
+  nonce: UintSchema,
 })
 export type AuthorizationParameter = InferOutput<
-  typeof authorizationParameterSchema
+  typeof AuthorizationParameterSchema
 >
 
-export const authorizationSignedSchema = object({
-  chainId: uintSchema,
-  address: addressSchema,
-  nonce: uintSchema,
-  yParity: uintSchema,
-  r: uintSchema,
-  s: uintSchema,
+export const AuthorizationSignedSchema = object({
+  chainId: UintSchema,
+  address: AddressSchema,
+  nonce: UintSchema,
+  yParity: UintSchema,
+  r: UintSchema,
+  s: UintSchema,
 })
 export type AuthorizationSigned = InferOutput<
-  typeof authorizationSignedSchema
+  typeof AuthorizationSignedSchema
 >
 
-export const authorizationListSchema = array(
-  authorizationSignedSchema,
+export const AuthorizationListSchema = array(
+  AuthorizationSignedSchema,
 )
 export type AuthorizationList = InferOutput<
-  typeof authorizationListSchema
+  typeof AuthorizationListSchema
 >
 
 function hex_to_big(hex: string): bigint {
@@ -71,7 +71,7 @@ function encode_authorization_body(
 export function build_authorization_message(
   _auth: AuthorizationParameter,
 ): Uint8Array {
-  const auth = parse(authorizationParameterSchema, _auth)
+  const auth = parse(AuthorizationParameterSchema, _auth)
   const body = encode_authorization_body(auth)
   const out = new Uint8Array(1 + body.length)
   out[0] = SET_CODE_MAGIC

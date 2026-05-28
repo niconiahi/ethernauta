@@ -1,9 +1,9 @@
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint32Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint32Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { encode_type } from "@ethernauta/eip/712"
 import { parse } from "valibot"
@@ -36,29 +36,29 @@ describe("typed-data.ts — make_gasless_order_typed_data", () => {
     const td = make_gasless_order_typed_data({
       order: {
         originSettler: parse(
-          addressSchema,
+          AddressSchema,
           "0x1111111111111111111111111111111111111111",
         ),
         user: parse(
-          addressSchema,
+          AddressSchema,
           "0x2222222222222222222222222222222222222222",
         ),
-        nonce: parse(uint256Schema, "0x1"),
-        originChainId: parse(uint256Schema, "0xaa36a7"),
-        openDeadline: parse(uint32Schema, "0x6800"),
-        fillDeadline: parse(uint32Schema, "0x6800"),
+        nonce: parse(Uint256Schema, "0x1"),
+        originChainId: parse(Uint256Schema, "0xaa36a7"),
+        openDeadline: parse(Uint32Schema, "0x6800"),
+        fillDeadline: parse(Uint32Schema, "0x6800"),
         orderDataType: parse(
-          bytes32Schema,
+          Bytes32Schema,
           `0x${"00".repeat(32)}`,
         ),
-        orderData: parse(bytesSchema, "0x"),
+        orderData: parse(BytesSchema, "0x"),
       },
       domain: {
         name: "Test Settler",
         version: "1",
         chainId: 11155111,
         verifyingContract: parse(
-          addressSchema,
+          AddressSchema,
           "0x1111111111111111111111111111111111111111",
         ),
       },

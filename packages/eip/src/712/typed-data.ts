@@ -1,9 +1,9 @@
 // https://eips.ethereum.org/EIPS/eip-712
 
 import {
-  addressSchema,
-  bytes32Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import {
   array,
@@ -18,39 +18,39 @@ import {
   unknown,
 } from "valibot"
 
-export const typedDataDomainSchema = object({
+export const TypedDataDomainSchema = object({
   name: optional(string()),
   version: optional(string()),
   chainId: optional(
-    union([bigint(), number(), uint256Schema]),
+    union([bigint(), number(), Uint256Schema]),
   ),
-  verifyingContract: optional(addressSchema),
-  salt: optional(bytes32Schema),
+  verifyingContract: optional(AddressSchema),
+  salt: optional(Bytes32Schema),
 })
 export type TypedDataDomain = InferOutput<
-  typeof typedDataDomainSchema
+  typeof TypedDataDomainSchema
 >
 
-export const typedDataFieldSchema = object({
+export const TypedDataFieldSchema = object({
   name: string(),
   type: string(),
 })
 export type TypedDataField = InferOutput<
-  typeof typedDataFieldSchema
+  typeof TypedDataFieldSchema
 >
 
-export const typedDataTypesSchema = record(
+export const TypedDataTypesSchema = record(
   string(),
-  array(typedDataFieldSchema),
+  array(TypedDataFieldSchema),
 )
 export type TypedDataTypes = InferOutput<
-  typeof typedDataTypesSchema
+  typeof TypedDataTypesSchema
 >
 
-export const typedDataSchema = object({
-  domain: typedDataDomainSchema,
-  types: typedDataTypesSchema,
+export const TypedDataSchema = object({
+  domain: TypedDataDomainSchema,
+  types: TypedDataTypesSchema,
   primaryType: string(),
   message: record(string(), unknown()),
 })
-export type TypedData = InferOutput<typeof typedDataSchema>
+export type TypedData = InferOutput<typeof TypedDataSchema>

@@ -1,5 +1,5 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   create_reader,
   encode_chain_id,
@@ -24,7 +24,7 @@ const MAINNET_RPC_URLS = [
 ]
 
 const VITALIK_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
 )
 

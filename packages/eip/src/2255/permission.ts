@@ -11,27 +11,27 @@ import {
   unknown,
 } from "valibot"
 
-export const caveatSchema = object({
+export const CaveatSchema = object({
   type: string(),
   value: unknown(),
 })
-export type Caveat = InferOutput<typeof caveatSchema>
+export type Caveat = InferOutput<typeof CaveatSchema>
 
-export const permissionSchema = object({
+export const PermissionSchema = object({
   invoker: optional(string()),
   parentCapability: string(),
-  caveats: array(caveatSchema),
+  caveats: array(CaveatSchema),
   date: optional(number()),
   id: optional(string()),
 })
 export type Permission = InferOutput<
-  typeof permissionSchema
+  typeof PermissionSchema
 >
 
-export const requestedPermissionSchema = record(
+export const RequestedPermissionSchema = record(
   string(),
   object({}),
 )
 export type RequestedPermissions = InferOutput<
-  typeof requestedPermissionSchema
+  typeof RequestedPermissionSchema
 >

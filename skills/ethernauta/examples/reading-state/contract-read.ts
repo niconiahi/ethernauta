@@ -4,7 +4,7 @@
 // Taken from the animatronik dapp's showcase loader.
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
-import { addressSchema } from "@ethernauta/eth"
+import { AddressSchema } from "@ethernauta/eth"
 import {
   contract,
   create_read,
@@ -41,7 +41,7 @@ const read = create_read([
 
 // `to` is the contract address. Validated here, not inside the method.
 const to = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000000",
 )
 

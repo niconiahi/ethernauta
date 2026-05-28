@@ -5,9 +5,9 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  bytes32Schema,
-  bytesSchema,
-  uintSchema,
+  Bytes32Schema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -25,15 +25,15 @@ export const FILL_SIGNATURE = {
   names: ["orderId", "originData", "fillerData"],
 }
 
-const parametersSchema = union([
-  tuple([bytes32Schema, bytesSchema, bytesSchema]),
+const ParametersSchema = union([
+  tuple([Bytes32Schema, BytesSchema, BytesSchema]),
   object({
-    orderId: bytes32Schema,
-    originData: bytesSchema,
-    fillerData: bytesSchema,
+    orderId: Bytes32Schema,
+    originData: BytesSchema,
+    fillerData: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function fill(
   _parameters: Parameters,
@@ -46,7 +46,7 @@ export function fill(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -70,8 +70,8 @@ export function fill(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: FILL_SIGNATURE,
         },

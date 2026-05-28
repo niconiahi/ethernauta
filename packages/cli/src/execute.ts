@@ -14,7 +14,7 @@ import {
   emit_name_for,
   generate,
 } from "@ethernauta/abi/generator"
-import { type Bytes4, bytes4Schema } from "@ethernauta/core"
+import { type Bytes4, Bytes4Schema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   array,
@@ -26,7 +26,7 @@ import {
 
 function selector_hex(signature: string): Bytes4 {
   return parse(
-    bytes4Schema,
+    Bytes4Schema,
     bytes_to_hex(to_selector(signature)),
   )
 }
@@ -184,14 +184,14 @@ function walk_abi_jsons(root: string): string[] {
   return found.sort()
 }
 
-const registryEntrySchema = object({
+const RegistryEntrySchema = object({
   signature: string(),
   name: string(),
   types: array(string()),
   param_names: array(string()),
   source: string(),
 })
-type RegistryEntry = InferOutput<typeof registryEntrySchema>
+type RegistryEntry = InferOutput<typeof RegistryEntrySchema>
 
 function collect_entries(
   files: string[],

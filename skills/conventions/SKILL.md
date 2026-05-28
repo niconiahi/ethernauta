@@ -28,7 +28,7 @@ That is the entire convention. Everything below is a corollary.
 
 ## Naming
 
-- Schema: lowerCamelCase + `Schema` suffix — `addressSchema`, `verifyHashParametersSchema`, `typedDataDomainSchema`. (See `packages/core/src/address.ts:10`, `packages/eip/src/1271/verify-hash.ts:33`, `packages/eip/src/712/typed-data.ts:21`.)
+- Schema: lowerCamelCase + `Schema` suffix — `AddressSchema`, `VerifyHashParametersSchema`, `TypedDataDomainSchema`. (See `packages/core/src/address.ts:10`, `packages/eip/src/1271/verify-hash.ts:33`, `packages/eip/src/712/typed-data.ts:21`.)
 - Type: PascalCase, no suffix — `Address`, `VerifyHashParameters`, `TypedDataDomain`.
 - Both go in the same file, schema first, type immediately below. Both are exported unless the schema is intentionally private to the module.
 - When the schema is the canonical reference for a wire-level shape (Chrome message, JSON-RPC request/response), the convention is PascalCase + `Schema` — see `packages/wallet/src/utils/event.ts:18` (`SignTransactionRequestSchema`). Pick one style per file; do not mix.
@@ -68,7 +68,7 @@ export function transfer(
 ): Signable<Bytes> {
   return async ([signer, _context]: ResolvedSigner) => {
     if (!_context.to) throw new Error(...)
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     // from here on, only `parameters` is used
     ...
   }
@@ -83,18 +83,18 @@ When a method accepts both a positional tuple and a named object (a recurring pa
 
 ```ts
 // packages/erc/src/20/methods/transfer.ts:30-34
-const parametersSchema = union([
-  tuple([addressSchema, uint256Schema]),
-  object({ to: addressSchema, value: uint256Schema }),
+const ParametersSchema = union([
+  tuple([AddressSchema, Uint256Schema]),
+  object({ to: AddressSchema, value: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 ```
 
 Inside the function body, `Array.isArray(parameters)` discriminates the two cases — TypeScript narrows correctly because the union came from the schema.
 
 ## Composition over redefinition
 
-Schemas compose. If you need to type `{ id, request }`, do not define a new `string` schema for `id` — import `string()` from valibot and the relevant request schema from where it already lives. If you need an address, do not redeclare the regex — import `addressSchema` from `@ethernauta/core`. The reuse rule is: the schema is declared **once**, at the lowest package in the dependency graph that needs it, and every consumer above it imports it.
+Schemas compose. If you need to type `{ id, request }`, do not define a new `string` schema for `id` — import `string()` from valibot and the relevant request schema from where it already lives. If you need an address, do not redeclare the regex — import `AddressSchema` from `@ethernauta/core`. The reuse rule is: the schema is declared **once**, at the lowest package in the dependency graph that needs it, and every consumer above it imports it.
 
 This is also why `core` exists. Read `skills/core/SKILL.md`.
 
@@ -106,7 +106,7 @@ Reactive state (`@preact/signals`) is no exception. The signal's payload is a va
 export const TransactionSchema = object({
   id: string(),
   method: string(),
-  params: parametersSchema,
+  params: ParametersSchema,
   to: optional(string()),
 })
 export type Transaction = InferOutput<typeof TransactionSchema>

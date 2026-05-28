@@ -15,8 +15,8 @@
 // "invalid".
 
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   parse_siwe_message,
@@ -37,20 +37,20 @@ import {
 
 import { verify_message } from "./verify-message"
 
-export const verifySiweMessageParametersSchema = object({
+export const VerifySiweMessageParametersSchema = object({
   message: string(),
-  signature: bytesSchema,
+  signature: BytesSchema,
   expected: object({
     domain: string(),
     nonce: string(),
-    address: optional(addressSchema),
+    address: optional(AddressSchema),
     chainId: optional(string()),
     uri: optional(string()),
   }),
   now: optional(date()),
 })
 export type VerifySiweMessageParameters = InferOutput<
-  typeof verifySiweMessageParametersSchema
+  typeof VerifySiweMessageParametersSchema
 >
 
 export type VerifySiweMessageResult =
@@ -80,7 +80,7 @@ export function verify_siwe_message(
     resolved: ResolvedReader,
   ): Promise<VerifySiweMessageResult> => {
     const parameters = parse(
-      verifySiweMessageParametersSchema,
+      VerifySiweMessageParametersSchema,
       _parameters,
     )
     const fields = parse_siwe_message(parameters.message)

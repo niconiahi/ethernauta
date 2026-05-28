@@ -1,22 +1,22 @@
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
   type AuthorizationParameter,
-  authorizationParameterSchema,
+  AuthorizationParameterSchema,
   build_authorization_message,
   hash_authorization,
   SET_CODE_MAGIC,
 } from "./authorization"
 
 const SAMPLE: AuthorizationParameter = {
-  chainId: parse(uintSchema, "0x1"),
+  chainId: parse(UintSchema, "0x1"),
   address: parse(
-    addressSchema,
+    AddressSchema,
     "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
   ),
-  nonce: parse(uintSchema, "0x0"),
+  nonce: parse(UintSchema, "0x0"),
 }
 
 describe("authorization.ts", () => {
@@ -40,7 +40,7 @@ describe("authorization.ts", () => {
       build_authorization_message({
         ...SAMPLE,
         address: parse(
-          addressSchema,
+          AddressSchema,
           "0x1234567890123456789012345678901234567890",
         ),
       }),
@@ -54,7 +54,7 @@ describe("authorization.ts", () => {
   it("should encode chainId 0 as the wildcard empty byte string", () => {
     const msg = build_authorization_message({
       ...SAMPLE,
-      chainId: parse(uintSchema, "0x0"),
+      chainId: parse(UintSchema, "0x0"),
     })
     // After 0x05 magic + rlp list header, the chain_id
     // appears as 0x80 (empty string = zero).
@@ -69,7 +69,7 @@ describe("authorization.ts", () => {
 
   it("should reject a malformed address via the schema", () => {
     expect(() =>
-      parse(authorizationParameterSchema, {
+      parse(AuthorizationParameterSchema, {
         ...SAMPLE,
         address: "0xnope",
       }),
@@ -78,7 +78,7 @@ describe("authorization.ts", () => {
 
   it("should reject a non-hex chainId via the schema", () => {
     expect(() =>
-      parse(authorizationParameterSchema, {
+      parse(AuthorizationParameterSchema, {
         ...SAMPLE,
         chainId: "1",
       }),

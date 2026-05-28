@@ -22,7 +22,7 @@
 // `Secure` on unconditionally would silently drop the
 // cookie during local testing.
 
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   type InferOutput,
   isoTimestamp,
@@ -47,22 +47,22 @@ export const SESSION_COOKIE = "siwe_session"
 const NONCE_MAX_AGE_SECONDS = 5 * 60
 const SESSION_MAX_AGE_SECONDS = 24 * 60 * 60
 
-export const nonceCookieSchema = object({
+export const NonceCookieSchema = object({
   nonce: string(),
   issuedAt: pipe(string(), isoTimestamp()),
 })
 export type NonceCookie = InferOutput<
-  typeof nonceCookieSchema
+  typeof NonceCookieSchema
 >
 
-export const siweSessionSchema = object({
-  address: addressSchema,
+export const SiweSessionSchema = object({
+  address: AddressSchema,
   chainId: string(),
   issuedAt: pipe(string(), isoTimestamp()),
   expirationTime: pipe(string(), isoTimestamp()),
 })
 export type SiweSession = InferOutput<
-  typeof siweSessionSchema
+  typeof SiweSessionSchema
 >
 
 function is_secure(request: Request): boolean {
@@ -84,7 +84,7 @@ export async function set_nonce_cookie(
   env: Env,
   request: Request,
 ): Promise<string> {
-  const payload = parse(nonceCookieSchema, _payload)
+  const payload = parse(NonceCookieSchema, _payload)
   const value = await sign_cookie_value(
     payload,
     get_session_secret(env),
@@ -105,7 +105,7 @@ export async function read_nonce_cookie(
     get_session_secret(env),
   )
   if (!verified) return undefined
-  const result = safeParse(nonceCookieSchema, verified)
+  const result = safeParse(NonceCookieSchema, verified)
   return result.success ? result.output : undefined
 }
 
@@ -118,7 +118,7 @@ export async function set_session_cookie(
   env: Env,
   request: Request,
 ): Promise<string> {
-  const payload = parse(siweSessionSchema, _payload)
+  const payload = parse(SiweSessionSchema, _payload)
   const value = await sign_cookie_value(
     payload,
     get_session_secret(env),
@@ -139,7 +139,7 @@ export async function read_session_cookie(
     get_session_secret(env),
   )
   if (!verified) return undefined
-  const result = safeParse(siweSessionSchema, verified)
+  const result = safeParse(SiweSessionSchema, verified)
   if (!result.success) return undefined
   // Defense in depth: a long-lived session cookie may have
   // outlived the SIWE expirationTime field it embeds.

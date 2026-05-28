@@ -9,7 +9,7 @@ import { parse } from "valibot"
 
 import {
   type SiweMessage,
-  siweMessageSchema,
+  SiweMessageSchema,
 } from "./parse"
 
 const FIELDS = [
@@ -26,7 +26,7 @@ const FIELDS = [
 export function build_siwe_message(
   _fields: SiweMessage,
 ): string {
-  const fields = parse(siweMessageSchema, _fields)
+  const fields = parse(SiweMessageSchema, _fields)
   const lines: string[] = []
   lines.push(
     `${fields.domain} wants you to sign in with your Ethereum account:`,

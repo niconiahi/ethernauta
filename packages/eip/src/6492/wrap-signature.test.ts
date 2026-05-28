@@ -1,6 +1,6 @@
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -11,15 +11,15 @@ import { unwrap_signature } from "./unwrap-signature"
 import { wrap_signature } from "./wrap-signature"
 
 const FACTORY = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000beef",
 )
 const FACTORY_DATA = parse(
-  bytesSchema,
+  BytesSchema,
   "0xdeadbeefcafef00d00000000000000000000000000000000000000000000000000000000000000aa",
 )
 const SIGNATURE_INNER = parse(
-  bytesSchema,
+  BytesSchema,
   "0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ff",
 )
 
@@ -60,7 +60,7 @@ describe("wrap-signature.ts", () => {
   it("should round-trip an empty factoryData", () => {
     const wrapped = wrap_signature({
       factory: FACTORY,
-      factoryData: parse(bytesSchema, "0x"),
+      factoryData: parse(BytesSchema, "0x"),
       signature: SIGNATURE_INNER,
     })
     const out = unwrap_signature(wrapped)
@@ -72,19 +72,19 @@ describe("wrap-signature.ts", () => {
 
 describe("is-wrapped-signature.ts", () => {
   it("should reject a plain 65-byte signature", () => {
-    const raw = parse(bytesSchema, `0x${"11".repeat(65)}`)
+    const raw = parse(BytesSchema, `0x${"11".repeat(65)}`)
     expect(is_wrapped_signature(raw)).toBe(false)
   })
 
   it("should reject a too-short signature", () => {
     expect(
-      is_wrapped_signature(parse(bytesSchema, "0x1234")),
+      is_wrapped_signature(parse(BytesSchema, "0x1234")),
     ).toBe(false)
   })
 
   it("should accept any signature ending in the magic suffix", () => {
     const trailing = parse(
-      bytesSchema,
+      BytesSchema,
       `0xdeadbeef${MAGIC_BYTES.slice(2)}`,
     )
     expect(is_wrapped_signature(trailing)).toBe(true)
@@ -95,7 +95,7 @@ describe("unwrap-signature.ts", () => {
   it("should return null on a non-wrapped signature", () => {
     expect(
       unwrap_signature(
-        parse(bytesSchema, `0x${"22".repeat(65)}`),
+        parse(BytesSchema, `0x${"22".repeat(65)}`),
       ),
     ).toBeNull()
   })
@@ -104,7 +104,7 @@ describe("unwrap-signature.ts", () => {
     // Magic suffix is present but the body is too short to
     // hold a 96-byte (address, bytes, bytes) head.
     const bogus = parse(
-      bytesSchema,
+      BytesSchema,
       `0x1234${MAGIC_BYTES.slice(2)}`,
     )
     expect(unwrap_signature(bogus)).toBeNull()

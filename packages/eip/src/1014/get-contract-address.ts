@@ -2,8 +2,8 @@
 
 import {
   type Address,
-  addressSchema,
-  uintSchema,
+  AddressSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -14,12 +14,12 @@ import { keccak_256 } from "@noble/hashes/sha3"
 import type { InferOutput } from "valibot"
 import { bigint, object, parse, union } from "valibot"
 
-export const getContractAddressParametersSchema = object({
-  from: addressSchema,
-  nonce: union([uintSchema, bigint()]),
+export const GetContractAddressParametersSchema = object({
+  from: AddressSchema,
+  nonce: union([UintSchema, bigint()]),
 })
 export type GetContractAddressParameters = InferOutput<
-  typeof getContractAddressParametersSchema
+  typeof GetContractAddressParametersSchema
 >
 
 // CREATE address: keccak256(rlp([sender, nonce]))[12:].
@@ -29,7 +29,7 @@ export function get_contract_address(
   _parameters: GetContractAddressParameters,
 ): Address {
   const parameters = parse(
-    getContractAddressParametersSchema,
+    GetContractAddressParametersSchema,
     _parameters,
   )
   const sender = hex_to_bytes(parameters.from)
@@ -40,7 +40,7 @@ export function get_contract_address(
   const encoded = rlp_encode([sender, nonce])
   const digest = keccak_256(encoded)
   return parse(
-    addressSchema,
+    AddressSchema,
     bytes_to_hex(digest.slice(12)),
   )
 }

@@ -1,4 +1,4 @@
-import { uint64Schema } from "@ethernauta/core"
+import { Uint64Schema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -11,9 +11,9 @@ describe("fixed_array", () => {
     expect(codec.signature).toBe("uint64[3]")
     expect(codec.is_dynamic).toBe(false)
     const values = [
-      parse(uint64Schema, "0x1"),
-      parse(uint64Schema, "0x2"),
-      parse(uint64Schema, "0xff"),
+      parse(Uint64Schema, "0x1"),
+      parse(Uint64Schema, "0x2"),
+      parse(Uint64Schema, "0xff"),
     ]
     const bytes = codec.encode(values)
     expect(bytes.length).toBe(3 * 32)
@@ -27,7 +27,7 @@ describe("fixed_array", () => {
 
   it("rejects wrong-length input on encode", () => {
     const codec = fixed_array(uint64(), 3)
-    const v = (h: string) => parse(uint64Schema, h)
+    const v = (h: string) => parse(Uint64Schema, h)
     expect(() =>
       codec.encode([v("0x1"), v("0x2")]),
     ).toThrow()

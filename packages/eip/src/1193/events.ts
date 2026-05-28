@@ -12,22 +12,22 @@ import {
 
 import type { ProviderRpcError } from "./error"
 
-export const providerConnectInfoSchema = object({
+export const ProviderConnectInfoSchema = object({
   chainId: string(),
 })
 export type ProviderConnectInfo = InferOutput<
-  typeof providerConnectInfoSchema
+  typeof ProviderConnectInfoSchema
 >
 
-export const providerMessageSchema = object({
+export const ProviderMessageSchema = object({
   type: string(),
   data: unknown(),
 })
 export type ProviderMessage = InferOutput<
-  typeof providerMessageSchema
+  typeof ProviderMessageSchema
 >
 
-export const ethSubscriptionSchema = object({
+export const EthSubscriptionSchema = object({
   type: literal("eth_subscription"),
   data: object({
     subscription: string(),
@@ -35,19 +35,19 @@ export const ethSubscriptionSchema = object({
   }),
 })
 export type EthSubscription = InferOutput<
-  typeof ethSubscriptionSchema
+  typeof EthSubscriptionSchema
 >
 
-export const eventMapSchema = object({
-  connect: providerConnectInfoSchema,
+export const EventMapSchema = object({
+  connect: ProviderConnectInfoSchema,
   disconnect: custom<ProviderRpcError>(
     (value) => value instanceof Error,
   ),
   chainChanged: string(),
   accountsChanged: array(string()),
-  message: providerMessageSchema,
+  message: ProviderMessageSchema,
 })
-export type EventMap = InferOutput<typeof eventMapSchema>
+export type EventMap = InferOutput<typeof EventMapSchema>
 
 export type EventName = keyof EventMap
 

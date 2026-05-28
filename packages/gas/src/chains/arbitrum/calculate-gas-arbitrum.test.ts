@@ -1,5 +1,5 @@
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   encode_chain_id,
   type ResolvedReader,
@@ -34,7 +34,7 @@ describe("calculate_gas_arbitrum", () => {
     const fees = await calculate_gas_arbitrum({
       tx: {
         to: parse(
-          addressSchema,
+          AddressSchema,
           "0x0000000000000000000000000000000000000001",
         ),
       },

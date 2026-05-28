@@ -9,13 +9,13 @@
 // Equivalence with `apps/playground/app/lib/auth/reader.server.ts`
 // is intentional: identical `create_reader` config, identical
 // `verify_siwe_message` invocation, identical
-// `bytesSchema` / `addressSchema` parses. If this test goes
+// `BytesSchema` / `AddressSchema` parses. If this test goes
 // red, the playground flow is broken for the same reason.
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { build_siwe_message } from "@ethernauta/eip/4361"
@@ -66,7 +66,7 @@ const ADDRESS_BYTES = keccak_256(PUBLIC_KEY.slice(1)).slice(
   -20,
 )
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   bytes_to_hex(ADDRESS_BYTES),
 )
 
@@ -93,7 +93,7 @@ function personal_sign(message: string, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }
 
 const NOW = new Date()
@@ -166,7 +166,7 @@ describe_live(
       // Flip a byte in `r` to invalidate without changing length.
       const bytes = hex_to_bytes(good)
       bytes[0] = (bytes[0] ?? 0) ^ 0x01
-      const bad = parse(bytesSchema, bytes_to_hex(bytes))
+      const bad = parse(BytesSchema, bytes_to_hex(bytes))
       const resolved = reader({
         chain_id: SEPOLIA_CHAIN_ID,
       })

@@ -18,12 +18,12 @@
 // `eth_getCode` check.
 
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
-  callSchema,
+  CallSchema,
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
@@ -35,13 +35,13 @@ import { type InferOutput, object, parse } from "valibot"
 
 import { MAGIC_VALUE } from "./magic-value"
 
-export const verifyHashParametersSchema = object({
-  address: addressSchema,
-  hash: hash32Schema,
-  signature: bytesSchema,
+export const VerifyHashParametersSchema = object({
+  address: AddressSchema,
+  hash: Hash32Schema,
+  signature: BytesSchema,
 })
 export type VerifyHashParameters = InferOutput<
-  typeof verifyHashParametersSchema
+  typeof VerifyHashParametersSchema
 >
 
 function encode_is_valid_signature_calldata(
@@ -81,14 +81,14 @@ export function verify_hash(
     _context,
   ]: ResolvedReader): Promise<boolean> => {
     const parameters = parse(
-      verifyHashParametersSchema,
+      VerifyHashParametersSchema,
       _parameters,
     )
     const input = encode_is_valid_signature_calldata(
       parameters.hash,
       parameters.signature,
     )
-    const call = parse(callSchema, [
+    const call = parse(CallSchema, [
       "eth_call",
       [{ to: parameters.address, input }, "latest"],
     ])

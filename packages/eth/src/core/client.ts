@@ -1,20 +1,20 @@
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { literal, object, union } from "valibot"
 
-export const syncingProgressSchema = object({
-  startingBlock: uintSchema,
-  currentBlock: uintSchema,
-  highestBlock: uintSchema,
+export const SyncingProgressSchema = object({
+  startingBlock: UintSchema,
+  currentBlock: UintSchema,
+  highestBlock: UintSchema,
 })
 export type SyncingProgress = InferOutput<
-  typeof syncingProgressSchema
+  typeof SyncingProgressSchema
 >
 
-export const syncingStatusSchema = union([
-  syncingProgressSchema,
+export const SyncingStatusSchema = union([
+  SyncingProgressSchema,
   literal(false),
 ])
 export type SyncingStatus = InferOutput<
-  typeof syncingStatusSchema
+  typeof SyncingStatusSchema
 >

@@ -12,13 +12,13 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes,
-  bytesSchema,
-  byteSchema,
+  BytesSchema,
+  ByteSchema,
   type Uint,
   type Uint256,
-  uintSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   eth_estimateGas,
@@ -45,41 +45,41 @@ import { estimate_1559_fees } from "../../estimate-1559-fees"
 
 import { estimate_l1_fee } from "./estimate-l1-fee"
 
-const percentileSchema = pipe(
+const PercentileSchema = pipe(
   number(),
   minValue(0),
   maxValue(100),
 )
-const multiplierSchema = pipe(number(), minValue(1))
+const MultiplierSchema = pipe(number(), minValue(1))
 
-export const calculateGasOpStackParametersSchema = object({
+export const CalculateGasOpStackParametersSchema = object({
   tx: object({
-    to: addressSchema,
-    value: optional(uintSchema),
-    input: optional(bytesSchema),
+    to: AddressSchema,
+    value: optional(UintSchema),
+    input: optional(BytesSchema),
   }),
-  base_fee_multiplier: multiplierSchema,
-  priority_percentile: percentileSchema,
+  base_fee_multiplier: MultiplierSchema,
+  priority_percentile: PercentileSchema,
 })
 export type CalculateGasOpStackParameters = InferOutput<
-  typeof calculateGasOpStackParametersSchema
+  typeof CalculateGasOpStackParametersSchema
 >
 
-export const calculateGasOpStackFeesSchema = object({
+export const CalculateGasOpStackFeesSchema = object({
   kind: literal("op-stack"),
-  base_fee_per_gas: uintSchema,
-  max_priority_fee_per_gas: uintSchema,
-  max_fee_per_gas: uintSchema,
-  l1_fee: uintSchema,
+  base_fee_per_gas: UintSchema,
+  max_priority_fee_per_gas: UintSchema,
+  max_fee_per_gas: UintSchema,
+  l1_fee: UintSchema,
 })
 export type CalculateGasOpStackFees = InferOutput<
-  typeof calculateGasOpStackFeesSchema
+  typeof CalculateGasOpStackFeesSchema
 >
 
-const ZERO_UINT: Uint = parse(uintSchema, "0x0")
-const EMPTY_BYTES: Bytes = parse(bytesSchema, "0x")
-const TYPE_2: InferOutput<typeof byteSchema> = parse(
-  byteSchema,
+const ZERO_UINT: Uint = parse(UintSchema, "0x0")
+const EMPTY_BYTES: Bytes = parse(BytesSchema, "0x")
+const TYPE_2: InferOutput<typeof ByteSchema> = parse(
+  ByteSchema,
   "0x2",
 )
 // EIP-155 chain references are decimal strings ("1", "8453", …).
@@ -87,7 +87,7 @@ const TYPE_2: InferOutput<typeof byteSchema> = parse(
 // uint schema's hex shape so the encoder consumes a branded value.
 function reference_to_uint(_reference: string): Uint {
   const big = BigInt(_reference)
-  return parse(uintSchema, `0x${big.toString(16)}`)
+  return parse(UintSchema, `0x${big.toString(16)}`)
 }
 
 export function calculate_gas_op_stack(
@@ -97,7 +97,7 @@ export function calculate_gas_op_stack(
     resolved: ResolvedReader,
   ): Promise<CalculateGasOpStackFees> => {
     const parameters = parse(
-      calculateGasOpStackParametersSchema,
+      CalculateGasOpStackParametersSchema,
       _parameters,
     )
     const { reference } = decode_chain_id(
@@ -145,11 +145,11 @@ export function calculate_gas_op_stack(
     // requires compact form. Round-trip through BigInt to drop
     // leading zeros so the result-schema's stricter brand attaches.
     const l1_fee = parse(
-      uintSchema,
+      UintSchema,
       `0x${BigInt(l1_fee_256).toString(16)}`,
     )
 
-    return parse(calculateGasOpStackFeesSchema, {
+    return parse(CalculateGasOpStackFeesSchema, {
       kind: "op-stack",
       base_fee_per_gas: fees_1559.base_fee_per_gas,
       max_priority_fee_per_gas:

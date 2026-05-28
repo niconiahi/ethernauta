@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-1559
 
-import { type Uint, uintSchema } from "@ethernauta/core"
+import { type Uint, UintSchema } from "@ethernauta/core"
 import { eth_feeHistory } from "@ethernauta/eth"
 import type {
   Readable,
@@ -18,26 +18,26 @@ import {
   tupleWithRest,
 } from "valibot"
 
-const percentileSchema = pipe(
+const PercentileSchema = pipe(
   number(),
   minValue(0),
   maxValue(100),
 )
-export const estimatePriorityFeeParametersSchema = object({
-  block_count: uintSchema,
-  percentile: percentileSchema,
+export const EstimatePriorityFeeParametersSchema = object({
+  block_count: UintSchema,
+  percentile: PercentileSchema,
 })
 export type EstimatePriorityFeeParameters = InferOutput<
-  typeof estimatePriorityFeeParametersSchema
+  typeof EstimatePriorityFeeParametersSchema
 >
 
-const rewardRowSchema = tupleWithRest(
-  [uintSchema],
-  uintSchema,
+const RewardRowSchema = tupleWithRest(
+  [UintSchema],
+  UintSchema,
 )
-const rewardMatrixSchema = tupleWithRest(
-  [rewardRowSchema],
-  rewardRowSchema,
+const RewardMatrixSchema = tupleWithRest(
+  [RewardRowSchema],
+  RewardRowSchema,
 )
 
 export function estimate_priority_fee(
@@ -47,7 +47,7 @@ export function estimate_priority_fee(
     resolved: ResolvedReader,
   ): Promise<Uint> => {
     const parameters = parse(
-      estimatePriorityFeeParametersSchema,
+      EstimatePriorityFeeParametersSchema,
       _parameters,
     )
     const fee_history = await eth_feeHistory({
@@ -56,12 +56,12 @@ export function estimate_priority_fee(
       rewardPercentiles: [parameters.percentile],
     })(resolved)
     const matrix = parse(
-      rewardMatrixSchema,
+      RewardMatrixSchema,
       fee_history.reward,
     )
     const samples = matrix.map((row) => BigInt(row[0]))
     const sum = samples.reduce((a, b) => a + b, 0n)
     const average = sum / BigInt(samples.length)
-    return parse(uintSchema, bigint_to_hex(average))
+    return parse(UintSchema, bigint_to_hex(average))
   }
 }

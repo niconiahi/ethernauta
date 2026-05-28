@@ -21,7 +21,7 @@
 //      response carries both Set-Cookie headers so the
 //      client lands signed-in on the next navigation.
 
-import { bytesSchema } from "@ethernauta/core"
+import { BytesSchema } from "@ethernauta/core"
 import { verify_siwe_message } from "@ethernauta/crypto"
 import { parse_siwe_message } from "@ethernauta/eip/4361"
 import { encode_chain_id } from "@ethernauta/transport"
@@ -34,9 +34,9 @@ import {
 } from "../../../../lib/auth/session.server"
 import type { Route } from "./+types/verify"
 
-const verifyBodySchema = object({
+const VerifyBodySchema = object({
   message: string(),
-  signature: bytesSchema,
+  signature: BytesSchema,
 })
 
 export async function action({
@@ -47,7 +47,7 @@ export async function action({
     return new Response(null, { status: 405 })
   }
   const env = context.cloudflare.env
-  const body = parse(verifyBodySchema, await request.json())
+  const body = parse(VerifyBodySchema, await request.json())
   const nonce = await read_nonce_cookie(request, env)
   if (!nonce) return json_error(401, "nonce_missing")
   const fields = parse_siwe_message(body.message)

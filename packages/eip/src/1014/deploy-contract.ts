@@ -3,7 +3,7 @@ import {
   type AbiCodec,
   encode_constructor_call,
 } from "@ethernauta/abi"
-import { type Bytes, bytesSchema } from "@ethernauta/core"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
@@ -33,7 +33,7 @@ export function deploy_contract<
 }): Signable<Bytes> {
   return async ([signer, _context]: ResolvedSigner) => {
     const bytecode = hex_to_bytes(
-      parse(bytesSchema, _parameters.bytecode),
+      parse(BytesSchema, _parameters.bytecode),
     )
     const calldata = encode_constructor_call({
       bytecode,
@@ -46,6 +46,6 @@ export function deploy_contract<
         input: bytes_to_hex(calldata),
       },
     ])
-    return parse(bytesSchema, signed)
+    return parse(BytesSchema, signed)
   }
 }

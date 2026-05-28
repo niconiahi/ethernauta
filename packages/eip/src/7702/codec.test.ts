@@ -1,9 +1,9 @@
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
@@ -22,30 +22,30 @@ import type {
 } from "./transaction"
 
 const AUTH: AuthorizationSigned = {
-  chainId: parse(uintSchema, "0x1"),
+  chainId: parse(UintSchema, "0x1"),
   address: parse(
-    addressSchema,
+    AddressSchema,
     "0x1234567890123456789012345678901234567890",
   ),
-  nonce: parse(uintSchema, "0x0"),
-  yParity: parse(uintSchema, "0x0"),
-  r: parse(uintSchema, "0xabcd"),
-  s: parse(uintSchema, "0xef01"),
+  nonce: parse(UintSchema, "0x0"),
+  yParity: parse(UintSchema, "0x0"),
+  r: parse(UintSchema, "0xabcd"),
+  s: parse(UintSchema, "0xef01"),
 }
 
 const BASE: Transaction7702Unsigned = {
-  type: parse(byteSchema, "0x4"),
-  chainId: parse(uintSchema, "0x1"),
-  nonce: parse(uintSchema, "0x0"),
-  maxPriorityFeePerGas: parse(uintSchema, "0x3b9aca00"),
-  maxFeePerGas: parse(uintSchema, "0x6fc23ac00"),
-  gas: parse(uintSchema, "0x186a0"),
+  type: parse(ByteSchema, "0x4"),
+  chainId: parse(UintSchema, "0x1"),
+  nonce: parse(UintSchema, "0x0"),
+  maxPriorityFeePerGas: parse(UintSchema, "0x3b9aca00"),
+  maxFeePerGas: parse(UintSchema, "0x6fc23ac00"),
+  gas: parse(UintSchema, "0x186a0"),
   to: parse(
-    addressSchema,
+    AddressSchema,
     "0xfa3a1d0c75a8d44a8dcd8c8dfcdcd52dbfdab845",
   ),
-  value: parse(uintSchema, "0x0"),
-  input: parse(bytesSchema, "0xa9059cbb"),
+  value: parse(UintSchema, "0x0"),
+  input: parse(BytesSchema, "0xa9059cbb"),
   accessList: [],
   authorizationList: [AUTH],
 }
@@ -72,9 +72,9 @@ describe("codec.ts — encode", () => {
     )
     const signed: Transaction7702Signed = {
       ...BASE,
-      yParity: parse(uintSchema, "0x0"),
-      r: parse(uintSchema, "0xabcd"),
-      s: parse(uintSchema, "0xef01"),
+      yParity: parse(UintSchema, "0x0"),
+      r: parse(UintSchema, "0xabcd"),
+      s: parse(UintSchema, "0xef01"),
     }
     const signed_hex = bytes_to_hex(
       encode_transaction_signed(signed),
@@ -118,13 +118,13 @@ describe("codec.ts — decode", () => {
   it("should round-trip a signed transaction", () => {
     const signed: Transaction7702Signed = {
       ...BASE,
-      yParity: parse(uintSchema, "0x1"),
+      yParity: parse(UintSchema, "0x1"),
       r: parse(
-        uintSchema,
+        UintSchema,
         "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
       ),
       s: parse(
-        uintSchema,
+        UintSchema,
         "0xcafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe",
       ),
     }
@@ -139,12 +139,12 @@ describe("codec.ts — decode", () => {
       accessList: [
         {
           address: parse(
-            addressSchema,
+            AddressSchema,
             "0xfa3a1d0c75a8d44a8dcd8c8dfcdcd52dbfdab845",
           ),
           storageKeys: [
-            parse(hash32Schema, `0x${"00".repeat(31)}01`),
-            parse(hash32Schema, `0x${"00".repeat(31)}02`),
+            parse(Hash32Schema, `0x${"00".repeat(31)}01`),
+            parse(Hash32Schema, `0x${"00".repeat(31)}02`),
           ],
         },
       ],
@@ -179,9 +179,9 @@ describe("codec.ts — decode", () => {
   it("should reject unsigned-decode when the body has 13 fields", () => {
     const signed: Transaction7702Signed = {
       ...BASE,
-      yParity: parse(uintSchema, "0x0"),
-      r: parse(uintSchema, "0x1"),
-      s: parse(uintSchema, "0x1"),
+      yParity: parse(UintSchema, "0x0"),
+      r: parse(UintSchema, "0x1"),
+      s: parse(UintSchema, "0x1"),
     }
     const encoded = encode_transaction_signed(signed)
     expect(() =>

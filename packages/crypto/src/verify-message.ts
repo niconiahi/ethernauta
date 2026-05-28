@@ -20,9 +20,9 @@
 
 import type { Hash32 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import {
@@ -46,13 +46,13 @@ import {
 
 import { verify_hash_deployed } from "./verify-hash-deployed"
 
-export const verifyMessageParametersSchema = object({
-  address: addressSchema,
+export const VerifyMessageParametersSchema = object({
+  address: AddressSchema,
   message: union([string(), instance(Uint8Array)]),
-  signature: bytesSchema,
+  signature: BytesSchema,
 })
 export type VerifyMessageParameters = InferOutput<
-  typeof verifyMessageParametersSchema
+  typeof VerifyMessageParametersSchema
 >
 
 function digest_of(
@@ -60,7 +60,7 @@ function digest_of(
 ): Hash32 {
   const prefixed = build_personal_message(message)
   return parse(
-    hash32Schema,
+    Hash32Schema,
     bytes_to_hex(keccak_256(prefixed)),
   )
 }
@@ -72,7 +72,7 @@ export function verify_message_deployed(
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyMessageParametersSchema,
+      VerifyMessageParametersSchema,
       _parameters,
     )
     return verify_hash_deployed(
@@ -91,7 +91,7 @@ export function verify_message_universal(
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyMessageParametersSchema,
+      VerifyMessageParametersSchema,
       _parameters,
     )
     return verify_hash_6492({
@@ -109,7 +109,7 @@ export function verify_message(
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyMessageParametersSchema,
+      VerifyMessageParametersSchema,
       _parameters,
     )
     const verify = is_wrapped_signature(

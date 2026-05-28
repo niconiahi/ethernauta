@@ -1,10 +1,10 @@
 import type { InferOutput } from "valibot"
 import { tuple, union } from "valibot"
 
-import { methodSchema, parametersSchema } from "./json-rpc"
+import { MethodSchema, ParametersSchema } from "./json-rpc"
 
-export const callSchema = union([
-  tuple([methodSchema, parametersSchema]),
-  tuple([methodSchema]),
+export const CallSchema = union([
+  tuple([MethodSchema, ParametersSchema]),
+  tuple([MethodSchema]),
 ])
-export type Call = InferOutput<typeof callSchema>
+export type Call = InferOutput<typeof CallSchema>

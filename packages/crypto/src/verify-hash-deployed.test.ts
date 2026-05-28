@@ -4,9 +4,9 @@
 // the eth_getCode branch.
 
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import { MAGIC_VALUE } from "@ethernauta/eip/1271"
 import type {
@@ -33,15 +33,15 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const EOA_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 const CONTRACT_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000c0de",
 )
 const OTHER_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x1234567890123456789012345678901234567890",
 )
 const CHAIN_ID = "eip155:1"
@@ -59,7 +59,7 @@ function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
     )
   }
   out[64] = 27 + sig.recovery
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }
 
 function resolved_with(transport: Http): ResolvedReader {
@@ -73,7 +73,7 @@ function ok(result: unknown) {
 const DIGEST = keccak_256(
   new TextEncoder().encode("verify-hash-deployed"),
 )
-const HASH = parse(hash32Schema, bytes_to_hex(DIGEST))
+const HASH = parse(Hash32Schema, bytes_to_hex(DIGEST))
 const VALID_SIGNATURE = sign_to_hex(DIGEST, PRIVATE_KEY)
 
 describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
@@ -112,7 +112,7 @@ describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
     const result = await verify_hash_deployed(
       EOA_ADDRESS,
       HASH,
-      parse(bytesSchema, "0xdeadbeef"),
+      parse(BytesSchema, "0xdeadbeef"),
       resolved_with(transport),
     )
     expect(result).toBe(false)

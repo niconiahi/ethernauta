@@ -4,9 +4,9 @@ export { wallet_getPermissions } from "./method/wallet_getPermissions"
 export { wallet_requestPermissions } from "./method/wallet_requestPermissions"
 export {
   type Caveat,
-  caveatSchema,
+  CaveatSchema,
   type Permission,
-  permissionSchema,
+  PermissionSchema,
   type RequestedPermissions,
-  requestedPermissionSchema,
+  RequestedPermissionSchema,
 } from "./permission"

@@ -6,8 +6,8 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  bytes32Schema,
-  bytesSchema,
+  Bytes32Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -31,15 +31,15 @@ export const TEXT_SIGNATURE = {
   names: ["node", "key"],
 }
 
-const parametersSchema = union([
-  tuple([bytes32Schema, string()]),
-  object({ node: bytes32Schema, key: string() }),
+const ParametersSchema = union([
+  tuple([Bytes32Schema, string()]),
+  object({ node: Bytes32Schema, key: string() }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function text(_parameters: Parameters) {
   return (context: ContractContext): Callable<string> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.node, parameters.key] as const)
@@ -51,7 +51,7 @@ export function text(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): string => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,

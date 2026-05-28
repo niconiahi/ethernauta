@@ -1,10 +1,10 @@
 import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import {
   address_to_bytes32,
@@ -28,7 +28,7 @@ const SEPOLIA_CHAIN_ID = encode_chain_id({
 })
 
 const SEPOLIA_REF_HEX = parse(
-  uint256Schema,
+  Uint256Schema,
   `0x${eip155_11155111.chainId.toString(16)}`,
 )
 
@@ -36,13 +36,13 @@ const OP_SEPOLIA_REF_HEX = "0xaa37dc" as const
 
 // Sepolia USDC (Circle's testnet deployment).
 const USDC_SEPOLIA = parse(
-  addressSchema,
+  AddressSchema,
   "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
 )
 
 // OP Sepolia USDC.
 const USDC_OP_SEPOLIA = parse(
-  addressSchema,
+  AddressSchema,
   "0x5fd84259d66Cd46123540766Be93DFE6D43130D7",
 )
 
@@ -58,7 +58,7 @@ const DEFAULT_SETTLER =
 // canonical 7683 ref impl uses keccak("ERC7683") — replace
 // with the type your settler expects.
 const ORDER_DATA_TYPE = parse(
-  bytes32Schema,
+  Bytes32Schema,
   `0x${"00".repeat(32)}`,
 )
 
@@ -90,8 +90,8 @@ export function CrossChain7683Demo() {
     set_error(null)
     set_signature(null)
     try {
-      const settler_address = parse(addressSchema, settler)
-      const user_address = parse(addressSchema, user)
+      const settler_address = parse(AddressSchema, settler)
+      const user_address = parse(AddressSchema, user)
       const built = build_gasless_order({
         originSettler: settler_address,
         user: user_address,
@@ -104,7 +104,7 @@ export function CrossChain7683Demo() {
         // is real but the on-chain submission won't succeed
         // until orderData matches the settler's schema.
         orderData: parse(
-          bytesSchema,
+          BytesSchema,
           `0x${USDC_SEPOLIA.slice(2).padStart(64, "0")}${USDC_OP_SEPOLIA.slice(2).padStart(64, "0")}${OP_SEPOLIA_REF_HEX.slice(2).padStart(64, "0")}`.toLowerCase(),
         ),
         window: {
@@ -154,7 +154,7 @@ export function CrossChain7683Demo() {
           value={
             user
               ? address_to_bytes32(
-                  parse(addressSchema, user),
+                  parse(AddressSchema, user),
                 )
               : "(connect)"
           }

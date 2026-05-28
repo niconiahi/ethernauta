@@ -8,5 +8,5 @@ function isAssetName(input: unknown): boolean {
     /^[-:a-zA-Z0-9]{5,73}$/.test(input)
   )
 }
-export const assetNameSchema = custom<string>(isAssetName)
-export type AssetName = InferOutput<typeof assetNameSchema>
+export const AssetNameSchema = custom<string>(isAssetName)
+export type AssetName = InferOutput<typeof AssetNameSchema>

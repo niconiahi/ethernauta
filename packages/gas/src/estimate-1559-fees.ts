@@ -1,6 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-1559
 
-import { type Uint, uintSchema } from "@ethernauta/core"
+import { type Uint, UintSchema } from "@ethernauta/core"
 import { eth_feeHistory } from "@ethernauta/eth"
 import type {
   Readable,
@@ -18,47 +18,47 @@ import {
   tupleWithRest,
 } from "valibot"
 
-const percentileSchema = pipe(
+const PercentileSchema = pipe(
   number(),
   minValue(0),
   maxValue(100),
 )
-const multiplierSchema = pipe(number(), minValue(1))
+const MultiplierSchema = pipe(number(), minValue(1))
 
-export const estimate1559FeesParametersSchema = object({
-  base_fee_multiplier: multiplierSchema,
-  priority_percentile: percentileSchema,
+export const Estimate1559FeesParametersSchema = object({
+  base_fee_multiplier: MultiplierSchema,
+  priority_percentile: PercentileSchema,
 })
 export type Estimate1559FeesParameters = InferOutput<
-  typeof estimate1559FeesParametersSchema
+  typeof Estimate1559FeesParametersSchema
 >
 
-export const fees1559Schema = object({
-  base_fee_per_gas: uintSchema,
-  max_priority_fee_per_gas: uintSchema,
-  max_fee_per_gas: uintSchema,
+export const Fees1559Schema = object({
+  base_fee_per_gas: UintSchema,
+  max_priority_fee_per_gas: UintSchema,
+  max_fee_per_gas: UintSchema,
 })
-export type Fees1559 = InferOutput<typeof fees1559Schema>
+export type Fees1559 = InferOutput<typeof Fees1559Schema>
 
 // Sample window matches viem's default: enough blocks to
 // smooth single-block volatility, few enough to react quickly.
-const SAMPLE_BLOCK_COUNT: Uint = parse(uintSchema, "0x4")
+const SAMPLE_BLOCK_COUNT: Uint = parse(UintSchema, "0x4")
 // Fixed-point precision for the base-fee × multiplier step.
 // 1e6 keeps the multiplier resolution at 6 decimal digits
 // while staying within safe-integer math.
 const MULTIPLIER_PRECISION = 1_000_000n
 
-const rewardRowSchema = tupleWithRest(
-  [uintSchema],
-  uintSchema,
+const RewardRowSchema = tupleWithRest(
+  [UintSchema],
+  UintSchema,
 )
-const rewardMatrixSchema = tupleWithRest(
-  [rewardRowSchema],
-  rewardRowSchema,
+const RewardMatrixSchema = tupleWithRest(
+  [RewardRowSchema],
+  RewardRowSchema,
 )
-const baseFeeListSchema = tupleWithRest(
-  [uintSchema],
-  uintSchema,
+const BaseFeeListSchema = tupleWithRest(
+  [UintSchema],
+  UintSchema,
 )
 
 export function estimate_1559_fees(
@@ -68,7 +68,7 @@ export function estimate_1559_fees(
     resolved: ResolvedReader,
   ): Promise<Fees1559> => {
     const parameters = parse(
-      estimate1559FeesParametersSchema,
+      Estimate1559FeesParametersSchema,
       _parameters,
     )
     const fee_history = await eth_feeHistory({
@@ -77,7 +77,7 @@ export function estimate_1559_fees(
       rewardPercentiles: [parameters.priority_percentile],
     })(resolved)
     const matrix = parse(
-      rewardMatrixSchema,
+      RewardMatrixSchema,
       fee_history.reward,
     )
     const samples = matrix.map((row) => BigInt(row[0]))
@@ -87,7 +87,7 @@ export function estimate_1559_fees(
     // entry is the next-block predicted fee. Reverse so the
     // tuple schema can pin its non-emptiness at [0].
     const reversed_base_fees = parse(
-      baseFeeListSchema,
+      BaseFeeListSchema,
       [...fee_history.baseFeePerGas].reverse(),
     )
     const base = BigInt(reversed_base_fees[0])
@@ -100,7 +100,7 @@ export function estimate_1559_fees(
     const max_fee =
       (base * scaled_multiplier) / MULTIPLIER_PRECISION +
       priority
-    return parse(fees1559Schema, {
+    return parse(Fees1559Schema, {
       base_fee_per_gas: bigint_to_hex(base),
       max_priority_fee_per_gas: bigint_to_hex(priority),
       max_fee_per_gas: bigint_to_hex(max_fee),

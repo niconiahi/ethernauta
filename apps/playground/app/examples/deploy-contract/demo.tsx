@@ -1,8 +1,8 @@
 import "./demo.css"
 import {
   type Address,
-  addressSchema,
-  bytes32Schema,
+  AddressSchema,
+  Bytes32Schema,
 } from "@ethernauta/core"
 import {
   get_contract_address,
@@ -17,22 +17,22 @@ import { Button } from "../../components/button"
 // real init code (creation bytecode + constructor calldata)
 // before passing it as `bytecodeHash`.
 const BYTECODE_HASH = parse(
-  bytes32Schema,
+  Bytes32Schema,
   "0xd6fb717f7e270a360f5093ce6a7a3752183e89c9a9afe5c0cb54b204a3902895",
 )
 
 const CREATE_FROM = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000042",
 )
 const CREATE_NONCE = 7n
 
 const CREATE2_FROM = parse(
-  addressSchema,
+  AddressSchema,
   "0x00000000000000000000000000000000deadbeef",
 )
 const CREATE2_SALT = parse(
-  bytes32Schema,
+  Bytes32Schema,
   "0x00000000000000000000000000000000000000000000000000000000cafebabe",
 )
 

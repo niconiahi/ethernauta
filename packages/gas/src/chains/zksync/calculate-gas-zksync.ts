@@ -3,9 +3,9 @@
 // matches the discriminated-union shape the dispatcher returns.
 
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   Readable,
@@ -16,27 +16,27 @@ import { literal, object, optional, parse } from "valibot"
 
 import { zks_estimate_fee } from "./zks-estimate-fee"
 
-export const calculateGasZksyncParametersSchema = object({
+export const CalculateGasZksyncParametersSchema = object({
   tx: object({
-    from: optional(addressSchema),
-    to: addressSchema,
-    value: optional(uintSchema),
-    input: optional(bytesSchema),
+    from: optional(AddressSchema),
+    to: AddressSchema,
+    value: optional(UintSchema),
+    input: optional(BytesSchema),
   }),
 })
 export type CalculateGasZksyncParameters = InferOutput<
-  typeof calculateGasZksyncParametersSchema
+  typeof CalculateGasZksyncParametersSchema
 >
 
-export const calculateGasZksyncFeesSchema = object({
+export const CalculateGasZksyncFeesSchema = object({
   kind: literal("zksync"),
-  gas_limit: uintSchema,
-  gas_per_pubdata_limit: uintSchema,
-  max_fee_per_gas: uintSchema,
-  max_priority_fee_per_gas: uintSchema,
+  gas_limit: UintSchema,
+  gas_per_pubdata_limit: UintSchema,
+  max_fee_per_gas: UintSchema,
+  max_priority_fee_per_gas: UintSchema,
 })
 export type CalculateGasZksyncFees = InferOutput<
-  typeof calculateGasZksyncFeesSchema
+  typeof CalculateGasZksyncFeesSchema
 >
 
 export function calculate_gas_zksync(
@@ -46,13 +46,13 @@ export function calculate_gas_zksync(
     resolved: ResolvedReader,
   ): Promise<CalculateGasZksyncFees> => {
     const parameters = parse(
-      calculateGasZksyncParametersSchema,
+      CalculateGasZksyncParametersSchema,
       _parameters,
     )
     const fee = await zks_estimate_fee(parameters.tx)(
       resolved,
     )
-    return parse(calculateGasZksyncFeesSchema, {
+    return parse(CalculateGasZksyncFeesSchema, {
       kind: "zksync",
       ...fee,
     })

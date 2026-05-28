@@ -12,8 +12,8 @@ import {
 import { parse } from "valibot"
 import type { Address } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
@@ -35,13 +35,13 @@ export function getL1RewardRecipient() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Address => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(addressSchema, decoded)
+        return parse(AddressSchema, decoded)
       },
     }
   }

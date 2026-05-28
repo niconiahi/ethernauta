@@ -4,10 +4,10 @@ export { deploy_contract } from "./deploy-contract"
 export {
   type GetContractAddressParameters,
   get_contract_address,
-  getContractAddressParametersSchema,
+  GetContractAddressParametersSchema,
 } from "./get-contract-address"
 export {
   type GetCreate2AddressParameters,
   get_create2_address,
-  getCreate2AddressParametersSchema,
+  GetCreate2AddressParametersSchema,
 } from "./get-create2-address"

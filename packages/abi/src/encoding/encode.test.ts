@@ -1,7 +1,7 @@
 import {
-  addressSchema,
-  uint64Schema,
-  uint256Schema,
+  AddressSchema,
+  Uint64Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
@@ -65,7 +65,7 @@ describe("encode.ts", () => {
         args: [address(), string_()] as const,
         values: [
           parse(
-            addressSchema,
+            AddressSchema,
             "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           ),
           "hello",
@@ -115,10 +115,10 @@ describe("encode.ts", () => {
         args: [address(), uint64()] as const,
         values: [
           parse(
-            addressSchema,
+            AddressSchema,
             "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           ),
-          parse(uint64Schema, "0xde0b6b3a7640000"),
+          parse(Uint64Schema, "0xde0b6b3a7640000"),
         ],
       })
       expect(result).toHaveLength(bytecode.length + 64)
@@ -135,10 +135,10 @@ describe("encode.ts", () => {
         args: [address(), uint256()] as const,
         values: [
           parse(
-            addressSchema,
+            AddressSchema,
             "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           ),
-          parse(uint256Schema, "0xde0b6b3a7640000"), // 1e18 as hex
+          parse(Uint256Schema, "0xde0b6b3a7640000"), // 1e18 as hex
         ],
       })
       expect(bytes_to_hex(result).slice(0, 10)).toBe(

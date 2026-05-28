@@ -7,12 +7,12 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint8Schema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint8Schema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -47,27 +47,27 @@ export const PERMIT_SIGNATURE = {
   ],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    addressSchema,
-    addressSchema,
-    uint256Schema,
-    uint256Schema,
-    uint8Schema,
-    bytes32Schema,
-    bytes32Schema,
+    AddressSchema,
+    AddressSchema,
+    Uint256Schema,
+    Uint256Schema,
+    Uint8Schema,
+    Bytes32Schema,
+    Bytes32Schema,
   ]),
   object({
-    owner: addressSchema,
-    spender: addressSchema,
-    value: uint256Schema,
-    deadline: uint256Schema,
-    v: uint8Schema,
-    r: bytes32Schema,
-    s: bytes32Schema,
+    owner: AddressSchema,
+    spender: AddressSchema,
+    value: Uint256Schema,
+    deadline: Uint256Schema,
+    v: Uint8Schema,
+    r: Bytes32Schema,
+    s: Bytes32Schema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function permit(
   _parameters: Parameters,
@@ -80,7 +80,7 @@ export function permit(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -112,8 +112,8 @@ export function permit(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: PERMIT_SIGNATURE,
         },

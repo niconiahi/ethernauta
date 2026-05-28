@@ -12,8 +12,8 @@ import {
 import { parse } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
 import {
-  bytesSchema,
-  uint256Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
@@ -46,7 +46,7 @@ export function getPricesInWei() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): [
@@ -62,12 +62,12 @@ export function getPricesInWei() {
           result,
         )
         return [
-          parse(uint256Schema, decoded[0]),
-          parse(uint256Schema, decoded[1]),
-          parse(uint256Schema, decoded[2]),
-          parse(uint256Schema, decoded[3]),
-          parse(uint256Schema, decoded[4]),
-          parse(uint256Schema, decoded[5]),
+          parse(Uint256Schema, decoded[0]),
+          parse(Uint256Schema, decoded[1]),
+          parse(Uint256Schema, decoded[2]),
+          parse(Uint256Schema, decoded[3]),
+          parse(Uint256Schema, decoded[4]),
+          parse(Uint256Schema, decoded[5]),
         ]
       },
     }

@@ -7,7 +7,7 @@ import type {
 import { parse } from "valibot"
 import {
   type CallsStatus,
-  callsStatusSchema,
+  CallsStatusSchema,
 } from "../capabilities"
 
 export function wallet_getCallsStatus(
@@ -18,6 +18,6 @@ export function wallet_getCallsStatus(
       "wallet_getCallsStatus",
       _parameters,
     )
-    return parse(callsStatusSchema, JSON.parse(result))
+    return parse(CallsStatusSchema, JSON.parse(result))
   }
 }

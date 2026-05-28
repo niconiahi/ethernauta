@@ -8,5 +8,5 @@ function isAssetType(input: unknown): boolean {
     /^[-:/a-zA-Z0-9]{11,115}$/.test(input)
   )
 }
-export const assetTypeSchema = custom<string>(isAssetType)
-export type AssetType = InferOutput<typeof assetTypeSchema>
+export const AssetTypeSchema = custom<string>(isAssetType)
+export type AssetType = InferOutput<typeof AssetTypeSchema>

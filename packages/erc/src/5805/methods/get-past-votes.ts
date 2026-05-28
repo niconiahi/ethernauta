@@ -6,9 +6,9 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes, Uint256 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -26,18 +26,18 @@ export const GET_PAST_VOTES_SIGNATURE = {
   names: ["account", "timepoint"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema, uint256Schema]),
+const ParametersSchema = union([
+  tuple([AddressSchema, Uint256Schema]),
   object({
-    account: addressSchema,
-    timepoint: uint256Schema,
+    account: AddressSchema,
+    timepoint: Uint256Schema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function getPastVotes(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([
@@ -52,13 +52,13 @@ export function getPastVotes(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint256Schema, decoded)
+        return parse(Uint256Schema, decoded)
       },
     }
   }

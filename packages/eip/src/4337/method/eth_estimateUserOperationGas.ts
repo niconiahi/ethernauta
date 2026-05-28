@@ -3,7 +3,7 @@
 
 import type { Address } from "@ethernauta/core"
 import {
-  callSchema,
+  CallSchema,
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
@@ -11,9 +11,9 @@ import { parse } from "valibot"
 
 import {
   type EstimateUserOperationGasResult,
-  estimateUserOperationGasResultSchema,
+  EstimateUserOperationGasResultSchema,
   type UserOperation,
-  userOperationSchema,
+  UserOperationSchema,
 } from "../types"
 
 export function eth_estimateUserOperationGas({
@@ -28,8 +28,8 @@ export function eth_estimateUserOperationGas({
     _context,
   ]: ResolvedReader): Promise<EstimateUserOperationGasResult> => {
     const method = "eth_estimateUserOperationGas"
-    const validated = parse(userOperationSchema, op)
-    const call = parse(callSchema, [
+    const validated = parse(UserOperationSchema, op)
+    const call = parse(CallSchema, [
       method,
       [validated, entryPoint],
     ])
@@ -40,7 +40,7 @@ export function eth_estimateUserOperationGas({
       throw new Error(response.error.message)
     }
     return parse(
-      estimateUserOperationGasResultSchema,
+      EstimateUserOperationGasResultSchema,
       response.result,
     )
   }

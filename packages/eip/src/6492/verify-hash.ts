@@ -10,12 +10,12 @@
 // response — surfaces as `false`.
 
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
-  callSchema,
+  CallSchema,
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
@@ -28,13 +28,13 @@ import { type InferOutput, object, parse } from "valibot"
 import { encode_address_bytes32_bytes } from "./abi"
 import { VALIDATOR_BYTECODE } from "./validator-bytecode"
 
-export const verifyHashParametersSchema = object({
-  address: addressSchema,
-  hash: hash32Schema,
-  signature: bytesSchema,
+export const VerifyHashParametersSchema = object({
+  address: AddressSchema,
+  hash: Hash32Schema,
+  signature: BytesSchema,
 })
 export type VerifyHashParameters = InferOutput<
-  typeof verifyHashParametersSchema
+  typeof VerifyHashParametersSchema
 >
 
 function build_calldata(
@@ -60,11 +60,11 @@ export function verify_hash(
     _context,
   ]: ResolvedReader): Promise<boolean> => {
     const parameters = parse(
-      verifyHashParametersSchema,
+      VerifyHashParametersSchema,
       _parameters,
     )
     const input = build_calldata(parameters)
-    const call = parse(callSchema, [
+    const call = parse(CallSchema, [
       "eth_call",
       [{ input }, "latest"],
     ])

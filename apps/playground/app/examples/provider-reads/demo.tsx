@@ -5,7 +5,7 @@ import "./demo.css"
 // as a public-RPC reader, different transport-construction
 // line.
 
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   eth_blockNumber,
   eth_chainId,
@@ -148,7 +148,7 @@ export function ProviderReadsDemo() {
             if (!reader) throw new Error("No provider")
             if (!owner) throw new Error("Sign in first")
             return await eth_getBalance([
-              parse(addressSchema, owner),
+              parse(AddressSchema, owner),
               "latest",
             ])(reader)
           })

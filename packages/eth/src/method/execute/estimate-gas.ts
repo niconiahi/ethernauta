@@ -1,25 +1,25 @@
 import type { Uint } from "@ethernauta/core"
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
-import { blockNumberOrTagSchema } from "../../core/block"
-import { genericTransactionSchema } from "../../core/transaction"
+import { BlockNumberOrTagSchema } from "../../core/block"
+import { GenericTransactionSchema } from "../../core/transaction"
 
-const parametersSchema = union([
-  tuple([genericTransactionSchema]),
-  tuple([genericTransactionSchema, blockNumberOrTagSchema]),
-  object({ transaction: genericTransactionSchema }),
+const ParametersSchema = union([
+  tuple([GenericTransactionSchema]),
+  tuple([GenericTransactionSchema, BlockNumberOrTagSchema]),
+  object({ transaction: GenericTransactionSchema }),
   object({
-    transaction: genericTransactionSchema,
-    blockNumberOrTag: blockNumberOrTagSchema,
+    transaction: GenericTransactionSchema,
+    blockNumberOrTag: BlockNumberOrTagSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 export function eth_estimateGas(
   _parameters: Parameters,
 ): Readable<Uint> {
@@ -28,15 +28,15 @@ export function eth_estimateGas(
     _context,
   ]: ResolvedReader): Promise<Uint> => {
     const method = "eth_estimateGas"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(uintSchema, response.result)
+    const result = parse(UintSchema, response.result)
     return result
   }
 }

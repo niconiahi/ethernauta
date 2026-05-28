@@ -5,8 +5,8 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes, Uint256 } from "@ethernauta/core"
 import {
-  bytesSchema,
-  uint256Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import type {
   Callable,
@@ -34,13 +34,13 @@ export function totalSupply() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint256Schema, decoded)
+        return parse(Uint256Schema, decoded)
       },
     }
   }

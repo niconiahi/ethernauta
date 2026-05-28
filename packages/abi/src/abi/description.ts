@@ -1,22 +1,22 @@
 import type { InferOutput } from "valibot"
 import { union } from "valibot"
 
-import { errorSchema } from "./error"
-import { eventSchema } from "./event"
+import { ErrorSchema } from "./error"
+import { EventSchema } from "./event"
 import {
-  constructorSchema,
-  fallbackSchema,
-  functionSchema,
-  receiveSchema,
+  ConstructorSchema,
+  FallbackSchema,
+  FunctionSchema,
+  ReceiveSchema,
 } from "./function"
 
 export const DescriptionSchema = union([
-  functionSchema,
-  constructorSchema,
-  receiveSchema,
-  fallbackSchema,
-  eventSchema,
-  errorSchema,
+  FunctionSchema,
+  ConstructorSchema,
+  ReceiveSchema,
+  FallbackSchema,
+  EventSchema,
+  ErrorSchema,
 ])
 export type Description = InferOutput<
   typeof DescriptionSchema

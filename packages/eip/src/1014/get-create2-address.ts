@@ -2,8 +2,8 @@
 
 import {
   type Address,
-  addressSchema,
-  bytes32Schema,
+  AddressSchema,
+  Bytes32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -13,13 +13,13 @@ import { keccak_256 } from "@noble/hashes/sha3"
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
-export const getCreate2AddressParametersSchema = object({
-  from: addressSchema,
-  salt: bytes32Schema,
-  bytecodeHash: bytes32Schema,
+export const GetCreate2AddressParametersSchema = object({
+  from: AddressSchema,
+  salt: Bytes32Schema,
+  bytecodeHash: Bytes32Schema,
 })
 export type GetCreate2AddressParameters = InferOutput<
-  typeof getCreate2AddressParametersSchema
+  typeof GetCreate2AddressParametersSchema
 >
 
 // CREATE2: keccak256(0xff ‖ from ‖ salt ‖ keccak256(init_code))[12:].
@@ -27,7 +27,7 @@ export function get_create2_address(
   _parameters: GetCreate2AddressParameters,
 ): Address {
   const parameters = parse(
-    getCreate2AddressParametersSchema,
+    GetCreate2AddressParametersSchema,
     _parameters,
   )
   const from_bytes = hex_to_bytes(parameters.from)
@@ -40,7 +40,7 @@ export function get_create2_address(
   buf.set(code_hash, 53)
   const digest = keccak_256(buf)
   return parse(
-    addressSchema,
+    AddressSchema,
     bytes_to_hex(digest.slice(12)),
   )
 }

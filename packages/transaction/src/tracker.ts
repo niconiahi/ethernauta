@@ -1,7 +1,7 @@
 import type { Http } from "@ethernauta/transport"
 import {
   type ChainEntry,
-  chainIdSchema,
+  ChainIdSchema,
   require_chain,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
@@ -9,10 +9,10 @@ import { object, parse } from "valibot"
 
 import type { Store } from "./store"
 
-export const trackContextSchema = object({
-  chain_id: chainIdSchema,
+export const TrackContextSchema = object({
+  chain_id: ChainIdSchema,
 })
-type TrackInput = InferOutput<typeof trackContextSchema>
+type TrackInput = InferOutput<typeof TrackContextSchema>
 
 /**
  * The resolved tracker context — what the four verbs receive
@@ -59,7 +59,7 @@ export function create_tracker(
   config: TrackerConfig,
 ): (_input: TrackInput) => ResolvedTracker {
   return (_input: TrackInput): ResolvedTracker => {
-    const input = parse(trackContextSchema, _input)
+    const input = parse(TrackContextSchema, _input)
     const transports = require_chain(chains, input.chain_id)
     return [
       transports,

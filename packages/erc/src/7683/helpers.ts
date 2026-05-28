@@ -2,14 +2,14 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes32,
-  bytes32Schema,
-  bytesSchema,
+  Bytes32Schema,
+  BytesSchema,
   type Uint32,
   type Uint256,
-  uint32Schema,
-  uint256Schema,
+  Uint32Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import {
   type InferOutput,
@@ -21,12 +21,12 @@ import {
 
 import type { GaslessCrossChainOrder } from "./types"
 
-export const deadlineWindowSchema = object({
+export const DeadlineWindowSchema = object({
   open_window_s: number(),
   fill_window_s: number(),
 })
 export type DeadlineWindow = InferOutput<
-  typeof deadlineWindowSchema
+  typeof DeadlineWindowSchema
 >
 
 export function compute_deadlines(
@@ -40,11 +40,11 @@ export function compute_deadlines(
   const fill = now_s + window.fill_window_s
   return {
     openDeadline: parse(
-      uint32Schema,
+      Uint32Schema,
       `0x${open.toString(16)}`,
     ),
     fillDeadline: parse(
-      uint32Schema,
+      Uint32Schema,
       `0x${fill.toString(16)}`,
     ),
   }
@@ -58,7 +58,7 @@ export function address_to_bytes32(
   _address: Address,
 ): Bytes32 {
   const hex = _address.toLowerCase().slice(2)
-  return parse(bytes32Schema, `0x${hex.padStart(64, "0")}`)
+  return parse(Bytes32Schema, `0x${hex.padStart(64, "0")}`)
 }
 
 // Pack a uint256 nonce as hex. Use `crypto.getRandomValues`
@@ -71,7 +71,7 @@ export function random_nonce(): Uint256 {
   for (const byte of bytes) {
     hex += byte.toString(16).padStart(2, "0")
   }
-  return parse(uint256Schema, hex)
+  return parse(Uint256Schema, hex)
 }
 
 // Strip leading zeros from a hex string except for `0x0`.
@@ -85,17 +85,17 @@ export function strip_hex_zeros(
   return `0x${stripped === "" ? "0" : stripped}`
 }
 
-export const gaslessOrderBuilderSchema = object({
-  originSettler: addressSchema,
-  user: addressSchema,
-  originChainId: uint256Schema,
-  orderDataType: bytes32Schema,
-  orderData: bytesSchema,
-  window: deadlineWindowSchema,
-  nonce: optional(uint256Schema),
+export const GaslessOrderBuilderSchema = object({
+  originSettler: AddressSchema,
+  user: AddressSchema,
+  originChainId: Uint256Schema,
+  orderDataType: Bytes32Schema,
+  orderData: BytesSchema,
+  window: DeadlineWindowSchema,
+  nonce: optional(Uint256Schema),
 })
 export type GaslessOrderBuilder = InferOutput<
-  typeof gaslessOrderBuilderSchema
+  typeof GaslessOrderBuilderSchema
 >
 
 export function build_gasless_order(

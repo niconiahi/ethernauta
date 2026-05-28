@@ -4,7 +4,7 @@
 
 import "./demo.css"
 import { eip155_324 } from "@ethernauta/chain/eip155-324"
-import { addressSchema, type Uint } from "@ethernauta/core"
+import { AddressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_zksync } from "@ethernauta/gas"
 import {
   create_reader,
@@ -34,12 +34,12 @@ const reader = create_reader([
 // happy-paths against mainnet — replace with the connected account
 // in real consumer code.
 const DEFAULT_FROM = parse(
-  addressSchema,
+  AddressSchema,
   "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
 )
 
 const DEFAULT_TO = parse(
-  addressSchema,
+  AddressSchema,
   "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
 )
 

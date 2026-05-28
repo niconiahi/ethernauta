@@ -15,7 +15,7 @@ import {
 } from "valibot"
 
 // https://www.jsonrpc.org/specification#extensions
-export const methodSchema = pipe(
+export const MethodSchema = pipe(
   string(),
   excludes(
     "rpc.",
@@ -24,34 +24,34 @@ export const methodSchema = pipe(
 )
 
 // https://www.jsonrpc.org/specification#parameter_structures
-export const parametersSchema = union([
+export const ParametersSchema = union([
   array(unknown()),
   record(string(), unknown()),
 ])
 export type Parameters = InferOutput<
-  typeof parametersSchema
+  typeof ParametersSchema
 >
 
-export const idSchema = union([string(), number(), null_()])
-export type Id = InferOutput<typeof idSchema>
+export const IdSchema = union([string(), number(), null_()])
+export type Id = InferOutput<typeof IdSchema>
 
 // https://www.jsonrpc.org/specification#request_object
-export const requestSchema = object({
+export const RequestSchema = object({
   jsonrpc: literal("2.0"),
-  method: methodSchema,
-  params: optional(parametersSchema),
-  id: idSchema,
+  method: MethodSchema,
+  params: optional(ParametersSchema),
+  id: IdSchema,
 })
-export type Request = InferOutput<typeof requestSchema>
+export type Request = InferOutput<typeof RequestSchema>
 
 // https://www.jsonrpc.org/specification#notification
-const notificationSchema = object({
+const NotificationSchema = object({
   jsonrpc: literal("2.0"),
-  method: methodSchema,
-  params: optional(parametersSchema),
+  method: MethodSchema,
+  params: optional(ParametersSchema),
 })
 export type Notification = InferOutput<
-  typeof notificationSchema
+  typeof NotificationSchema
 >
 
 // https://www.jsonrpc.org/specification#error_object
@@ -63,33 +63,33 @@ export type Notification = InferOutput<
 // `code` as `number` rather than enumerating literals — any code
 // outside that range is still a real JSON-RPC error response and
 // shouldn't be coerced into a different one to satisfy the schema.
-const errorSchema = object({
+const ErrorSchema = object({
   data: optional(unknown()),
   message: string(),
   code: number(),
 })
 
 // https://www.jsonrpc.org/specification#response_object
-const failedResponseSchema = object({
-  id: idSchema,
+const FailedResponseSchema = object({
+  id: IdSchema,
   jsonrpc: literal("2.0"),
-  error: errorSchema,
+  error: ErrorSchema,
 })
 export type FailedResponse = InferOutput<
-  typeof failedResponseSchema
+  typeof FailedResponseSchema
 >
 
-const succesfulResponseSchema = object({
-  id: idSchema,
+const SuccesfulResponseSchema = object({
+  id: IdSchema,
   jsonrpc: literal("2.0"),
   result: unknown(),
 })
 export type SuccesfulResponse = InferOutput<
-  typeof succesfulResponseSchema
+  typeof SuccesfulResponseSchema
 >
 
-export const responseSchema = union([
-  failedResponseSchema,
-  succesfulResponseSchema,
+export const ResponseSchema = union([
+  FailedResponseSchema,
+  SuccesfulResponseSchema,
 ])
-export type Response = InferOutput<typeof responseSchema>
+export type Response = InferOutput<typeof ResponseSchema>

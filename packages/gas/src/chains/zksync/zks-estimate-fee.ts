@@ -6,26 +6,26 @@
 // is the v4 gas helper — per M11 it does NOT belong under
 // @ethernauta/eth's standard `eth_*` namespace.
 
-import { uintSchema } from "@ethernauta/core"
-import { genericTransactionSchema } from "@ethernauta/eth"
+import { UintSchema } from "@ethernauta/core"
+import { GenericTransactionSchema } from "@ethernauta/eth"
 import {
-  callSchema,
+  CallSchema,
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
-export const zksFeeSchema = object({
-  gas_limit: uintSchema,
-  gas_per_pubdata_limit: uintSchema,
-  max_fee_per_gas: uintSchema,
-  max_priority_fee_per_gas: uintSchema,
+export const ZksFeeSchema = object({
+  gas_limit: UintSchema,
+  gas_per_pubdata_limit: UintSchema,
+  max_fee_per_gas: UintSchema,
+  max_priority_fee_per_gas: UintSchema,
 })
-export type ZksFee = InferOutput<typeof zksFeeSchema>
+export type ZksFee = InferOutput<typeof ZksFeeSchema>
 
 type ZksTransaction = InferOutput<
-  typeof genericTransactionSchema
+  typeof GenericTransactionSchema
 >
 
 export function zks_estimate_fee(
@@ -34,8 +34,8 @@ export function zks_estimate_fee(
   return async (
     resolved: ResolvedReader,
   ): Promise<ZksFee> => {
-    const tx = parse(genericTransactionSchema, _tx)
-    const call = parse(callSchema, [
+    const tx = parse(GenericTransactionSchema, _tx)
+    const call = parse(CallSchema, [
       "zks_estimateFee",
       [tx],
     ])
@@ -46,6 +46,6 @@ export function zks_estimate_fee(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    return parse(zksFeeSchema, response.result)
+    return parse(ZksFeeSchema, response.result)
   }
 }

@@ -10,7 +10,7 @@ import {
   unrecognized_chain,
   unsupported_method,
 } from "@ethernauta/eip/1193"
-import { switchEthereumChainParametersSchema } from "@ethernauta/eip/3326"
+import { SwitchEthereumChainParametersSchema } from "@ethernauta/eip/3326"
 import { safeParse } from "valibot"
 
 // Synchronous reads served from wallet-cached state. No
@@ -107,7 +107,7 @@ function extract_switch_chain_id(
   params: RequestArguments["params"],
 ): string {
   const result = safeParse(
-    switchEthereumChainParametersSchema,
+    SwitchEthereumChainParametersSchema,
     params,
   )
   if (!result.success)

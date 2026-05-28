@@ -1,22 +1,22 @@
 import type { NotFound, Uint } from "@ethernauta/core"
 import {
-  hash32Schema,
-  notFoundSchema,
-  uintSchema,
+  Hash32Schema,
+  NotFoundSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
-const parametersSchema = union([
-  tuple([hash32Schema]),
-  object({ blockHash: hash32Schema }),
+const ParametersSchema = union([
+  tuple([Hash32Schema]),
+  object({ blockHash: Hash32Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 export function eth_getUncleCountByBlockHash(
   _parameters: Parameters,
 ): Readable<Uint | NotFound> {
@@ -25,8 +25,8 @@ export function eth_getUncleCountByBlockHash(
     _context,
   ]: ResolvedReader): Promise<Uint | NotFound> => {
     const method = "eth_getUncleCountByBlockHash"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -34,7 +34,7 @@ export function eth_getUncleCountByBlockHash(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([uintSchema, notFoundSchema]),
+      union([UintSchema, NotFoundSchema]),
       response.result,
     )
     return result

@@ -4,8 +4,8 @@
 // and typeHash = keccak(encodeType(typeOf(s))).
 
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -126,12 +126,12 @@ function encode_value(
   }
   if (type === "bytes") {
     return keccak_256(
-      hex_to_bytes(parse(bytesSchema, value)),
+      hex_to_bytes(parse(BytesSchema, value)),
     )
   }
   if (type === "address") {
     const out = new Uint8Array(32)
-    const bytes = hex_to_bytes(parse(addressSchema, value))
+    const bytes = hex_to_bytes(parse(AddressSchema, value))
     out.set(bytes, 12)
     return out
   }
@@ -143,7 +143,7 @@ function encode_value(
   const fixed_bytes = /^bytes(\d+)$/.exec(type)
   if (fixed_bytes) {
     const out = new Uint8Array(32)
-    const bytes = hex_to_bytes(parse(bytesSchema, value))
+    const bytes = hex_to_bytes(parse(BytesSchema, value))
     out.set(bytes, 0)
     return out
   }

@@ -3,7 +3,7 @@
 export {
   type AddEthereumChainParameter,
   type AddEthereumChainParameters,
-  addEthereumChainParameterSchema,
-  addEthereumChainParametersSchema,
+  AddEthereumChainParameterSchema,
+  AddEthereumChainParametersSchema,
   wallet_addEthereumChain,
 } from "./method/wallet_addEthereumChain"

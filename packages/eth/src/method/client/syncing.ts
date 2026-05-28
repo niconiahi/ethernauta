@@ -2,10 +2,10 @@ import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import { literal, parse, union } from "valibot"
 import type { SyncingStatus } from "../../core/client"
-import { syncingStatusSchema } from "../../core/client"
+import { SyncingStatusSchema } from "../../core/client"
 
 export function eth_syncing(): Readable<SyncingStatus> {
   return async ([
@@ -13,7 +13,7 @@ export function eth_syncing(): Readable<SyncingStatus> {
     _context,
   ]: ResolvedReader): Promise<SyncingStatus> => {
     const method = "eth_syncing"
-    const call = parse(callSchema, [method])
+    const call = parse(CallSchema, [method])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -21,7 +21,7 @@ export function eth_syncing(): Readable<SyncingStatus> {
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([syncingStatusSchema, literal(false)]),
+      union([SyncingStatusSchema, literal(false)]),
       response.result,
     )
     return result

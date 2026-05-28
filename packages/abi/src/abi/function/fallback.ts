@@ -1,7 +1,7 @@
 import { literal, object } from "valibot"
-import { stateMutabilitySchema } from "./function-shared"
+import { StateMutabilitySchema } from "./function-shared"
 
-export const fallbackSchema = object({
+export const FallbackSchema = object({
   type: literal("fallback"),
-  stateMutability: stateMutabilitySchema,
+  stateMutability: StateMutabilitySchema,
 })

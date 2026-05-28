@@ -2,8 +2,8 @@
 
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -17,13 +17,13 @@ import {
 } from "./abi"
 import { is_wrapped_signature } from "./is-wrapped-signature"
 
-export const unwrappedSignatureSchema = object({
-  factory: addressSchema,
-  factoryData: bytesSchema,
-  signature: bytesSchema,
+export const UnwrappedSignatureSchema = object({
+  factory: AddressSchema,
+  factoryData: BytesSchema,
+  signature: BytesSchema,
 })
 export type UnwrappedSignature = InferOutput<
-  typeof unwrappedSignatureSchema
+  typeof UnwrappedSignatureSchema
 >
 
 // Inverse of `wrap_signature`. Returns null when the input
@@ -34,7 +34,7 @@ export type UnwrappedSignature = InferOutput<
 export function unwrap_signature(
   _signature: Bytes,
 ): UnwrappedSignature | null {
-  const signature = parse(bytesSchema, _signature)
+  const signature = parse(BytesSchema, _signature)
   if (!is_wrapped_signature(signature)) return null
   const bytes = hex_to_bytes(signature)
   const body = bytes.subarray(0, bytes.length - 32)
@@ -47,15 +47,15 @@ export function unwrap_signature(
   try {
     return {
       factory: parse(
-        addressSchema,
+        AddressSchema,
         bytes_to_hex(decoded.address),
       ),
       factoryData: parse(
-        bytesSchema,
+        BytesSchema,
         bytes_to_hex(decoded.first),
       ),
       signature: parse(
-        bytesSchema,
+        BytesSchema,
         bytes_to_hex(decoded.second),
       ),
     }

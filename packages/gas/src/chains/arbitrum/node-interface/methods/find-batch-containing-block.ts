@@ -12,7 +12,7 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Uint64 } from "@ethernauta/core"
-import { bytesSchema, uint64Schema } from "@ethernauta/core"
+import { BytesSchema, Uint64Schema } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint64()] as const
 const OUTPUT_CODECS = [uint64()] as const
@@ -22,17 +22,17 @@ export const FIND_BATCH_CONTAINING_BLOCK_SIGNATURE = {
   names: ["blockNum"],
 }
 
-const parametersSchema = union([
-  tuple([uint64Schema]),
-  object({ blockNum: uint64Schema }),
+const ParametersSchema = union([
+  tuple([Uint64Schema]),
+  object({ blockNum: Uint64Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function findBatchContainingBlock(
   _parameters: Parameters,
 ) {
   return (context: ContractContext): Callable<Uint64> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.blockNum] as const)
@@ -44,13 +44,13 @@ export function findBatchContainingBlock(
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint64 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint64Schema, decoded)
+        return parse(Uint64Schema, decoded)
       },
     }
   }

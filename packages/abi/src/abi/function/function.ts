@@ -1,16 +1,16 @@
 import type { InferOutput } from "valibot"
 import { array, literal, object, string } from "valibot"
 import {
-  function_inputSchema,
-  function_outputSchema,
-  stateMutabilitySchema,
+  Function_inputSchema,
+  Function_outputSchema,
+  StateMutabilitySchema,
 } from "./function-shared"
 
-export const functionSchema = object({
+export const FunctionSchema = object({
   type: literal("function"),
   name: string(),
-  inputs: array(function_inputSchema),
-  outputs: array(function_outputSchema),
-  stateMutability: stateMutabilitySchema,
+  inputs: array(Function_inputSchema),
+  outputs: array(Function_outputSchema),
+  stateMutability: StateMutabilitySchema,
 })
-export type _Function = InferOutput<typeof functionSchema>
+export type _Function = InferOutput<typeof FunctionSchema>

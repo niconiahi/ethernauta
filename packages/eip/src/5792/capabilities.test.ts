@@ -2,9 +2,9 @@ import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
   CALLS_STATUS,
-  callsStatusSchema,
-  sendCallsParameterSchema,
-  sendCallsResultSchema,
+  CallsStatusSchema,
+  SendCallsParameterSchema,
+  SendCallsResultSchema,
 } from "./capabilities"
 
 describe("capabilities.ts", () => {
@@ -23,7 +23,7 @@ describe("capabilities.ts", () => {
       ],
     }
     expect(() =>
-      parse(sendCallsParameterSchema, param),
+      parse(SendCallsParameterSchema, param),
     ).not.toThrow()
   })
 
@@ -37,7 +37,7 @@ describe("capabilities.ts", () => {
       },
     }
     expect(() =>
-      parse(sendCallsParameterSchema, param),
+      parse(SendCallsParameterSchema, param),
     ).not.toThrow()
   })
 
@@ -48,7 +48,7 @@ describe("capabilities.ts", () => {
       calls: [],
     }
     expect(() =>
-      parse(sendCallsParameterSchema, param),
+      parse(SendCallsParameterSchema, param),
     ).toThrow()
   })
 
@@ -58,7 +58,7 @@ describe("capabilities.ts", () => {
       capabilities: { custom: { foo: "bar" } },
     }
     expect(() =>
-      parse(sendCallsResultSchema, result),
+      parse(SendCallsResultSchema, result),
     ).not.toThrow()
   })
 
@@ -92,7 +92,7 @@ describe("capabilities.ts", () => {
       ],
     }
     expect(() =>
-      parse(callsStatusSchema, status),
+      parse(CallsStatusSchema, status),
     ).not.toThrow()
   })
 
@@ -105,7 +105,7 @@ describe("capabilities.ts", () => {
       atomic: true,
     }
     expect(() =>
-      parse(callsStatusSchema, status),
+      parse(CallsStatusSchema, status),
     ).not.toThrow()
   })
 
@@ -117,6 +117,6 @@ describe("capabilities.ts", () => {
       status: 1.5,
       atomic: false,
     }
-    expect(() => parse(callsStatusSchema, status)).toThrow()
+    expect(() => parse(CallsStatusSchema, status)).toThrow()
   })
 })

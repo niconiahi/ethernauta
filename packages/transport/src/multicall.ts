@@ -7,10 +7,10 @@ import {
   tuple,
 } from "@ethernauta/abi"
 import {
-  addressSchema,
+  AddressSchema,
   type Bytes,
-  bytes32Schema,
-  bytesSchema,
+  Bytes32Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -25,8 +25,8 @@ import {
   parse,
   tupleWithRest,
 } from "valibot"
-import { callSchema as rpcCallSchema } from "./call"
-import { chainIdSchema } from "./chain/chain-id"
+import { CallSchema as RpcCallSchema } from "./call"
+import { ChainIdSchema } from "./chain/chain-id"
 import type { Callable } from "./contract"
 import {
   type ChainEntry,
@@ -38,29 +38,29 @@ import {
 // it lives at a different address (zkSync Era, a few niche L2s), this
 // constant would need an override registry — out of v1 scope.
 const MULTICALL_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xcA11bde05977b3631167028862bE2a173976CA11",
 )
 
 // Inner call tuple: `(address target, bool allowFailure, bytes callData)`.
 // Solidity field order — wire layout matches this declaration.
-const callSchema = tuple({
+const CallSchema = tuple({
   target: address(),
   allowFailure: bool(),
   callData: bytes(),
 })
 
 // Per-call result tuple: `(bool success, bytes returnData)`.
-const resultSchema = tuple({
+const ResultSchema = tuple({
   success: bool(),
   returnData: bytes(),
 })
 
-const multicallOptionsSchema = object({
+const MulticallOptionsSchema = object({
   allow_failure: optional(boolean()),
 })
 type MulticallOptions = InferOutput<
-  typeof multicallOptionsSchema
+  typeof MulticallOptionsSchema
 >
 
 // Structural schema for `Callable<unknown>` (the function-bearing
@@ -68,23 +68,23 @@ type MulticallOptions = InferOutput<
 // `@ethernauta/core` primitive; `decode` is a function so it falls
 // back to `custom<F>(typeof === "function")` — the only way to
 // validate a function value with Valibot.
-const callableSchema = object({
-  chain_id: chainIdSchema,
-  to: addressSchema,
-  data: bytesSchema,
+const CallableSchema = object({
+  chain_id: ChainIdSchema,
+  to: AddressSchema,
+  data: BytesSchema,
   decode: custom<(result: Bytes) => unknown>(
     (v) => typeof v === "function",
   ),
 })
 
-// Non-empty list of calls — `nonEmptyCallsSchema` produces
+// Non-empty list of calls — `NonEmptyCallsSchema` produces
 // `[Callable<unknown>, ...Callable<unknown>[]]`, so the parsed value
 // destructures into a non-optional `first` (same pattern as
-// `tupleWithRest([chainSchema], chainSchema)` for `CHAINS` in
+// `tupleWithRest([ChainSchema], ChainSchema)` for `CHAINS` in
 // `packages/wallet/src/utils/chain.ts`).
-const nonEmptyCallsSchema = tupleWithRest(
-  [callableSchema],
-  callableSchema,
+const NonEmptyCallsSchema = tupleWithRest(
+  [CallableSchema],
+  CallableSchema,
 )
 
 type ValuesOf<T extends readonly Callable<unknown>[]> = {
@@ -118,7 +118,7 @@ export function create_multicall(_chains: ChainEntry[]) {
     _options: MulticallOptions = {},
   ): Promise<unknown[]> {
     const [first, ...rest] = parse(
-      nonEmptyCallsSchema,
+      NonEmptyCallsSchema,
       _calls,
     )
     const chain_id = first.chain_id
@@ -132,7 +132,7 @@ export function create_multicall(_chains: ChainEntry[]) {
     const allow_failure = _options.allow_failure ?? false
     const calldata = encode_function_call({
       name: "aggregate3",
-      args: [array(callSchema)] as const,
+      args: [array(CallSchema)] as const,
       values: [
         _calls.map((c) => ({
           target: c.to,
@@ -142,7 +142,7 @@ export function create_multicall(_chains: ChainEntry[]) {
       ] as const,
     })
     const transports = require_chain(_chains, chain_id)
-    const rpc_call = parse(rpcCallSchema, [
+    const rpc_call = parse(RpcCallSchema, [
       "eth_call",
       [
         {
@@ -158,7 +158,7 @@ export function create_multicall(_chains: ChainEntry[]) {
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result_hex = parse(bytesSchema, response.result)
+    const result_hex = parse(BytesSchema, response.result)
     const results = decode_aggregate_result(result_hex)
     return _calls.map((c, i) => {
       // `parse` against the per-result Valibot schema turns the
@@ -166,7 +166,7 @@ export function create_multicall(_chains: ChainEntry[]) {
       // `noUncheckedIndexedAccess` into a hard failure if the decode
       // returned fewer entries than `_calls` — keeps the runtime
       // contract aligned with the multicall ABI without an `as`.
-      const r = parse(resultSchema.schema, results[i])
+      const r = parse(ResultSchema.schema, results[i])
       if (!r.success) {
         if (allow_failure) {
           return { success: false, value: undefined }
@@ -188,12 +188,12 @@ export function create_multicall(_chains: ChainEntry[]) {
 // single dynamic-array argument. Top-level layout:
 //   [offset_to_array (32B)][...result-array body]
 // The offset (always 0x20 in practice) points past itself to the
-// length-prefixed body that `array(resultSchema).decode` reads.
+// length-prefixed body that `array(ResultSchema).decode` reads.
 function decode_aggregate_result(
   _hex: Bytes,
 ): Array<{ success: boolean; returnData: Bytes }> {
-  const header_hex = parse(bytes32Schema, _hex.slice(0, 66))
+  const header_hex = parse(Bytes32Schema, _hex.slice(0, 66))
   const offset = BigInt(header_hex)
   const data = hex_to_bytes(_hex)
-  return array(resultSchema).decode(data, Number(offset))
+  return array(ResultSchema).decode(data, Number(offset))
 }

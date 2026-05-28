@@ -2,8 +2,8 @@
 
 import type { Bytes } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -14,13 +14,13 @@ import { type InferOutput, object, parse } from "valibot"
 import { encode_address_bytes_bytes } from "./abi"
 import { MAGIC_BYTES } from "./magic-bytes"
 
-export const wrapSignatureParametersSchema = object({
-  factory: addressSchema,
-  factoryData: bytesSchema,
-  signature: bytesSchema,
+export const WrapSignatureParametersSchema = object({
+  factory: AddressSchema,
+  factoryData: BytesSchema,
+  signature: BytesSchema,
 })
 export type WrapSignatureParameters = InferOutput<
-  typeof wrapSignatureParametersSchema
+  typeof WrapSignatureParametersSchema
 >
 
 // Wrap a 1271 signature with the CREATE2-factory deploy
@@ -31,7 +31,7 @@ export function wrap_signature(
   _parameters: WrapSignatureParameters,
 ): Bytes {
   const parameters = parse(
-    wrapSignatureParametersSchema,
+    WrapSignatureParametersSchema,
     _parameters,
   )
   const body = encode_address_bytes_bytes(
@@ -43,5 +43,5 @@ export function wrap_signature(
   const out = new Uint8Array(body.length + magic.length)
   out.set(body, 0)
   out.set(magic, body.length)
-  return parse(bytesSchema, bytes_to_hex(out))
+  return parse(BytesSchema, bytes_to_hex(out))
 }

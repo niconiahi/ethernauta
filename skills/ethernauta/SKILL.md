@@ -208,7 +208,7 @@ The four method shapes:
 |---|---|
 | `@ethernauta/chain` | `eip155_1`, `eip155_11155111`, … (500+ chain definitions) |
 | `@ethernauta/transport` | `create_reader`, `create_writer`, `create_signer`, `create_contract`, `http`, `encode_chain_id`, type `Readable`, `Writable`, `Signable`, `Callable`, `ResolvedSigner`, `ResolvedContract` |
-| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `addressSchema`, `uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
+| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `AddressSchema`, `Uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
 | `@ethernauta/transaction` | `create_tracker`, `register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`, `window_store`, type `Store` / `Transaction` / `PendingTransaction` / `MinedTransaction` / `RevertedTransaction` (single-hash lifecycle — see section 8.1) |
 | `@ethernauta/eip/1102` | `eth_requestAccounts` |
 | `@ethernauta/eip/1193` | `create_provider`, `Provider` interface |

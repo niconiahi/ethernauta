@@ -1,10 +1,10 @@
 // https://eips.ethereum.org/EIPS/eip-5792
 
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
   type Hash32,
-  uintSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type { SendCallsResult } from "@ethernauta/eip/5792"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
@@ -47,8 +47,8 @@ import { active_account } from "../../utils/wallet"
 const MAX_PRIORITY_FEE_PER_GAS = 2_000_000_000n
 const MAX_FEE_PER_GAS = 30_000_000_000n
 const GAS_LIMIT = 500_000n
-const ZERO_UINT = parse(uintSchema, "0x0")
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const ZERO_UINT = parse(UintSchema, "0x0")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 export function SendCalls() {
   const req = send_calls_request.value
@@ -161,7 +161,7 @@ export function SendCalls() {
               const { chain_id, reader } = get_reader(chain)
               const { writer } = get_writer(chain)
               const address = parse(
-                addressSchema,
+                AddressSchema,
                 active_account.value.address,
               )
               const start_nonce = await get_nonce(
@@ -197,7 +197,7 @@ export function SendCalls() {
                   )
                 const transaction_hash =
                   await eth_sendRawTransaction([
-                    parse(bytesSchema, bytes_to_hex(raw)),
+                    parse(BytesSchema, bytes_to_hex(raw)),
                   ])(writer({ chain_id }))
                 transaction_hashes.push(transaction_hash)
               }

@@ -2,20 +2,20 @@ import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
-  fillInstructionSchema,
-  gaslessCrossChainOrderSchema,
-  onchainCrossChainOrderSchema,
-  outputSchema,
+  FillInstructionSchema,
+  GaslessCrossChainOrderSchema,
+  OnchainCrossChainOrderSchema,
+  OutputSchema,
 } from "./types"
 
 const ADDR =
   "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845" as const
 const B32 = `0x${"11".repeat(32)}` as const
 
-describe("types.ts — outputSchema", () => {
+describe("types.ts — OutputSchema", () => {
   it("should accept a well-formed output", () => {
     expect(() =>
-      parse(outputSchema, {
+      parse(OutputSchema, {
         token: B32,
         amount: "0x10",
         recipient: B32,
@@ -26,7 +26,7 @@ describe("types.ts — outputSchema", () => {
 
   it("should reject a non-bytes32 token", () => {
     expect(() =>
-      parse(outputSchema, {
+      parse(OutputSchema, {
         token: "0x1234",
         amount: "0x10",
         recipient: B32,
@@ -36,10 +36,10 @@ describe("types.ts — outputSchema", () => {
   })
 })
 
-describe("types.ts — fillInstructionSchema", () => {
+describe("types.ts — FillInstructionSchema", () => {
   it("should accept a well-formed fill instruction", () => {
     expect(() =>
-      parse(fillInstructionSchema, {
+      parse(FillInstructionSchema, {
         destinationChainId: "0xa",
         destinationSettler: B32,
         originData: "0xdead",
@@ -48,10 +48,10 @@ describe("types.ts — fillInstructionSchema", () => {
   })
 })
 
-describe("types.ts — onchainCrossChainOrderSchema", () => {
+describe("types.ts — OnchainCrossChainOrderSchema", () => {
   it("should accept a well-formed onchain order", () => {
     expect(() =>
-      parse(onchainCrossChainOrderSchema, {
+      parse(OnchainCrossChainOrderSchema, {
         fillDeadline: "0x1000",
         orderDataType: B32,
         orderData: "0x",
@@ -60,10 +60,10 @@ describe("types.ts — onchainCrossChainOrderSchema", () => {
   })
 })
 
-describe("types.ts — gaslessCrossChainOrderSchema", () => {
+describe("types.ts — GaslessCrossChainOrderSchema", () => {
   it("should accept a well-formed gasless order", () => {
     expect(() =>
-      parse(gaslessCrossChainOrderSchema, {
+      parse(GaslessCrossChainOrderSchema, {
         originSettler: ADDR,
         user: ADDR,
         nonce: "0x1",
@@ -78,7 +78,7 @@ describe("types.ts — gaslessCrossChainOrderSchema", () => {
 
   it("should reject when originSettler is missing", () => {
     expect(() =>
-      parse(gaslessCrossChainOrderSchema, {
+      parse(GaslessCrossChainOrderSchema, {
         user: ADDR,
         nonce: "0x1",
         originChainId: "0xaa36a7",

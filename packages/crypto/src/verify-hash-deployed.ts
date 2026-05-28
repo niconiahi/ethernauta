@@ -14,7 +14,7 @@
 import {
   type Address,
   type Bytes,
-  bytesSchema,
+  BytesSchema,
   type Hash32,
 } from "@ethernauta/core"
 import { verify_hash } from "@ethernauta/eip/1271"
@@ -25,10 +25,10 @@ import { parse, safeParse } from "valibot"
 
 import {
   recover_address,
-  recoverSignatureSchema,
+  RecoverSignatureSchema,
 } from "./recover"
 
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 export async function verify_hash_deployed(
   address: Address,
@@ -47,7 +47,7 @@ export async function verify_hash_deployed(
     is_delegation_designator(code)
   ) {
     const eoa_sig = safeParse(
-      recoverSignatureSchema,
+      RecoverSignatureSchema,
       signature,
     )
     if (!eoa_sig.success) return false

@@ -1,4 +1,4 @@
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import { format_unit } from "@ethernauta/utils"
 import { useEffect } from "preact/hooks"
 import { parse } from "valibot"
@@ -12,7 +12,7 @@ import { active_account } from "../../utils/wallet"
 
 export function Wallet() {
   const address = parse(
-    addressSchema,
+    AddressSchema,
     active_account.value.address,
   )
   useEffect(() => {

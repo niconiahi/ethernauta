@@ -1,7 +1,7 @@
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import type {
   Http,
@@ -20,14 +20,14 @@ import { describe, expect, it, vi } from "vitest"
 import { verify_hash } from "./verify-hash"
 
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 const HASH = parse(
-  hash32Schema,
+  Hash32Schema,
   "0x88cd2108bf28cb88ce6b8e54bd9f4f99c1d1a3a3c5b8b1d3b3e4b8b2c4e6a7a8",
 )
-const SIGNATURE = parse(bytesSchema, `0x${"ab".repeat(65)}`)
+const SIGNATURE = parse(BytesSchema, `0x${"ab".repeat(65)}`)
 const CHAIN_ID = "eip155:1"
 
 function resolved_with(transport: Http): ResolvedReader {
@@ -127,7 +127,7 @@ describe("verify-hash.ts (6492)", () => {
     const [tx, block] = parse(
       tuple([
         object({
-          to: optional(addressSchema),
+          to: optional(AddressSchema),
           input: string(),
         }),
         string(),

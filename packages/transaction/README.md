@@ -85,7 +85,7 @@ const receipt = await wait_for_receipt([hash, {
 // a live `confirmations` count.
 ```
 
-The `ConfirmedReceipt` type and matching `confirmedReceiptSchema` are exported alongside.
+The `ConfirmedReceipt` type and matching `ConfirmedReceiptSchema` are exported alongside.
 
 ### `set_transaction` — write any record directly
 
@@ -120,10 +120,10 @@ import {
   type PendingTransaction,
   type MinedTransaction,
   type RevertedTransaction,
-  transactionSchema,
-  pendingTransactionSchema,
-  minedTransactionSchema,
-  revertedTransactionSchema,
+  TransactionSchema,
+  PendingTransactionSchema,
+  MinedTransactionSchema,
+  RevertedTransactionSchema,
 } from "@ethernauta/transaction"
 ```
 

@@ -1,34 +1,34 @@
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { nullable, object, optional } from "valibot"
 
 // https://github.com/ethereum/execution-apis/blob/main/src/schemas/transaction.yaml#L283
-const transactionLegacyUnsignedSchema = object({
-  type: byteSchema,
-  nonce: uintSchema,
-  to: nullable(addressSchema),
-  gas: uintSchema,
-  value: uintSchema,
-  input: bytesSchema,
-  gasPrice: uintSchema,
-  chainId: optional(uintSchema),
+const TransactionLegacyUnsignedSchema = object({
+  type: ByteSchema,
+  nonce: UintSchema,
+  to: nullable(AddressSchema),
+  gas: UintSchema,
+  value: UintSchema,
+  input: BytesSchema,
+  gasPrice: UintSchema,
+  chainId: optional(UintSchema),
 })
 export type TransactionLegacyUnsigned = InferOutput<
-  typeof transactionLegacyUnsignedSchema
+  typeof TransactionLegacyUnsignedSchema
 >
 
 // https://github.com/ethereum/execution-apis/blob/main/src/schemas/transaction.yaml#L432
-export const transactionLegacySignedSchema = object({
-  ...transactionLegacyUnsignedSchema.entries,
-  v: uintSchema,
-  r: uintSchema,
-  s: uintSchema,
+export const TransactionLegacySignedSchema = object({
+  ...TransactionLegacyUnsignedSchema.entries,
+  v: UintSchema,
+  r: UintSchema,
+  s: UintSchema,
 })
 export type TransactionLegacySigned = InferOutput<
-  typeof transactionLegacySignedSchema
+  typeof TransactionLegacySignedSchema
 >

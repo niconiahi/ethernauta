@@ -4,7 +4,7 @@
 // parameter is the message (hex or utf8), the second is the
 // signer address.
 
-import { type Bytes, bytesSchema } from "@ethernauta/core"
+import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
@@ -20,6 +20,6 @@ export function personal_sign(
       message,
       address,
     ])
-    return parse(bytesSchema, signature)
+    return parse(BytesSchema, signature)
   }
 }

@@ -29,10 +29,10 @@ Every export pairs a `xxxSchema` Valibot schema with an `Xxx` type inferred via 
 
 ```ts
 import { parse } from "valibot"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 
 function transfer(_to: string) {
-  const to = parse(addressSchema, _to) // validated `Address`
+  const to = parse(AddressSchema, _to) // validated `Address`
   // …
 }
 ```
@@ -40,39 +40,39 @@ function transfer(_to: string) {
 ### Address
 
 ```ts
-import { type Address, addressSchema, addressesSchema } from "@ethernauta/core"
+import { type Address, AddressSchema, AddressesSchema } from "@ethernauta/core"
 
-// `addressSchema`     — single 0x-prefixed 20-byte address
-// `addressesSchema`   — array of addresses
+// `AddressSchema`     — single 0x-prefixed 20-byte address
+// `AddressesSchema`   — array of addresses
 ```
 
 ### Hash
 
 ```ts
-import { type Hash32, hash32Schema } from "@ethernauta/core"
+import { type Hash32, Hash32Schema } from "@ethernauta/core"
 
-// `hash32Schema` — 0x-prefixed 32-byte hash (transaction / block / topic)
+// `Hash32Schema` — 0x-prefixed 32-byte hash (transaction / block / topic)
 ```
 
 ### Bytes
 
 ```ts
 import {
-  type Byte, byteSchema,
-  type Bytes, bytesSchema,
-  type BytesMax32, bytesMax32Schema,
-  type Bytes4, bytes4Schema,
-  type Bytes8, bytes8Schema,
-  type Bytes32, bytes32Schema,
-  type Bytes48, bytes48Schema,
-  type Bytes64, bytes64Schema,
-  type Bytes65, bytes65Schema,
-  type Bytes256, bytes256Schema,
+  type Byte, ByteSchema,
+  type Bytes, BytesSchema,
+  type BytesMax32, BytesMax32Schema,
+  type Bytes4, Bytes4Schema,
+  type Bytes8, Bytes8Schema,
+  type Bytes32, Bytes32Schema,
+  type Bytes48, Bytes48Schema,
+  type Bytes64, Bytes64Schema,
+  type Bytes65, Bytes65Schema,
+  type Bytes256, Bytes256Schema,
 } from "@ethernauta/core"
 
-// `byteSchema`       — single 0x-prefixed byte
-// `bytesSchema`      — arbitrary 0x-prefixed byte string
-// `bytesMax32Schema` — 0x-prefixed byte string ≤ 32 bytes
+// `ByteSchema`       — single 0x-prefixed byte
+// `BytesSchema`      — arbitrary 0x-prefixed byte string
+// `BytesMax32Schema` — 0x-prefixed byte string ≤ 32 bytes
 // `bytesNSchema`     — fixed-width N-byte string (4, 8, 32, 48, 64, 65, 256)
 ```
 
@@ -80,21 +80,21 @@ import {
 
 ```ts
 import {
-  type Uint, uintSchema,
-  type Uint8, uint8Schema,
-  type Uint16, uint16Schema,
-  type Uint24, uint24Schema,
-  type Uint32, uint32Schema,
-  type Uint40, uint40Schema,
-  type Uint48, uint48Schema,
-  type Uint56, uint56Schema,
-  type Uint64, uint64Schema,
-  type Uint96, uint96Schema,
-  type Uint128, uint128Schema,
-  type Uint160, uint160Schema,
-  type Uint192, uint192Schema,
-  type Uint224, uint224Schema,
-  type Uint256, uint256Schema,
+  type Uint, UintSchema,
+  type Uint8, Uint8Schema,
+  type Uint16, Uint16Schema,
+  type Uint24, Uint24Schema,
+  type Uint32, Uint32Schema,
+  type Uint40, Uint40Schema,
+  type Uint48, Uint48Schema,
+  type Uint56, Uint56Schema,
+  type Uint64, Uint64Schema,
+  type Uint96, Uint96Schema,
+  type Uint128, Uint128Schema,
+  type Uint160, Uint160Schema,
+  type Uint192, Uint192Schema,
+  type Uint224, Uint224Schema,
+  type Uint256, Uint256Schema,
 } from "@ethernauta/core"
 
 // One schema per ABI uintN width. All accept 0x-prefixed
@@ -104,7 +104,7 @@ import {
 ### Ratio
 
 ```ts
-import { type Ratio, ratioSchema } from "@ethernauta/core"
+import { type Ratio, RatioSchema } from "@ethernauta/core"
 
 // A 0x-prefixed fraction in [0, 1] (used by tip / cap ratios).
 ```
@@ -112,9 +112,9 @@ import { type Ratio, ratioSchema } from "@ethernauta/core"
 ### NotFound
 
 ```ts
-import { type NotFound, notFoundSchema } from "@ethernauta/core"
+import { type NotFound, NotFoundSchema } from "@ethernauta/core"
 
 // The protocol's "absent" sentinel — `null` wrapped as a schema
 // so JSON-RPC responses that may resolve to `null` (missing
-// block, missing receipt) can be composed with `union([…, notFoundSchema])`.
+// block, missing receipt) can be composed with `union([…, NotFoundSchema])`.
 ```

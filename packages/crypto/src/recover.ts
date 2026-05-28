@@ -9,13 +9,13 @@
 
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes64,
   type Bytes65,
-  bytes64Schema,
-  bytes65Schema,
+  Bytes64Schema,
+  Bytes65Schema,
   type Hash32,
-  hash32Schema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -25,9 +25,9 @@ import { keccak_256 } from "@noble/hashes/sha3"
 import { Signature } from "@noble/secp256k1"
 import { parse, union } from "valibot"
 
-export const recoverSignatureSchema = union([
-  bytes64Schema,
-  bytes65Schema,
+export const RecoverSignatureSchema = union([
+  Bytes64Schema,
+  Bytes65Schema,
 ])
 
 function parse_signature(_signature: Bytes64 | Bytes65): {
@@ -35,7 +35,7 @@ function parse_signature(_signature: Bytes64 | Bytes65): {
   recovery: number
 } {
   const signature = parse(
-    recoverSignatureSchema,
+    RecoverSignatureSchema,
     _signature,
   )
   const bytes = hex_to_bytes(signature)
@@ -62,7 +62,7 @@ export function recover_address(
   _hash: Hash32,
   _signature: Bytes64 | Bytes65,
 ): Address {
-  const hash = parse(hash32Schema, _hash)
+  const hash = parse(Hash32Schema, _hash)
   const { compact, recovery } = parse_signature(_signature)
   const sig =
     Signature.fromCompact(compact).addRecoveryBit(recovery)
@@ -70,5 +70,5 @@ export function recover_address(
   const uncompressed = point.toBytes(false)
   const hashed = keccak_256(uncompressed.slice(1))
   const tail = hashed.slice(12)
-  return parse(addressSchema, bytes_to_hex(tail))
+  return parse(AddressSchema, bytes_to_hex(tail))
 }

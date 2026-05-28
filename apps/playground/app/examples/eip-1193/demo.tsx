@@ -1,5 +1,5 @@
 import "./demo.css"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
 import {
   watch_accounts,
@@ -182,7 +182,7 @@ function Connected({
       const first = existing[0]
       if (first) {
         const wei = await eth_getBalance({
-          address: parse(addressSchema, first),
+          address: parse(AddressSchema, first),
         })(provider.reader({ chain_id: wallet_chain_id }))
         if (cancelled) return
         set_balance(wei)
@@ -206,7 +206,7 @@ function Connected({
     const first = next[0]
     if (first) {
       const wei = await eth_getBalance({
-        address: parse(addressSchema, first),
+        address: parse(AddressSchema, first),
       })(provider.reader({ chain_id: wallet_chain_id }))
       set_balance(wei)
     }

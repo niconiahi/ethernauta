@@ -1,7 +1,7 @@
 // https://eips.ethereum.org/EIPS/eip-6492
 
 import type { Bytes } from "@ethernauta/core"
-import { bytesSchema } from "@ethernauta/core"
+import { BytesSchema } from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { parse } from "valibot"
 
@@ -13,7 +13,7 @@ import { MAGIC_BYTES } from "./magic-bytes"
 export function is_wrapped_signature(
   _signature: Bytes,
 ): boolean {
-  const signature = parse(bytesSchema, _signature)
+  const signature = parse(BytesSchema, _signature)
   const bytes = hex_to_bytes(signature)
   if (bytes.length < 32) return false
   const suffix = bytes.subarray(bytes.length - 32)

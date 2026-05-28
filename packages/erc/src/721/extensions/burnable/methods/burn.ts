@@ -4,9 +4,9 @@ import {
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
 import {
-  bytesSchema,
-  uint256Schema,
-  uintSchema,
+  BytesSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
@@ -24,11 +24,11 @@ export const BURN_SIGNATURE = {
   names: ["tokenId"],
 }
 
-const parametersSchema = union([
-  tuple([uint256Schema]),
-  object({ tokenId: uint256Schema }),
+const ParametersSchema = union([
+  tuple([Uint256Schema]),
+  object({ tokenId: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function burn(
   _parameters: Parameters,
@@ -41,7 +41,7 @@ export function burn(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.tokenId] as const)
@@ -57,8 +57,8 @@ export function burn(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: BURN_SIGNATURE,
         },

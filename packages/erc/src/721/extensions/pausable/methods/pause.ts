@@ -1,6 +1,6 @@
 import { encode_function_call } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
-import { bytesSchema, uintSchema } from "@ethernauta/core"
+import { BytesSchema, UintSchema } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
 import type {
   ResolvedSigner,
@@ -38,8 +38,8 @@ export function pause(): Signable<Bytes> {
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: PAUSE_SIGNATURE,
         },

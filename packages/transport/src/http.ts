@@ -17,35 +17,35 @@ import type {
   Request,
   Response,
 } from "./json-rpc"
-import { requestSchema, responseSchema } from "./json-rpc"
+import { RequestSchema, ResponseSchema } from "./json-rpc"
 
-export const httpRetryOptionsSchema = object({
+export const HttpRetryOptionsSchema = object({
   attempts: number(),
   base_delay_ms: optional(number()),
   max_delay_ms: optional(number()),
 })
 export type HttpRetryOptions = InferOutput<
-  typeof httpRetryOptionsSchema
+  typeof HttpRetryOptionsSchema
 >
 
-export const httpBatchOptionsSchema = object({
+export const HttpBatchOptionsSchema = object({
   window_ms: optional(number()),
   max_size: optional(number()),
 })
 export type HttpBatchOptions = InferOutput<
-  typeof httpBatchOptionsSchema
+  typeof HttpBatchOptionsSchema
 >
 
-export const httpOptionsSchema = object({
+export const HttpOptionsSchema = object({
   timeout_ms: optional(number()),
-  retry: optional(httpRetryOptionsSchema),
+  retry: optional(HttpRetryOptionsSchema),
   batch: optional(
-    union([boolean(), httpBatchOptionsSchema]),
+    union([boolean(), HttpBatchOptionsSchema]),
   ),
   headers: optional(record(string(), string())),
 })
 export type HttpOptions = InferOutput<
-  typeof httpOptionsSchema
+  typeof HttpOptionsSchema
 >
 
 export function http(
@@ -65,7 +65,7 @@ function create_single_http(
 ): (_call: Call) => Promise<Response> {
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
-    const request = parse(requestSchema, {
+    const request = parse(RequestSchema, {
       jsonrpc: "2.0",
       id: crypto.randomUUID(),
       method,
@@ -75,7 +75,7 @@ function create_single_http(
       () => post(url, request, options),
       options.retry,
     )
-    return parse(responseSchema, raw)
+    return parse(ResponseSchema, raw)
   }
 }
 
@@ -88,8 +88,8 @@ function create_batching_http(
   const window_ms = batch_options.window_ms ?? 0
   const max_size = batch_options.max_size ?? 100
 
-  const slotSchema = object({
-    request: requestSchema,
+  const SlotSchema = object({
+    request: RequestSchema,
     resolve: custom<(_response: Response) => void>(
       (value) => typeof value === "function",
     ),
@@ -97,7 +97,7 @@ function create_batching_http(
       (value) => typeof value === "function",
     ),
   })
-  type Slot = InferOutput<typeof slotSchema>
+  type Slot = InferOutput<typeof SlotSchema>
   let queue: Slot[] = []
   let timer: ReturnType<typeof setTimeout> | null = null
 
@@ -117,7 +117,7 @@ function create_batching_http(
       .then((responses) => {
         const by_id = new Map<unknown, Response>()
         for (const raw of responses) {
-          const response = parse(responseSchema, raw)
+          const response = parse(ResponseSchema, raw)
           by_id.set(response.id, response)
         }
         for (const slot of current) {
@@ -140,7 +140,7 @@ function create_batching_http(
 
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
-    const request = parse(requestSchema, {
+    const request = parse(RequestSchema, {
       jsonrpc: "2.0",
       id: crypto.randomUUID(),
       method,

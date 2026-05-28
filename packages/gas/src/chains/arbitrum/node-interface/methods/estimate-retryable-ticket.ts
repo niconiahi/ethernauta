@@ -14,10 +14,10 @@ import {
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
+  UintSchema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [
@@ -44,27 +44,27 @@ export const ESTIMATE_RETRYABLE_TICKET_SIGNATURE = {
   ],
 }
 
-const parametersSchema = union([
+const ParametersSchema = union([
   tuple([
-    addressSchema,
-    uint256Schema,
-    addressSchema,
-    uint256Schema,
-    addressSchema,
-    addressSchema,
-    bytesSchema,
+    AddressSchema,
+    Uint256Schema,
+    AddressSchema,
+    Uint256Schema,
+    AddressSchema,
+    AddressSchema,
+    BytesSchema,
   ]),
   object({
-    sender: addressSchema,
-    deposit: uint256Schema,
-    to: addressSchema,
-    l2CallValue: uint256Schema,
-    excessFeeRefundAddress: addressSchema,
-    callValueRefundAddress: addressSchema,
-    data: bytesSchema,
+    sender: AddressSchema,
+    deposit: Uint256Schema,
+    to: AddressSchema,
+    l2CallValue: Uint256Schema,
+    excessFeeRefundAddress: AddressSchema,
+    callValueRefundAddress: AddressSchema,
+    data: BytesSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function estimateRetryableTicket(
   _parameters: Parameters,
@@ -77,7 +77,7 @@ export function estimateRetryableTicket(
       throw new Error(
         "contract Signable requires a 'to' on the signer resolver",
       )
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([
           parameters[0],
@@ -109,8 +109,8 @@ export function estimateRetryableTicket(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: ESTIMATE_RETRYABLE_TICKET_SIGNATURE,
         },

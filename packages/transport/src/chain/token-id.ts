@@ -8,5 +8,5 @@ function isTokenId(input: unknown): boolean {
     /^[-a-zA-Z0-9]{1,32}$/.test(input)
   )
 }
-export const tokenIdSchema = custom<string>(isTokenId)
-export type TokenId = InferOutput<typeof tokenIdSchema>
+export const TokenIdSchema = custom<string>(isTokenId)
+export type TokenId = InferOutput<typeof TokenIdSchema>

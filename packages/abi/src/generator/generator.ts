@@ -21,14 +21,14 @@ import type { Description } from "../abi/description"
 import type { _Function } from "../abi/function/function"
 import type { AbiInput } from "../abi/function/function-shared"
 import {
-  abiInputSchema,
-  function_outputSchema,
+  AbiInputSchema,
+  Function_outputSchema,
 } from "../abi/function/function-shared"
 import { to_selector } from "../encoding/encode"
 
 // A function input is either a leaf {name, type} or a tuple with
 // nested components. `FunctionInput` (a discriminated union from
-// `function_inputSchema`) is structurally assignable to
+// `Function_inputSchema`) is structurally assignable to
 // `AbiInput` — the recursive Valibot anchor whose tuple variant
 // carries `components: AbiInput[]`. The runtime `parse` here is the
 // boundary between the loose anchor type and the tuple-arm contract:
@@ -36,7 +36,7 @@ import { to_selector } from "../encoding/encode"
 // or `"tuple[]"`, where the variant schema guarantees a non-empty
 // components array on the wire.
 function get_components(input: AbiInput): AbiInput[] {
-  return parse(array(abiInputSchema), input.components)
+  return parse(array(AbiInputSchema), input.components)
 }
 
 function canonical_type(input: AbiInput): string {
@@ -145,7 +145,7 @@ export function emit_file_basename_for(
 //     (e.g. "address", "uint256", "array", "abi_tuple"). `abi_tuple` is
 //     aliased on import as `tuple as abi_tuple` to avoid colliding with
 //     valibot's `tuple`.
-const typeInfoSchema = object({
+const TypeInfoSchema = object({
   param_schema: string(),
   param_type: string(),
   decoded_schema: string(),
@@ -156,7 +156,7 @@ const typeInfoSchema = object({
   core_types: set(string()),
   abi_builders: set(string()),
 })
-type TypeInfo = InferOutput<typeof typeInfoSchema>
+type TypeInfo = InferOutput<typeof TypeInfoSchema>
 
 function valibot_leaf(
   valibot_name: string,
@@ -334,24 +334,24 @@ function get_type_info(input: AbiInput): TypeInfo {
       return valibot_leaf("string", "string", "string_")
     case "address":
       return core_leaf(
-        "addressSchema",
+        "AddressSchema",
         "Address",
         "address",
       )
     case "bytes":
-      return core_leaf("bytesSchema", "Bytes", "bytes")
+      return core_leaf("BytesSchema", "Bytes", "bytes")
     case "bytes4":
-      return core_leaf("bytes4Schema", "Bytes4", "bytes4")
+      return core_leaf("Bytes4Schema", "Bytes4", "bytes4")
     case "bytes8":
-      return core_leaf("bytes8Schema", "Bytes8", "bytes8")
+      return core_leaf("Bytes8Schema", "Bytes8", "bytes8")
     case "bytes32":
       return core_leaf(
-        "bytes32Schema",
+        "Bytes32Schema",
         "Bytes32",
         "bytes32",
       )
     case "uint":
-      return core_leaf("uint256Schema", "Uint256", "uint")
+      return core_leaf("Uint256Schema", "Uint256", "uint")
     default: {
       const uint_match = /^uint(\d+)$/.exec(type)
       if (uint_match) {
@@ -362,7 +362,7 @@ function get_type_info(input: AbiInput): TypeInfo {
         ])
         if (supported.has(bits)) {
           return core_leaf(
-            `uint${bits}Schema`,
+            `Uint${bits}Schema`,
             `Uint${bits}`,
             `uint${bits}`,
           )
@@ -455,11 +455,11 @@ function compose_parameters_block(
         `${input.name}: ${infos[i]?.param_schema}`,
     )
     .join(", ")
-  return `const parametersSchema = union([
+  return `const ParametersSchema = union([
   tuple([${tuple_items}]),
   object({ ${object_items} }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>`
+type Parameters = InferOutput<typeof ParametersSchema>`
 }
 
 function compose_values_extraction(
@@ -479,7 +479,7 @@ function compose_values_extraction(
   // tuple's `Args` slot — without this, ternary widening collapses
   // `[A, B] | [A, B]` into `(A | B)[]` and the strict generic call
   // to `encode_function_call` rejects the loose array shape.
-  return `const parameters = parse(parametersSchema, _parameters)
+  return `const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([${by_index}] as const)
       : ([${by_name}] as const)`
@@ -518,13 +518,13 @@ function compose_signature_const(
 }`
 }
 
-const aggregateSchema = object({
+const AggregateSchema = object({
   valibot_names: set(string()),
   core_schemas: set(string()),
   core_types: set(string()),
   abi_builders: set(string()),
 })
-type Aggregate = InferOutput<typeof aggregateSchema>
+type Aggregate = InferOutput<typeof AggregateSchema>
 
 function empty_aggregate(): Aggregate {
   return {
@@ -536,7 +536,7 @@ function empty_aggregate(): Aggregate {
 }
 
 // Inputs contribute schemas, valibot symbols, and builders, but NOT
-// core types: the `Parameters` type is derived from `parametersSchema`
+// core types: the `Parameters` type is derived from `ParametersSchema`
 // via `InferOutput`, so no input type ever appears directly. Outputs
 // contribute everything because the decoded type is the return type.
 function fold_input(
@@ -571,8 +571,8 @@ function build_readable(
   const { name, inputs } = description
   const outputs = parse(
     tupleWithRest(
-      [function_outputSchema],
-      function_outputSchema,
+      [Function_outputSchema],
+      Function_outputSchema,
     ),
     description.outputs,
   )
@@ -582,9 +582,9 @@ function build_readable(
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
   for (const info of output_infos) fold_output(agg, info)
-  // Callable.data is bytesSchema-branded; the template wraps the
-  // bytes_to_hex(calldata) emit in parse(bytesSchema, …).
-  agg.core_schemas.add("bytesSchema")
+  // Callable.data is BytesSchema-branded; the template wraps the
+  // bytes_to_hex(calldata) emit in parse(BytesSchema, …).
+  agg.core_schemas.add("BytesSchema")
 
   const is_tuple = output_infos.length > 1
   const return_type = is_tuple
@@ -637,7 +637,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): ${return_type} => {
         ${decode_body}
       },
@@ -656,12 +656,12 @@ function build_signable(
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
   // The emitted eth_signTransaction payload routes its `value` and
-  // `input` fields through parse(uintSchema, "0x0") and
-  // parse(bytesSchema, bytes_to_hex(...)) — Signable<Bytes> requires
-  // the brand on `data`, genericTransactionSchema requires brands on
+  // `input` fields through parse(UintSchema, "0x0") and
+  // parse(BytesSchema, bytes_to_hex(...)) — Signable<Bytes> requires
+  // the brand on `data`, GenericTransactionSchema requires brands on
   // both fields.
-  agg.core_schemas.add("bytesSchema")
-  agg.core_schemas.add("uintSchema")
+  agg.core_schemas.add("BytesSchema")
+  agg.core_schemas.add("UintSchema")
 
   return `import type { Bytes } from "@ethernauta/core"
 import { eth_signTransaction } from "@ethernauta/eth"
@@ -694,8 +694,8 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     return eth_signTransaction(
       [{
         to: context.to,
-        value: parse(uintSchema, "0x0"),
-        input: parse(bytesSchema, bytes_to_hex(calldata)),
+        value: parse(UintSchema, "0x0"),
+        input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: ${signature_const_name(emit_name)},
         },
@@ -706,14 +706,14 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
 `
 }
 
-const generateResultSchema = object({
+const GenerateResultSchema = object({
   generated: array(string()),
   skipped: array(
     object({ name: string(), reason: string() }),
   ),
 })
 export type GenerateResult = InferOutput<
-  typeof generateResultSchema
+  typeof GenerateResultSchema
 >
 
 // Real-world ABIs frequently include methods that exercise types the
@@ -767,5 +767,5 @@ export function generate(
       })
     }
   }
-  return parse(generateResultSchema, { generated, skipped })
+  return parse(GenerateResultSchema, { generated, skipped })
 }

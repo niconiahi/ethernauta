@@ -1,9 +1,9 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
-  addressSchema,
-  bytes4Schema,
-  uint256Schema,
+  AddressSchema,
+  Bytes4Schema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { supportsInterface } from "@ethernauta/erc/165"
 import {
@@ -59,7 +59,7 @@ const multicall = create_multicall([
   },
 ])
 
-const snapshotSchema = object({
+const SnapshotSchema = object({
   interfaces: array(
     object({
       label: string(),
@@ -72,7 +72,7 @@ const snapshotSchema = object({
   token_uri_1: string(),
   elapsed_ms: number(),
 })
-type Snapshot = InferOutput<typeof snapshotSchema>
+type Snapshot = InferOutput<typeof SnapshotSchema>
 
 export function NftIntrospectionDemo() {
   const [snapshot, set_snapshot] =
@@ -86,21 +86,21 @@ export function NftIntrospectionDemo() {
     try {
       const ctx = contract({
         chain_id: MAINNET_CHAIN_ID,
-        to: parse(addressSchema, BAYC),
+        to: parse(AddressSchema, BAYC),
       })
       const start = performance.now()
       const results = await multicall([
         ...INTERFACES.map((i) =>
           supportsInterface({
-            interfaceId: parse(bytes4Schema, i.id),
+            interfaceId: parse(Bytes4Schema, i.id),
           })(ctx),
         ),
         name()(ctx),
         totalSupply()(ctx),
-        ownerOf({ tokenId: parse(uint256Schema, "0x1") })(
+        ownerOf({ tokenId: parse(Uint256Schema, "0x1") })(
           ctx,
         ),
-        tokenURI({ tokenId: parse(uint256Schema, "0x1") })(
+        tokenURI({ tokenId: parse(Uint256Schema, "0x1") })(
           ctx,
         ),
       ] as never)

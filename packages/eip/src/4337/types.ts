@@ -3,11 +3,11 @@
 // 0x0000000071727De22E5E9d8BAf0edAc6f37da032
 
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   array,
@@ -19,89 +19,89 @@ import {
 // JSON-RPC facing UserOperation. v0.7 splits the packed
 // composite fields back into discrete keys so bundlers can
 // reason about each gas component independently.
-export const userOperationSchema = object({
-  sender: addressSchema,
-  nonce: uintSchema,
-  factory: optional(addressSchema),
-  factoryData: optional(bytesSchema),
-  callData: bytesSchema,
-  callGasLimit: uintSchema,
-  verificationGasLimit: uintSchema,
-  preVerificationGas: uintSchema,
-  maxFeePerGas: uintSchema,
-  maxPriorityFeePerGas: uintSchema,
-  paymaster: optional(addressSchema),
-  paymasterVerificationGasLimit: optional(uintSchema),
-  paymasterPostOpGasLimit: optional(uintSchema),
-  paymasterData: optional(bytesSchema),
-  signature: bytesSchema,
+export const UserOperationSchema = object({
+  sender: AddressSchema,
+  nonce: UintSchema,
+  factory: optional(AddressSchema),
+  factoryData: optional(BytesSchema),
+  callData: BytesSchema,
+  callGasLimit: UintSchema,
+  verificationGasLimit: UintSchema,
+  preVerificationGas: UintSchema,
+  maxFeePerGas: UintSchema,
+  maxPriorityFeePerGas: UintSchema,
+  paymaster: optional(AddressSchema),
+  paymasterVerificationGasLimit: optional(UintSchema),
+  paymasterPostOpGasLimit: optional(UintSchema),
+  paymasterData: optional(BytesSchema),
+  signature: BytesSchema,
 })
 export type UserOperation = InferOutput<
-  typeof userOperationSchema
+  typeof UserOperationSchema
 >
 
 // EntryPoint v0.7 storage layout. Composite fields are
 // already packed — see ./packing.ts for the rules.
-export const packedUserOperationSchema = object({
-  sender: addressSchema,
-  nonce: uintSchema,
-  initCode: bytesSchema,
-  callData: bytesSchema,
-  accountGasLimits: bytes32Schema,
-  preVerificationGas: uintSchema,
-  gasFees: bytes32Schema,
-  paymasterAndData: bytesSchema,
-  signature: bytesSchema,
+export const PackedUserOperationSchema = object({
+  sender: AddressSchema,
+  nonce: UintSchema,
+  initCode: BytesSchema,
+  callData: BytesSchema,
+  accountGasLimits: Bytes32Schema,
+  preVerificationGas: UintSchema,
+  gasFees: Bytes32Schema,
+  paymasterAndData: BytesSchema,
+  signature: BytesSchema,
 })
 export type PackedUserOperation = InferOutput<
-  typeof packedUserOperationSchema
+  typeof PackedUserOperationSchema
 >
 
-export const userOperationByHashSchema = object({
-  userOperation: userOperationSchema,
-  entryPoint: addressSchema,
-  blockNumber: optional(uintSchema),
-  blockHash: optional(hash32Schema),
-  transactionHash: optional(hash32Schema),
+export const UserOperationByHashSchema = object({
+  userOperation: UserOperationSchema,
+  entryPoint: AddressSchema,
+  blockNumber: optional(UintSchema),
+  blockHash: optional(Hash32Schema),
+  transactionHash: optional(Hash32Schema),
 })
 export type UserOperationByHash = InferOutput<
-  typeof userOperationByHashSchema
+  typeof UserOperationByHashSchema
 >
 
-export const userOperationLogSchema = object({
-  address: addressSchema,
-  topics: array(hash32Schema),
-  data: bytesSchema,
+export const UserOperationLogSchema = object({
+  address: AddressSchema,
+  topics: array(Hash32Schema),
+  data: BytesSchema,
 })
 
-export const userOperationReceiptSchema = object({
-  userOpHash: hash32Schema,
-  entryPoint: addressSchema,
-  sender: addressSchema,
-  nonce: uintSchema,
-  paymaster: optional(addressSchema),
-  actualGasCost: uintSchema,
-  actualGasUsed: uintSchema,
-  success: optional(uintSchema),
-  reason: optional(bytesSchema),
-  logs: array(userOperationLogSchema),
+export const UserOperationReceiptSchema = object({
+  userOpHash: Hash32Schema,
+  entryPoint: AddressSchema,
+  sender: AddressSchema,
+  nonce: UintSchema,
+  paymaster: optional(AddressSchema),
+  actualGasCost: UintSchema,
+  actualGasUsed: UintSchema,
+  success: optional(UintSchema),
+  reason: optional(BytesSchema),
+  logs: array(UserOperationLogSchema),
   receipt: object({
-    transactionHash: hash32Schema,
-    blockHash: hash32Schema,
-    blockNumber: uintSchema,
+    transactionHash: Hash32Schema,
+    blockHash: Hash32Schema,
+    blockNumber: UintSchema,
   }),
 })
 export type UserOperationReceipt = InferOutput<
-  typeof userOperationReceiptSchema
+  typeof UserOperationReceiptSchema
 >
 
-export const estimateUserOperationGasResultSchema = object({
-  preVerificationGas: uintSchema,
-  verificationGasLimit: uintSchema,
-  callGasLimit: uintSchema,
-  paymasterVerificationGasLimit: optional(uintSchema),
-  paymasterPostOpGasLimit: optional(uintSchema),
+export const EstimateUserOperationGasResultSchema = object({
+  preVerificationGas: UintSchema,
+  verificationGasLimit: UintSchema,
+  callGasLimit: UintSchema,
+  paymasterVerificationGasLimit: optional(UintSchema),
+  paymasterPostOpGasLimit: optional(UintSchema),
 })
 export type EstimateUserOperationGasResult = InferOutput<
-  typeof estimateUserOperationGasResultSchema
+  typeof EstimateUserOperationGasResultSchema
 >

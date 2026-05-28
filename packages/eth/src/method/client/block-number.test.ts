@@ -1,4 +1,4 @@
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
@@ -40,7 +40,7 @@ describe.skip("eth_blockNumber", () => {
       reader({ chain_id: chainId }),
     )
     expect(() =>
-      parse(uintSchema, blockNumber_),
+      parse(UintSchema, blockNumber_),
     ).not.toThrow()
   })
 })

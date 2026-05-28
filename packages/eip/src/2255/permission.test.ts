@@ -1,9 +1,9 @@
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
-  caveatSchema,
-  permissionSchema,
-  requestedPermissionSchema,
+  CaveatSchema,
+  PermissionSchema,
+  RequestedPermissionSchema,
 } from "./permission"
 
 describe("permission.ts", () => {
@@ -12,7 +12,7 @@ describe("permission.ts", () => {
       type: "restrictReturnedAccounts",
       value: ["0xabc"],
     }
-    expect(() => parse(caveatSchema, caveat)).not.toThrow()
+    expect(() => parse(CaveatSchema, caveat)).not.toThrow()
   })
 
   it("should validate a minimum eth_accounts permission", () => {
@@ -21,7 +21,7 @@ describe("permission.ts", () => {
       caveats: [],
     }
     expect(() =>
-      parse(permissionSchema, perm),
+      parse(PermissionSchema, perm),
     ).not.toThrow()
   })
 
@@ -39,19 +39,19 @@ describe("permission.ts", () => {
       id: "abc-123",
     }
     expect(() =>
-      parse(permissionSchema, perm),
+      parse(PermissionSchema, perm),
     ).not.toThrow()
   })
 
   it("should reject when parentCapability is missing", () => {
     const perm = { caveats: [] }
-    expect(() => parse(permissionSchema, perm)).toThrow()
+    expect(() => parse(PermissionSchema, perm)).toThrow()
   })
 
   it("should accept a wallet_requestPermissions input", () => {
     const requested = { eth_accounts: {} }
     expect(() =>
-      parse(requestedPermissionSchema, requested),
+      parse(RequestedPermissionSchema, requested),
     ).not.toThrow()
   })
 })

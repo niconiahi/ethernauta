@@ -5,7 +5,7 @@
 // chrome.storage.session so the background script can answer
 // wallet_getCallsStatus polls without re-opening the popup.
 
-import { hash32Schema, uintSchema } from "@ethernauta/core"
+import { Hash32Schema, UintSchema } from "@ethernauta/core"
 import {
   array,
   boolean,
@@ -17,14 +17,14 @@ import {
 
 const KEY_PREFIX = "calls_"
 
-export const batchRecordSchema = object({
+export const BatchRecordSchema = object({
   id: string(),
-  chainId: uintSchema,
+  chainId: UintSchema,
   atomic: boolean(),
-  transaction_hashes: array(hash32Schema),
+  transaction_hashes: array(Hash32Schema),
 })
 export type BatchRecord = InferOutput<
-  typeof batchRecordSchema
+  typeof BatchRecordSchema
 >
 
 function compose_key(id: string): string {
@@ -56,6 +56,6 @@ export async function get_batch(
   const result = await chrome.storage.session.get(key)
   const raw = result[key]
   if (raw === undefined) return undefined
-  const batch_record = parse(batchRecordSchema, raw)
+  const batch_record = parse(BatchRecordSchema, raw)
   return batch_record
 }

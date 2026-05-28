@@ -11,7 +11,7 @@ import {
   type SignTransactionResponse,
 } from "../src/utils/event"
 
-const pendingRecordSchema = object({
+const PendingRecordSchema = object({
   tab_id: number(),
   request: object({ id: string() }),
 })
@@ -26,7 +26,7 @@ chrome.runtime.onConnect.addListener((port) => {
     for (const [key, value] of Object.entries(session)) {
       if (!key.startsWith("pending_")) continue
       const { tab_id, request } = parse(
-        pendingRecordSchema,
+        PendingRecordSchema,
         value,
       )
       const response: NativeExtensionCloseResponse = {
@@ -112,7 +112,7 @@ chrome.runtime.onMessage.addListener(
       const session_results =
         await chrome.storage.session.get(key)
       const pending_request = parse(
-        pendingRecordSchema,
+        PendingRecordSchema,
         session_results[key],
       )
       chrome.tabs.sendMessage(

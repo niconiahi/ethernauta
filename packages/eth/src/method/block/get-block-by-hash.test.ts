@@ -1,5 +1,5 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { hash32Schema } from "@ethernauta/core"
+import { Hash32Schema } from "@ethernauta/core"
 import {
   create_reader,
   encode_chain_id,
@@ -31,7 +31,7 @@ describe.skip("eth_getBlockByHash", () => {
       },
     ])
     const VALID_BLOCK_HASH = parse(
-      hash32Schema,
+      Hash32Schema,
       "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
     )
     const readable = eth_getBlockByHash([
@@ -58,7 +58,7 @@ describe.skip("eth_getBlockByHash", () => {
       },
     ])
     const INVALID_BLOCK_HASH = parse(
-      hash32Schema,
+      Hash32Schema,
       "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e36",
     )
     const readable = eth_getBlockByHash([
@@ -85,7 +85,7 @@ describe.skip("eth_getBlockByHash", () => {
       },
     ])
     const VALID_BLOCK_HASH = parse(
-      hash32Schema,
+      Hash32Schema,
       "0x31386e6cfba70bb4d8a95404bdb740572b758a15c62e51ee912071a7b5be9e26",
     )
     const readable = eth_getBlockByHash({

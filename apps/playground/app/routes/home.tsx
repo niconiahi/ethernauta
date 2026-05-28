@@ -1,5 +1,5 @@
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import {
   eth_sendRawTransaction,
   eth_signTransaction,
@@ -180,11 +180,11 @@ export default function () {
                   await eth_signTransaction([
                     {
                       to: parse(
-                        addressSchema,
+                        AddressSchema,
                         "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
                       ),
                       value: parse(
-                        uintSchema,
+                        UintSchema,
                         number_to_hex(1),
                       ),
                     },

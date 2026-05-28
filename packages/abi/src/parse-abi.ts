@@ -11,7 +11,7 @@ import {
   type Description,
   DescriptionSchema,
 } from "./abi/description"
-import { typeSchema } from "./abi/shared"
+import { TypeSchema } from "./abi/shared"
 
 // Parse a list of human-readable Solidity signatures into the canonical
 // ABI JSON shape this package speaks (`Description`). Scope:
@@ -19,7 +19,7 @@ import { typeSchema } from "./abi/shared"
 //   - `event Name(type [indexed] arg, ...)` (+ trailing `anonymous`)
 //   - `error Name(type arg, ...)`
 //   - `constructor(type arg, ...) [stateMutability]`
-// Only primitive types from `typeSchema` are accepted. No tuples, no
+// Only primitive types from `TypeSchema` are accepted. No tuples, no
 // nested types. Hand-write JSON ABI for anything richer.
 export function parse_abi(
   _signatures: readonly string[],
@@ -175,12 +175,12 @@ function parse_constructor(_sig: string): Description {
   })
 }
 
-const parsedArgSchema = object({
+const ParsedArgSchema = object({
   name: string(),
-  type: typeSchema,
+  type: TypeSchema,
   indexed: optional(boolean()),
 })
-type ParsedArg = InferOutput<typeof parsedArgSchema>
+type ParsedArg = InferOutput<typeof ParsedArgSchema>
 
 function parse_arg(
   _arg: string,
@@ -191,7 +191,7 @@ function parse_arg(
     throw new Error("parse_abi: empty argument")
   }
   const type_str = tokens[0] as string
-  const type = parse(typeSchema, type_str)
+  const type = parse(TypeSchema, type_str)
   let indexed = false
   let name = ""
   if (tokens.length === 1) {

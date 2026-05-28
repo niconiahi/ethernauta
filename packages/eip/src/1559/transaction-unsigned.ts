@@ -1,28 +1,28 @@
 // https://eips.ethereum.org/EIPS/eip-1559
 
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
-import { accessListSchema } from "@ethernauta/eip/2930"
+import { AccessListSchema } from "@ethernauta/eip/2930"
 import type { InferOutput } from "valibot"
 import { nullable, object } from "valibot"
 
-export const transaction1559UnsignedSchema = object({
-  type: byteSchema,
-  nonce: uintSchema,
-  to: nullable(addressSchema),
-  gas: uintSchema,
-  value: uintSchema,
-  input: bytesSchema,
-  maxPriorityFeePerGas: uintSchema,
-  maxFeePerGas: uintSchema,
-  gasPrice: uintSchema,
-  accessList: accessListSchema,
-  chainId: uintSchema,
+export const Transaction1559UnsignedSchema = object({
+  type: ByteSchema,
+  nonce: UintSchema,
+  to: nullable(AddressSchema),
+  gas: UintSchema,
+  value: UintSchema,
+  input: BytesSchema,
+  maxPriorityFeePerGas: UintSchema,
+  maxFeePerGas: UintSchema,
+  gasPrice: UintSchema,
+  accessList: AccessListSchema,
+  chainId: UintSchema,
 })
 export type Transaction1559Unsigned = InferOutput<
-  typeof transaction1559UnsignedSchema
+  typeof Transaction1559UnsignedSchema
 >

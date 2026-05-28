@@ -3,7 +3,7 @@
 // EIP-712 digest internally and signs with the user's private key.
 
 import type { Address, Bytes } from "@ethernauta/core"
-import { bytesSchema } from "@ethernauta/core"
+import { BytesSchema } from "@ethernauta/core"
 import type {
   ResolvedSigner,
   Signable,
@@ -13,7 +13,7 @@ import { parse } from "valibot"
 
 import {
   type TypedData,
-  typedDataSchema,
+  TypedDataSchema,
 } from "./typed-data"
 
 // Bigints survive `window.postMessage` (structured clone) but
@@ -22,7 +22,7 @@ import {
 // before crossing into the wallet so callers can keep using
 // bigints (the natural type for uint256 fields) without
 // thinking about the boundary. The wallet re-parses via the
-// same `typedDataSchema` which accepts hex/number/bigint.
+// same `TypedDataSchema` which accepts hex/number/bigint.
 function bigint_to_hex(value: bigint): `0x${string}` {
   return `0x${value.toString(16)}`
 }
@@ -77,16 +77,16 @@ export function eth_signTypedData_v4(
     context,
   ]: ResolvedSigner): Promise<Bytes> => {
     const [address, typed_data] = _parameters
-    const validated = parse(typedDataSchema, typed_data)
+    const validated = parse(TypedDataSchema, typed_data)
     assert_domain_chain(validated, context.chain_id)
     const wire_safe = parse(
-      typedDataSchema,
+      TypedDataSchema,
       normalize_bigints(validated),
     )
     const signature = await signer("eth_signTypedData_v4", [
       address,
       wire_safe,
     ])
-    return parse(bytesSchema, signature)
+    return parse(BytesSchema, signature)
   }
 }

@@ -1,8 +1,8 @@
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -16,7 +16,7 @@ import {
 } from "./helpers"
 
 const B32_ZERO = parse(
-  bytes32Schema,
+  Bytes32Schema,
   `0x${"00".repeat(32)}`,
 )
 
@@ -24,7 +24,7 @@ describe("helpers.ts — address_to_bytes32", () => {
   it("should left-pad an address to 32 bytes", () => {
     const padded = address_to_bytes32(
       parse(
-        addressSchema,
+        AddressSchema,
         "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
       ),
     )
@@ -72,18 +72,18 @@ describe("helpers.ts — build_gasless_order", () => {
   it("should assemble a gasless order with computed deadlines", () => {
     const order = build_gasless_order({
       originSettler: parse(
-        addressSchema,
+        AddressSchema,
         "0x1111111111111111111111111111111111111111",
       ),
       user: parse(
-        addressSchema,
+        AddressSchema,
         "0x2222222222222222222222222222222222222222",
       ),
-      originChainId: parse(uint256Schema, "0xaa36a7"),
+      originChainId: parse(Uint256Schema, "0xaa36a7"),
       orderDataType: B32_ZERO,
-      orderData: parse(bytesSchema, "0x"),
+      orderData: parse(BytesSchema, "0x"),
       window: { open_window_s: 60, fill_window_s: 600 },
-      nonce: parse(uint256Schema, "0x1"),
+      nonce: parse(Uint256Schema, "0x1"),
     })
     expect(order.originSettler).toBe(
       "0x1111111111111111111111111111111111111111",

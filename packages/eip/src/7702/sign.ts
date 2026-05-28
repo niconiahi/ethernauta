@@ -6,7 +6,7 @@
 // or UI concerns — drop them straight into a wallet view, a
 // CLI signer, or a test harness.
 
-import { uintSchema } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import { hmac } from "@noble/hashes/hmac"
 import { sha256 } from "@noble/hashes/sha2"
 import { keccak_256 } from "@noble/hashes/sha3"
@@ -65,11 +65,11 @@ export function sign_authorization(
     address: auth.address,
     nonce: auth.nonce,
     yParity: parse(
-      uintSchema,
+      UintSchema,
       big_to_hex(BigInt(signature.recovery)),
     ),
-    r: parse(uintSchema, big_to_hex(signature.r)),
-    s: parse(uintSchema, big_to_hex(signature.s)),
+    r: parse(UintSchema, big_to_hex(signature.r)),
+    s: parse(UintSchema, big_to_hex(signature.s)),
   }
 }
 
@@ -95,11 +95,11 @@ export function sign_set_code_transaction(
   const signed: Transaction7702Signed = {
     ...unsigned,
     yParity: parse(
-      uintSchema,
+      UintSchema,
       big_to_hex(BigInt(signature.recovery)),
     ),
-    r: parse(uintSchema, big_to_hex(signature.r)),
-    s: parse(uintSchema, big_to_hex(signature.s)),
+    r: parse(UintSchema, big_to_hex(signature.r)),
+    s: parse(UintSchema, big_to_hex(signature.s)),
   }
   return encode_transaction_signed(signed)
 }

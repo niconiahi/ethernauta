@@ -1,16 +1,16 @@
-import { addressSchema, uintSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { get_contract_address } from "./get-contract-address"
 
 const FROM = parse(
-  addressSchema,
+  AddressSchema,
   "0x6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0",
 )
-const NONCE_0 = parse(uintSchema, "0x0")
-const NONCE_1 = parse(uintSchema, "0x1")
-const NONCE_7 = parse(uintSchema, "0x7")
+const NONCE_0 = parse(UintSchema, "0x0")
+const NONCE_1 = parse(UintSchema, "0x1")
+const NONCE_7 = parse(UintSchema, "0x7")
 
 describe("get_contract_address", () => {
   // Vector from the canonical RLP test set: deployer

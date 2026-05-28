@@ -13,8 +13,8 @@ import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
 import {
-  bytesSchema,
-  uint256Schema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint256()] as const
@@ -25,15 +25,15 @@ export const GET_OPERATOR_FEE_SIGNATURE = {
   names: ["_gasUsed"],
 }
 
-const parametersSchema = union([
-  tuple([uint256Schema]),
-  object({ _gasUsed: uint256Schema }),
+const ParametersSchema = union([
+  tuple([Uint256Schema]),
+  object({ _gasUsed: Uint256Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function getOperatorFee(_parameters: Parameters) {
   return (context: ContractContext): Callable<Uint256> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters._gasUsed] as const)
@@ -45,13 +45,13 @@ export function getOperatorFee(_parameters: Parameters) {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (result: Bytes): Uint256 => {
         const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return parse(uint256Schema, decoded)
+        return parse(Uint256Schema, decoded)
       },
     }
   }

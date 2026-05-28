@@ -8,10 +8,10 @@ import type {
   Uint,
 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -26,15 +26,15 @@ import type {
 } from "./types"
 
 const ZERO_BYTES32 = parse(
-  bytes32Schema,
+  Bytes32Schema,
   "0x0000000000000000000000000000000000000000000000000000000000000000",
 )
 const ZERO_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000000",
 )
-const EMPTY_BYTES = parse(bytesSchema, "0x")
-const ZERO_UINT = parse(uintSchema, "0x0")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
+const ZERO_UINT = parse(UintSchema, "0x0")
 
 function pack_uint128(value: bigint): Uint8Array {
   if (value < 0n || value >= 1n << 128n) {
@@ -75,7 +75,7 @@ export function pack_account_gas_limits(
     pack_uint128(to_bigint(verificationGasLimit)),
     pack_uint128(to_bigint(callGasLimit)),
   )
-  return parse(bytes32Schema, bytes_to_hex(packed))
+  return parse(Bytes32Schema, bytes_to_hex(packed))
 }
 
 export function pack_gas_fees(
@@ -86,7 +86,7 @@ export function pack_gas_fees(
     pack_uint128(to_bigint(maxPriorityFeePerGas)),
     pack_uint128(to_bigint(maxFeePerGas)),
   )
-  return parse(bytes32Schema, bytes_to_hex(packed))
+  return parse(Bytes32Schema, bytes_to_hex(packed))
 }
 
 export function pack_init_code(
@@ -101,7 +101,7 @@ export function pack_init_code(
     hex_to_bytes(factory),
     hex_to_bytes(data),
   )
-  return parse(bytesSchema, bytes_to_hex(bytes))
+  return parse(BytesSchema, bytes_to_hex(bytes))
 }
 
 export function pack_paymaster_and_data(input: {
@@ -126,7 +126,7 @@ export function pack_paymaster_and_data(input: {
   )
   const data = input.paymasterData ?? EMPTY_BYTES
   return parse(
-    bytesSchema,
+    BytesSchema,
     bytes_to_hex(
       concat(
         hex_to_bytes(input.paymaster),
@@ -181,11 +181,11 @@ export function unpack_uint128_pair(packed: Bytes32): {
   }
   return {
     hi: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(bytes.slice(0, 16)),
     ),
     lo: parse(
-      uintSchema,
+      UintSchema,
       bytes_to_uint(bytes.slice(16, 32)),
     ),
   }

@@ -1,4 +1,4 @@
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -6,7 +6,7 @@ import { build_siwe_message } from "./build"
 import { parse_siwe_message } from "./parse"
 
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xfA3a1d0c75A8D44A8DcD8c8DfcdcD52DBfdAB845",
 )
 

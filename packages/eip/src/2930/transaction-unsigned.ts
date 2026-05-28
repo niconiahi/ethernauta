@@ -1,26 +1,26 @@
 // https://eips.ethereum.org/EIPS/eip-2930
 
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import { nullable, object } from "valibot"
-import { accessListSchema } from "./access-list"
+import { AccessListSchema } from "./access-list"
 
-export const transaction2930UnsignedSchema = object({
-  type: byteSchema,
-  nonce: uintSchema,
-  to: nullable(addressSchema),
-  gas: uintSchema,
-  value: uintSchema,
-  input: bytesSchema,
-  gasPrice: uintSchema,
-  accessList: accessListSchema,
-  chainId: uintSchema,
+export const Transaction2930UnsignedSchema = object({
+  type: ByteSchema,
+  nonce: UintSchema,
+  to: nullable(AddressSchema),
+  gas: UintSchema,
+  value: UintSchema,
+  input: BytesSchema,
+  gasPrice: UintSchema,
+  accessList: AccessListSchema,
+  chainId: UintSchema,
 })
 export type Transaction2930Unsigned = InferOutput<
-  typeof transaction2930UnsignedSchema
+  typeof Transaction2930UnsignedSchema
 >

@@ -180,12 +180,12 @@ await ws.close()
 ```ts
 import {
   encode_chain_id, decode_chain_id,
-  accountIdSchema, type AccountId,
-  assetIdSchema, type AssetId,
-  assetTypeSchema, type AssetType,
-  assetNameSchema, type AssetName,
-  tokenIdSchema, type TokenId,
-  chainIdSchema, type ChainId,
+  AccountIdSchema, type AccountId,
+  AssetIdSchema, type AssetId,
+  AssetTypeSchema, type AssetType,
+  AssetNameSchema, type AssetName,
+  TokenIdSchema, type TokenId,
+  ChainIdSchema, type ChainId,
 } from "@ethernauta/transport"
 
 const chain_id = encode_chain_id({ namespace: "eip155", reference: "11155111" })
@@ -199,13 +199,13 @@ CAIP-2 (chain), CAIP-10 (account) and CAIP-19 (asset / token) primitives are all
 
 ```ts
 import {
-  type Call, callSchema,
-  type Request, requestSchema,
-  type Response, responseSchema,
+  type Call, CallSchema,
+  type Request, RequestSchema,
+  type Response, ResponseSchema,
   type FailedResponse, type SuccesfulResponse,
-  type Parameters, parametersSchema,
-  type Id, idSchema,
-  methodSchema,
+  type Parameters, ParametersSchema,
+  type Id, IdSchema,
+  MethodSchema,
 } from "@ethernauta/transport"
 ```
 
@@ -215,7 +215,7 @@ Sidecar metadata that travels alongside a `eth_signTransaction` request so the w
 
 ```ts
 import type { FunctionSignature } from "@ethernauta/transport"
-import { functionSignatureSchema } from "@ethernauta/transport"
+import { FunctionSignatureSchema } from "@ethernauta/transport"
 
 const _function: FunctionSignature = {
   signature: "transfer(address,uint256)",
@@ -223,4 +223,4 @@ const _function: FunctionSignature = {
 }
 ```
 
-The matching `EthernautaContext` and `ethernautaContextSchema` are exported for callers that want to assemble the full sidecar by hand.
+The matching `EthernautaContext` and `EthernautaContextSchema` are exported for callers that want to assemble the full sidecar by hand.

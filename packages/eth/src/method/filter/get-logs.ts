@@ -2,20 +2,20 @@ import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { FilterResults } from "../../core/filter"
 import {
-  filterResultsSchema,
-  filterSchema,
+  FilterResultsSchema,
+  FilterSchema,
 } from "../../core/filter"
 
-const parametersSchema = union([
-  tuple([filterSchema]),
-  object({ filter: filterSchema }),
+const ParametersSchema = union([
+  tuple([FilterSchema]),
+  object({ filter: FilterSchema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns All logs matching filter with given id
  */
@@ -27,8 +27,8 @@ export function eth_getLogs(
     _context,
   ]: ResolvedReader): Promise<FilterResults> => {
     const method = "eth_getLogs"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -36,7 +36,7 @@ export function eth_getLogs(
       throw new Error(response.error.message)
     }
     const result = parse(
-      filterResultsSchema,
+      FilterResultsSchema,
       response.result,
     )
     return result

@@ -6,8 +6,8 @@ import {
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   type Address,
-  addressSchema,
-  uintSchema,
+  AddressSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   HDKey,
@@ -17,7 +17,7 @@ import { keccak_256, sign_digest } from "@ethernauta/crypto"
 import {
   encode_rlp,
   eth_getTransactionCount,
-  genericTransactionSchema,
+  GenericTransactionSchema,
 } from "@ethernauta/eth"
 import type { ChainId, Reader } from "@ethernauta/transport"
 import { hex_to_bytes } from "@ethernauta/utils"
@@ -34,39 +34,39 @@ import {
 import { get_private_key, hex_to_big } from "./crypto"
 import type { Transaction } from "./transaction"
 
-export const accessListItemSchema = object({
-  address: addressSchema,
+export const AccessListItemSchema = object({
+  address: AddressSchema,
   storage_keys: array(string()),
 })
 export type AccessListItem = InferOutput<
-  typeof accessListItemSchema
+  typeof AccessListItemSchema
 >
 
-// Post-parse tightening of `genericTransactionSchema` for the
+// Post-parse tightening of `GenericTransactionSchema` for the
 // `eth_signTransaction` boundary: `to` is required (a Signable
 // can't broadcast to "no address" — that's `eth_sendTransaction`
 // contract-deployment territory, which Ethernauta routes via
 // EIP-1014's deploy flow, not this signer).
-const signableTransactionSchema = object({
-  ...genericTransactionSchema.entries,
-  to: addressSchema,
+const SignableTransactionSchema = object({
+  ...GenericTransactionSchema.entries,
+  to: AddressSchema,
 })
 
-export const eip1559TransactionUnsignedSchema = object({
+export const Eip1559TransactionUnsignedSchema = object({
   chain_id: bigint(),
   nonce: bigint(),
   max_priority_fee_per_gas: bigint(),
   max_fee_per_gas: bigint(),
   gas_limit: bigint(),
-  to: addressSchema,
+  to: AddressSchema,
   value: bigint(),
   data: custom<Uint8Array>(
     (value) => value instanceof Uint8Array,
   ),
-  access_list: array(accessListItemSchema),
+  access_list: array(AccessListItemSchema),
 })
 export type Eip1559TransactionUnsigned = InferOutput<
-  typeof eip1559TransactionUnsignedSchema
+  typeof Eip1559TransactionUnsignedSchema
 >
 
 export type Eip1559TransactionSigned =
@@ -150,7 +150,7 @@ function get_fields_from_transaction(
       const raw = Array.isArray(params)
         ? params[0]
         : params.transaction
-      const tx = parse(signableTransactionSchema, raw)
+      const tx = parse(SignableTransactionSchema, raw)
       const value_hex = tx.value ?? "0x0"
       const input_hex = tx.input ?? "0x"
       const data =
@@ -165,7 +165,7 @@ function get_fields_from_transaction(
     }
     case "transfer": {
       const [transfer_to, value_hex] = parse(
-        tuple([addressSchema, uintSchema]),
+        tuple([AddressSchema, UintSchema]),
         params,
       )
       return {
@@ -175,9 +175,9 @@ function get_fields_from_transaction(
       }
     }
     case "safeMint": {
-      const contract = parse(addressSchema, to)
+      const contract = parse(AddressSchema, to)
       const [nft_recipient, uri] = parse(
-        tuple([addressSchema, string()]),
+        tuple([AddressSchema, string()]),
         params,
       )
       return {

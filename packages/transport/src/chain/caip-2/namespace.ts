@@ -7,8 +7,8 @@ function isNamespace(input: unknown): boolean {
     /^[-a-z0-9]{3,8}$/.test(input)
   )
 }
-export const caip2_namespaceSchema =
+export const Caip2_namespaceSchema =
   custom<string>(isNamespace)
 export type caip2_Namespace = InferOutput<
-  typeof caip2_namespaceSchema
+  typeof Caip2_namespaceSchema
 >

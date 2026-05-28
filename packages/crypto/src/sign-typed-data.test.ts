@@ -1,6 +1,6 @@
 import {
-  addressSchema,
-  hash32Schema,
+  AddressSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
   hash_typed_data,
@@ -27,7 +27,7 @@ const TYPED_DATA: TypedData = {
     version: "1",
     chainId: 1,
     verifyingContract: parse(
-      addressSchema,
+      AddressSchema,
       "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
     ),
   },
@@ -66,7 +66,7 @@ describe("sign-typed-data.ts — sign_typed_data", () => {
   it("round-trips through recover_address against the EIP-712 digest", () => {
     const sig = sign_typed_data(TYPED_DATA, PRIVATE_KEY)
     const hash = parse(
-      hash32Schema,
+      Hash32Schema,
       bytes_to_hex(hash_typed_data(TYPED_DATA)),
     )
     const recovered = recover_address(hash, sig)

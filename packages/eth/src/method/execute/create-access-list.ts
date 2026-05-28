@@ -1,10 +1,10 @@
-import { uintSchema } from "@ethernauta/core"
-import { accessListSchema } from "@ethernauta/eip/2930"
+import { UintSchema } from "@ethernauta/core"
+import { AccessListSchema } from "@ethernauta/eip/2930"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   object,
@@ -13,28 +13,28 @@ import {
   tuple,
   union,
 } from "valibot"
-import { blockNumberOrTagOrHashSchema } from "../../core/block"
-import { genericTransactionSchema } from "../../core/transaction"
+import { BlockNumberOrTagOrHashSchema } from "../../core/block"
+import { GenericTransactionSchema } from "../../core/transaction"
 
-const parametersSchema = union([
-  tuple([genericTransactionSchema]),
+const ParametersSchema = union([
+  tuple([GenericTransactionSchema]),
   tuple([
-    genericTransactionSchema,
-    blockNumberOrTagOrHashSchema,
+    GenericTransactionSchema,
+    BlockNumberOrTagOrHashSchema,
   ]),
-  object({ transaction: genericTransactionSchema }),
+  object({ transaction: GenericTransactionSchema }),
   object({
-    transaction: genericTransactionSchema,
-    blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
+    transaction: GenericTransactionSchema,
+    blockNumberOrTagOrHash: BlockNumberOrTagOrHashSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
-const accessListResultSchema = object({
-  accessList: accessListSchema,
+type Parameters = InferOutput<typeof ParametersSchema>
+const AccessListResultSchema = object({
+  accessList: AccessListSchema,
   error: string(),
-  gasUsed: uintSchema,
+  gasUsed: UintSchema,
 })
-type Response = InferOutput<typeof accessListResultSchema>
+type Response = InferOutput<typeof AccessListResultSchema>
 export function eth_createAccessList(
   _parameters: Parameters,
 ): Readable<Response> {
@@ -43,8 +43,8 @@ export function eth_createAccessList(
     _context,
   ]: ResolvedReader): Promise<Response> => {
     const method = "eth_createAccessList"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -52,7 +52,7 @@ export function eth_createAccessList(
       throw new Error(response.error.message)
     }
     const result = parse(
-      accessListResultSchema,
+      AccessListResultSchema,
       response.result,
     )
     return result

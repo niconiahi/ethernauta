@@ -1,8 +1,8 @@
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   sign_authorization,
@@ -35,7 +35,7 @@ import { active_account } from "../../utils/wallet"
 const MAX_PRIORITY_FEE_PER_GAS = 2_000_000_000n
 const MAX_FEE_PER_GAS = 30_000_000_000n
 const GAS_LIMIT = 1_000_000n
-const ZERO_UINT = parse(uintSchema, "0x0")
+const ZERO_UINT = parse(UintSchema, "0x0")
 
 export function AuthorizeDelegation() {
   const req = set_code_request.value
@@ -111,7 +111,7 @@ export function AuthorizeDelegation() {
             )
             const nonce = await get_nonce(
               parse(
-                addressSchema,
+                AddressSchema,
                 active_account.value.address,
               ),
               reader,
@@ -128,7 +128,7 @@ export function AuthorizeDelegation() {
                     chainId: delegation.chainId,
                     address: delegation.address,
                     nonce: parse(
-                      uintSchema,
+                      UintSchema,
                       big_to_hex(nonce + BigInt(i + 1)),
                     ),
                   },
@@ -137,33 +137,33 @@ export function AuthorizeDelegation() {
               )
             const raw = sign_set_code_transaction(
               {
-                type: parse(byteSchema, "0x4"),
+                type: parse(ByteSchema, "0x4"),
                 chainId: parse(
-                  uintSchema,
+                  UintSchema,
                   big_to_hex(
                     BigInt(selected_chain.value.id),
                   ),
                 ),
-                nonce: parse(uintSchema, big_to_hex(nonce)),
+                nonce: parse(UintSchema, big_to_hex(nonce)),
                 maxPriorityFeePerGas: parse(
-                  uintSchema,
+                  UintSchema,
                   big_to_hex(MAX_PRIORITY_FEE_PER_GAS),
                 ),
                 maxFeePerGas: parse(
-                  uintSchema,
+                  UintSchema,
                   big_to_hex(MAX_FEE_PER_GAS),
                 ),
                 gas: parse(
-                  uintSchema,
+                  UintSchema,
                   big_to_hex(GAS_LIMIT),
                 ),
                 to: params.to,
                 value: parse(
-                  uintSchema,
+                  UintSchema,
                   params.value ?? "0x0",
                 ),
                 input: parse(
-                  bytesSchema,
+                  BytesSchema,
                   params.data ?? "0x",
                 ),
                 accessList: [],
@@ -173,7 +173,7 @@ export function AuthorizeDelegation() {
             )
             const transaction_hash =
               await eth_sendRawTransaction([
-                parse(bytesSchema, bytes_to_hex(raw)),
+                parse(BytesSchema, bytes_to_hex(raw)),
               ])(writer({ chain_id }))
             const response: SignTransactionResponse = {
               id: req.id,

@@ -1,6 +1,6 @@
 import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   decimals,
   name,
@@ -43,14 +43,14 @@ const multicall = create_multicall([
   },
 ])
 
-const snapshotSchema = object({
+const SnapshotSchema = object({
   name: string(),
   symbol: string(),
   decimals: number(),
   totalSupply: bigint(),
   elapsed_ms: number(),
 })
-type Snapshot = InferOutput<typeof snapshotSchema>
+type Snapshot = InferOutput<typeof SnapshotSchema>
 
 export function MulticallDemo() {
   const [snapshot, set_snapshot] =
@@ -64,7 +64,7 @@ export function MulticallDemo() {
     try {
       const ctx = contract({
         chain_id: SEPOLIA_CHAIN_ID,
-        to: parse(addressSchema, WETH_SEPOLIA),
+        to: parse(AddressSchema, WETH_SEPOLIA),
       })
       const start = performance.now()
       const [name_, symbol_, decimals_, supply_] =

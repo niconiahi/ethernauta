@@ -1,23 +1,23 @@
 import type { NotFound } from "@ethernauta/core"
-import { notFoundSchema } from "@ethernauta/core"
+import { NotFoundSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { callSchema } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { array, object, parse, tuple, union } from "valibot"
-import { blockNumberOrTagOrHashSchema } from "../../core/block"
+import { BlockNumberOrTagOrHashSchema } from "../../core/block"
 import type { ReceiptInfo } from "../../core/receipt"
-import { receiptInfoSchema } from "../../core/receipt"
+import { ReceiptInfoSchema } from "../../core/receipt"
 
-const parametersSchema = union([
-  tuple([blockNumberOrTagOrHashSchema]),
+const ParametersSchema = union([
+  tuple([BlockNumberOrTagOrHashSchema]),
   object({
-    blockNumberOrTagOrHash: blockNumberOrTagOrHashSchema,
+    blockNumberOrTagOrHash: BlockNumberOrTagOrHashSchema,
   }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 export function eth_getBlockReceipts(
   _parameters: Parameters,
 ): Readable<ReceiptInfo[] | NotFound> {
@@ -26,8 +26,8 @@ export function eth_getBlockReceipts(
     _context,
   ]: ResolvedReader): Promise<ReceiptInfo[] | NotFound> => {
     const method = "eth_getBlockReceipts"
-    const parameters = parse(parametersSchema, _parameters)
-    const call = parse(callSchema, [method, parameters])
+    const parameters = parse(ParametersSchema, _parameters)
+    const call = parse(CallSchema, [method, parameters])
     const response = await Promise.any(
       transports.map((transport) => transport(call)),
     )
@@ -35,7 +35,7 @@ export function eth_getBlockReceipts(
       throw new Error(response.error.message)
     }
     const result = parse(
-      union([array(receiptInfoSchema), notFoundSchema]),
+      union([array(ReceiptInfoSchema), NotFoundSchema]),
       response.result,
     )
     return result

@@ -15,13 +15,13 @@
 
 import type { Hash32 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
   hash_typed_data,
-  typedDataSchema,
+  TypedDataSchema,
 } from "@ethernauta/eip/712"
 import {
   is_wrapped_signature,
@@ -36,20 +36,20 @@ import { type InferOutput, object, parse } from "valibot"
 
 import { verify_hash_deployed } from "./verify-hash-deployed"
 
-export const verifyTypedDataParametersSchema = object({
-  address: addressSchema,
-  typedData: typedDataSchema,
-  signature: bytesSchema,
+export const VerifyTypedDataParametersSchema = object({
+  address: AddressSchema,
+  typedData: TypedDataSchema,
+  signature: BytesSchema,
 })
 export type VerifyTypedDataParameters = InferOutput<
-  typeof verifyTypedDataParametersSchema
+  typeof VerifyTypedDataParametersSchema
 >
 
 function digest_of(
   typedData: VerifyTypedDataParameters["typedData"],
 ): Hash32 {
   return parse(
-    hash32Schema,
+    Hash32Schema,
     bytes_to_hex(hash_typed_data(typedData)),
   )
 }
@@ -61,7 +61,7 @@ export function verify_typed_data_deployed(
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyTypedDataParametersSchema,
+      VerifyTypedDataParametersSchema,
       _parameters,
     )
     return verify_hash_deployed(
@@ -80,7 +80,7 @@ export function verify_typed_data_universal(
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyTypedDataParametersSchema,
+      VerifyTypedDataParametersSchema,
       _parameters,
     )
     return verify_hash_6492({
@@ -98,7 +98,7 @@ export function verify_typed_data(
     resolved: ResolvedReader,
   ): Promise<boolean> => {
     const parameters = parse(
-      verifyTypedDataParametersSchema,
+      VerifyTypedDataParametersSchema,
       _parameters,
     )
     const verify = is_wrapped_signature(

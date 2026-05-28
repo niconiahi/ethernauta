@@ -1,7 +1,7 @@
 import {
-  addressSchema,
-  bytesSchema,
-  uintSchema,
+  AddressSchema,
+  BytesSchema,
+  UintSchema,
 } from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -17,27 +17,27 @@ import {
 import type { UserOperation } from "./types"
 
 const SENDER = parse(
-  addressSchema,
+  AddressSchema,
   "0x1111111111111111111111111111111111111111",
 )
 const FACTORY = parse(
-  addressSchema,
+  AddressSchema,
   "0x2222222222222222222222222222222222222222",
 )
 const PAYMASTER = parse(
-  addressSchema,
+  AddressSchema,
   "0x3333333333333333333333333333333333333333",
 )
 const ZERO_ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000000",
 )
 
 describe("packing.ts — pack_account_gas_limits", () => {
   it("should produce 32 bytes with verification high, call low", () => {
     const packed = pack_account_gas_limits(
-      parse(uintSchema, "0x100"),
-      parse(uintSchema, "0x200"),
+      parse(UintSchema, "0x100"),
+      parse(UintSchema, "0x200"),
     )
     expect(packed).toBe(
       "0x0000000000000000000000000000010000000000000000000000000000000200",
@@ -51,10 +51,10 @@ describe("packing.ts — pack_account_gas_limits", () => {
     expect(() =>
       pack_account_gas_limits(
         parse(
-          uintSchema,
+          UintSchema,
           "0x100000000000000000000000000000000",
         ),
-        parse(uintSchema, "0x0"),
+        parse(UintSchema, "0x0"),
       ),
     ).toThrow()
   })
@@ -63,8 +63,8 @@ describe("packing.ts — pack_account_gas_limits", () => {
 describe("packing.ts — pack_gas_fees", () => {
   it("should round-trip the priority / max pair", () => {
     const packed = pack_gas_fees(
-      parse(uintSchema, "0x1"),
-      parse(uintSchema, "0x10"),
+      parse(UintSchema, "0x1"),
+      parse(UintSchema, "0x10"),
     )
     const { hi, lo } = unpack_uint128_pair(packed)
     expect(BigInt(hi)).toBe(1n)
@@ -81,7 +81,7 @@ describe("packing.ts — pack_init_code", () => {
     expect(
       pack_init_code(
         ZERO_ADDRESS,
-        parse(bytesSchema, "0xdeadbeef"),
+        parse(BytesSchema, "0xdeadbeef"),
       ),
     ).toBe("0x")
   })
@@ -90,7 +90,7 @@ describe("packing.ts — pack_init_code", () => {
     expect(
       pack_init_code(
         FACTORY,
-        parse(bytesSchema, "0xdeadbeef"),
+        parse(BytesSchema, "0xdeadbeef"),
       ),
     ).toBe(`${FACTORY}deadbeef`.toLowerCase())
   })
@@ -107,11 +107,11 @@ describe("packing.ts — pack_paymaster_and_data", () => {
     const packed = pack_paymaster_and_data({
       paymaster: PAYMASTER,
       paymasterVerificationGasLimit: parse(
-        uintSchema,
+        UintSchema,
         "0x10",
       ),
-      paymasterPostOpGasLimit: parse(uintSchema, "0x20"),
-      paymasterData: parse(bytesSchema, "0xab"),
+      paymasterPostOpGasLimit: parse(UintSchema, "0x20"),
+      paymasterData: parse(BytesSchema, "0xab"),
     })
     expect(packed.length).toBe(2 + 40 + 32 + 32 + 2)
     expect(packed.startsWith(PAYMASTER.toLowerCase())).toBe(
@@ -125,16 +125,16 @@ describe("packing.ts — pack_user_operation", () => {
   it("should pack composite fields and pass through scalars", () => {
     const op: UserOperation = {
       sender: SENDER,
-      nonce: parse(uintSchema, "0x1"),
+      nonce: parse(UintSchema, "0x1"),
       factory: FACTORY,
-      factoryData: parse(bytesSchema, "0xfeed"),
-      callData: parse(bytesSchema, "0x"),
-      callGasLimit: parse(uintSchema, "0x200"),
-      verificationGasLimit: parse(uintSchema, "0x100"),
-      preVerificationGas: parse(uintSchema, "0x300"),
-      maxFeePerGas: parse(uintSchema, "0x10"),
-      maxPriorityFeePerGas: parse(uintSchema, "0x1"),
-      signature: parse(bytesSchema, "0x"),
+      factoryData: parse(BytesSchema, "0xfeed"),
+      callData: parse(BytesSchema, "0x"),
+      callGasLimit: parse(UintSchema, "0x200"),
+      verificationGasLimit: parse(UintSchema, "0x100"),
+      preVerificationGas: parse(UintSchema, "0x300"),
+      maxFeePerGas: parse(UintSchema, "0x10"),
+      maxPriorityFeePerGas: parse(UintSchema, "0x1"),
+      signature: parse(BytesSchema, "0x"),
     }
     const packed = pack_user_operation(op)
     expect(packed.sender).toBe(SENDER)

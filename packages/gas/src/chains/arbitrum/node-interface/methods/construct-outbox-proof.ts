@@ -21,9 +21,9 @@ import {
 } from "valibot"
 import type { Bytes32 } from "@ethernauta/core"
 import {
-  bytes32Schema,
-  bytesSchema,
-  uint64Schema,
+  Bytes32Schema,
+  BytesSchema,
+  Uint64Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [uint64(), uint64()] as const
@@ -38,11 +38,11 @@ export const CONSTRUCT_OUTBOX_PROOF_SIGNATURE = {
   names: ["size", "leaf"],
 }
 
-const parametersSchema = union([
-  tuple([uint64Schema, uint64Schema]),
-  object({ size: uint64Schema, leaf: uint64Schema }),
+const ParametersSchema = union([
+  tuple([Uint64Schema, Uint64Schema]),
+  object({ size: Uint64Schema, leaf: Uint64Schema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function constructOutboxProof(
   _parameters: Parameters,
@@ -50,7 +50,7 @@ export function constructOutboxProof(
   return (
     context: ContractContext,
   ): Callable<[Bytes32, Bytes32, Bytes32[]]> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0], parameters[1]] as const)
       : ([parameters.size, parameters.leaf] as const)
@@ -62,7 +62,7 @@ export function constructOutboxProof(
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): [Bytes32, Bytes32, Bytes32[]] => {
@@ -71,9 +71,9 @@ export function constructOutboxProof(
           result,
         )
         return [
-          parse(bytes32Schema, decoded[0]),
-          parse(bytes32Schema, decoded[1]),
-          parse(v_array(bytes32Schema), decoded[2]),
+          parse(Bytes32Schema, decoded[0]),
+          parse(Bytes32Schema, decoded[1]),
+          parse(v_array(Bytes32Schema), decoded[2]),
         ]
       },
     }

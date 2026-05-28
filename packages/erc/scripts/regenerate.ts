@@ -67,35 +67,35 @@ export const SPEC_LINK_RE =
 export const INTERFACE_DECL_RE = /^interface\s+\w/m
 export const CONTRACT_DECL_RE = /^contract\s+\w/m
 
-const classificationSchema = picklist(["interface", "skip"])
+const ClassificationSchema = picklist(["interface", "skip"])
 export type Classification = InferOutput<
-  typeof classificationSchema
+  typeof ClassificationSchema
 >
 
-const routeSchema = object({
+const RouteSchema = object({
   source_file: string(),
   host_number: string(),
   suffix: string(),
   out_dir: string(),
 })
-export type Route = InferOutput<typeof routeSchema>
+export type Route = InferOutput<typeof RouteSchema>
 
-const forgeArtifactSchema = object({
+const ForgeArtifactSchema = object({
   abi: array(DescriptionSchema),
 })
 
-const pathsSchema = object({
+const PathsSchema = object({
   contracts_dir: string(),
   forge_out: string(),
   erc_src: string(),
 })
-export type Paths = InferOutput<typeof pathsSchema>
+export type Paths = InferOutput<typeof PathsSchema>
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repo_root = resolve(__dirname, "../../..")
 
 export function default_paths(): Paths {
-  return parse(pathsSchema, {
+  return parse(PathsSchema, {
     contracts_dir: join(repo_root, "contracts"),
     forge_out: join(repo_root, "contracts/out"),
     erc_src: join(repo_root, "packages/erc/src"),
@@ -257,7 +257,7 @@ export function read_artifact_abi(
     )
   }
   const artifact = parse(
-    forgeArtifactSchema,
+    ForgeArtifactSchema,
     JSON.parse(readFileSync(path, "utf8")),
   )
   const functions: _Function[] = []
@@ -303,8 +303,8 @@ export function run_forge_build(
   })
 }
 
-const regenerateOptionsSchema = object({
-  paths: pathsSchema,
+const RegenerateOptionsSchema = object({
+  paths: PathsSchema,
 })
 
 export function regenerate(input?: {
@@ -312,7 +312,7 @@ export function regenerate(input?: {
   skip_forge_build?: boolean
   quiet?: boolean
 }): void {
-  const opts = parse(regenerateOptionsSchema, {
+  const opts = parse(RegenerateOptionsSchema, {
     paths: input?.paths ?? default_paths(),
   })
   const { contracts_dir, forge_out, erc_src } = opts.paths

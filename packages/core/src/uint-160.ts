@@ -6,8 +6,8 @@ function isUint160(input: unknown): boolean {
   if (!/^0x[0-9a-f]{1,64}$/.test(input)) return false
   return BigInt(input) <= (1n << 160n) - 1n
 }
-export const uint160Schema = pipe(
+export const Uint160Schema = pipe(
   custom<`0x${string}`>(isUint160, "uint160"),
   brand("Uint160"),
 )
-export type Uint160 = InferOutput<typeof uint160Schema>
+export type Uint160 = InferOutput<typeof Uint160Schema>

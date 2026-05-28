@@ -24,7 +24,7 @@ Concrete instances of the rule:
 If you find yourself about to put a helper in `@ethernauta/transport`, `@ethernauta/utils`, `@ethernauta/eth`, or `@ethernauta/abi` **because** an EIP says so — stop. It belongs in the EIP folder. The only carve-outs are:
 
 1. **Truly cross-cutting primitives that pre-date any EIP**: ABI codec leaves (`address`, `uint256`, …) in `@ethernauta/abi`; `keccak_256` from `@noble/hashes`; RLP encoding in `@ethernauta/utils`. These exist regardless of any particular EIP and are imported *by* the EIP folder.
-2. **Wire envelopes shared by the wallet/transport plumbing** (`callSchema`, `parametersSchema`, the four method shapes). These are infrastructure, not standard semantics.
+2. **Wire envelopes shared by the wallet/transport plumbing** (`CallSchema`, `ParametersSchema`, the four method shapes). These are infrastructure, not standard semantics.
 
 The smell test: "would this helper still exist if EIP-`<n>` were deleted from the universe?" If no, it belongs in `packages/eip/src/<n>/`.
 
@@ -45,7 +45,7 @@ packages/eip/src/<n>/
 Rules:
 
 - **One operation per file.** `verify-hash.ts`, `verify-message.ts`, `verify-typed-data.ts` are three files, not one. This is the granularity at which tree-shaking works.
-- **Filenames in kebab-case.** `wrap-signature.ts`, `magic-value.ts`. Inside the file, identifiers are `snake_case` for functions and `camelCase` for schemas (`verifyHashParametersSchema`).
+- **Filenames in kebab-case.** `wrap-signature.ts`, `magic-value.ts`. Inside the file, identifiers are `snake_case` for functions and `camelCase` for schemas (`VerifyHashParametersSchema`).
 - **Tests are co-located.** `verify-hash.ts` next to `verify-hash.test.ts`. Vitest discovers them via `vitest.config.mjs`.
 - **The first line of every file is a link to the spec.** `// https://eips.ethereum.org/EIPS/eip-<n>` — see `packages/eip/src/1271/recover.ts:1` and `packages/eip/src/6492/index.ts:1`. If your operation is half from one EIP and half from another (e.g. `recover.ts` cites both 1271 and 2098), list both.
 
@@ -97,19 +97,19 @@ This is the project-wide convention (`skills/conventions/SKILL.md`). Inside an E
 
 ```ts
 import {
-  addressSchema,
-  bytesSchema,
-  hash32Schema,
+  AddressSchema,
+  BytesSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import { type InferOutput, object, parse } from "valibot"
 
-export const verifyHashParametersSchema = object({
-  address: addressSchema,
-  hash: hash32Schema,
-  signature: bytesSchema,
+export const VerifyHashParametersSchema = object({
+  address: AddressSchema,
+  hash: Hash32Schema,
+  signature: BytesSchema,
 })
 export type VerifyHashParameters = InferOutput<
-  typeof verifyHashParametersSchema
+  typeof VerifyHashParametersSchema
 >
 ```
 
@@ -120,7 +120,7 @@ export function verify_hash(
   _parameters: VerifyHashParameters,
 ): Readable<boolean> {
   return async ([transports, _context]: ResolvedReader) => {
-    const parameters = parse(verifyHashParametersSchema, _parameters)
+    const parameters = parse(VerifyHashParametersSchema, _parameters)
     ...
   }
 }
@@ -162,7 +162,7 @@ EIPs are a middle layer. Permitted imports:
 
 - `@ethernauta/core` — primitive schemas (always allowed).
 - `@ethernauta/utils` — pure utilities (`bytes_to_hex`, `hex_to_bytes`, `number_to_hex`, `rlp_encode`).
-- `@ethernauta/transport` — `Readable`, `Writable`, `Signable`, `Callable`, `ResolvedReader`, `ResolvedSigner`, `ResolvedContract`, `callSchema`, `parametersSchema`.
+- `@ethernauta/transport` — `Readable`, `Writable`, `Signable`, `Callable`, `ResolvedReader`, `ResolvedSigner`, `ResolvedContract`, `CallSchema`, `ParametersSchema`.
 - `@ethernauta/abi` — only when the EIP requires ABI encode/decode (e.g. `6492` decodes `(address, bytes, bytes)`).
 - `@noble/hashes`, `@noble/secp256k1` — pure crypto.
 - Other `@ethernauta/eip/<m>` subpaths — fine when one EIP genuinely builds on another (see `1271/verify-message.ts` importing `../191/personal-message`).

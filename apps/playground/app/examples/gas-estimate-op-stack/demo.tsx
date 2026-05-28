@@ -9,7 +9,7 @@ import "./demo.css"
 import type { Chain } from "@ethernauta/chain"
 import { eip155_10 } from "@ethernauta/chain/eip155-10"
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
-import { addressSchema, type Uint } from "@ethernauta/core"
+import { AddressSchema, type Uint } from "@ethernauta/core"
 import { calculate_gas_op_stack } from "@ethernauta/gas"
 import {
   create_reader,
@@ -51,7 +51,7 @@ const reader = create_reader([
 ])
 
 const DEFAULT_TO = parse(
-  addressSchema,
+  AddressSchema,
   "0x000000000000000000000000000000000000dEaD",
 )
 

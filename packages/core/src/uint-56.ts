@@ -6,8 +6,8 @@ function isUint56(input: unknown): boolean {
   if (!/^0x[0-9a-f]{1,64}$/.test(input)) return false
   return BigInt(input) <= (1n << 56n) - 1n
 }
-export const uint56Schema = pipe(
+export const Uint56Schema = pipe(
   custom<`0x${string}`>(isUint56, "uint56"),
   brand("Uint56"),
 )
-export type Uint56 = InferOutput<typeof uint56Schema>
+export type Uint56 = InferOutput<typeof Uint56Schema>

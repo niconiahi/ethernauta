@@ -1,12 +1,12 @@
 import {
-  addressSchema,
-  byteSchema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  ByteSchema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
-import { accessListSchema } from "@ethernauta/eip/2930"
-import { ethernautaContextSchema } from "@ethernauta/transport"
+import { AccessListSchema } from "@ethernauta/eip/2930"
+import { EthernautaContextSchema } from "@ethernauta/transport"
 import { array, nullable, object, optional } from "valibot"
 
 /**
@@ -19,21 +19,21 @@ import { array, nullable, object, optional } from "valibot"
  * wallets silently strip. Ethernauta reads its `function`
  * sub-field to render decoded calldata in the sign view.
  */
-export const genericTransactionSchema = object({
-  type: optional(byteSchema),
-  nonce: optional(uintSchema),
-  to: optional(nullable(addressSchema)),
-  from: optional(addressSchema),
-  gas: optional(uintSchema),
-  value: optional(uintSchema),
-  input: optional(bytesSchema),
-  gasPrice: optional(uintSchema),
-  maxPriorityFeePerGas: optional(uintSchema),
-  maxFeePerGas: optional(uintSchema),
-  maxFeePerBlobGas: optional(uintSchema),
-  accessList: optional(accessListSchema),
-  blobVersionedHashes: optional(array(hash32Schema)),
-  blobs: optional(array(bytesSchema)),
-  chainId: optional(uintSchema),
-  _ethernauta: optional(ethernautaContextSchema),
+export const GenericTransactionSchema = object({
+  type: optional(ByteSchema),
+  nonce: optional(UintSchema),
+  to: optional(nullable(AddressSchema)),
+  from: optional(AddressSchema),
+  gas: optional(UintSchema),
+  value: optional(UintSchema),
+  input: optional(BytesSchema),
+  gasPrice: optional(UintSchema),
+  maxPriorityFeePerGas: optional(UintSchema),
+  maxFeePerGas: optional(UintSchema),
+  maxFeePerBlobGas: optional(UintSchema),
+  accessList: optional(AccessListSchema),
+  blobVersionedHashes: optional(array(Hash32Schema)),
+  blobs: optional(array(BytesSchema)),
+  chainId: optional(UintSchema),
+  _ethernauta: optional(EthernautaContextSchema),
 })

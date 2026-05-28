@@ -20,10 +20,10 @@ import type {
   Uint8,
 } from "@ethernauta/core"
 import {
-  bytesSchema,
-  uint32Schema,
-  uint64Schema,
-  uint8Schema,
+  BytesSchema,
+  Uint32Schema,
+  Uint64Schema,
+  Uint8Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [] as const
@@ -65,7 +65,7 @@ export function getMultiGasPricingConstraints() {
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): {
@@ -83,13 +83,13 @@ export function getMultiGasPricingConstraints() {
             object({
               resources: v_array(
                 object({
-                  resource: uint8Schema,
-                  weight: uint64Schema,
+                  resource: Uint8Schema,
+                  weight: Uint64Schema,
                 }),
               ),
-              adjustmentWindowSecs: uint32Schema,
-              targetPerSec: uint64Schema,
-              backlog: uint64Schema,
+              adjustmentWindowSecs: Uint32Schema,
+              targetPerSec: Uint64Schema,
+              backlog: Uint64Schema,
             }),
           ),
           decoded,

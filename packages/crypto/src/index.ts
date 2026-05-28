@@ -35,7 +35,7 @@
 //
 // The single-EIP primitives stay in their numbered folders:
 //   - eip/191    — `build_personal_message`, `personal_sign`
-//   - eip/712    — `hash_typed_data`, `typedDataSchema`, `sign_typed_data`
+//   - eip/712    — `hash_typed_data`, `TypedDataSchema`, `sign_typed_data`
 //   - eip/1271   — `MAGIC_VALUE`, `verify_hash`
 //   - eip/6492   — `MAGIC_BYTES`, `verify_hash`, wrap/unwrap
 
@@ -63,19 +63,19 @@ export {
   verify_message,
   verify_message_deployed,
   verify_message_universal,
-  verifyMessageParametersSchema,
+  VerifyMessageParametersSchema,
 } from "./verify-message"
 export {
   type VerifySiweMessageFailureReason,
   type VerifySiweMessageParameters,
   type VerifySiweMessageResult,
   verify_siwe_message,
-  verifySiweMessageParametersSchema,
+  VerifySiweMessageParametersSchema,
 } from "./verify-siwe"
 export {
   type VerifyTypedDataParameters,
   verify_typed_data,
   verify_typed_data_deployed,
   verify_typed_data_universal,
-  verifyTypedDataParametersSchema,
+  VerifyTypedDataParametersSchema,
 } from "./verify-typed-data"

@@ -11,9 +11,9 @@
 // wallet's writer, and returns the resulting tx hash.
 
 import {
-  addressSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   ResolvedSigner,
@@ -30,29 +30,29 @@ import {
   string,
 } from "valibot"
 
-export const delegationIntentSchema = object({
-  chainId: uintSchema,
-  address: addressSchema,
+export const DelegationIntentSchema = object({
+  chainId: UintSchema,
+  address: AddressSchema,
 })
 export type DelegationIntent = InferOutput<
-  typeof delegationIntentSchema
+  typeof DelegationIntentSchema
 >
 
-export const hexDataSchema = pipe(
+export const HexDataSchema = pipe(
   string(),
   regex(/^0x([0-9a-fA-F]{2})*$/),
 )
 
-export const sendSetCodeTransactionParametersSchema =
+export const SendSetCodeTransactionParametersSchema =
   object({
-    to: addressSchema,
-    value: optional(uintSchema),
-    data: optional(hexDataSchema),
-    gasLimit: optional(uintSchema),
-    delegations: array(delegationIntentSchema),
+    to: AddressSchema,
+    value: optional(UintSchema),
+    data: optional(HexDataSchema),
+    gasLimit: optional(UintSchema),
+    delegations: array(DelegationIntentSchema),
   })
 export type SendSetCodeTransactionParameters = InferOutput<
-  typeof sendSetCodeTransactionParametersSchema
+  typeof SendSetCodeTransactionParametersSchema
 >
 
 export function wallet_sendSetCodeTransaction(
@@ -60,13 +60,13 @@ export function wallet_sendSetCodeTransaction(
 ): Signable<`0x${string}`> {
   return async ([signer]: ResolvedSigner) => {
     const parameters = parse(
-      sendSetCodeTransactionParametersSchema,
+      SendSetCodeTransactionParametersSchema,
       _parameters,
     )
     const result = await signer(
       "wallet_sendSetCodeTransaction",
       parameters,
     )
-    return parse(hash32Schema, result)
+    return parse(Hash32Schema, result)
   }
 }

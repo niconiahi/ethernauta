@@ -1,6 +1,6 @@
 import {
-  addressSchema,
-  hash32Schema,
+  AddressSchema,
+  Hash32Schema,
 } from "@ethernauta/core"
 import {
   bytes_to_hex,
@@ -17,7 +17,7 @@ const PRIVATE_KEY = hex_to_bytes(
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 )
 const ADDRESS = parse(
-  addressSchema,
+  AddressSchema,
   "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
 )
 
@@ -38,7 +38,7 @@ describe("signature-to-hex.ts — signature_to_hex", () => {
     const digest = keccak_256(
       new TextEncoder().encode("hello"),
     )
-    const hash = parse(hash32Schema, bytes_to_hex(digest))
+    const hash = parse(Hash32Schema, bytes_to_hex(digest))
     const hex = signature_to_hex(
       sign_digest(digest, PRIVATE_KEY),
     )

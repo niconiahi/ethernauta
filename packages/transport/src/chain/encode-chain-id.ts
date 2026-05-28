@@ -1,8 +1,8 @@
 import { parse } from "valibot"
-import { caip2_namespaceSchema } from "./caip-2/namespace"
-import { caip2_referenceSchema } from "./caip-2/reference"
+import { Caip2_namespaceSchema } from "./caip-2/namespace"
+import { Caip2_referenceSchema } from "./caip-2/reference"
 import type { ChainId } from "./chain-id"
-import { chainIdSchema } from "./chain-id"
+import { ChainIdSchema } from "./chain-id"
 
 const DELIMITER = ":"
 export function encode_chain_id({
@@ -12,14 +12,14 @@ export function encode_chain_id({
   namespace: string
   reference: string | number
 }): ChainId {
-  const namespace = parse(caip2_namespaceSchema, _namespace)
+  const namespace = parse(Caip2_namespaceSchema, _namespace)
   const reference = parse(
-    caip2_referenceSchema,
+    Caip2_referenceSchema,
     typeof _reference === "number"
       ? String(_reference)
       : _reference,
   )
   const _chainId = namespace + DELIMITER + reference
-  const chainId = parse(chainIdSchema, _chainId)
+  const chainId = parse(ChainIdSchema, _chainId)
   return chainId
 }

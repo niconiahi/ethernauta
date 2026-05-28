@@ -1,11 +1,11 @@
 // https://eips.ethereum.org/EIPS/eip-5792
 
 import {
-  addressSchema,
-  bytes32Schema,
-  bytesSchema,
-  hash32Schema,
-  uintSchema,
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+  Hash32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import {
   array,
@@ -21,58 +21,58 @@ import {
   unknown,
 } from "valibot"
 
-export const capabilitiesSchema = record(
+export const CapabilitiesSchema = record(
   string(),
   record(string(), unknown()),
 )
 export type Capabilities = InferOutput<
-  typeof capabilitiesSchema
+  typeof CapabilitiesSchema
 >
 
-export const sendCallsCallSchema = object({
-  to: optional(addressSchema),
-  data: optional(bytesSchema),
-  value: optional(uintSchema),
+export const SendCallsCallSchema = object({
+  to: optional(AddressSchema),
+  data: optional(BytesSchema),
+  value: optional(UintSchema),
   capabilities: optional(record(string(), unknown())),
 })
 export type SendCallsCall = InferOutput<
-  typeof sendCallsCallSchema
+  typeof SendCallsCallSchema
 >
 
-export const sendCallsParameterSchema = object({
+export const SendCallsParameterSchema = object({
   version: string(),
   id: optional(string()),
-  from: optional(addressSchema),
-  chainId: uintSchema,
+  from: optional(AddressSchema),
+  chainId: UintSchema,
   atomicRequired: optional(boolean()),
-  calls: array(sendCallsCallSchema),
+  calls: array(SendCallsCallSchema),
   capabilities: optional(record(string(), unknown())),
 })
 export type SendCallsParameter = InferOutput<
-  typeof sendCallsParameterSchema
+  typeof SendCallsParameterSchema
 >
 
-export const sendCallsParametersSchema = array(
-  sendCallsParameterSchema,
+export const SendCallsParametersSchema = array(
+  SendCallsParameterSchema,
 )
 export type SendCallsParameters = InferOutput<
-  typeof sendCallsParametersSchema
+  typeof SendCallsParametersSchema
 >
 
-export const sendCallsResultSchema = object({
+export const SendCallsResultSchema = object({
   id: string(),
   capabilities: optional(record(string(), unknown())),
 })
 export type SendCallsResult = InferOutput<
-  typeof sendCallsResultSchema
+  typeof SendCallsResultSchema
 >
 
-export const callsStatusCodeSchema = pipe(
+export const CallsStatusCodeSchema = pipe(
   number(),
   integer(),
 )
 export type CallsStatusCode = InferOutput<
-  typeof callsStatusCodeSchema
+  typeof CallsStatusCodeSchema
 >
 
 export const CALLS_STATUS = {
@@ -83,36 +83,36 @@ export const CALLS_STATUS = {
   PARTIALLY_REVERTED: 600,
 } as const
 
-export const callsReceiptLogSchema = object({
-  address: addressSchema,
-  topics: array(bytes32Schema),
-  data: bytesSchema,
+export const CallsReceiptLogSchema = object({
+  address: AddressSchema,
+  topics: array(Bytes32Schema),
+  data: BytesSchema,
 })
 export type CallsReceiptLog = InferOutput<
-  typeof callsReceiptLogSchema
+  typeof CallsReceiptLogSchema
 >
 
-export const callsReceiptSchema = object({
-  logs: array(callsReceiptLogSchema),
-  status: uintSchema,
-  blockHash: hash32Schema,
-  blockNumber: uintSchema,
-  gasUsed: uintSchema,
-  transactionHash: hash32Schema,
+export const CallsReceiptSchema = object({
+  logs: array(CallsReceiptLogSchema),
+  status: UintSchema,
+  blockHash: Hash32Schema,
+  blockNumber: UintSchema,
+  gasUsed: UintSchema,
+  transactionHash: Hash32Schema,
 })
 export type CallsReceipt = InferOutput<
-  typeof callsReceiptSchema
+  typeof CallsReceiptSchema
 >
 
-export const callsStatusSchema = object({
+export const CallsStatusSchema = object({
   version: string(),
   id: string(),
-  chainId: uintSchema,
-  status: callsStatusCodeSchema,
+  chainId: UintSchema,
+  status: CallsStatusCodeSchema,
   atomic: boolean(),
-  receipts: optional(array(callsReceiptSchema)),
+  receipts: optional(array(CallsReceiptSchema)),
   capabilities: optional(record(string(), unknown())),
 })
 export type CallsStatus = InferOutput<
-  typeof callsStatusSchema
+  typeof CallsStatusSchema
 >

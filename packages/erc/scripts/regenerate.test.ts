@@ -11,7 +11,7 @@ import { tmpdir } from "node:os"
 import { dirname, join } from "node:path"
 import {
   DescriptionSchema,
-  functionSchema,
+  FunctionSchema,
 } from "@ethernauta/abi"
 import { array, parse } from "valibot"
 import {
@@ -55,21 +55,21 @@ describe("pascal_to_kebab", () => {
 })
 
 describe("signature_key", () => {
-  const total_supply = parse(functionSchema, {
+  const total_supply = parse(FunctionSchema, {
     type: "function",
     name: "totalSupply",
     inputs: [],
     outputs: [],
     stateMutability: "view",
   })
-  const balance_of = parse(functionSchema, {
+  const balance_of = parse(FunctionSchema, {
     type: "function",
     name: "balanceOf",
     inputs: [{ name: "account", type: "address" }],
     outputs: [],
     stateMutability: "view",
   })
-  const transfer_from = parse(functionSchema, {
+  const transfer_from = parse(FunctionSchema, {
     type: "function",
     name: "transferFrom",
     inputs: [

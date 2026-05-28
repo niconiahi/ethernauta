@@ -1,7 +1,7 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import {
-  addressSchema,
-  bytesSchema,
+  AddressSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
   encode_chain_id,
@@ -18,14 +18,14 @@ const CHAIN_ID = encode_chain_id({
   reference: eip155_1.chainId,
 })
 const TRANSFER_TARGET = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000001",
 )
 const CONTRACT_TARGET = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000002",
 )
-const INPUT_DATA = parse(bytesSchema, "0xdeadbeef")
+const INPUT_DATA = parse(BytesSchema, "0xdeadbeef")
 
 describe("buffer_gas_limit", () => {
   it("returns the estimate unchanged at multiplier 1.0", async () => {

@@ -1,6 +1,6 @@
 // https://docs.ens.domains/ensip/5 — text(node, key)
 
-import { addressSchema } from "@ethernauta/core"
+import { AddressSchema } from "@ethernauta/core"
 import {
   get_registry_address,
   namehash,
@@ -17,12 +17,12 @@ import type {
 import type { InferOutput } from "valibot"
 import { object, optional, parse, string } from "valibot"
 
-const parametersSchema = object({
+const ParametersSchema = object({
   name: string(),
   key: string(),
-  registry: optional(addressSchema),
+  registry: optional(AddressSchema),
 })
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function get_ens_text(
   _parameters: Parameters,
@@ -31,7 +31,7 @@ export function get_ens_text(
     transports,
     context,
   ]: ResolvedReader): Promise<string | null> => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const node = namehash(normalize(parameters.name))
     const registry = get_registry_address(
       context.chain_id,

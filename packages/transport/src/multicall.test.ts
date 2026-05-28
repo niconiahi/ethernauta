@@ -1,8 +1,8 @@
 import {
   type Address,
-  addressSchema,
+  AddressSchema,
   type Bytes,
-  bytesSchema,
+  BytesSchema,
 } from "@ethernauta/core"
 import { object, parse, string, tuple } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -38,16 +38,16 @@ function make_callable<T>(
   }
 }
 
-const EMPTY_BYTES = parse(bytesSchema, "0x")
+const EMPTY_BYTES = parse(BytesSchema, "0x")
 const ADDRESS_1 = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000001",
 )
 const ADDRESS_2 = parse(
-  addressSchema,
+  AddressSchema,
   "0x0000000000000000000000000000000000000002",
 )
-const SELECTOR_70A08231 = parse(bytesSchema, "0x70a08231")
+const SELECTOR_70A08231 = parse(BytesSchema, "0x70a08231")
 
 describe("multicall", () => {
   it("rejects an empty call list", async () => {
@@ -94,7 +94,7 @@ describe("multicall", () => {
               captured = p
             },
             parse(
-              bytesSchema,
+              BytesSchema,
               "0x" +
                 "0000000000000000000000000000000000000000000000000000000000000020" +
                 "0000000000000000000000000000000000000000000000000000000000000001" +
@@ -132,7 +132,7 @@ describe("multicall", () => {
           fake_transport(
             () => {},
             parse(
-              bytesSchema,
+              BytesSchema,
               "0x" +
                 "0000000000000000000000000000000000000000000000000000000000000020" +
                 "0000000000000000000000000000000000000000000000000000000000000002" +
@@ -166,7 +166,7 @@ describe("multicall", () => {
           fake_transport(
             () => {},
             parse(
-              bytesSchema,
+              BytesSchema,
               "0x" +
                 "0000000000000000000000000000000000000000000000000000000000000020" +
                 "0000000000000000000000000000000000000000000000000000000000000001" +

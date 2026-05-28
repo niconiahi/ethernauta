@@ -14,9 +14,9 @@ import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import type { Uint256 } from "@ethernauta/core"
 import {
-  addressSchema,
-  bytesSchema,
-  uint256Schema,
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
 } from "@ethernauta/core"
 
 const PARAM_CODECS = [address()] as const
@@ -34,11 +34,11 @@ export const GET_PRICES_IN_WEI_WITH_AGGREGATOR_SIGNATURE = {
   names: ["aggregator"],
 }
 
-const parametersSchema = union([
-  tuple([addressSchema]),
-  object({ aggregator: addressSchema }),
+const ParametersSchema = union([
+  tuple([AddressSchema]),
+  object({ aggregator: AddressSchema }),
 ])
-type Parameters = InferOutput<typeof parametersSchema>
+type Parameters = InferOutput<typeof ParametersSchema>
 
 export function getPricesInWeiWithAggregator(
   _parameters: Parameters,
@@ -48,7 +48,7 @@ export function getPricesInWeiWithAggregator(
   ): Callable<
     [Uint256, Uint256, Uint256, Uint256, Uint256, Uint256]
   > => {
-    const parameters = parse(parametersSchema, _parameters)
+    const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
       : ([parameters.aggregator] as const)
@@ -60,7 +60,7 @@ export function getPricesInWeiWithAggregator(
     return {
       chain_id: context.chain_id,
       to: context.to,
-      data: parse(bytesSchema, bytes_to_hex(calldata)),
+      data: parse(BytesSchema, bytes_to_hex(calldata)),
       decode: (
         result: Bytes,
       ): [
@@ -76,12 +76,12 @@ export function getPricesInWeiWithAggregator(
           result,
         )
         return [
-          parse(uint256Schema, decoded[0]),
-          parse(uint256Schema, decoded[1]),
-          parse(uint256Schema, decoded[2]),
-          parse(uint256Schema, decoded[3]),
-          parse(uint256Schema, decoded[4]),
-          parse(uint256Schema, decoded[5]),
+          parse(Uint256Schema, decoded[0]),
+          parse(Uint256Schema, decoded[1]),
+          parse(Uint256Schema, decoded[2]),
+          parse(Uint256Schema, decoded[3]),
+          parse(Uint256Schema, decoded[4]),
+          parse(Uint256Schema, decoded[5]),
         ]
       },
     }

@@ -9,44 +9,44 @@ import {
   string,
 } from "valibot"
 
-const featureSchema = object({
+const FeatureSchema = object({
   name: string(),
 })
-export type Feature = InferOutput<typeof featureSchema>
+export type Feature = InferOutput<typeof FeatureSchema>
 
-const nativeCurrencySchema = object({
+const NativeCurrencySchema = object({
   name: string(),
   symbol: string(),
   decimals: number(),
 })
 export type NativeCurrency = InferOutput<
-  typeof nativeCurrencySchema
+  typeof NativeCurrencySchema
 >
 
-const explorerSchema = object({
+const ExplorerSchema = object({
   name: string(),
   url: string(),
   standard: string(),
 })
-export type Explorer = InferOutput<typeof explorerSchema>
+export type Explorer = InferOutput<typeof ExplorerSchema>
 
-const bridgeSchema = object({
+const BridgeSchema = object({
   url: string(),
 })
-export type Bridge = InferOutput<typeof bridgeSchema>
+export type Bridge = InferOutput<typeof BridgeSchema>
 
-const parentSchema = object({
+const ParentSchema = object({
   type: string(),
   chain: string(),
-  bridges: optional(array(bridgeSchema)),
+  bridges: optional(array(BridgeSchema)),
 })
-export type Parent = InferOutput<typeof parentSchema>
+export type Parent = InferOutput<typeof ParentSchema>
 
-const ensRegistrySchema = object({
+const EnsRegistrySchema = object({
   registry: string(),
 })
 export type EnsRegistry = InferOutput<
-  typeof ensRegistrySchema
+  typeof EnsRegistrySchema
 >
 
 function isShortName(input: unknown): boolean {
@@ -55,32 +55,32 @@ function isShortName(input: unknown): boolean {
     /^[A-Za-z0-9-_]{1,64}$/.test(input)
   )
 }
-export const shortNameSchema = custom<string>(isShortName)
-export type ShortName = InferOutput<typeof shortNameSchema>
+export const ShortNameSchema = custom<string>(isShortName)
+export type ShortName = InferOutput<typeof ShortNameSchema>
 
-const redFlagSchema = literal("reusedChainId")
+const RedFlagSchema = literal("reusedChainId")
 export type RedFlagSchema = InferOutput<
-  typeof redFlagSchema
+  typeof RedFlagSchema
 >
 
-export const chainSchema = object({
+export const ChainSchema = object({
   name: string(),
-  shortName: shortNameSchema,
+  shortName: ShortNameSchema,
   title: optional(string()),
   chain: string(),
   icon: optional(string()),
   rpc: array(string()),
   faucets: array(string()),
-  features: optional(array(featureSchema)),
-  nativeCurrency: nativeCurrencySchema,
+  features: optional(array(FeatureSchema)),
+  nativeCurrency: NativeCurrencySchema,
   infoURL: string(),
   chainId: number(),
   networkId: number(),
   slip44: optional(number()),
-  ens: optional(ensRegistrySchema),
-  explorers: optional(array(explorerSchema)),
-  parent: optional(parentSchema),
+  ens: optional(EnsRegistrySchema),
+  explorers: optional(array(ExplorerSchema)),
+  parent: optional(ParentSchema),
   status: optional(string()),
-  redFlags: optional(array(redFlagSchema)),
+  redFlags: optional(array(RedFlagSchema)),
 })
-export type Chain = InferOutput<typeof chainSchema>
+export type Chain = InferOutput<typeof ChainSchema>

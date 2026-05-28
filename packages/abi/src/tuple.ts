@@ -76,7 +76,7 @@ export function tuple<F extends Fields>(
     })
   }
 
-  const tupleSchema = custom<TupleValue<F>>((_input) => {
+  const TupleSchema = custom<TupleValue<F>>((_input) => {
     try {
       normalize(_input)
       return true
@@ -88,7 +88,7 @@ export function tuple<F extends Fields>(
   return {
     signature,
     is_dynamic,
-    schema: tupleSchema,
+    schema: TupleSchema,
     encode(_value) {
       const positional = normalize(_value)
       return encode_sequence(codecs, positional)
@@ -99,7 +99,7 @@ export function tuple<F extends Fields>(
       names.forEach((n, i) => {
         out[n] = values[i]
       })
-      return parse(tupleSchema, out)
+      return parse(TupleSchema, out)
     },
   }
 }
