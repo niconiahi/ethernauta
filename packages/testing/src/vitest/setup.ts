@@ -12,7 +12,7 @@ import type { Bytes } from "@ethernauta/core"
 import {
   evm_revert,
   evm_snapshot,
-} from "../anvil/method"
+} from "../anvil/methods"
 import { await_ready } from "../spawner/await-ready"
 import { pick_free_port } from "../spawner/pick-free-port"
 import { register_cleanup } from "../spawner/signals"
