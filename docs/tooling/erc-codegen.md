@@ -38,16 +38,53 @@ Each generated `packages/erc/src/<n>/methods/<method>.ts` follows this shape:
 
 ```ts
 // auto-generated — do not edit
-import { make_codec, parse_abi } from "@ethernauta/abi";
-import type { Callable } from "@ethernauta/transport";
-import { AddressSchema, Uint256Schema } from "@ethernauta/core";
+import { address, encode_function_call, uint256 } from "@ethernauta/abi";
+import type { Bytes } from "@ethernauta/core";
+import {
+  AddressSchema,
+  BytesSchema,
+  Uint256Schema,
+  UintSchema,
+} from "@ethernauta/core";
+import { eth_signTransaction } from "@ethernauta/eth";
+import type { ResolvedSigner, Signable } from "@ethernauta/transport";
+import { bytes_to_hex } from "@ethernauta/utils";
+import type { InferOutput } from "valibot";
+import { object, parse, tuple, union } from "valibot";
 
-const fragment = parse_abi(["function transfer(address to, uint256 amount) returns (bool)"])[0];
-const codec = make_codec(fragment);
+const PARAM_CODECS = [address(), uint256()] as const;
 
-export const transfer = (args: { to: Address; amount: Uint256 }): Signable<Hash32> => {
-  // ...
+export const TRANSFER_SIGNATURE = {
+  signature: "transfer(address,uint256)",
+  names: ["to", "value"],
 };
+
+const ParametersSchema = union([
+  tuple([AddressSchema, Uint256Schema]),
+  object({ to: AddressSchema, value: Uint256Schema }),
+]);
+type Parameters = InferOutput<typeof ParametersSchema>;
+
+export function transfer(_parameters: Parameters): Signable<Bytes> {
+  return async ([signer, context]: ResolvedSigner): Promise<Bytes> => {
+    if (!context.to) throw new Error("contract Signable requires a 'to'");
+    const parameters = parse(ParametersSchema, _parameters);
+    const values = Array.isArray(parameters)
+      ? ([parameters[0], parameters[1]] as const)
+      : ([parameters.to, parameters.value] as const);
+    const calldata = encode_function_call({
+      name: "transfer",
+      args: PARAM_CODECS,
+      values,
+    });
+    return eth_signTransaction([{
+      to: context.to,
+      value: parse(UintSchema, "0x0"),
+      input: parse(BytesSchema, bytes_to_hex(calldata)),
+      _ethernauta: { function: TRANSFER_SIGNATURE },
+    }])([signer, context]);
+  };
+}
 ```
 
 ABI-bound identifiers preserve their **ABI casing** (`balanceOf`, `transferFrom`) inside the signature string so `keccak(signature)` matches the on-chain 4-byte selector. The exported TypeScript function name follows the project's snake_case convention.
@@ -71,11 +108,11 @@ export const REGISTRY = {
   "0xa9059cbb": {
     name: "transfer",
     signature: "transfer(address,uint256)",
-    inputs: [...],
-    erc: 20,
+    types: ["address", "uint256"],
+    param_names: ["to", "value"],
   },
   // ...
-};
+} as const;
 ```
 
 Consumers (the wallet's `send-calls` view, audit-friendly logs) look up selectors here without bundling per-contract ABIs.
