@@ -6,8 +6,8 @@ This module owns the protocol layer that the rest of the library composes on top
 
 - [JSON-RPC 2.0](https://www.jsonrpc.org/specification) primitives (`Call`, `Request`, `Response`, `http()`, `websocket()`).
 - [CAIP](https://github.com/ChainAgnostic/caip-js) chain, account, asset and token identifiers.
-- The four resolver factories — `create_reader`, `create_writer`, `create_signer`, `create_contract` — and their matching method shapes.
-- The dapp-side adapter (`create_provider`) that lifts any EIP-1193 source into Ethernauta's resolver shape.
+- The chain-config-driven resolver factories — `create_reader`, `create_writer`, `create_contract` — and their matching method shapes.
+- The dapp-side adapter (`create_provider`) that lifts any EIP-1193 source into Ethernauta's `{ reader, signer }` resolver shape — the only way to obtain a `Signable<T>` resolver.
 
 It is the only package every other published package depends on.
 
@@ -19,7 +19,7 @@ Every method exported across the library is one of these four shapes:
 | --- | --- | --- | --- |
 | `Readable<T>` | `create_reader(chains)` | `{ chain_id }` | Chain reads via JSON-RPC (`eth_getBalance`, `eth_getBlockByHash`, …) |
 | `Writable<T>` | `create_writer(chains)` | `{ chain_id }` | Chain writes via JSON-RPC (`eth_sendRawTransaction`) |
-| `Signable<T>` | `create_signer(chains)` | `{ chain_id, to? }` | Wallet interactions (`eth_requestAccounts`, `eth_signTransaction`, contract `Signable` methods) |
+| `Signable<T>` | `create_provider(provider).signer` | `{ chain_id, to? }` | Wallet interactions (`eth_requestAccounts`, `eth_signTransaction`, contract `Signable` methods). `provider` is an EIP-1193 source — typically from an EIP-6963 announce |
 | `Callable<T>` | `create_contract(chains)` | `{ chain_id, to }` | `eth_call` reads against a specific contract |
 
 All four factories take the same `chains` array shape — each entry is `{ chainId, transports? }`. `Promise.any` is used internally so that any one transport succeeding resolves the call.
@@ -72,16 +72,6 @@ export const writer = create_writer([
     transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
   },
 ])
-```
-
-### `create_signer`
-
-```ts
-import { create_signer } from "@ethernauta/transport"
-
-// The signer doesn't broadcast — it bridges to the wallet
-// extension via window.postMessage. Transports are optional.
-export const signer = create_signer([{ chainId: SEPOLIA_CHAIN_ID }])
 ```
 
 ### `create_contract`
@@ -147,7 +137,7 @@ const chain_id = await eth_chainId()(resolver.reader({ chain_id: SEPOLIA_CHAIN_I
 const [account] = await eth_requestAccounts()(resolver.signer({ chain_id }))
 ```
 
-`create_injected_transport` and `create_injected_signer` are also exported for callers that want to build a single shape rather than the `{ reader, signer }` pair.
+`create_injected_transport` is also exported for callers that want only the reader-side adapter (e.g. building an `Http` against `window.ethereum` without the signer pair).
 
 ### Transports — `http`
 

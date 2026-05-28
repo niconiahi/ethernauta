@@ -64,7 +64,7 @@ const hash = await eth_sendTransaction([{ to, value, input }])(
 void hash;
 ```
 
-The call shape is identical to `create_reader(CHAINS)` / `create_signer(CHAINS)`. The only difference is the transport-construction line — which is the dapp's decision, made per call, not a contrast every demo has to enact.
+The reader call shape is identical in form to `create_reader(CHAINS)({ chain_id })`. The signer has no chain-config-driven sibling — `create_provider(provider).signer` is the only way to obtain it, and the same `signer({ chain_id })` call shape applies regardless of which 1193 source (`window.ethereum`, EIP-6963 announce, test mock) you wrapped.
 
 ## What this buys
 

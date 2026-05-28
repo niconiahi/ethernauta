@@ -86,13 +86,13 @@ type SignContext = { chain_id: caip2_ChainId; to?: Address }
 methods validate its presence at call time and throw with a clear message if
 missing.
 
-### 2.2 Extend `create_reader` / `create_signer`
+### 2.2 Extend `create_reader` / signer resolver
 
 The factory invocation becomes:
 
 ```ts
 const reader = create_reader([{ chainId, transports }])
-const signer = create_signer([{ chainId, transports: [] }])
+const { signer } = create_provider(eip1193_provider) // 6963-discovered
 
 reader({ chain_id })                  // native
 reader({ chain_id, to: contract })    // contract read
@@ -100,8 +100,9 @@ signer({ chain_id })                  // native
 signer({ chain_id, to: contract })    // contract write
 ```
 
-The factory returns a `(context: { chain_id, to? }) => Http[]` or equivalent
-that the `Readable`/`Signable` callable then consumes. Adjust call sites
+The reader factory returns a `(context: { chain_id, to? }) => Http[]` and the
+signer factory returns a `(context: { chain_id, to? }) => ResolvedSigner`,
+which the `Readable`/`Signable` callable then consumes. Adjust call sites
 inside `@ethernauta/eth`, `@ethernauta/eip`, and `@ethernauta/erc` so every
 existing Readable/Signable accepts and ignores the new context where it
 doesn't need it.

@@ -1,13 +1,13 @@
 // Sign a native ETH transfer, then broadcast it.
-// Pattern: signer for signing, writer for sending.
+// Pattern: provider.signer for signing, writer for sending.
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   eth_sendRawTransaction,
   eth_signTransaction,
 } from "@ethernauta/eth"
+import type { ProviderResolver } from "@ethernauta/transport"
 import {
-  create_signer,
   create_writer,
   encode_chain_id,
   http,
@@ -28,10 +28,12 @@ const CHAINS = [
   },
 ]
 
-const signer = create_signer(CHAINS)
 const writer = create_writer(CHAINS)
 
+// Pass in the resolver pair from `create_provider(provider)`
+// — see `wallet-connect/example.tsx` for how to acquire it.
 export async function send_transfer(
+  provider: ProviderResolver,
   to: `0x${string}`,
   wei: number,
 ) {
@@ -43,7 +45,7 @@ export async function send_transfer(
       to,
       value: number_to_hex(wei),
     },
-  ])(signer({ chain_id: CHAIN_ID }))
+  ])(provider.signer({ chain_id: CHAIN_ID }))
 
   // Step 2 — broadcast the RLP-encoded signed tx.
   const hash = await eth_sendRawTransaction([signed])(

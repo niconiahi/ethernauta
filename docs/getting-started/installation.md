@@ -25,7 +25,7 @@ If your dapp talks to a wallet via EIP-1193:
 pnpm add @ethernauta/eip
 ```
 
-The `Provider` adapter, `create_signer`, EIP-6963 discovery, and every signing-related EIP all live here.
+The `Provider` envelope, EIP-6963 discovery helpers, and every signing-related EIP live here. The dapp-side `create_provider(provider)` adapter that yields the `Signable<T>` resolver lives in `@ethernauta/transport`.
 
 ## ERC token bindings
 

@@ -85,7 +85,8 @@ This is what the generated ERC bindings do under the hood.
 ## Writes — `Signable<Hash32>` via an ERC binding
 
 ```ts
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, encode_chain_id } from "@ethernauta/transport";
 import { approve } from "@ethernauta/erc/20";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { AddressSchema, Uint256Schema } from "@ethernauta/core";
@@ -93,9 +94,8 @@ import { bigint_to_hex, parse_unit } from "@ethernauta/utils";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const usdc = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
 const router = parse(AddressSchema, "0xE592427A0AEce92De3Edee1F18E0157C05861564");
 
@@ -112,16 +112,16 @@ The signer fills in nonce / gas / fees. The dapp only specifies the call.
 To inspect or persist the signed bytes before broadcast (see [signing transactions](/guides/signing-transactions)):
 
 ```ts
-import { create_signer, create_writer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, create_writer, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_sendRawTransaction, eth_signTransaction } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const writer = create_writer([
   { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
 ]);
@@ -143,15 +143,15 @@ For "approve + swap" or any multi-step interaction, use EIP-5792:
 
 ```ts
 import { wallet_sendCalls } from "@ethernauta/eip/5792";
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, encode_chain_id } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const account = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 const usdc = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
 const router = parse(AddressSchema, "0xE592427A0AEce92De3Edee1F18E0157C05861564");

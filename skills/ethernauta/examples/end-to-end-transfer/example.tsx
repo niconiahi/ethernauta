@@ -3,18 +3,25 @@
 
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { eth_requestAccounts } from "@ethernauta/eip/1102"
+import type { Provider } from "@ethernauta/eip/1193"
+import {
+  ANNOUNCE_EVENT,
+  type EIP6963AnnounceProviderEvent,
+  REQUEST_EVENT,
+} from "@ethernauta/eip/6963"
 import {
   eth_sendRawTransaction,
   eth_signTransaction,
 } from "@ethernauta/eth"
 import {
-  create_signer,
+  create_provider,
   create_writer,
   encode_chain_id,
   http,
+  type ProviderResolver,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/utils"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 // Single-hash tracking hook from the transaction-tracking example.
 // See skills/ethernauta/examples/transaction-tracking/example.tsx.
@@ -37,32 +44,52 @@ const CHAINS = [
   },
 ]
 
-const signer = create_signer(CHAINS)
 const writer = create_writer(CHAINS)
 
 export default function Demo() {
+  const [provider, set_provider] =
+    useState<ProviderResolver | null>(null)
   const [account, set_account] = useState<string | null>(
     null,
   )
   const { tx, track } = useTransaction()
   const [error, set_error] = useState<string | null>(null)
 
+  useEffect(() => {
+    function on_announce(event: Event) {
+      const detail = (event as EIP6963AnnounceProviderEvent)
+        .detail
+      set_provider(create_provider(detail.provider as Provider))
+    }
+    window.addEventListener(ANNOUNCE_EVENT, on_announce, {
+      once: true,
+    })
+    window.dispatchEvent(new Event(REQUEST_EVENT))
+    return () =>
+      window.removeEventListener(ANNOUNCE_EVENT, on_announce)
+  }, [])
+
   async function handle_connect() {
+    if (!provider) return
     const accounts = await eth_requestAccounts()(
-      signer({ chain_id: CHAIN_ID }),
+      provider.signer({ chain_id: CHAIN_ID }),
     )
     if (accounts[0]) set_account(accounts[0])
   }
 
   async function handle_transfer() {
     set_error(null)
+    if (!provider) {
+      set_error("No wallet detected.")
+      return
+    }
     try {
       const signed = await eth_signTransaction([
         {
           to: "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           value: number_to_hex(1),
         },
-      ])(signer({ chain_id: CHAIN_ID }))
+      ])(provider.signer({ chain_id: CHAIN_ID }))
 
       const hash = await eth_sendRawTransaction([signed])(
         writer({ chain_id: CHAIN_ID }),
@@ -84,7 +111,9 @@ export default function Demo() {
       {account ? (
         <p>Connected: {account}</p>
       ) : (
-        <button onClick={handle_connect}>Connect</button>
+        <button onClick={handle_connect} disabled={!provider}>
+          Connect
+        </button>
       )}
       <button onClick={handle_transfer} disabled={!account}>
         Send 1 wei

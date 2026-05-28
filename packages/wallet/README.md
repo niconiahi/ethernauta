@@ -87,7 +87,7 @@ The wallet replies with one of three responses:
 - `ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED` — user clicked reject (consumer sees error code `4001`).
 - `ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE` — popup was closed without a decision (also surfaces as `4001`).
 
-Consumers don't write to this protocol directly — `create_signer` in `@ethernauta/transport` wraps the `postMessage` plumbing behind the `Signable<T>` interface.
+Consumers don't write to this protocol directly. The wallet announces itself as a standard EIP-1193 provider over EIP-6963; dapps adapt that provider with `create_provider(provider)` from `@ethernauta/transport`, which exposes a `Signable<T>`-compatible `signer` resolver. The `postMessage` envelope above is wallet-internal plumbing between the content script, background, and popup.
 
 ## `FunctionSidecar`
 

@@ -71,7 +71,8 @@ Same HTTP transport, but reserved for methods that broadcast. Only `eth_sendRawT
 ## Signable\<T\>
 
 ```ts
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, encode_chain_id } from "@ethernauta/transport";
 import { eth_sendTransaction } from "@ethernauta/eth";
 import { personal_sign } from "@ethernauta/eip/191";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
@@ -79,9 +80,8 @@ import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 const value = parse(UintSchema, "0x0");
 const input = parse(BytesSchema, "0x");

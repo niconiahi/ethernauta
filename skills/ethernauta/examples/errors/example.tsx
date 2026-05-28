@@ -8,10 +8,10 @@ import {
   eth_signTransaction,
 } from "@ethernauta/eth"
 import {
-  create_signer,
   create_writer,
   encode_chain_id,
   http,
+  type ProviderResolver,
 } from "@ethernauta/transport"
 import { number_to_hex } from "@ethernauta/utils"
 import { useState } from "react"
@@ -28,10 +28,9 @@ const CHAINS = [
     ],
   },
 ]
-const signer = create_signer(CHAINS)
 const writer = create_writer(CHAINS)
 
-// EIP-1193 user-rejection / extension-close shape.
+// EIP-1193 user-rejection shape.
 type Eip1193Error = { code: number; message: string }
 
 function is_user_rejection(
@@ -45,14 +44,24 @@ function is_user_rejection(
   )
 }
 
-export function ErrorAwareTransfer() {
+export function ErrorAwareTransfer({
+  provider,
+}: {
+  // From `create_provider(eip1193_provider)` — see
+  // wallet-connect/example.tsx.
+  provider: ProviderResolver | null
+}) {
   const [status, set_status] = useState<string | null>(null)
 
   async function handle_click() {
     set_status(null)
+    if (!provider) {
+      set_status("Connect a wallet first.")
+      return
+    }
     try {
       const [account] = await eth_requestAccounts()(
-        signer({ chain_id: CHAIN_ID }),
+        provider.signer({ chain_id: CHAIN_ID }),
       )
       if (!account) throw new Error("No account returned")
 
@@ -61,7 +70,7 @@ export function ErrorAwareTransfer() {
           to: "0x636c0fcd6da2207abfa80427b556695a4ad0af94",
           value: number_to_hex(1),
         },
-      ])(signer({ chain_id: CHAIN_ID }))
+      ])(provider.signer({ chain_id: CHAIN_ID }))
 
       const hash = await eth_sendRawTransaction([signed])(
         writer({ chain_id: CHAIN_ID }),

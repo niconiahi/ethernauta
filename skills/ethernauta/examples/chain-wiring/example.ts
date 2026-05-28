@@ -5,7 +5,6 @@ import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   create_reader,
-  create_signer,
   create_writer,
   encode_chain_id,
   http,
@@ -23,8 +22,8 @@ export const SEPOLIA_CHAIN_ID = encode_chain_id({
   reference: eip155_11155111.chainId,
 })
 
-// One ChainEntry per supported chain. `transports` only needed
-// for reader / writer / contract — not for the signer.
+// One ChainEntry per supported chain. `transports` is required —
+// reader / writer / contract resolve through them.
 const CHAINS = [
   {
     chainId: SEPOLIA_CHAIN_ID,
@@ -38,4 +37,5 @@ const CHAINS = [
 // Module-scope factories. Stable for the lifetime of the dapp.
 export const reader = create_reader(CHAINS)
 export const writer = create_writer(CHAINS)
-export const signer = create_signer(CHAINS)
+// The signer is built per-mount from an EIP-1193 provider acquired
+// via EIP-6963 discovery — see `wallet-connect/example.tsx`.

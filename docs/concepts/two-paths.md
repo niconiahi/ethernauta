@@ -21,16 +21,16 @@ Both paths ship. Both are first-class. **Collapsing either is a violation** rega
 The dapp calls a wallet-implemented RPC method (`eth_sendTransaction`, `personal_sign`, `wallet_sendCalls`, …). The wallet does the heavy lifting: builds the tx, fills in nonce / gas, prompts the user, signs, broadcasts, returns a hash. From the dapp's POV it's one round trip.
 
 ```ts
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, encode_chain_id } from "@ethernauta/transport";
 import { eth_sendTransaction } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 
 const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 const amount = parse(UintSchema, "0x0");
@@ -52,8 +52,9 @@ What the dapp gets: simplicity. One call, one prompt, one hash.
 The dapp asks the wallet only for the signed bytes (`eth_signTransaction`), then broadcasts them itself through a `Writable<T>` against any RPC (the chain's public endpoints, the dapp's own infrastructure, a private bundler).
 
 ```ts
+import type { Provider } from "@ethernauta/eip/1193";
 import {
-  create_signer,
+  create_provider,
   create_writer,
   encode_chain_id,
   http,
@@ -64,9 +65,8 @@ import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const writer = create_writer([
   { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
 ]);
@@ -125,6 +125,6 @@ Forcing those dapps onto path 1 means forcing them into workarounds (raw provide
 
 ## The cost
 
-Path 2 needs both `create_signer` and `create_writer`. That's two transport objects instead of one. It's a one-line extra setup and the library docs surface it as a deliberate choice rather than a friction point.
+Path 2 needs both a signer (`create_provider(provider).signer`) and a writer (`create_writer(CHAINS)`). That's two transport objects instead of one. It's a one-line extra setup and the library docs surface it as a deliberate choice rather than a friction point.
 
 The trade-off the maxim forces: a slightly wider surface area for a permanently broader use case.

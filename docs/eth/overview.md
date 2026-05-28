@@ -141,8 +141,9 @@ For typed contract calls, use `@ethernauta/erc/<n>/methods/*` — the ERC bindin
 ### Submit (path 2)
 
 ```ts
+import type { Provider } from "@ethernauta/eip/1193";
 import {
-  create_signer,
+  create_provider,
   create_writer,
   encode_chain_id,
   http,
@@ -153,9 +154,8 @@ import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { parse } from "valibot";
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const writer = create_writer([
   { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
 ]);
@@ -226,4 +226,4 @@ These are the building blocks the wallet's `eth_sendTransaction` handler compose
 - [Concepts → resolver shapes](/concepts/resolver-shapes) — what `Readable`, `Writable`, `Signable` mean.
 - [Concepts → two paths](/concepts/two-paths) — when to use `eth_sendTransaction` vs `eth_signTransaction`.
 - [@ethernauta/transaction](/transaction/overview) — lifecycle on top of these methods.
-- [@ethernauta/transport](/transport/overview) — `create_reader`, `create_writer`, `create_signer`.
+- [@ethernauta/transport](/transport/overview) — `create_reader`, `create_writer`, `create_provider(provider).signer`.

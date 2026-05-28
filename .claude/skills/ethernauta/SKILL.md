@@ -106,7 +106,7 @@ Signable<T>   = (signer: Signer) => Promise<T>
 
 `create_reader` and `create_writer` are identical in implementation but semantically different — one is for reads, one for writes. Keep them separate.
 
-`create_signer` is the wallet bridge. It takes a chain config, returns a curried function keyed by chainId that returns a `Signer`. The signer fires a `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` postMessage and waits for the extension to respond.
+The signer is **not** a chain-config-driven factory. It is obtained dapp-side by calling `create_provider(eip1193_provider)` from `@ethernauta/transport`, where `eip1193_provider` is acquired through EIP-6963 discovery. `create_provider` returns `{ reader, signer }`; the `signer` is a curried function keyed by `{ chain_id }` that returns a `Signer`. The underlying `Signer` calls `eip1193_provider.request({ method, params })` — for the Ethernauta wallet specifically, the content script translates that 1193 call into the internal `ETHERNAUTA_REQUEST_*` postMessage envelope.
 
 ---
 
@@ -180,9 +180,9 @@ This makes the method ergonomic for callers without losing type safety.
 
 ## The Signer–Provider Split
 
-`create_provider` (EIP-1193) is **skinny**: it handles the provider event interface and a minimal `request()` switch. It does not know how to sign anything. It only knows `eth_chainId` natively.
+`create_provider` in `@ethernauta/eip/1193` (wallet-side) is **skinny**: it builds the four-field 1193 envelope (`request`, `on`, `removeListener`, `emit`) from a `request` handler. It does not know how to sign anything; method routing happens inside the handler the wallet supplies.
 
-`create_signer` (transport) is **dumb**: it is a raw postMessage bridge. It knows nothing about Ethereum — just method strings and params.
+`create_provider` in `@ethernauta/transport` (dapp-side) is the symmetric adapter: it takes any EIP-1193 provider and returns `{ reader, signer }`. Both shapes delegate to `provider.request()`. The signer is **dumb** in the same sense the old postMessage bridge was — it knows nothing about Ethereum, just method strings and params.
 
 Methods that require wallet interaction are `Signable<T>` — they take a `Signer` directly, not a `Provider`. This keeps the signing surface narrow and testable in isolation.
 

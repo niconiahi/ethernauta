@@ -21,7 +21,7 @@ method(args)(resolver({ chain_id, ...context }))
 
 There are three pieces:
 
-- **Factories** (`create_reader`, `create_writer`, `create_signer`, `create_contract`) — module-scope, called once per dapp with the chains you support.
+- **Factories** (`create_reader`, `create_writer`, `create_contract`, and the wallet-side `create_provider(provider).signer`) — module-scope (or memoized per-mount for the signer), called once per dapp with the chains you support.
 - **Resolvers** — what the factory returns. Called per-call with the chain (and, for contracts, the contract address). Produces a tuple of `[transports_or_signer, context]`.
 - **Methods** (`eth_getBalance`, `eth_signTransaction`, `mint`, etc.) — factory functions that return a method shape (`Readable`, `Writable`, `Signable`, or `Callable`) which takes the resolved tuple and executes.
 
@@ -31,10 +31,10 @@ The four method shapes:
 
 | Shape | Resolver | Use for |
 |---|---|---|
-| `Readable<T>` | `create_reader` | Raw `eth_*` state queries (balance, nonce, code, block) |
-| `Writable<T>` | `create_writer` | Submitting pre-signed transactions (`eth_sendRawTransaction`) |
-| `Signable<T>` | `create_signer` | Anything that needs the wallet (account access, signing) |
-| `Callable<T>` | `create_contract` | Read-only contract method calls (`view` / `pure`) |
+| `Readable<T>` | `create_reader(CHAINS)` *or* `create_provider(provider).reader` | Raw `eth_*` state queries (balance, nonce, code, block). Both produce the same shape — pick path 2 (chain-config, no wallet) or path 1 (routed through the wallet's selected RPC) per call |
+| `Writable<T>` | `create_writer(CHAINS)` | Submitting pre-signed transactions (`eth_sendRawTransaction`) |
+| `Signable<T>` | `create_provider(provider).signer` | Anything that needs the wallet (account access, signing) — `provider` is an EIP-1193 source obtained via EIP-6963 discovery (section 9) |
+| `Callable<T>` | `create_contract(CHAINS)` | Read-only contract method calls (`view` / `pure`) |
 
 → **See** `examples/chain-wiring/` for the canonical setup.
 
@@ -44,12 +44,11 @@ The four method shapes:
 
 **What it is.** Ethernauta identifies chains with CAIP-2 strings (`"eip155:1"`, `"eip155:11155111"`) — never raw integers. You build the chain ID with `encode_chain_id({ namespace, reference })` using a chain definition from `@ethernauta/chain`, then wrap it with the HTTP RPC endpoints you want to use into a `ChainEntry`.
 
-**When to reach for it.** Every dapp begins here. Build the `CHAIN_ID` constant and the `CHAINS` array once at module scope, then pass `CHAINS` to whichever factories you need (`create_reader`, `create_signer`, etc.). Do not rebuild these per render — they are stable and cheap to share.
+**When to reach for it.** Every dapp begins here. Build the `CHAIN_ID` constant and the `CHAINS` array once at module scope, then pass `CHAINS` to whichever factories you need (`create_reader`, `create_writer`, `create_contract`). Do not rebuild these per render — they are stable and cheap to share. The signer does not consume `CHAINS` — it is built from an EIP-1193 provider acquired at runtime (sections 5 and 9).
 
 **Notes.**
 - `@ethernauta/chain` exports 500+ EIP-155 chain definitions as `eip155_<chainId>`. Import the ones you need by name (`eip155_1`, `eip155_11155111`).
 - `http(url)` creates an HTTP JSON-RPC transport. Pass more than one for fallback; dispatch uses `Promise.any()`, so the first to succeed wins.
-- The `Signer` factory does **not** need `transports` on each chain entry — it talks to the wallet extension, not RPCs. Only readers/writers/contracts need transports.
 
 → **See** `examples/chain-wiring/example.ts`.
 
@@ -82,14 +81,14 @@ The four method shapes:
 
 ## 5. Connecting a Wallet
 
-**What it is.** `eth_requestAccounts` from `@ethernauta/eip/1102` is a `Signable<string[]>` that prompts the wallet to expose accounts. You resolve it through `create_signer`. There is no provider object to keep around — the resolver pattern *is* the connection.
+**What it is.** Signing flows go through an EIP-1193 provider obtained via EIP-6963 discovery (section 9). Pass the provider to `create_provider(provider)` from `@ethernauta/transport` to get a `{ reader, signer }` resolver pair, then call `eth_requestAccounts` from `@ethernauta/eip/1102` — a `Signable<string[]>` — through the `signer` resolver.
 
-**When to reach for it.** Whenever your UI needs the user's address. Call once on a Connect button; cache the resulting address in component state. Resolve again per-call when you later need the signer for a transaction.
+**When to reach for it.** Whenever your UI needs the user's address. Discover providers on mount, let the user pick one, call `eth_requestAccounts` once to surface the address, and cache the picked provider for later transactions.
 
 **Notes.**
-- The signer talks to the wallet via `window.postMessage` with `ETHERNAUTA_REQUEST_*` / `ETHERNAUTA_RESPONSE_*` envelopes. There is no global injected object to detect — if the extension is installed, the message loop just works.
+- `create_provider(provider)` in `@ethernauta/transport` is the dapp-side adapter. It composes the provider into both a `reader` (delegates `eth_*` reads through `provider.request`) and a `signer` (delegates signable methods through `provider.request`). Same call shape as `create_reader(CHAINS)` etc. — the only difference is the construction line.
 - User rejection raises an EIP-1193-shaped error with `code: 4001`. Wrap calls in try/catch and read `err.message` for display.
-- For multi-wallet discovery (EIP-6963), see section 9.
+- In React, `@ethernauta/react` exports a `useProvider({ key })` hook that returns the `{ reader, signer }` pair already composed against the rehydrated EIP-6963 selection — see `apps/playground/app/examples/*` for the live consumer pattern.
 
 → **See** `examples/wallet-connect/example.tsx`.
 
@@ -104,7 +103,7 @@ The four method shapes:
 **Notes.**
 - Do not set `nonce`, `gas`, `maxFeePerGas`, `maxPriorityFeePerGas` yourself. The wallet fills them from `eth_getTransactionCount`, `eth_estimateGas`, and `eth_feeHistory`. Leaving them unset is the contract between you and the wallet.
 - `value` must be a hex string. Use `number_to_hex(amount)` from `@ethernauta/utils`.
-- Same signer can be reused for `eth_requestAccounts` and `eth_signTransaction` — resolve fresh each call with `signer({ chain_id })`.
+- Same signer can be reused for `eth_requestAccounts` and `eth_signTransaction` — resolve fresh each call with `signer({ chain_id })` where `signer` came from `create_provider(provider).signer`.
 
 → **See** `examples/sending-transactions/example.tsx` and `examples/end-to-end-transfer/example.tsx`.
 
@@ -131,7 +130,7 @@ The four method shapes:
 
 ### 8.1 Single-hash UI tracking (path 2 — no wallet required)
 
-**What it is.** After a transaction lands in the mempool, use `@ethernauta/transaction` to persist its lifecycle (`pending` → `mined` / `reverted`) and observe transitions in your UI. The package provides four verbs (`register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`) composed through a fifth factory `create_tracker(CHAINS, { store })` — same idiom as `create_reader` / `create_writer` / `create_signer` / `create_contract`.
+**What it is.** After a transaction lands in the mempool, use `@ethernauta/transaction` to persist its lifecycle (`pending` → `mined` / `reverted`) and observe transitions in your UI. The package provides four verbs (`register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`) composed through a fifth factory `create_tracker(CHAINS, { store })` — same idiom as `create_reader` / `create_writer` / `create_contract`.
 
 **When to reach for it.** Any single transaction your UI needs to surface (a transfer, a mint, an approval, a broadcast against any wallet) where you want to render `pending` → `mined` / `reverted` in-line. Works without an Ethernauta wallet — only RPC transports are required.
 
@@ -160,9 +159,9 @@ The four method shapes:
 
 ## 9. EIP-6963 Provider Discovery
 
-**What it is.** EIP-6963 is the standard event protocol for multi-wallet discovery. Wallets dispatch `eip6963:announceProvider` with their info and provider; dapps dispatch `eip6963:requestProvider` to trigger announcements. `@ethernauta/eip/6963` exports the types (`EIP6963ProviderDetail`, `EIP6963AnnounceProviderEvent`) and the `announce()` helper for wallet builders.
+**What it is.** EIP-6963 is the standard event protocol for multi-wallet discovery. Wallets dispatch `eip6963:announceProvider` with their info and provider; dapps dispatch `eip6963:requestProvider` to trigger announcements. `@ethernauta/eip/6963` exports the types (`EIP6963ProviderDetail`, `EIP6963AnnounceProviderEvent`), the `announce()` helper for wallet builders, and `set_provider_detail` / `get_provider_detail` / `web_storage` for persisting the user's selection.
 
-**When to reach for it.** Dapps that want to support multiple wallets simultaneously rather than hard-coding a single provider channel. If your dapp only targets Ethernauta, you can skip this and use the signer directly (sections 5–7) — that is what `animatronik` and `playground` do.
+**When to reach for it.** Always, on the dapp side, whenever you need a signer. There is no wallet-specific shortcut — every signable flow starts from an EIP-1193 provider discovered through 6963 and adapted via `create_provider(provider)` (section 5). Multi-wallet support is the *baseline*, not an opt-in.
 
 → **See** `examples/provider-discovery/example.ts`.
 
@@ -188,9 +187,9 @@ The four method shapes:
 
 | Source | Shape | When |
 |---|---|---|
-| User rejected in extension | `{ code: 4001, message: "User rejected request" }` | Signer flows |
-| Extension closed mid-flow | `{ code: 4001, message: "Extension closed" }` | Signer flows |
+| User rejected in wallet | `{ code: 4001, message: "User rejected request" }` | Signer flows |
 | RPC error response | `Error(response.error.message)` | Reader / Writer / Contract flows |
+| No provider connected | `Error("Connect a wallet first.")` (raise yourself) | Signer flows reached before EIP-6963 selection |
 
 **When to reach for it.** Wrap every entry-point call in try/catch. The 4001 cases are EXPECTED user behaviors — render a soft message, not a stack trace. RPC errors usually mean the call is malformed (bad chain id, gas issue, reverted call) — surface `err.message` for display and log details for debugging.
 
@@ -207,12 +206,13 @@ The four method shapes:
 | Package | Exports you will use |
 |---|---|
 | `@ethernauta/chain` | `eip155_1`, `eip155_11155111`, … (500+ chain definitions) |
-| `@ethernauta/transport` | `create_reader`, `create_writer`, `create_signer`, `create_contract`, `http`, `encode_chain_id`, type `Readable`, `Writable`, `Signable`, `Callable`, `ResolvedSigner`, `ResolvedContract` |
+| `@ethernauta/transport` | `create_reader`, `create_writer`, `create_contract`, `create_provider`, `http`, `encode_chain_id`, type `Readable`, `Writable`, `Signable`, `Callable`, `ProviderResolver`, `ResolvedSigner`, `ResolvedContract` |
 | `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `AddressSchema`, `Uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
 | `@ethernauta/transaction` | `create_tracker`, `register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`, `window_store`, type `Store` / `Transaction` / `PendingTransaction` / `MinedTransaction` / `RevertedTransaction` (single-hash lifecycle — see section 8.1) |
+| `@ethernauta/react` | `useProvider`, `useProviderDetail` (composes `create_provider` against a rehydrated EIP-6963 selection — see section 5) |
 | `@ethernauta/eip/1102` | `eth_requestAccounts` |
-| `@ethernauta/eip/1193` | `create_provider`, `Provider` interface |
-| `@ethernauta/eip/6963` | `announce`, `EIP6963ProviderDetail`, `ANNOUNCE_EVENT`, `REQUEST_EVENT` |
+| `@ethernauta/eip/1193` | `Provider` interface (the wallet-side `create_provider` envelope-builder also lives here) |
+| `@ethernauta/eip/6963` | `announce`, `EIP6963ProviderDetail`, `ANNOUNCE_EVENT`, `REQUEST_EVENT`, `set_provider_detail`, `get_provider_detail`, `web_storage` |
 | `@ethernauta/eip/5792` | `wallet_sendCalls`, `wallet_getCallsStatus`, `wallet_getCapabilities` (batched-call protocol — see section 8.2) |
 | `@ethernauta/abi` | `build_signature`, `encode_function_call`, `decode_function_result` (only needed when writing your own contract methods — usually codegen handles this) |
 | `@ethernauta/utils` | `number_to_hex`, `hex_to_number`, `bytes_to_hex` |

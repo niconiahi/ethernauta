@@ -5,10 +5,10 @@ import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { AddressSchema } from "@ethernauta/eth"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
-  create_signer,
   create_writer,
   encode_chain_id,
   http,
+  type ProviderResolver,
 } from "@ethernauta/transport"
 import { useState } from "react"
 import { parse } from "valibot"
@@ -39,13 +39,16 @@ const CHAINS = [
   },
 ]
 
-const signer = create_signer(CHAINS)
 const writer = create_writer(CHAINS)
 
 export function MintButton({
+  provider,
   contract_address,
   data,
 }: {
+  // From `create_provider(eip1193_provider)` — see
+  // wallet-connect/example.tsx.
+  provider: ProviderResolver
   contract_address: string
   data: string
 }) {
@@ -58,10 +61,11 @@ export function MintButton({
       // Validate the contract address at the boundary.
       const to = parse(AddressSchema, contract_address)
 
-      // Signable: signer({ chain_id, to }) — `to` is the
-      // contract address, supplied here, not baked into mint().
+      // Signable: provider.signer({ chain_id, to }) — `to`
+      // is the contract address, supplied here, not baked
+      // into mint().
       const signed = await mint({ data })(
-        signer({ chain_id: CHAIN_ID, to }),
+        provider.signer({ chain_id: CHAIN_ID, to }),
       )
 
       // Broadcast identical to a native transfer.

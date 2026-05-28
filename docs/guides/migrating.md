@@ -88,7 +88,8 @@ import type { Wallet } from "ethers";
 import type { WalletClient } from "viem";
 import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { eth_sendTransaction } from "@ethernauta/eth";
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, encode_chain_id } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { parse } from "valibot";
 
@@ -99,9 +100,8 @@ const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 const value = parse(UintSchema, "0x16345785D8A0000");
 const input = parse(BytesSchema, "0x");
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 
 // ethers
 const ethers_tx = await ethers_signer.sendTransaction({ to, value });
@@ -121,7 +121,8 @@ void hash;
 import type { Wallet, JsonRpcProvider } from "ethers";
 import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
 import { eth_sendRawTransaction, eth_signTransaction } from "@ethernauta/eth";
-import { create_signer, create_writer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, create_writer, encode_chain_id, http } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { parse } from "valibot";
 
@@ -132,9 +133,8 @@ const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 const value = parse(UintSchema, "0x16345785D8A0000");
 const input = parse(BytesSchema, "0x");
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const writer = create_writer([
   { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
 ]);
@@ -212,7 +212,8 @@ import type { WalletClient } from "viem";
 import type { Address } from "@ethernauta/core";
 import { AddressSchema } from "@ethernauta/core";
 import { eth_signTypedData_v4, type TypedData } from "@ethernauta/eip/712";
-import { create_signer, encode_chain_id, http } from "@ethernauta/transport";
+import type { Provider } from "@ethernauta/eip/1193";
+import { create_provider, encode_chain_id } from "@ethernauta/transport";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
 import { parse } from "valibot";
 
@@ -222,9 +223,8 @@ declare const typed_data: TypedData;
 const account: Address = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 
 const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const signer = create_signer([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 
 // ethers
 const ethers_sig = await ethers_signer.signTypedData(

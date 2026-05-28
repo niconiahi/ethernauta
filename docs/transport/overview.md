@@ -18,10 +18,11 @@ This package defines the **shapes** that every method binding in the monorepo sp
 ## The four factories
 
 ```ts
+import type { Provider } from "@ethernauta/eip/1193";
 import {
+  create_provider,
   create_reader,
   create_writer,
-  create_signer,
   contract,
   encode_chain_id,
   http,
@@ -41,9 +42,8 @@ const reader = create_reader([
 const writer = create_writer([
   { chainId: CHAIN_ID_1, transports: [http("https://ethereum-rpc.publicnode.com")] },
 ]);
-const signer = create_signer([
-  { chainId: CHAIN_ID_1, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
+declare const provider: Provider; // see /eips/6963 for discovery
+const { signer } = create_provider(provider);
 const token = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
 const ctx = contract({ chain_id: CHAIN_ID_1, to: token });
 ```
@@ -169,7 +169,7 @@ const hash = await eth_sendTransaction([{ to, value, input }])(
 );
 ```
 
-`create_provider(provider)` adapts any 1193-compliant source into Ethernauta's resolver shapes. `create_injected_transport` and `create_injected_signer` are the lower-level building blocks.
+`create_provider(provider)` adapts any 1193-compliant source into Ethernauta's `{ reader, signer }` resolver pair. `create_injected_transport` is also exported for callers that want only the reader-side adapter.
 
 ## JSON-RPC schemas
 

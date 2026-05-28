@@ -75,7 +75,7 @@ Signing, writing, contract reads and EIP-6963 wallet discovery follow the same `
 
 ## A real production dapp: Animatronik
 
-[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, and `create_signer` + `create_writer` for state changes. The source is the most complete public reference for consuming the library.
+[**Animatronik**](https://github.com/niconiahi/animatronik) is a production NFT dApp built end-to-end on Ethernauta. It uses the ABI generator for [its contract](https://github.com/niconiahi/animatronik/blob/main/contracts/out/AnimatronikContract.sol/AnimatronikContract.json) methods, `create_contract` for view reads, and `create_provider(provider).signer` + `create_writer` for state changes (the `provider` comes from an EIP-6963 announce). The source is the most complete public reference for consuming the library.
 
 ## Use Ethernauta with your AI agent
 

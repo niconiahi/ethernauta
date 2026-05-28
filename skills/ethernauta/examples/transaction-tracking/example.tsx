@@ -1,7 +1,7 @@
 // Single-hash UI tracking via @ethernauta/transaction.
 // Compose register_transaction + watch_transaction against a
 // tracker resolver. The tracker takes the same CHAINS array
-// as create_reader / create_writer / create_signer + a `store`
+// as create_reader / create_writer / create_contract + a `store`
 // telling the package where to persist the lifecycle records.
 // `window_store` is the default browser-side backend (writes
 // into a Map hung off `window.transactions`); pass any

@@ -15,7 +15,7 @@ These are pillars. Read them before any design decision. If a proposed change co
 
 ### M1 — Primitives are first-class
 
-The first-class citizens of this monorepo are small composable primitive functions: JSON-RPC methods (`eth_*`), encode/decode helpers (`encode_eip155_transaction_unsigned`, `decode_function_call`), hashing and normalization (`keccak256`, ENSIP normalize), Valibot schemas, and the four resolver factories (`create_reader`, `create_writer`, `create_signer`, `create_contract`). Adding a new EIP, ERC, or algorithm is a folder-shaped operation: create `packages/eip/src/<n>/` or `packages/erc/src/<n>/` (or extend the un-numbered base packages for cross-cutting helpers), declare the schemas, ship the method bindings. No coordinated work with a server, a hosted indexer, or a wallet release. Folder + done.
+The first-class citizens of this monorepo are small composable primitive functions: JSON-RPC methods (`eth_*`), encode/decode helpers (`encode_eip155_transaction_unsigned`, `decode_function_call`), hashing and normalization (`keccak256`, ENSIP normalize), Valibot schemas, and the resolver factories (`create_reader`, `create_writer`, `create_contract` — chain-config-driven, no wallet — and `create_provider(provider).signer`, the dapp-side adapter that yields a signer from any EIP-1193 source). Adding a new EIP, ERC, or algorithm is a folder-shaped operation: create `packages/eip/src/<n>/` or `packages/erc/src/<n>/` (or extend the un-numbered base packages for cross-cutting helpers), declare the schemas, ship the method bindings. No coordinated work with a server, a hosted indexer, or a wallet release. Folder + done.
 
 The signing strategy that primitives default to is the **sign-with-`eth_signTransaction`-then-broadcast-with-the-writer** pattern (path 2 — see M3). Primitives never depend on a specific wallet implementation; they depend only on the JSON-RPC method protocol.
 
@@ -36,11 +36,11 @@ ethernauta primitives → consumer dapp                                       (p
 
 A dapp must be able to consume the library on **either path**. The four-shape resolver split exists specifically for this:
 
-- `Readable<T>` via `create_reader(CHAINS)` — chain reads, no wallet.
+- `Readable<T>` via `create_reader(CHAINS)` — chain reads, no wallet. (The path-1 sibling `create_provider(provider).reader` routes the same shape through the wallet's selected RPC — see M5.)
 - `Writable<T>` via `create_writer(CHAINS)` — broadcast pre-signed bytes, no wallet.
 - `Callable<T>` via `create_contract(CHAINS)` — `eth_call` reads, no wallet.
 - `Trackable<T>` / `Watchable` via `create_tracker(CHAINS, { store })` — lifecycle tracking via receipt polling, no wallet.
-- `Signable<T>` via `create_signer(CHAINS)` — the **only** shape that requires a wallet.
+- `Signable<T>` via `create_provider(provider).signer` — the **only** shape that requires a wallet. `provider` is an EIP-1193 source acquired via EIP-6963 discovery; there is no chain-config-driven shortcut.
 
 Collapsing or removing path 2 is a violation of this maxim regardless of how clean the resulting code looks. When the wallet adds a standard RPC method, the matching primitive stays available on path 2. Concretely: `eth_sendTransaction` (path 1, `Signable<Hash32>` — wallet signs and broadcasts) and `eth_signTransaction` + `eth_sendRawTransaction` (path 2, primitive composition — dapp broadcasts) BOTH exist as exported methods. The library does not force a choice between them; the dapp does, per call. Documentation should show them side-by-side wherever the choice is non-obvious.
 
@@ -57,7 +57,7 @@ This is the symmetric dual of M2: when the wallet implements a 1193 method, the 
 Concretely:
 
 - **Wallet side.** `create_envelope({ request })` in `@ethernauta/eip/1193` produces the four-field 1193 object (`request`, `on`, `removeListener`, `emit`) and nothing else. The router lives in `packages/wallet/src/utils/dispatch.ts` with four strict allowlists (wallet-state, chain-read, signable, wallet-internal); methods outside all four return 4200.
-- **Dapp side.** `create_provider(provider)` from `@ethernauta/eip/1193` adapts any 1193 source (an EIP-6963 announce result, `window.ethereum`, a test mock) into Ethernauta's resolver shape — `.reader({ chain_id })` for `Readable<T>` consumers, `.signer({ chain_id })` for `Signable<T>` consumers. The call site is identical to `create_reader(CHAINS)` / `create_signer(CHAINS)`; only the transport-construction line differs.
+- **Dapp side.** `create_provider(provider)` from `@ethernauta/transport` adapts any 1193 source (an EIP-6963 announce result, `window.ethereum`, a test mock) into Ethernauta's resolver shape — `.reader({ chain_id })` for `Readable<T>` consumers, `.signer({ chain_id })` for `Signable<T>` consumers. The signer is **only** available through this adapter; there is no chain-config-driven `create_signer` exported from `@ethernauta/transport`. The reader call site is identical in form to `create_reader(CHAINS)({ chain_id })`; only the transport-construction line differs.
 
 Playground demos surface this convergence by showing the call shape once — the transport choice (public RPC reader vs wallet-routed provider) is the dapp's decision, made per call, not a visual contrast every demo has to enact.
 

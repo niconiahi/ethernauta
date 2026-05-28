@@ -19,7 +19,7 @@ A Chrome MV3 extension runs in three places. Each lives in its own file under `p
 | Background service worker | `packages/wallet/manifest/extension.entry.ts:1-135` | Event-driven, killed when idle | Router — stashes the request in `chrome.storage.session`, opens the popup, waits for the popup-ready notification, replays the request to the popup, then routes the response back to the originating tab |
 | Popup (UI) | `packages/wallet/src/entry.preact.tsx` → `controller.tsx` | While the popup window is open | View — Preact app that authenticates the user, decrypts the vault, renders a view per request method, and posts back the response |
 
-The page itself (`window`) is the fourth participant, but it is not extension code — it is the dapp, talking to the wallet via the `@ethernauta/transport` `create_signer` resolver. The dapp never sees a provider object; the signer just `postMessage`s and waits.
+The page itself (`window`) is the fourth participant, but it is not extension code — it is the dapp, talking to the wallet via a standard EIP-1193 provider. The wallet's content script announces that provider over EIP-6963 (`packages/wallet/manifest/wallet.ts:246`); the provider's `request()` is internally backed by the same `ETHERNAUTA_REQUEST_*` postMessage envelope described below — that envelope is wallet-internal plumbing, not part of the dapp-facing surface.
 
 ## The message envelope
 
@@ -53,7 +53,7 @@ When introducing a new message: add a `*Schema` in `event.ts`, derive the type, 
 
 End-to-end, for an `eth_signTransaction` originating in the dapp:
 
-1. **Dapp** calls a method (e.g. `eth_signTransaction(...)(signer({ chain_id }))`). The signer `postMessage`s an `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` to `window`.
+1. **Dapp** calls a method (e.g. `eth_signTransaction(...)(provider.signer({ chain_id }))` where `provider = create_provider(eip1193_provider)`). The transport adapter calls `eip1193_provider.request({ method, params })`; the wallet's content script translates that into an `ETHERNAUTA_REQUEST_SIGN_TRANSACTION` `postMessage` to `window`.
 2. **Content script** picks it up and forwards via `chrome.runtime.sendMessage`.
 3. **Background** (`extension.entry.ts:38-101`):
    - `parse(EthernautaEventSchema, message)` — every message is validated.
@@ -135,16 +135,30 @@ Constraints that must not slip:
 This is consumer territory — the `ethernauta` skill (`skills/ethernauta/SKILL.md`) is the long form. The short form:
 
 ```ts
-// 1. Request accounts (opens the connect view in the popup)
-import { eth_requestAccounts } from "@ethernauta/eip/1102"
-import { create_signer } from "@ethernauta/transport"
+// 1. Discover the wallet (any EIP-6963 announcing wallet — Ethernauta included)
+import {
+  ANNOUNCE_EVENT,
+  type EIP6963AnnounceProviderEvent,
+  REQUEST_EVENT,
+} from "@ethernauta/eip/6963"
+import { create_provider } from "@ethernauta/transport"
 
-const signer = create_signer({ chains: [{ chainId: SEPOLIA }] })
+const eip1193 = await new Promise<Provider>((resolve) => {
+  window.addEventListener(ANNOUNCE_EVENT, (event) => {
+    resolve((event as EIP6963AnnounceProviderEvent).detail.provider)
+  }, { once: true })
+  window.dispatchEvent(new Event(REQUEST_EVENT))
+})
+const { signer } = create_provider(eip1193)
+
+// 2. Request accounts (opens the connect view in the popup)
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+
 const [account] = await eth_requestAccounts()(
   signer({ chain_id: SEPOLIA }),
 )
 
-// 2. Sign + broadcast a native transfer
+// 3. Sign + broadcast a native transfer
 import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth"
 import { number_to_hex } from "@ethernauta/utils"
 
@@ -157,7 +171,7 @@ const hash = await eth_sendRawTransaction([signed])(
 )
 ```
 
-The wallet does not expose a provider object. The connection is the `postMessage` channel that the signer opens transparently. There is nothing global to detect — if the extension is installed, the channel works; if not, the signer rejects with `{ code: 4001, message: "Extension closed" }`.
+The wallet exposes itself as a standard EIP-1193 provider announced over EIP-6963 — same shape as MetaMask, Rabby, et al. Detection is the 6963 dance; if Ethernauta is installed, its `announceProvider` event fires and you pick its detail. If the popup window closes mid-sign, the signer rejects with an EIP-1193 `{ code: 4001, message: "Extension closed" }`.
 
 ## Adding a new RPC method to the wallet — checklist
 
