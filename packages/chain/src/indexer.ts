@@ -15,38 +15,38 @@ import { ChainSchema } from "../src/chain"
 
 export function runIndexer(): void {
   const git = simpleGit()
-  const repositoryUrl =
+  const repository_url =
     "https://github.com/ethereum-lists/chains"
-  const outputPath = "src/chain/output"
-  const targetPath = resolve("./src/chain")
+  const output_path = "src/chain/output"
+  const target_path = resolve("./src/chain")
 
-  if (existsSync(outputPath)) {
-    rmSync(outputPath, { recursive: true })
+  if (existsSync(output_path)) {
+    rmSync(output_path, { recursive: true })
   }
 
   git
-    .clone(repositoryUrl, outputPath)
+    .clone(repository_url, output_path)
     .then(() => {
-      const folderPath = join(outputPath, "_data/chains")
+      const folder_path = join(output_path, "_data/chains")
 
-      if (!existsSync(folderPath)) {
-        mkdirSync(folderPath, { recursive: true })
+      if (!existsSync(folder_path)) {
+        mkdirSync(folder_path, { recursive: true })
       }
 
-      readdir(folderPath, async (error, files) => {
+      readdir(folder_path, async (error, files) => {
         if (error) {
           throw new Error(error.message)
         }
 
-        const indexFilePath = join(
-          targetPath,
+        const index_file_path = join(
+          target_path,
           "eip155",
           "index.ts",
         )
 
-        const chainPath = join(targetPath, "eip155")
-        if (!existsSync(chainPath)) {
-          mkdirSync(chainPath, { recursive: true })
+        const chain_path = join(target_path, "eip155")
+        if (!existsSync(chain_path)) {
+          mkdirSync(chain_path, { recursive: true })
         }
 
         const imports: string[] = []
@@ -56,13 +56,13 @@ export function runIndexer(): void {
           if (!file) {
             continue
           }
-          const filePath = join(folderPath, file)
+          const file_path = join(folder_path, file)
 
-          if (extname(filePath) === ".json") {
+          if (extname(file_path) === ".json") {
             const promise = new Promise<void>(
               (resolve, reject) => {
                 readFile(
-                  filePath,
+                  file_path,
                   "utf8",
                   async (error, data) => {
                     if (error) {
@@ -71,26 +71,26 @@ export function runIndexer(): void {
                     }
 
                     try {
-                      const jsonData = JSON.parse(data)
+                      const json_data = JSON.parse(data)
                       const chain = parse(
                         ChainSchema,
-                        jsonData,
+                        json_data,
                       )
 
-                      const fileId = `eip155-${chain.chainId}`
-                      const nameId = `eip155_${chain.chainId}`
+                      const file_id = `eip155-${chain.chainId}`
+                      const name_id = `eip155_${chain.chainId}`
                       imports.push(
-                        `export * from "./${fileId}"`,
+                        `export * from "./${file_id}"`,
                       )
-                      const chainFile = `${fileId}.ts`
+                      const chain_file = `${file_id}.ts`
 
                       const _filePath = join(
-                        chainPath,
-                        chainFile,
+                        chain_path,
+                        chain_file,
                       )
                       const content = `import type { Chain } from "../shared"
 
-export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain
+export const ${name_id} = ${JSON.stringify(chain, null, 2)} satisfies Chain
 `
 
                       writeFile(
@@ -121,7 +121,7 @@ export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain
           .then(() => {
             const content = imports.sort().join("\n")
             writeFile(
-              indexFilePath,
+              index_file_path,
               content,
               "utf-8",
               (error) => {
@@ -132,8 +132,8 @@ export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain
                   `Generated ${imports.length} chain files and index`,
                 )
                 // Clean up the cloned repository
-                if (existsSync(outputPath)) {
-                  rmSync(outputPath, { recursive: true })
+                if (existsSync(output_path)) {
+                  rmSync(output_path, { recursive: true })
                 }
               },
             )
@@ -145,8 +145,8 @@ export const ${nameId} = ${JSON.stringify(chain, null, 2)} satisfies Chain
     })
     .catch((err) => {
       console.error("Error in indexer:", err)
-      if (existsSync(outputPath)) {
-        rmSync(outputPath, { recursive: true })
+      if (existsSync(output_path)) {
+        rmSync(output_path, { recursive: true })
       }
       throw new Error(err)
     })

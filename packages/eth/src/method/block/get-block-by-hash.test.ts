@@ -38,12 +38,12 @@ describe.skip("eth_getBlockByHash", () => {
       VALID_BLOCK_HASH,
       false,
     ])
-    const chainId = encode_chain_id({
+    const chain_id = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
     const block = await readable(
-      reader({ chain_id: chainId }),
+      reader({ chain_id }),
     )
     expect(block).toHaveProperty("hash", VALID_BLOCK_HASH)
   })
@@ -65,12 +65,12 @@ describe.skip("eth_getBlockByHash", () => {
       INVALID_BLOCK_HASH,
       false,
     ])
-    const chainId = encode_chain_id({
+    const chain_id = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
     const block = await readable(
-      reader({ chain_id: chainId }),
+      reader({ chain_id }),
     )
     expect(block).toBeNull()
   })
@@ -92,12 +92,12 @@ describe.skip("eth_getBlockByHash", () => {
       blockHash: VALID_BLOCK_HASH,
       hydratedTransactions: false,
     })
-    const chainId = encode_chain_id({
+    const chain_id = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
     const block = await readable(
-      reader({ chain_id: chainId }),
+      reader({ chain_id }),
     )
     expect(block).toHaveProperty("hash", VALID_BLOCK_HASH)
   })

@@ -158,11 +158,11 @@ export async function get_vault(
           resolve(undefined)
           return
         }
-        const vaultRecord = parse(
+        const vault_record = parse(
           VaultRecordSchema,
           request.result,
         )
-        resolve(vaultRecord)
+        resolve(vault_record)
       }
       request.onerror = () =>
         reject(

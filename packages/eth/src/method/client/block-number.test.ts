@@ -32,12 +32,12 @@ describe.skip("eth_blockNumber", () => {
       },
     ])
     const readable = eth_blockNumber()
-    const chainId = encode_chain_id({
+    const chain_id = encode_chain_id({
       namespace: "eip155",
       reference: eip155_1.chainId,
     })
     const blockNumber_ = await readable(
-      reader({ chain_id: chainId }),
+      reader({ chain_id }),
     )
     expect(() =>
       parse(UintSchema, blockNumber_),

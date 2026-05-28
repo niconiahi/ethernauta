@@ -19,7 +19,7 @@ export function encode_chain_id({
       ? String(_reference)
       : _reference,
   )
-  const _chainId = namespace + DELIMITER + reference
-  const chainId = parse(ChainIdSchema, _chainId)
-  return chainId
+  const _chain_id = namespace + DELIMITER + reference
+  const chain_id = parse(ChainIdSchema, _chain_id)
+  return chain_id
 }

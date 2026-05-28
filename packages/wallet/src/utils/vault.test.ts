@@ -133,47 +133,47 @@ it("should handle multiple save/retrieve cycles", async () => {
 })
 
 it("should preserve exact mnemonic whitespace and casing", async () => {
-  const mnemonicWithSpaces =
+  const mnemonic_with_spaces =
     "  abandon   abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about  "
-  const mnemonicMixed =
+  const mnemonic_mixed =
     "Abandon ABANDON abandon Abandon abandon abandon abandon abandon abandon abandon abandon about"
 
-  await set_vault(mnemonicWithSpaces, TEST_PASSWORD)
+  await set_vault(mnemonic_with_spaces, TEST_PASSWORD)
   let retrieved = await get_vault(TEST_PASSWORD)
-  expect(retrieved).toBe(mnemonicWithSpaces)
+  expect(retrieved).toBe(mnemonic_with_spaces)
 
-  await set_vault(mnemonicMixed, TEST_PASSWORD)
+  await set_vault(mnemonic_mixed, TEST_PASSWORD)
   retrieved = await get_vault(TEST_PASSWORD)
-  expect(retrieved).toBe(mnemonicMixed)
+  expect(retrieved).toBe(mnemonic_mixed)
 })
 
 it("should validate correct password", async () => {
   await set_vault(TEST_MNEMONIC, TEST_PASSWORD)
-  const isValid = await validate_password(TEST_PASSWORD)
-  expect(isValid).toBe(true)
+  const is_valid = await validate_password(TEST_PASSWORD)
+  expect(is_valid).toBe(true)
 })
 
 it("should return false for incorrect password", async () => {
   await set_vault(TEST_MNEMONIC, TEST_PASSWORD)
-  const isValid = await validate_password("wrong_password")
-  expect(isValid).toBe(false)
+  const is_valid = await validate_password("wrong_password")
+  expect(is_valid).toBe(false)
 })
 
 it("should return false when no vault exists", async () => {
-  const isValid = await validate_password(TEST_PASSWORD)
-  expect(isValid).toBe(false)
+  const is_valid = await validate_password(TEST_PASSWORD)
+  expect(is_valid).toBe(false)
 })
 
 it("should return false for empty password", async () => {
   await set_vault(TEST_MNEMONIC, TEST_PASSWORD)
 
-  const isValid = await validate_password("")
-  expect(isValid).toBe(false)
+  const is_valid = await validate_password("")
+  expect(is_valid).toBe(false)
 })
 
 it("should return false for whitespace-only password", async () => {
   await set_vault(TEST_MNEMONIC, TEST_PASSWORD)
 
-  const isValid = await validate_password("   ")
-  expect(isValid).toBe(false)
+  const is_valid = await validate_password("   ")
+  expect(is_valid).toBe(false)
 })

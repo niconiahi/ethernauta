@@ -6,11 +6,11 @@ import type { caip2_Reference } from "./caip-2/reference"
 import { Caip2_referenceSchema } from "./caip-2/reference"
 
 const DELIMITER = ":"
-export function decode_chain_id(chainId: string): {
+export function decode_chain_id(chain_id: string): {
   namespace: caip2_Namespace
   reference: caip2_Reference
 } {
-  const [_namespace, _reference] = chainId.split(DELIMITER)
+  const [_namespace, _reference] = chain_id.split(DELIMITER)
   const namespace = parse(Caip2_namespaceSchema, _namespace)
   const reference = parse(Caip2_referenceSchema, _reference)
   return { namespace, reference }
