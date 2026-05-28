@@ -12,16 +12,12 @@ import {
   string,
 } from "valibot"
 
-// Spawn config — every option that gets translated into an anvil
-// CLI flag. Phase 4 (fork mode) and Phase 7 (override
-// pass-through) wire the public `test()` config through to this
-// schema; right now only `port` is required so the package can
-// stand up a local node from Phase 3 onward.
+import { ForkConfigSchema } from "../test/config"
 
-const ForkConfigSchema = object({
-  url: string(),
-  blockNumber: optional(bigint()),
-})
+// Spawn config — every option that gets translated into an anvil
+// CLI flag. Reuses the public `ForkConfigSchema` from
+// `src/test/config.ts` so URL validation is enforced at the
+// spawner boundary too, not only on the public `test()` path.
 
 export const SpawnConfigSchema = object({
   port: number(),

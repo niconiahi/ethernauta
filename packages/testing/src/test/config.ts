@@ -12,11 +12,20 @@ import {
   number,
   object,
   optional,
+  pipe,
   string,
+  url,
 } from "valibot"
 
+// `fork.url` is the raw RPC string anvil consumes via
+// `--fork-url`. Phase 6 (the simulation plan's OQ6) will extend
+// this with a `{ chainId }` form that resolves the URL via
+// `@ethernauta/chain`; for now we require a syntactically valid
+// URL so a typo throws at the parse boundary, before anvil
+// spawns and fails with a less actionable error.
+
 export const ForkConfigSchema = object({
-  url: string(),
+  url: pipe(string(), url()),
   blockNumber: optional(bigint()),
 })
 export type ForkConfig = InferOutput<typeof ForkConfigSchema>
