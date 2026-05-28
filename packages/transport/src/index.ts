@@ -4,7 +4,14 @@ export * from "./contract"
 export * from "./http"
 export * from "./json-rpc"
 export * from "./multicall"
-export * from "./provider"
+export {
+  create_injected_transport,
+  create_provider,
+  ProviderResolverSchema,
+  type ProviderResolver,
+  ProviderRpcErrorSchema,
+  type ProviderRpcErrorShape,
+} from "./provider"
 export * from "./read"
 export * from "./reader"
 export * from "./require-chain"

@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest"
 
 import { CallSchema } from "./call"
 import {
-  create_injected_signer,
+  create_signer,
   create_injected_transport,
   create_provider,
 } from "./provider"
@@ -67,14 +67,14 @@ describe("create_injected_transport", () => {
   })
 })
 
-describe("create_injected_signer", () => {
+describe("create_signer", () => {
   it("returns the signed transaction from the provider", async () => {
     const { provider } = fake_provider({
       request: async () => "0xfeedbeef",
     })
-    const sign = create_injected_signer(provider)
-    const [signer, context] = sign({ chain_id: "eip155:1" })
-    const result = await signer("eth_signTransaction", [
+    const signer = create_signer(provider)
+    const [sign, context] = signer({ chain_id: "eip155:1" })
+    const result = await sign("eth_signTransaction", [
       { to: "0xaaaa", value: "0x1" },
     ])
     expect(result).toBe("0xfeedbeef")
@@ -87,9 +87,9 @@ describe("create_injected_signer", () => {
         "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       ],
     })
-    const sign = create_injected_signer(provider)
-    const [signer] = sign({ chain_id: "eip155:1" })
-    const result = await signer("eth_requestAccounts", [])
+    const signer = create_signer(provider)
+    const [sign] = signer({ chain_id: "eip155:1" })
+    const result = await sign("eth_requestAccounts", [])
     expect(JSON.parse(result)).toEqual([
       "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     ])
@@ -101,10 +101,10 @@ describe("create_injected_signer", () => {
         throw { code: 4001, message: "User denied" }
       },
     })
-    const sign = create_injected_signer(provider)
-    const [signer] = sign({ chain_id: "eip155:1" })
+    const signer = create_signer(provider)
+    const [sign] = signer({ chain_id: "eip155:1" })
     await expect(
-      signer("eth_signTransaction", []),
+      sign("eth_signTransaction", []),
     ).rejects.toMatchObject({
       code: 4001,
       message: "User denied",

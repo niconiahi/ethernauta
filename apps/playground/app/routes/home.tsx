@@ -4,6 +4,7 @@ import {
   eth_sendRawTransaction,
   eth_signTransaction,
 } from "@ethernauta/eth"
+import { useProvider } from "@ethernauta/react"
 import {
   create_tracker,
   register_transaction,
@@ -12,7 +13,6 @@ import {
   window_store,
 } from "@ethernauta/transaction"
 import {
-  create_signer,
   create_writer,
   encode_chain_id,
   http,
@@ -21,6 +21,7 @@ import { number_to_hex } from "@ethernauta/utils"
 import { useEffect, useRef, useState } from "react"
 import { parse } from "valibot"
 import { Button, ButtonLink } from "../components/button"
+import { PROVIDER_STORE_KEY } from "../lib/provider-store"
 
 const NAMESPACE = {
   ETHEREUM: "eip155",
@@ -38,12 +39,12 @@ const CHAINS = [
   },
 ]
 const writer = create_writer(CHAINS)
-const signer = create_signer(CHAINS)
 const tracker = create_tracker(CHAINS, {
   store: window_store,
 })
 
 export default function () {
+  const provider = useProvider({ key: PROVIDER_STORE_KEY })
   const [transactions, setTransactions] = useState<
     Transaction[]
   >([])
@@ -175,6 +176,10 @@ export default function () {
             variant="secondary"
             onClick={async () => {
               set_error(null)
+              if (!provider) {
+                set_error("Connect a wallet first.")
+                return
+              }
               try {
                 const signed_transaction =
                   await eth_signTransaction([
@@ -188,7 +193,11 @@ export default function () {
                         number_to_hex(1),
                       ),
                     },
-                  ])(signer({ chain_id: SEPOLIA_CHAIN_ID }))
+                  ])(
+                    provider.signer({
+                      chain_id: SEPOLIA_CHAIN_ID,
+                    }),
+                  )
                 const writable = eth_sendRawTransaction([
                   signed_transaction,
                 ])

@@ -39,10 +39,6 @@ export type ProviderRpcErrorShape = InferOutput<
   typeof ProviderRpcErrorSchema
 >
 
-// EIP-1193 USER_REJECTED_REQUEST. Mirrors
-// transport/src/signer.ts ERROR_CODE so the signer
-// adapter raises the SAME shape that consumers already
-// handle for the native Ethernauta wallet.
 const USER_REJECTED_REQUEST = 4001
 
 // Adapt an EIP-1193 provider (window.ethereum, an
@@ -91,7 +87,7 @@ export function create_injected_transport(
 // the Ethernauta wallet. The signer's return type is `string`
 // per the codebase convention — methods that produce arrays
 // or objects JSON-encode themselves to fit.
-export function create_injected_signer(
+export function create_signer(
   _provider: Provider,
 ): (_input: SignContext) => ResolvedSigner {
   return (_input: SignContext): ResolvedSigner => {
@@ -152,11 +148,11 @@ export function create_provider(
   provider: Provider,
 ): ProviderResolver {
   const http = create_injected_transport(provider)
-  const signer_factory = create_injected_signer(provider)
+  const signer = create_signer(provider)
   return {
     reader: (context: ReadContext): ResolvedReader => {
       return [[http], parse(ReadContextSchema, context)]
     },
-    signer: signer_factory,
+    signer,
   }
 }

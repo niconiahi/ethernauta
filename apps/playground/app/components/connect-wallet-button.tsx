@@ -38,7 +38,7 @@ import {
   web_storage,
 } from "@ethernauta/eip/6963"
 import {
-  create_injected_signer,
+  create_provider,
   encode_chain_id,
 } from "@ethernauta/transport"
 import { useEffect, useRef, useState } from "react"
@@ -127,7 +127,7 @@ export function ConnectWalletButton({
         namespace: "eip155",
         reference,
       })
-      const signer = create_injected_signer(provider)
+      const { signer } = create_provider(provider)
       const accounts = await eth_requestAccounts()(
         signer({ chain_id }),
       )
