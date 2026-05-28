@@ -32,7 +32,8 @@
     "@ethernauta/chain": "workspace:*",
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eip": "workspace:*",
-    "@ethernauta/transport": "workspace:*"
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
