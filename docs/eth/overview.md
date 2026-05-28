@@ -91,32 +91,49 @@ Each method returns a resolver-shaped curried function. The first call binds the
 ### Read
 
 ```ts
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import {
   eth_blockNumber,
   eth_getBalance,
   eth_getCode,
 } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const reader = create_reader([eip155_1]);
-const ctx = reader({ chain_id: eip155_1.chain_id });
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
+const address = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
 
 const block = await eth_blockNumber()(ctx);
-const balance = await eth_getBalance({ address, block: "latest" })(ctx);
-const code = await eth_getCode({ address, block: "latest" })(ctx);
+const balance = await eth_getBalance([address, "latest"])(ctx);
+const code = await eth_getCode([address, "latest"])(ctx);
 ```
 
 ### Call
 
 ```ts
 import { eth_call } from "@ethernauta/eth";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const result_bytes = await eth_call({
-  to: contract_address,
-  input: calldata,
-  block: "latest",
-})(reader({ chain_id: eip155_1.chain_id }));
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const contract_address = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const calldata = parse(BytesSchema, "0x");
+
+const result_bytes = await eth_call([{ to: contract_address, input: calldata }])(
+  reader({ chain_id: CHAIN_ID }),
+);
 ```
 
 For typed contract calls, use `@ethernauta/erc/<n>/methods/*` — the ERC bindings wrap `eth_call` with a decoder.
@@ -124,18 +141,34 @@ For typed contract calls, use `@ethernauta/erc/<n>/methods/*` — the ERC bindin
 ### Submit (path 2)
 
 ```ts
-import { create_signer, create_writer } from "@ethernauta/transport";
+import {
+  create_signer,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport";
 import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const signer = create_signer([eip155_1]);
-const writer = create_writer([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const signer = create_signer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const writer = create_writer([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
-const signed = await eth_signTransaction({ to, value, input: "0x" })(
-  signer({ chain_id: eip155_1.chain_id }),
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
+
+const signed = await eth_signTransaction([{ to, value, input: parse(BytesSchema, "0x") }])(
+  signer({ chain_id: CHAIN_ID }),
 );
 
-const hash = await eth_sendRawTransaction(signed)(
-  writer({ chain_id: eip155_1.chain_id }),
+const hash = await eth_sendRawTransaction([signed])(
+  writer({ chain_id: CHAIN_ID }),
 );
 ```
 
@@ -143,13 +176,34 @@ const hash = await eth_sendRawTransaction(signed)(
 
 ```ts
 import { eth_getLogs } from "@ethernauta/eth";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import {
+  AddressSchema,
+  Bytes32Schema,
+  UintSchema,
+} from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const token = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const transfer_event_topic = parse(
+  Bytes32Schema,
+  "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+);
 
 const logs = await eth_getLogs({
-  address: token,
-  topics: [transfer_event_topic],
-  from_block: "0x0",
-  to_block: "latest",
-})(reader({ chain_id: eip155_1.chain_id }));
+  filter: {
+    address: token,
+    topics: [transfer_event_topic],
+    fromBlock: parse(UintSchema, "0x0"),
+    toBlock: parse(UintSchema, "0x1000000"),
+  },
+})(reader({ chain_id: CHAIN_ID }));
 ```
 
 ## Core types
