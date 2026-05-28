@@ -1,6 +1,5 @@
-// Root subpath for `@ethernauta/testing`. The `test()` transport
-// factory and account / signer helpers land here in Phases 3 and 6;
-// for now this file only carries the placeholder so consumers can
-// import the package and the tsdown build emits the entrypoint.
+// Root subpath for `@ethernauta/testing`. The `test()`
+// transport factory, the config schemas, and (Phase 6) the
+// account/signer helpers re-export from here.
 
-export {}
+export * from "./test"
