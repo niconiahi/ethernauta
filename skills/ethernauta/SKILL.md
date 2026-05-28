@@ -1,231 +1,597 @@
 ---
 name: ethernauta
-description: Official consumer guide for the @ethernauta/* packages — what each concept is, when to reach for it, and where the runnable example lives. Read this before writing dapp code against Ethernauta so the AI agent does not have to rediscover the API every session.
+description: Self-contained consumer guide for the @ethernauta/* npm packages. Read this before writing any dapp code that talks to a chain or a wallet. Every concept, snippet, and decision rule needed to build with Ethernauta is in this file — runnable longer-form versions of each pattern live next to it under examples/<name>/example.ts.
 ---
 
-# Using Ethernauta
+# Ethernauta — consumer guide
 
-This document teaches a consuming agent how to build a dapp on top of `@ethernauta/*`. It is organized by **concept**, not by package. Each section explains WHAT the concept is, WHEN to reach for it, and points to a self-contained example file under `examples/<section>/`.
+This document is everything an agent needs to use `@ethernauta/*` correctly without reading the package source. Each section answers one user intent with: the **shape** of the call (an inline snippet that compiles), the **knobs** the consumer might want to change, and a pointer to the matching `examples/<name>/example.ts` file in this skill folder for a full runnable version.
 
-The canonical real-world consumer is the [animatronik](https://github.com/niconiahi/animatronik) dapp — every pattern below is taken verbatim from it or from `apps/playground` inside the ethernauta monorepo. If a pattern is not represented in this skill, it is not a supported usage.
+The packages are published to npm. The consumer installs them and imports from them — no monorepo checkout is needed for anything below.
+
+## §0 Intent → section
+
+| The user wants to… | Section |
+|---|---|
+| Understand the call shape every method uses | §1 |
+| Pick packages to install | §2 |
+| Wire chains (build chain IDs, build factories) | §3 |
+| Read native chain state (balance, block, code, logs, receipt) | §4 |
+| Read a contract (view / pure) | §5 |
+| Discover wallets and let the user pick one | §6 |
+| Send a native transaction — path 1, wallet does it all | §7 |
+| Send a native transaction — path 2, dapp owns the broadcast | §7 |
+| Call a contract method that changes state | §8 |
+| Batch several calls into one user action | §9 |
+| Track a single transaction's lifecycle (`pending → mined / reverted`) | §10 |
+| Sign or verify a message (EIP-191 / 712 / 1271 / 6492) | §11 |
+| Resolve ENS (forward / reverse / avatar / text) | §12 |
+| Handle errors | §13 |
+| Look up which package exports a symbol | §14 |
+| Refresh on the always-on rules | §15 |
 
 ---
 
-## 1. Mental Model — Factories, Resolvers, and Methods
+## §1 The mental model — read this first
 
-Before any other section, internalize this single shape. Every Ethernauta call you will ever write is:
+Every Ethernauta call is two function calls in a row:
 
 ```
 method(args)(resolver({ chain_id, ...context }))
 ```
 
-There are three pieces:
+- **Method** — a curried function like `eth_getBalance`, `balanceOf`, `eth_signTransaction`.
+- **First call** — binds the parameters. Returns a function shaped `(resolved) => Promise<T>`.
+- **Second call** — binds the transport (a reader, a writer, a signer, a contract, or a tracker). The actual RPC request happens here.
 
-- **Factories** (`create_reader`, `create_writer`, `create_contract`, and the wallet-side `create_provider(provider).signer`) — module-scope (or memoized per-mount for the signer), called once per dapp with the chains you support.
-- **Resolvers** — what the factory returns. Called per-call with the chain (and, for contracts, the contract address). Produces a tuple of `[transports_or_signer, context]`.
-- **Methods** (`eth_getBalance`, `eth_signTransaction`, `mint`, etc.) — factory functions that return a method shape (`Readable`, `Writable`, `Signable`, or `Callable`) which takes the resolved tuple and executes.
+**The two calls are never collapsed.** The same `eth_blockNumber` runs against a public-RPC reader, an EIP-1193 provider, or a test mock without any change to the call site — that is what the split buys you.
 
-Methods never execute on their own. They are **curried**: the first call validates and prepares the call, the second applies it to a resolved transport. Never collapse the two.
+There are five resolver shapes:
 
-The four method shapes:
-
-| Shape | Resolver | Use for |
+| Shape | Built by | Use for |
 |---|---|---|
-| `Readable<T>` | `create_reader(CHAINS)` *or* `create_provider(provider).reader` | Raw `eth_*` state queries (balance, nonce, code, block). Both produce the same shape — pick path 2 (chain-config, no wallet) or path 1 (routed through the wallet's selected RPC) per call |
-| `Writable<T>` | `create_writer(CHAINS)` | Submitting pre-signed transactions (`eth_sendRawTransaction`) |
-| `Signable<T>` | `create_provider(provider).signer` | Anything that needs the wallet (account access, signing) — `provider` is an EIP-1193 source obtained via EIP-6963 discovery (section 9) |
-| `Callable<T>` | `create_contract(CHAINS)` | Read-only contract method calls (`view` / `pure`) |
+| `Readable<T>` | `create_reader(CHAINS)` or `create_provider(p).reader` | `eth_*` reads — no wallet required |
+| `Writable<T>` | `create_writer(CHAINS)` | `eth_sendRawTransaction` — no wallet required |
+| `Signable<T>` | `create_provider(p).signer` (only) | Anything that needs the wallet to sign or expose state |
+| `Callable<T>` | `contract({ chain_id, to })` from `@ethernauta/transport` | Read-only contract methods (ABI calldata + decoder) |
+| `Trackable<T>` | `create_tracker(CHAINS, { store })` | Transaction lifecycle polling |
 
-→ **See** `examples/chain-wiring/` for the canonical setup.
-
----
-
-## 2. Chain Wiring
-
-**What it is.** Ethernauta identifies chains with CAIP-2 strings (`"eip155:1"`, `"eip155:11155111"`) — never raw integers. You build the chain ID with `encode_chain_id({ namespace, reference })` using a chain definition from `@ethernauta/chain`, then wrap it with the HTTP RPC endpoints you want to use into a `ChainEntry`.
-
-**When to reach for it.** Every dapp begins here. Build the `CHAIN_ID` constant and the `CHAINS` array once at module scope, then pass `CHAINS` to whichever factories you need (`create_reader`, `create_writer`, `create_contract`). Do not rebuild these per render — they are stable and cheap to share. The signer does not consume `CHAINS` — it is built from an EIP-1193 provider acquired at runtime (sections 5 and 9).
-
-**Notes.**
-- `@ethernauta/chain` exports 500+ EIP-155 chain definitions as `eip155_<chainId>`. Import the ones you need by name (`eip155_1`, `eip155_11155111`).
-- `http(url)` creates an HTTP JSON-RPC transport. Pass more than one for fallback; dispatch uses `Promise.any()`, so the first to succeed wins.
-
-→ **See** `examples/chain-wiring/example.ts`.
+`Signable<T>` is the **only** shape that needs a wallet. The other four work entirely from public RPC endpoints.
 
 ---
 
-## 3. Reading Raw Chain State
+## §2 Install
 
-**What it is.** The `eth_*` methods exported from `@ethernauta/eth` whose shape is `Readable<T>`. They wrap JSON-RPC reads like `eth_getBalance`, `eth_blockNumber`, `eth_getTransactionCount`, `eth_getCode`, `eth_getTransactionReceipt`, `eth_call`. You call them through a resolver built by `create_reader`.
+Minimum useful set — chain reads + every `eth_*` method:
 
-**When to reach for it.** Anything chain-level that is *not* a contract method: balances of native ETH, block info, mempool inspection, transaction receipts. For contract reads, use the Contract path (next section) instead — it handles ABI encoding/decoding for you.
+```bash
+pnpm add @ethernauta/core @ethernauta/transport @ethernauta/chain @ethernauta/eth
+```
 
-→ **See** `examples/reading-state/example.ts`.
+Add as the dapp needs:
 
----
+- `@ethernauta/eip` — wallet protocols (`1102`, `1193`, `191`, `712`, `1271`, `5792`, `6492`, `6963`, `7702`, …) as importable subpaths.
+- `@ethernauta/erc` — token bindings (`20`, `721`, `1155`, `4626`, `2612`, `5805`, `137` ENS, …) as importable subpaths.
+- `@ethernauta/transaction` — lifecycle tracking.
+- `@ethernauta/react` — `useProvider`, `useProviderDetail` hooks.
+- `@ethernauta/crypto` — universal signature verification across 191/712/1271/6492.
+- `@ethernauta/ens` — ENSIP-15 normalization, multi-call resolution.
+- `@ethernauta/abi` — codecs (only when writing custom contract bindings; ERC bindings ship with their own).
+- `@ethernauta/utils` — `number_to_hex`, `parse_unit`, `format_unit`, RLP, etc.
 
-## 4. Reading Contracts (`view` / `pure`)
-
-**What it is.** Read-only contract methods are `Callable<T>`. Each generated method (`balanceOf`, `totalSupply`, `tokenURI`, …) handles its own ABI encoding internally and uses `eth_call` under the hood. You resolve them with `create_contract`, which adds the contract address `to` to the context.
-
-**When to reach for it.** Any `view`/`pure` Solidity function. You do not need a wallet. You do not need to know calldata or selectors — the generated method packs them. This is what `animatronik` uses for `totalSupply()`, `tokenByIndex`, `get_data`, etc.
-
-**Notes.**
-- The contract resolver is `contract({ chain_id, to })` — `to` is required, validated as an address.
-- The Callable shape is `[Http[], ContractContext] → Promise<T>`. Same shape as Readable, with `to` added to context.
-- Contract method files live in your generated directory (e.g. `app/generated/animatronik/methods/`). Each is small and self-contained; they are the canonical example of what `Callable` code looks like.
-
-→ **See** `examples/reading-state/contract-read.ts`.
+Peer requirements: TypeScript 5.x, ES2022 runtime (modern browsers / Node 20+ / Bun / Workers / Deno).
 
 ---
 
-## 5. Connecting a Wallet
+## §3 Chain wiring
 
-**What it is.** Signing flows go through an EIP-1193 provider obtained via EIP-6963 discovery (section 9). Pass the provider to `create_provider(provider)` from `@ethernauta/transport` to get a `{ reader, signer }` resolver pair, then call `eth_requestAccounts` from `@ethernauta/eip/1102` — a `Signable<string[]>` — through the `signer` resolver.
+Build chain IDs and resolver factories **once, at module scope**. Reuse for the lifetime of the dapp. Do not rebuild per render.
 
-**When to reach for it.** Whenever your UI needs the user's address. Discover providers on mount, let the user pick one, call `eth_requestAccounts` once to surface the address, and cache the picked provider for later transactions.
+```ts
+import { eip155_1 } from "@ethernauta/chain/eip155-1"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
+import {
+  create_reader,
+  create_writer,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 
-**Notes.**
-- `create_provider(provider)` in `@ethernauta/transport` is the dapp-side adapter. It composes the provider into both a `reader` (delegates `eth_*` reads through `provider.request`) and a `signer` (delegates signable methods through `provider.request`). Same call shape as `create_reader(CHAINS)` etc. — the only difference is the construction line.
-- User rejection raises an EIP-1193-shaped error with `code: 4001`. Wrap calls in try/catch and read `err.message` for display.
-- In React, `@ethernauta/react` exports a `useProvider({ key })` hook that returns the `{ reader, signer }` pair already composed against the rehydrated EIP-6963 selection — see `apps/playground/app/examples/*` for the live consumer pattern.
+export const MAINNET_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_1.chainId,
+})
+export const SEPOLIA_CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_11155111.chainId,
+})
 
-→ **See** `examples/wallet-connect/example.tsx`.
+const CHAINS = [
+  {
+    chainId: MAINNET_CHAIN_ID,
+    transports: [http("https://ethereum-rpc.publicnode.com")],
+  },
+  {
+    chainId: SEPOLIA_CHAIN_ID,
+    transports: [http("https://ethereum-sepolia-rpc.publicnode.com")],
+  },
+]
 
----
+export const reader = create_reader(CHAINS)
+export const writer = create_writer(CHAINS)
+```
 
-## 6. Sending a Native Transfer
+Knobs:
 
-**What it is.** The two-step submit: (1) `eth_signTransaction([{ to, value }])` through the signer returns an RLP-encoded raw transaction; (2) `eth_sendRawTransaction([signed])` through the writer broadcasts it and returns the transaction hash.
+- **Chain IDs are CAIP-2 strings** (`"eip155:1"`), never raw integers. Build them with `encode_chain_id`.
+- **`@ethernauta/chain` exposes 500+ chain definitions** as subpaths (`eip155-1`, `eip155-10`, `eip155-137`, `eip155-8453`, `eip155-11155111`, …). Import only the ones you need.
+- **Multiple `http(url)` transports per chain** — fallback uses `Promise.any()`; the first to succeed wins. Add a private RPC alongside a public one for resilience.
+- **The signer is not built from `CHAINS`.** It comes from an EIP-1193 provider acquired at runtime — see §6.
 
-**When to reach for it.** Native ETH (or chain-native token) transfers. For contract calls, use section 7 — but the second step (sendRawTransaction) is identical.
-
-**Notes.**
-- Do not set `nonce`, `gas`, `maxFeePerGas`, `maxPriorityFeePerGas` yourself. The wallet fills them from `eth_getTransactionCount`, `eth_estimateGas`, and `eth_feeHistory`. Leaving them unset is the contract between you and the wallet.
-- `value` must be a hex string. Use `number_to_hex(amount)` from `@ethernauta/utils`.
-- Same signer can be reused for `eth_requestAccounts` and `eth_signTransaction` — resolve fresh each call with `signer({ chain_id })` where `signer` came from `create_provider(provider).signer`.
-
-→ **See** `examples/sending-transactions/example.tsx` and `examples/end-to-end-transfer/example.tsx`.
-
----
-
-## 7. Calling a Contract Method (State-Changing)
-
-**What it is.** Write-side contract methods are also `Signable<Bytes>` — the generated method encodes calldata, calls `eth_signTransaction` with `{ to, value: "0x0", input }` plus a **function sidecar** `{ signature, names }` so the wallet can render a human-readable confirmation. You then broadcast with `eth_sendRawTransaction`.
-
-**When to reach for it.** Any non-view contract method: `mint`, `transferFrom`, `approve`, etc. This is exactly the path animatronik uses for `mint(data)`.
-
-**Notes.**
-- The resolver for write-side contract methods is the **signer**, not the contract resolver — pass `signer({ chain_id, to })` where `to` is the contract address. The signer's context accepts an optional `to`.
-- The function sidecar travels on the Ethernauta envelope, not on the JSON-RPC params, so the underlying transaction stays spec-compliant. The wallet verifies it with `keccak(signature)[0:4] === input[0:4]`.
-- Generated methods live under `app/generated/<project>/methods/<method>.ts`. They are produced by a codegen step from the contract ABI; do not hand-write them unless you are extending the codegen.
-
-→ **See** `examples/smart-contract-call/example.tsx`.
-
----
-
-## 8. Tracking Transactions
-
-**Two paths depending on the shape of what you are tracking.**
-
-### 8.1 Single-hash UI tracking (path 2 — no wallet required)
-
-**What it is.** After a transaction lands in the mempool, use `@ethernauta/transaction` to persist its lifecycle (`pending` → `mined` / `reverted`) and observe transitions in your UI. The package provides four verbs (`register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`) composed through a fifth factory `create_tracker(CHAINS, { store })` — same idiom as `create_reader` / `create_writer` / `create_contract`.
-
-**When to reach for it.** Any single transaction your UI needs to surface (a transfer, a mint, an approval, a broadcast against any wallet) where you want to render `pending` → `mined` / `reverted` in-line. Works without an Ethernauta wallet — only RPC transports are required.
-
-**Notes.**
-- `Transaction` is the canonical Valibot-backed discriminated union for this lifecycle, exported from `@ethernauta/transaction`: `{ hash, status: "pending" | "mined" | "reverted", ...receipt fields when mined/reverted }`. Import it; do not redefine.
-- The `store` config dependency-injects WHERE the lifecycle records persist. `window_store` is the default browser-side backend; pass any `Store`-shaped object for chrome-storage / IndexedDB / in-memory test backends.
-- `watch_transaction` returns an `unsubscribe` function on the second call — wire it into a `useEffect` cleanup so unmounted components don't fire `setState` after the receipt arrives.
-- For an awaitable "wait until N confirmations" flow, use `wait_for_receipt(hash, { confirmations, timeout_ms })(tracker(...))` instead.
-
-→ **See** `examples/transaction-tracking/example.tsx`.
-
-### 8.2 Batched calls (path 1 — EIP-5792, wallet required)
-
-**What it is.** For multi-call flows that should look like one user action (`approve` + `swap`, `permit` + `transfer`, etc.), use `wallet_sendCalls` from `@ethernauta/eip/5792`. The wallet mints a bundle ID, signs each call, broadcasts sequentially, and exposes status via `wallet_getCallsStatus`. **Dapps do not track the underlying transaction hashes themselves** — the wallet owns batch lifecycle.
-
-**When to reach for it.** Any flow that today consists of "send transaction A, wait for it, then send transaction B." Switch the *whole* flow to one `wallet_sendCalls` invocation; render UI off `wallet_getCallsStatus(bundle_id)` polling.
-
-**Notes.**
-- `wallet_sendCalls` is a `Signable<SendCallsResult>` — same curried shape as every other Ethernauta method.
-- `wallet_getCallsStatus` returns receipts grouped by bundle once all calls have mined; before that, status is `PENDING`.
-- Today the wallet executes calls sequentially. Atomic execution (EIP-7702) is a future capability. Dapps that branch on `wallet_getCapabilities` will degrade gracefully.
-
-→ **See** `apps/playground/app/examples/send-calls/demo.tsx` for the live consumer pattern.
+Full version: `examples/chain-wiring/example.ts`.
 
 ---
 
-## 9. EIP-6963 Provider Discovery
+## §4 Reading native chain state
 
-**What it is.** EIP-6963 is the standard event protocol for multi-wallet discovery. Wallets dispatch `eip6963:announceProvider` with their info and provider; dapps dispatch `eip6963:requestProvider` to trigger announcements. `@ethernauta/eip/6963` exports the types (`EIP6963ProviderDetail`, `EIP6963AnnounceProviderEvent`), the `announce()` helper for wallet builders, and `set_provider_detail` / `get_provider_detail` / `web_storage` for persisting the user's selection.
+Use the methods from `@ethernauta/eth`. Each is a `Readable<T>`.
 
-**When to reach for it.** Always, on the dapp side, whenever you need a signer. There is no wallet-specific shortcut — every signable flow starts from an EIP-1193 provider discovered through 6963 and adapted via `create_provider(provider)` (section 5). Multi-wallet support is the *baseline*, not an opt-in.
+```ts
+import { eth_blockNumber, eth_getBalance } from "@ethernauta/eth"
+import { AddressSchema } from "@ethernauta/core"
+import { parse } from "valibot"
 
-→ **See** `examples/provider-discovery/example.ts`.
+const block = await eth_blockNumber()(reader({ chain_id: MAINNET_CHAIN_ID }))
+
+const vitalik = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045")
+const balance = await eth_getBalance([vitalik, "latest"])(
+  reader({ chain_id: MAINNET_CHAIN_ID }),
+)
+```
+
+Available: `eth_blockNumber`, `eth_chainId`, `eth_getBalance`, `eth_getTransactionCount`, `eth_getCode`, `eth_getStorageAt`, `eth_getBlockByNumber`, `eth_getBlockByHash`, `eth_getTransactionByHash`, `eth_getTransactionReceipt`, `eth_getLogs`, `eth_estimateGas`, `eth_feeHistory`, `eth_call`, `eth_gasPrice`. Parameter shapes follow the JSON-RPC spec.
+
+For contract reads with ABI decoding go to §5 — calling `eth_call` directly only when no binding exists.
+
+Full version: `examples/reading-state/example.ts`.
 
 ---
 
-## 10. Parameter Shapes
+## §5 Reading a contract (view / pure)
 
-**What it is.** Every parameterized Ethernauta method accepts inputs in **two equivalent forms**: a positional tuple (`[address, blockTag]`) or a named object (`{ address, block }`). Internally a Valibot `union` validates either.
+The ERC bindings handle ABI encode/decode for you. Build a `Callable<T>`, pass it through `eth_call`, then call `.decode` on the returned bytes.
 
-**When to reach for it.** Use the named form for readability when reading complex methods; use the positional form for spec-aligned snippets. Both are equally valid. Pick one style per codebase to keep diffs clean.
+```ts
+import { contract } from "@ethernauta/transport"
+import { balanceOf } from "@ethernauta/erc/20"
+import { eth_call } from "@ethernauta/eth"
+import { AddressSchema } from "@ethernauta/core"
+import { parse } from "valibot"
 
-**Notes.**
-- The named keys match the EIP / JSON-RPC schema field names (`address`, `block`, `owner`, `uri`, etc.).
-- Validation throws on the first invalid shape — never use `safeParse`. Surface the error to the user.
+const usdc = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
+const holder = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
 
-→ **See** `examples/parameter-shapes/example.ts`.
+const callable = balanceOf([holder])(
+  contract({ chain_id: MAINNET_CHAIN_ID, to: usdc }),
+)
+const bytes = await eth_call([{ to: callable.to, input: callable.data }])(
+  reader({ chain_id: MAINNET_CHAIN_ID }),
+)
+const balance = callable.decode(bytes)
+```
+
+Knobs:
+
+- **Bind the address at `contract({ chain_id, to })`**, the method at `balanceOf(...)`. The two are intentionally separate — one `contract(...)` can host many method calls.
+- **Multiple reads in parallel** — build the `Callable`s, run the `eth_call`s through `Promise.all`, then decode each.
+- **No matching binding?** Use `encode_function_call` from `@ethernauta/abi` to build calldata yourself:
+
+```ts
+import { address, encode_function_call, uint256 } from "@ethernauta/abi"
+import { BytesSchema, Uint256Schema } from "@ethernauta/core"
+import { bytes_to_hex } from "@ethernauta/utils"
+
+const calldata = encode_function_call({
+  name: "myView",
+  args: [address(), uint256()],
+  values: [some_address, parse(Uint256Schema, "0x64")],
+})
+const result = await eth_call([{ to: contract_addr, input: parse(BytesSchema, bytes_to_hex(calldata)) }])(
+  reader({ chain_id: MAINNET_CHAIN_ID }),
+)
+```
+
+Full version: `examples/reading-state/contract-read.ts`.
 
 ---
 
-## 11. Error Handling
+## §6 Connecting a wallet (EIP-6963 discovery)
 
-**What it is.** Three error sources, three distinct shapes:
+Every signable flow starts from an EIP-1193 provider discovered via EIP-6963. There is **no chain-config-driven signer factory** — the signer is always built from a discovered provider.
+
+### Manual discovery
+
+Listen for `eip6963:announceProvider` and dispatch `eip6963:requestProvider`. Wallets that match respond synchronously:
+
+```ts
+import {
+  ANNOUNCE_EVENT,
+  type EIP6963AnnounceProviderEvent,
+  type EIP6963ProviderDetail,
+  REQUEST_EVENT,
+} from "@ethernauta/eip/6963"
+import type { Provider } from "@ethernauta/eip/1193"
+import { create_provider } from "@ethernauta/transport"
+import { eth_requestAccounts } from "@ethernauta/eip/1102"
+
+const providers: EIP6963ProviderDetail[] = []
+
+window.addEventListener(ANNOUNCE_EVENT, (event) => {
+  const detail = (event as EIP6963AnnounceProviderEvent).detail
+  if (!providers.some((p) => p.info.rdns === detail.info.rdns)) {
+    providers.push(detail)
+  }
+})
+window.dispatchEvent(new Event(REQUEST_EVENT))
+
+const picked = providers[0]
+const { reader: walletReader, signer } = create_provider(picked.provider as Provider)
+
+const [account] = await eth_requestAccounts()(signer({ chain_id: MAINNET_CHAIN_ID }))
+```
+
+### Persisted selection across reloads
+
+`@ethernauta/eip/6963` ships storage helpers keyed by an app-owned key. Persist by `rdns`, rehydrate on next load by re-running discovery and matching:
+
+```ts
+import {
+  set_provider_detail,
+  get_provider_detail,
+  clear_provider_detail,
+  web_storage,
+} from "@ethernauta/eip/6963"
+
+const store = web_storage(localStorage)
+const key = "wallet"
+
+set_provider_detail({ store, key, provider_detail: picked })
+
+// next page load:
+const persisted = await get_provider_detail({ store, key })
+// → EIP6963ProviderDetail | null (null = first visit or previously-picked wallet uninstalled)
+
+clear_provider_detail({ store, key }) // "disconnect"
+```
+
+### React shortcut
+
+`@ethernauta/react` collapses the whole flow:
+
+```tsx
+import { useProvider } from "@ethernauta/react"
+
+const provider = useProvider({ key: "wallet" })
+// → { reader, signer } | null
+```
+
+Knobs:
+
+- **`rdns` is the persistent identity** (`io.ethernauta`, `io.metamask`, …). `name` / `uuid` can drift.
+- **`get_provider_detail` is async** — it re-runs discovery internally to match the persisted rdns against currently-announcing wallets.
+- **The cached `Provider` is not persistable** — only `rdns` is stored; the provider object is reacquired on each load.
+
+Full versions: `examples/wallet-connect/example.tsx` (React, manual discovery), `examples/provider-discovery/example.ts` (storage helpers).
+
+---
+
+## §7 Sending a native transaction
+
+Two paths. Both ship. Both are first-class. Pick per call.
+
+### Path 1 — wallet signs + broadcasts
+
+One round trip. The wallet fills `nonce` / `gas` / `maxFeePerGas` / `maxPriorityFeePerGas`, prompts the user, signs, broadcasts.
+
+```ts
+import { eth_sendTransaction } from "@ethernauta/eth"
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core"
+import { number_to_hex } from "@ethernauta/utils"
+import { parse } from "valibot"
+
+const to = parse(AddressSchema, recipient_address)
+const value = parse(UintSchema, number_to_hex(1_000_000_000_000_000n)) // 0.001 ETH in wei
+const input = parse(BytesSchema, "0x")
+
+const hash = await eth_sendTransaction([{ to, value, input }])(
+  signer({ chain_id: MAINNET_CHAIN_ID }),
+)
+```
+
+### Path 2 — wallet signs, dapp broadcasts
+
+Two round trips. The dapp gets the signed bytes and owns the broadcast — can inspect, log, retry against a different RPC, route through a private bundler, sign-now-broadcast-later.
+
+```ts
+import { eth_signTransaction, eth_sendRawTransaction } from "@ethernauta/eth"
+
+const signed = await eth_signTransaction([{ to, value, input }])(
+  signer({ chain_id: MAINNET_CHAIN_ID }),
+)
+
+// inspect / persist / re-route `signed` here
+
+const hash = await eth_sendRawTransaction([signed])(
+  writer({ chain_id: MAINNET_CHAIN_ID }),
+)
+```
+
+Rules:
+
+- **Never set `nonce`, `gas`, `maxFeePerGas`, `maxPriorityFeePerGas`.** The wallet fills them. Leaving them unset is the contract.
+- **`value` and `input` are hex strings.** Use `number_to_hex(amount)` from `@ethernauta/utils` for amounts in wei.
+- **Pick path 2 when the dapp needs control of the broadcast** — bridges, MEV-sensitive flows, audit-heavy systems, idempotency under reorgs. Otherwise path 1.
+
+Full versions: `examples/sending-transactions/example.tsx` (path 2), `examples/end-to-end-transfer/example.tsx` (end-to-end, includes a tracker for §10).
+
+---
+
+## §8 Calling a contract (state-changing)
+
+Same two paths. The ERC binding builds calldata and attaches an `_ethernauta.function` sidecar so the wallet can render a human-readable approval (instead of raw hex).
+
+### Path 1 — via a generated binding
+
+```ts
+import { approve } from "@ethernauta/erc/20"
+import { AddressSchema, Uint256Schema } from "@ethernauta/core"
+import { bigint_to_hex, parse_unit } from "@ethernauta/utils"
+import { parse } from "valibot"
+
+const usdc = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
+const router = parse(AddressSchema, "0xE592427A0AEce92De3Edee1F18E0157C05861564")
+const amount = parse(Uint256Schema, bigint_to_hex(parse_unit("100", 6))) // 100 USDC (6 decimals)
+
+const hash = await approve({ spender: router, value: amount })(
+  signer({ chain_id: MAINNET_CHAIN_ID, to: usdc }),
+)
+```
+
+### Path 2 — wallet signs, dapp broadcasts
+
+Use `eth_signTransaction` with the calldata, then `eth_sendRawTransaction`. The binding's `Signable<Bytes>` form is the path-2 variant (`approve(...)(signer({...}))` returns signed bytes when used that way — full pattern in `examples/smart-contract-call/example.tsx`).
+
+Knobs:
+
+- **The resolver is the `signer`, not `contract({...})`.** Pass the contract address as `to` on the signer's context: `signer({ chain_id, to })`.
+- **For an unsupported method**, build calldata with `encode_function_call` from `@ethernauta/abi`, then call `eth_signTransaction` with `{ to, value, input, _ethernauta: { function: <SIGNATURE> } }`. The `_ethernauta.function` sidecar is what lets the wallet render the human-readable approval — without it the wallet shows raw calldata.
+
+### What ERC bindings exist
+
+`@ethernauta/erc` ships bindings as importable subpaths — `@ethernauta/erc/20`, `@ethernauta/erc/721`, `@ethernauta/erc/1155`, `@ethernauta/erc/4626` (ERC-4626 vaults), `@ethernauta/erc/2612` (permit), `@ethernauta/erc/2981` (royalties), `@ethernauta/erc/5805` (voting), `@ethernauta/erc/165` (interface detection), `@ethernauta/erc/137` (ENS — see §12), and more. Each subpath exports its method bindings (`balanceOf`, `transfer`, `approve`, …) as camelCase functions matching the ABI.
+
+Full version: `examples/smart-contract-call/example.tsx`.
+
+---
+
+## §9 Batched calls (EIP-5792)
+
+For "approve + swap", "permit + transfer", any multi-step user action that should be one prompt. The wallet owns the batch lifecycle.
+
+```ts
+import { wallet_sendCalls, wallet_getCallsStatus, wallet_getCapabilities } from "@ethernauta/eip/5792"
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core"
+import { parse } from "valibot"
+
+const account = parse(AddressSchema, user_address)
+const usdc = parse(AddressSchema, usdc_address)
+const router = parse(AddressSchema, router_address)
+const approve_calldata = parse(BytesSchema, "0x...") // built via @ethernauta/abi
+const swap_calldata = parse(BytesSchema, "0x...")
+
+const { id } = await wallet_sendCalls([{
+  version: "1.0",
+  chainId: parse(UintSchema, "0x1"),
+  from: account,
+  calls: [
+    { to: usdc, data: approve_calldata },
+    { to: router, data: swap_calldata },
+  ],
+}])(signer({ chain_id: MAINNET_CHAIN_ID }))
+
+// poll until done:
+const status = await wallet_getCallsStatus([id])(signer({ chain_id: MAINNET_CHAIN_ID }))
+// status.status === "PENDING" | "CONFIRMED"
+// status.receipts is populated once all calls have mined
+```
+
+Rules:
+
+- **Dapps do not track underlying tx hashes themselves** for batched calls — the wallet does. Render UI off `wallet_getCallsStatus(id)`.
+- **Branch on `wallet_getCapabilities`** if you care whether the chain supports atomic execution (EIP-7702) vs sequential. Dapps that branch degrade gracefully across wallets.
+
+---
+
+## §10 Tracking a single transaction
+
+For non-batched flows where the dapp needs `pending → mined / reverted` in its UI. No wallet required — reads receipts off any `Readable`.
+
+```ts
+import {
+  create_tracker,
+  register_transaction,
+  watch_transaction,
+  wait_for_receipt,
+  window_store,
+} from "@ethernauta/transaction"
+import { Hash32Schema } from "@ethernauta/core"
+import { parse } from "valibot"
+
+const tracker = create_tracker(CHAINS, { store: window_store })
+
+const hash = parse(Hash32Schema, broadcast_hash)
+await register_transaction(hash)(tracker({ chain_id: MAINNET_CHAIN_ID }))
+
+// react to lifecycle transitions:
+const unsubscribe = watch_transaction(hash, (tx) => {
+  if (tx.status === "mined") { /* … */ }
+  if (tx.status === "reverted") { /* … */ }
+})(tracker({ chain_id: MAINNET_CHAIN_ID }))
+
+// or await synchronously:
+const receipt = await wait_for_receipt([hash])(tracker({ chain_id: MAINNET_CHAIN_ID }))
+```
+
+Knobs:
+
+- **`Transaction` is a Valibot-backed discriminated union** (`pending` | `mined` | `reverted`) exported from `@ethernauta/transaction`. Import the type; do not redefine it.
+- **`store` dependency-injects persistence.** `window_store` wraps `window.transactions` (a `Map`); pass any `{ get, set }` to back it with `localStorage`, `chrome.storage`, IndexedDB, in-memory for tests.
+- **`watch_transaction` returns an unsubscribe**. Wire it into your component's cleanup so unmounted components don't fire state updates after the receipt arrives.
+- **`wait_for_receipt` accepts options**: `[hash, { poll_interval_ms, confirmations, timeout_ms }]`.
+- **Surviving reloads**: keep the dapp's own list of in-flight hashes in the same `Store`; on next mount, re-attach `watch_transaction` to each.
+
+Full version: `examples/transaction-tracking/example.tsx`.
+
+---
+
+## §11 Signing or verifying a message
+
+| Standard | Signing | Verification |
+|---|---|---|
+| **EIP-191** personal_sign | `personal_sign([message, account])` from `@ethernauta/eip/191` → `Signable<Bytes>` | `verify_message` from `@ethernauta/crypto` |
+| **EIP-712** typed data | `eth_signTypedData_v4([account, typed_data])` from `@ethernauta/eip/712` → `Signable<Bytes>` | `verify_typed_data` from `@ethernauta/crypto` |
+| **EIP-1271** contract signatures | (the contract responds to `isValidSignature(hash, sig)`) | `verify_hash` from `@ethernauta/eip/1271` (auto-falls-back to EOA `ecrecover` if `to` is an EOA) |
+| **EIP-6492** counterfactual signatures (smart account not yet deployed) | wrap with `wrap_signature` from `@ethernauta/eip/6492` | `verify_hash` (auto-unwraps 6492-wrapped signatures) |
+
+Personal-sign example:
+
+```ts
+import { personal_sign } from "@ethernauta/eip/191"
+
+const signature = await personal_sign(["Hello, world", account])(
+  signer({ chain_id: MAINNET_CHAIN_ID }),
+)
+```
+
+Universal verification (works across all four standards):
+
+```ts
+import { verify_message } from "@ethernauta/crypto"
+
+const ok = await verify_message({
+  address: claimed_signer,
+  message: "Hello, world",
+  signature,
+})(reader({ chain_id: MAINNET_CHAIN_ID }))
+```
+
+`@ethernauta/crypto`'s `verify_*` operations are the universal entry point — they pick the right verification path (EOA vs 1271 contract call vs 6492 counterfactual) automatically. Use them whenever the dapp consumes a signature it didn't itself produce.
+
+---
+
+## §12 ENS
+
+ENS lives at `@ethernauta/erc/137` (ENS = ERC-137). ENSIP-15 normalization is split into `@ethernauta/ens`.
+
+```ts
+import {
+  get_ens_name,
+  get_ens_address,
+  get_ens_avatar,
+  get_ens_text,
+} from "@ethernauta/erc/137"
+import { AddressSchema } from "@ethernauta/core"
+import { parse } from "valibot"
+
+const vitalik = parse(AddressSchema, "0xd8dA6BF26964aF9D7eED9e03E53415D37aA96045")
+
+const name = await get_ens_name({ address: vitalik })(reader({ chain_id: MAINNET_CHAIN_ID }))
+// → "vitalik.eth" | null
+
+const address = await get_ens_address({ name: "vitalik.eth" })(reader({ chain_id: MAINNET_CHAIN_ID }))
+const avatar = await get_ens_avatar({ name: "vitalik.eth" })(reader({ chain_id: MAINNET_CHAIN_ID }))
+const url = await get_ens_text({ name: "vitalik.eth", key: "url" })(reader({ chain_id: MAINNET_CHAIN_ID }))
+```
+
+Knobs:
+
+- **Pass user-typed names through `normalize` from `@ethernauta/ens`** before resolving — emoji, casing, and confusable characters need ENSIP-15 normalization to produce the right namehash.
+- **Reverse resolution (`get_ens_name`) returns `null`** if no reverse record is set; this is normal — most addresses don't have a primary name.
+- **Resolution uses the chain's public RPC.** ENS lives on mainnet; pass the mainnet chain id to the reader even if the dapp's primary chain is something else.
+
+---
+
+## §13 Errors
+
+Three sources, three distinct shapes:
 
 | Source | Shape | When |
 |---|---|---|
-| User rejected in wallet | `{ code: 4001, message: "User rejected request" }` | Signer flows |
+| User rejected in wallet | `{ code: 4001, message: "User rejected request" }` | Any signer flow |
 | RPC error response | `Error(response.error.message)` | Reader / Writer / Contract flows |
-| No provider connected | `Error("Connect a wallet first.")` (raise yourself) | Signer flows reached before EIP-6963 selection |
+| No provider connected | `Error("Connect a wallet first.")` (raise yourself) | Signer flow reached before EIP-6963 selection |
 
-**When to reach for it.** Wrap every entry-point call in try/catch. The 4001 cases are EXPECTED user behaviors — render a soft message, not a stack trace. RPC errors usually mean the call is malformed (bad chain id, gas issue, reverted call) — surface `err.message` for display and log details for debugging.
+Rules:
 
-**Never.**
-- Never call `safeParse` to swallow validation errors. Let `parse` throw.
-- Never log private keys, mnemonics, or signed-but-unsent transactions.
+- **Wrap every entry-point call in try/catch.** Don't let the page-level error boundary catch a 4001 — render an inline soft message ("connect again to continue") instead of a stack trace.
+- **Never use `safeParse` to swallow validation errors.** `parse` throws by design — surface the error or let it bubble.
+- **Never log private keys, mnemonics, or signed-but-unsent transactions.** The signed bytes are not secret in the cryptographic sense, but logging them creates an idempotency hazard (the same tx broadcast twice through two paths).
+- **Distinguish 4001 from other errors** in UI copy. 4001 is expected user behavior; the rest are usually misconfiguration or chain state.
 
-→ **See** `examples/errors/example.tsx`.
+Full version: `examples/errors/example.tsx`.
 
 ---
 
-## Where Things Live (Quick Reference)
+## §14 Where things live (imports)
 
-| Package | Exports you will use |
+| Package | Symbols you reach for |
 |---|---|
-| `@ethernauta/chain` | `eip155_1`, `eip155_11155111`, … (500+ chain definitions) |
-| `@ethernauta/transport` | `create_reader`, `create_writer`, `create_contract`, `create_provider`, `http`, `encode_chain_id`, type `Readable`, `Writable`, `Signable`, `Callable`, `ProviderResolver`, `ResolvedSigner`, `ResolvedContract` |
-| `@ethernauta/eth` | `eth_getBalance`, `eth_getTransactionCount`, `eth_blockNumber`, `eth_call`, `eth_sendRawTransaction`, `eth_signTransaction`, `eth_getTransactionReceipt`, `AddressSchema`, `Uint256Schema`, type `Bytes`, `Hash32`, `Uint256` |
-| `@ethernauta/transaction` | `create_tracker`, `register_transaction`, `set_transaction`, `watch_transaction`, `wait_for_receipt`, `window_store`, type `Store` / `Transaction` / `PendingTransaction` / `MinedTransaction` / `RevertedTransaction` (single-hash lifecycle — see section 8.1) |
-| `@ethernauta/react` | `useProvider`, `useProviderDetail` (composes `create_provider` against a rehydrated EIP-6963 selection — see section 5) |
+| `@ethernauta/chain` | `eip155_1`, `eip155_10`, `eip155_137`, `eip155_8453`, `eip155_11155111`, … (one subpath per chain) |
+| `@ethernauta/transport` | `create_reader`, `create_writer`, `create_provider`, `contract`, `http`, `encode_chain_id`; types `Readable<T>`, `Writable<T>`, `Signable<T>`, `Callable<T>`, `ProviderResolver` |
+| `@ethernauta/eth` | Every `eth_*` method; `RECEIPT_STATUS`, `is_post_byzantium` |
+| `@ethernauta/transaction` | `create_tracker`, `register_transaction`, `watch_transaction`, `wait_for_receipt`, `set_transaction`, `window_store`; types `Transaction`, `Store`, `PendingTransaction`, `MinedTransaction`, `RevertedTransaction` |
 | `@ethernauta/eip/1102` | `eth_requestAccounts` |
-| `@ethernauta/eip/1193` | `Provider` interface (the wallet-side `create_provider` envelope-builder also lives here) |
-| `@ethernauta/eip/6963` | `announce`, `EIP6963ProviderDetail`, `ANNOUNCE_EVENT`, `REQUEST_EVENT`, `set_provider_detail`, `get_provider_detail`, `web_storage` |
-| `@ethernauta/eip/5792` | `wallet_sendCalls`, `wallet_getCallsStatus`, `wallet_getCapabilities` (batched-call protocol — see section 8.2) |
-| `@ethernauta/abi` | `build_signature`, `encode_function_call`, `decode_function_result` (only needed when writing your own contract methods — usually codegen handles this) |
-| `@ethernauta/utils` | `number_to_hex`, `hex_to_number`, `bytes_to_hex` |
+| `@ethernauta/eip/1193` | `Provider` type |
+| `@ethernauta/eip/6963` | `ANNOUNCE_EVENT`, `REQUEST_EVENT`, `set_provider_detail`, `get_provider_detail`, `clear_provider_detail`, `web_storage`; types `EIP6963ProviderDetail`, `EIP6963AnnounceProviderEvent` |
+| `@ethernauta/eip/5792` | `wallet_sendCalls`, `wallet_getCallsStatus`, `wallet_getCapabilities` |
+| `@ethernauta/eip/191` | `personal_sign` |
+| `@ethernauta/eip/712` | `eth_signTypedData_v4`, typed-data schemas |
+| `@ethernauta/eip/1271` | `verify_hash`, `verify_message`, `verify_typed_data`, `MAGIC_VALUE` |
+| `@ethernauta/eip/6492` | `wrap_signature`, `unwrap_signature`, `is_6492_signature` |
+| `@ethernauta/eip/7702` | `wallet_signAuthorization`, `wallet_sendSetCodeTransaction` |
+| `@ethernauta/eip/1014` | `get_create2_address`, `get_contract_address`, `deploy_contract` |
+| `@ethernauta/erc/20` | `transfer`, `approve`, `balanceOf`, `totalSupply`, `allowance`, `transferFrom`; metadata extension `decimals`, `symbol`, `name` |
+| `@ethernauta/erc/721` | `ownerOf`, `tokenURI`, `safeTransferFrom`, `approve`, … |
+| `@ethernauta/erc/1155` | `balanceOf`, `balanceOfBatch`, `safeTransferFrom`, … |
+| `@ethernauta/erc/4626` | `deposit`, `mint`, `withdraw`, `redeem`, `previewDeposit`, … |
+| `@ethernauta/erc/2612` | EIP-2612 permit (gasless approvals) |
+| `@ethernauta/erc/137` | `get_ens_name`, `get_ens_address`, `get_ens_avatar`, `get_ens_text`, `namehash`, `ENS_REGISTRY` |
+| `@ethernauta/ens` | `normalize` (ENSIP-15) |
+| `@ethernauta/crypto` | `verify_message`, `verify_typed_data`, `verify_hash` (universal across 191/712/1271/6492); BIP-32/39/44 key derivation |
+| `@ethernauta/abi` | `encode_function_call`, `decode_function_result`; codecs `address`, `uint256`, `bytes32`, `bool`, `string`, … |
+| `@ethernauta/react` | `useProvider`, `useProviderDetail`; types `Provider` |
+| `@ethernauta/utils` | `number_to_hex`, `hex_to_number`, `bigint_to_hex`, `bytes_to_hex`, `hex_to_bytes`, `parse_unit`, `format_unit`, `deadline_in`, `now_to_big`, `rlp_encode` |
+| `@ethernauta/core` | Valibot primitives — `AddressSchema`, `BytesSchema`, `Bytes4Schema`, `Bytes32Schema`, `Hash32Schema`, `UintSchema`, `Uint8Schema`, `Uint256Schema` |
 
 ---
 
-## How To Use This Skill
+## §15 Always-on rules
 
-When the user asks for something matching a section's "When to reach for it" line:
+These bind every dapp call regardless of section.
 
-1. Read the matching section.
-2. Open the example file under `examples/<section>/`. The example is self-contained and copy-pasteable.
-3. Adapt it: change chain (mainnet vs testnet), addresses, and method names. Keep the **shape** of the call exactly as the example shows — module-scope factories, per-call resolvers, two-step curried invocation.
-4. Wire errors with the patterns from section 11.
+1. **`method(args)(resolver({...}))` never collapses.** Two calls in order; first binds parameters, second binds transport.
+2. **Validate at boundaries with `parse(schema, raw)` — never `safeParse`.** Throws are the contract.
+3. **Never set `nonce` / `gas` / `maxFeePerGas` / `maxPriorityFeePerGas`.** The wallet fills them.
+4. **Module-scope factories, per-call resolvers.** Build `create_reader` / `create_writer` / `create_provider` once; call `reader({ chain_id })` / `signer({ chain_id })` per call.
+5. **Hex literals go through `parse` before flowing into typed positions.** Core primitives are nominally branded — a raw `"0x..."` is not assignable to an `Address` slot. The fix is always `parse(AddressSchema, raw)`, never an `as` cast.
+6. **For value-bearing types, write a Valibot schema first and derive the type via `InferOutput`.** Never hand-roll `interface` / `type X = { ... }` for shapes that cross boundaries.
 
-Do not invent new patterns. If the dapp needs something not in this skill, the gap is intentional — flag it to the user and read the relevant package source before guessing.
+---
+
+## How to use this skill
+
+1. Read §0, pick the matching section.
+2. Read that section. If the inline snippet is enough — use it.
+3. If the user needs the full runnable form (React component, full setup, error wiring), open `examples/<name>/example.ts` in this skill folder.
+4. Adapt the chain id, addresses, amounts. Keep the **call shape** exactly as shown — module-scope factories, per-call resolvers, two-step curried invocation.
+5. If the dapp needs something not in this skill, the gap is real — flag it to the user. Do not invent patterns.
