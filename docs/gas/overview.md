@@ -38,12 +38,20 @@ EIP-1559 spec constants and arithmetic (`INITIAL_BASE_FEE`, `BASE_FEE_MAX_CHANGE
 ## Quick example — standard 1559
 
 ```ts
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { estimate_1559_fees, buffer_gas_limit } from "@ethernauta/gas";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const reader = create_reader([eip155_1]);
-const ctx = reader({ chain_id: eip155_1.chain_id });
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
+const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const amount = parse(UintSchema, "0x0");
 
 const fees = await estimate_1559_fees({
   base_fee_multiplier: 1.5,
@@ -52,7 +60,7 @@ const fees = await estimate_1559_fees({
 // { base_fee_per_gas, max_priority_fee_per_gas, max_fee_per_gas }
 
 const gas = await buffer_gas_limit({
-  tx: { to: recipient, value: amount, input: "0x" },
+  tx: { to: recipient, value: amount, input: parse(BytesSchema, "0x") },
   multiplier: 1.2,
 })(ctx);
 ```
@@ -66,17 +74,25 @@ OP-stack, Arbitrum, and zkSync each get their own coarse helper. They orchestrat
 ### OP-stack (Optimism, Base, Mode, Zora, Mantle, World Chain, Soneium, Lisk)
 
 ```ts
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { calculate_gas_op_stack } from "@ethernauta/gas";
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
 
-const reader = create_reader([eip155_8453]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_8453.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://base-rpc.publicnode.com")] },
+]);
+
+const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
 
 const fees = await calculate_gas_op_stack({
-  tx: { to: recipient, value, input: "0x" },
+  tx: { to: recipient, value, input: parse(BytesSchema, "0x") },
   base_fee_multiplier: 1.5,
   priority_percentile: 10,
-})(reader({ chain_id: eip155_8453.chain_id }));
+})(reader({ chain_id: CHAIN_ID }));
 
 // { kind: "op-stack", base_fee_per_gas, max_priority_fee_per_gas,
 //   max_fee_per_gas, l1_fee }
@@ -87,12 +103,23 @@ Four reads run in parallel where they're independent: `eth_feeHistory` + `eth_ge
 ### Arbitrum (One, Nova)
 
 ```ts
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { calculate_gas_arbitrum } from "@ethernauta/gas";
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161";
+import { AddressSchema, BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_42161.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://arbitrum-one-rpc.publicnode.com")] },
+]);
+
+const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const calldata = parse(BytesSchema, "0x");
 
 const fees = await calculate_gas_arbitrum({
   tx: { to: recipient, input: calldata },
-})(reader({ chain_id: eip155_42161.chain_id }));
+})(reader({ chain_id: CHAIN_ID }));
 
 // { kind: "arbitrum", gas_estimate, l1_base_fee_estimate, l2_base_fee }
 ```
@@ -102,12 +129,23 @@ One call to `NodeInterface.gasEstimateComponents` at the predeploy `0x00…C8`. 
 ### zkSync (Era mainnet, Sepolia)
 
 ```ts
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { calculate_gas_zksync } from "@ethernauta/gas";
 import { eip155_324 } from "@ethernauta/chain/eip155-324";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_324.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://mainnet.era.zksync.io")] },
+]);
+
+const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
 
 const fees = await calculate_gas_zksync({
-  tx: { to: recipient, value, input: "0x" },
-})(reader({ chain_id: eip155_324.chain_id }));
+  tx: { to: recipient, value, input: parse(BytesSchema, "0x") },
+})(reader({ chain_id: CHAIN_ID }));
 
 // { kind: "zksync", gas_limit, gas_per_pubdata_limit,
 //   max_fee_per_gas, max_priority_fee_per_gas }
@@ -120,17 +158,48 @@ One call to `zks_estimateFee` — a non-standard RPC method, hand-bound here bec
 For dispatch by chain, use `gas_family`:
 
 ```ts
-import { gas_family } from "@ethernauta/gas";
+import {
+  gas_family,
+  calculate_gas_op_stack,
+  calculate_gas_arbitrum,
+  calculate_gas_zksync,
+  estimate_1559_fees,
+} from "@ethernauta/gas";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import type { Chain } from "@ethernauta/chain";
+import { parse } from "valibot";
 
-switch (gas_family(chain)) {
-  case "op-stack":
-    return calculate_gas_op_stack(...)(reader(...));
-  case "arbitrum":
-    return calculate_gas_arbitrum(...)(reader(...));
-  case "zksync":
-    return calculate_gas_zksync(...)(reader(...));
-  case "1559":
-    return estimate_1559_fees(...)(reader(...));
+const chain: Chain = eip155_1;
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: chain.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+const ctx = reader({ chain_id: CHAIN_ID });
+
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
+
+async function pick() {
+  switch (gas_family(chain)) {
+    case "op-stack":
+      return calculate_gas_op_stack({
+        tx: { to, value, input },
+        base_fee_multiplier: 1.5,
+        priority_percentile: 10,
+      })(ctx);
+    case "arbitrum":
+      return calculate_gas_arbitrum({ tx: { to, input } })(ctx);
+    case "zksync":
+      return calculate_gas_zksync({ tx: { to, value, input } })(ctx);
+    case "1559":
+      return estimate_1559_fees({
+        base_fee_multiplier: 1.5,
+        priority_percentile: 10,
+      })(ctx);
+  }
 }
 ```
 
