@@ -17,6 +17,7 @@
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.15.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tanstack/react-query": "^5.100.14",
     "@types/react": "^19.2.15",
     "ethers": "^6.16.0",
     "mdsvex": "^0.12.3",

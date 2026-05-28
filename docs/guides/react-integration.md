@@ -18,15 +18,22 @@ import { useProvider } from "@ethernauta/react";
 import { eth_getBalance } from "@ethernauta/eth";
 import { useQuery } from "@tanstack/react-query";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { encode_chain_id } from "@ethernauta/transport";
+import type { Address } from "@ethernauta/core";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
 
 function Balance({ address }: { address: Address }) {
   const provider = useProvider({ key: "wallet" });
 
   const { data: balance } = useQuery({
-    queryKey: ["balance", address, eip155_1.chain_id],
-    queryFn: () => eth_getBalance({ address, block: "latest" })(
-      provider!.reader({ chain_id: eip155_1.chain_id }),
-    ),
+    queryKey: ["balance", address, CHAIN_ID],
+    queryFn: () => {
+      if (!provider) throw new Error("no provider");
+      return eth_getBalance([address, "latest"])(
+        provider.reader({ chain_id: CHAIN_ID }),
+      );
+    },
     enabled: !!provider,
   });
 
@@ -41,16 +48,20 @@ function Balance({ address }: { address: Address }) {
 If the read doesn't need a wallet, skip the hook entirely:
 
 ```tsx
-import { create_reader } from "@ethernauta/transport";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
 import { eth_blockNumber } from "@ethernauta/eth";
 import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { useQuery } from "@tanstack/react-query";
 
-const reader = create_reader([eip155_1]);
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
 
 function GlobalBlock() {
   const { data } = useQuery({
-    queryKey: ["block", eip155_1.chain_id],
-    queryFn: () => eth_blockNumber()(reader({ chain_id: eip155_1.chain_id })),
+    queryKey: ["block", CHAIN_ID],
+    queryFn: () => eth_blockNumber()(reader({ chain_id: CHAIN_ID })),
   });
 
   return <p>{data?.toString()}</p>;
@@ -71,6 +82,7 @@ import {
   web_storage,
   type EIP6963ProviderDetail,
 } from "@ethernauta/eip/6963";
+import { useEffect, useState } from "react";
 
 const store = web_storage(localStorage);
 
@@ -83,14 +95,14 @@ function WalletPicker() {
 
   return (
     <>
-      {options.map((detail) => (
+      {options.map((provider_detail) => (
         <button
-          key={detail.info.rdns}
+          key={provider_detail.info.rdns}
           onClick={() => {
-            set_provider_detail(detail, { store, key: "wallet" });
+            set_provider_detail({ store, key: "wallet", provider_detail });
           }}
         >
-          <img src={detail.info.icon} alt="" /> {detail.info.name}
+          <img src={provider_detail.info.icon} alt="" /> {provider_detail.info.name}
         </button>
       ))}
       <button onClick={() => clear_provider_detail({ store, key: "wallet" })}>
@@ -106,6 +118,8 @@ After the user picks, `useProvider({ key: "wallet" })` elsewhere in the tree sta
 ## Showing the connected wallet's name
 
 ```tsx
+import { useProvider } from "@ethernauta/react";
+
 function ConnectedWallet() {
   const provider = useProvider({ key: "wallet" });
 
@@ -130,19 +144,24 @@ For `accountsChanged` / `chainChanged`, you need the **raw 1193 provider** (the 
 ```tsx
 import { useProviderDetail } from "@ethernauta/react";
 import { watch_accounts, watch_chain } from "@ethernauta/eip/1193";
+import { useEffect } from "react";
 
 function ProviderListeners() {
-  const detail = useProviderDetail({ key: "wallet" });
+  const provider_detail = useProviderDetail({ key: "wallet" });
 
   useEffect(() => {
-    if (!detail) return;
-    const off1 = watch_accounts(detail.provider, (accounts) => { ... });
-    const off2 = watch_chain(detail.provider, (chain_id) => { ... });
+    if (!provider_detail) return;
+    const unsubscribe_accounts = watch_accounts(provider_detail.provider, (_accounts) => {
+      // react to new accounts
+    });
+    const unsubscribe_chain = watch_chain(provider_detail.provider, (_chain_id) => {
+      // react to chain change
+    });
     return () => {
-      off1();
-      off2();
+      unsubscribe_accounts();
+      unsubscribe_chain();
     };
-  }, [detail]);
+  }, [provider_detail]);
 
   return null;
 }
@@ -151,15 +170,25 @@ function ProviderListeners() {
 ## Signing
 
 ```tsx
+import { useProvider } from "@ethernauta/react";
 import { eth_sendTransaction } from "@ethernauta/eth";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { encode_chain_id } from "@ethernauta/transport";
+import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
+const value = parse(UintSchema, "0x0");
+const input = parse(BytesSchema, "0x");
 
 function SendButton() {
   const provider = useProvider({ key: "wallet" });
 
   async function send() {
     if (!provider) return;
-    const hash = await eth_sendTransaction({ to, value, input: "0x" })(
-      provider.signer({ chain_id: eip155_1.chain_id }),
+    const hash = await eth_sendTransaction([{ to, value, input }])(
+      provider.signer({ chain_id: CHAIN_ID }),
     );
     return hash;
   }
