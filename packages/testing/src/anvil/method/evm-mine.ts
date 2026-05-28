@@ -1,11 +1,16 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#mining-control
 //
-// `evm_mine` mines the requested number of blocks (one when no
-// argument is given) and advances the chain timestamp by the
-// configured block-time or the explicit `timestamp` override.
-// Anvil returns `null` on success.
+// Anvil signature: `evm_mine(opts: Option<MineOptions>) ->
+// Result<String>` (see `crates/anvil/src/eth/api.rs`). Mines the
+// requested block(s) regardless of mining mode and advances the
+// chain timestamp. Anvil hard-codes the response to the
+// placeholder string `"0x0"` (a ganache compatibility quirk —
+// the foundry source explicitly notes ganache reserved this
+// slot for future meta-data). We parse with `BytesSchema`
+// because the value is opaque and the caller never inspects it.
 
-import { UintSchema } from "@ethernauta/core"
+import { BytesSchema, UintSchema } from "@ethernauta/core"
+import type { Bytes } from "@ethernauta/core"
 import type {
   ResolvedWriter,
   Writable,
@@ -13,7 +18,6 @@ import type {
 import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
-  null_,
   object,
   optional,
   parse,
@@ -38,11 +42,11 @@ type Parameters = InferOutput<typeof ParametersSchema>
 
 export function evm_mine(
   _parameters: Parameters = [],
-): Writable<null> {
+): Writable<Bytes> {
   return async ([
     transports,
     _context,
-  ]: ResolvedWriter): Promise<null> => {
+  ]: ResolvedWriter): Promise<Bytes> => {
     const method = "evm_mine"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
@@ -52,7 +56,7 @@ export function evm_mine(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(null_(), response.result)
+    const result = parse(BytesSchema, response.result)
     return result
   }
 }

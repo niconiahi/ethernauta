@@ -1,11 +1,14 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#account-impersonation
 //
-// `anvil_impersonateAccount` adds an address to anvil's unlocked
-// set, letting tests submit transactions as that account without
-// holding its private key. The companion `anvil_stopImpersonatingAccount`
-// reverses it; we only ship the `impersonate` direction in v1
-// because the typical test pattern impersonates once and tears
-// the whole anvil down at the end of the run.
+// Anvil signature: `anvil_impersonate_account(address: Address)
+// -> Result<()>` (see `crates/anvil/src/eth/api.rs`). Adds an
+// address to anvil's unlocked set, letting tests submit
+// transactions as that account without holding its private key.
+// Returns JSON `null` on success. The companion
+// `anvil_stopImpersonatingAccount` reverses it; we only ship
+// the `impersonate` direction in v1 because the typical test
+// pattern impersonates once and tears the whole anvil down at
+// the end of the run.
 
 import { AddressSchema } from "@ethernauta/core"
 import type {

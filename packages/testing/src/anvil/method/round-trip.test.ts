@@ -1,7 +1,3 @@
-import { spawn } from "node:child_process"
-import { createServer } from "node:net"
-import { setTimeout as sleep } from "node:timers/promises"
-
 import {
   AddressSchema,
   Bytes32Schema,
@@ -14,7 +10,18 @@ import type {
 } from "@ethernauta/transport"
 import { http } from "@ethernauta/transport"
 import { parse } from "valibot"
-import { afterAll, beforeAll, describe, expect, it } from "vitest"
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+} from "vitest"
+
+import { await_ready } from "../../spawner/await-ready"
+import { pick_free_port } from "../../spawner/pick-free-port"
+import type { SpawnHandle } from "../../spawner/spawn-anvil"
+import { spawn_anvil } from "../../spawner/spawn-anvil"
 
 import { anvil_dumpState } from "./anvil-dump-state"
 import { anvil_impersonateAccount } from "./anvil-impersonate-account"
@@ -29,83 +36,25 @@ import { evm_snapshot } from "./evm-snapshot"
 
 // Gated by `ETHERNAUTA_TEST_ANVIL=1`. The block is skipped in
 // normal `pnpm test` runs because anvil is not available in CI
-// and the spawn-and-wait cost is meaningful. The Phase 2 spawner
-// will replace the inline spawn helper below.
+// and the spawn-and-wait cost is meaningful.
 const isEnabled = process.env.ETHERNAUTA_TEST_ANVIL === "1"
 
-function pickFreePort(): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const server = createServer()
-    server.unref()
-    server.on("error", reject)
-    server.listen(0, () => {
-      const address = server.address()
-      if (
-        address === null ||
-        typeof address === "string"
-      ) {
-        server.close()
-        reject(new Error("no tcp port assigned"))
-        return
-      }
-      const port = address.port
-      server.close(() => resolve(port))
-    })
-  })
-}
-
-async function awaitReady(
-  port: number,
-  timeoutMs: number,
-): Promise<void> {
-  const deadline = Date.now() + timeoutMs
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:${port}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "eth_blockNumber",
-            params: [],
-          }),
-        },
-      )
-      if (response.ok) return
-    } catch {
-      // anvil not yet up; loop
-    }
-    await sleep(50)
-  }
-  throw new Error(
-    `anvil did not become ready on port ${port} within ${timeoutMs}ms`,
-  )
-}
-
 describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
-  let port = 0
-  let child: ReturnType<typeof spawn> | null = null
+  let handle: SpawnHandle
   let resolvedReader: ResolvedReader
   let resolvedWriter: ResolvedWriter
 
   beforeAll(async () => {
-    port = await pickFreePort()
-    child = spawn(
-      "anvil",
-      ["--port", String(port), "--silent"],
-      { stdio: "ignore" },
-    )
-    await awaitReady(port, 10_000)
+    const port = await pick_free_port()
+    handle = spawn_anvil({ port, extraArgs: ["--silent"] })
+    await await_ready({ handle, timeoutMs: 10_000 })
     const transport = http(`http://127.0.0.1:${port}`)
     resolvedReader = [[transport], { chain_id: "eip155:31337" }]
     resolvedWriter = [[transport], { chain_id: "eip155:31337" }]
   })
 
   afterAll(() => {
-    if (child) child.kill("SIGTERM")
+    handle.kill()
   })
 
   it("evm_snapshot returns a hex id and evm_revert consumes it", async () => {
@@ -115,17 +64,18 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
     expect(ok).toBe(true)
   })
 
-  it("evm_mine returns null", async () => {
+  it("evm_mine returns the placeholder \"0x0\"", async () => {
     const result = await evm_mine()(resolvedWriter)
-    expect(result).toBeNull()
+    expect(result).toBe("0x0")
   })
 
-  it("evm_increaseTime returns the new timestamp", async () => {
+  it("evm_increaseTime returns the new timestamp as bigint", async () => {
     const seconds = parse(UintSchema, "0x3c")
     const newTimestamp = await evm_increaseTime([
       seconds,
     ])(resolvedWriter)
-    expect(newTimestamp.startsWith("0x")).toBe(true)
+    expect(typeof newTimestamp).toBe("bigint")
+    expect(newTimestamp).toBeGreaterThan(0n)
   })
 
   it("anvil_impersonateAccount returns null", async () => {
@@ -157,7 +107,7 @@ describe.skipIf(!isEnabled)("anvil RPC bindings", () => {
       AddressSchema,
       "0x0000000000000000000000000000000000000003",
     )
-    const slot = parse(Bytes32Schema, `0x${"0".repeat(64)}`)
+    const slot = parse(UintSchema, "0x0")
     const value = parse(Bytes32Schema, `0x${"1".repeat(64)}`)
     const result = await anvil_setStorageAt([
       address,

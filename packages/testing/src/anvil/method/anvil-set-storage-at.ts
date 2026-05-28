@@ -1,13 +1,17 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#balance-and-code-manipulation
 //
-// `anvil_setStorageAt` overwrites a single 32-byte storage slot
-// on an account. The slot key is a 32-byte hash (the keccak of
-// the Solidity storage layout); the value is a 32-byte word.
-// Anvil returns `true` on success.
+// Anvil signature: `anvil_set_storage_at(address: Address,
+// slot: U256, val: B256) -> Result<bool>` (see
+// `crates/anvil/src/eth/api.rs`). Overwrites a single 32-byte
+// storage slot. The slot key is a `U256` (the keccak of the
+// Solidity storage layout, accepted as compact hex per the
+// uint encoding); the value is a `B256` 32-byte word. Returns
+// `true` on success.
 
 import {
   AddressSchema,
   Bytes32Schema,
+  UintSchema,
 } from "@ethernauta/core"
 import type {
   ResolvedWriter,
@@ -18,10 +22,10 @@ import type { InferOutput } from "valibot"
 import { boolean, object, parse, tuple, union } from "valibot"
 
 const ParametersSchema = union([
-  tuple([AddressSchema, Bytes32Schema, Bytes32Schema]),
+  tuple([AddressSchema, UintSchema, Bytes32Schema]),
   object({
     address: AddressSchema,
-    slot: Bytes32Schema,
+    slot: UintSchema,
     value: Bytes32Schema,
   }),
 ])

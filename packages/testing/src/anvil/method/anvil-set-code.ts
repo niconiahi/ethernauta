@@ -1,10 +1,11 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#balance-and-code-manipulation
 //
-// `anvil_setCode` overwrites the deployed bytecode at an
-// address. The `code` argument is the runtime bytecode as
-// 0x-prefixed hex. Useful for swapping a contract's
+// Anvil signature: `anvil_set_code(address: Address, code:
+// Bytes) -> Result<()>` (see `crates/anvil/src/eth/api.rs`).
+// Overwrites the deployed bytecode at an address. The `code`
+// argument is the runtime bytecode as 0x-prefixed hex. Returns
+// JSON `null` on success. Useful for swapping a contract's
 // implementation in-place during a test without redeploying.
-// Anvil returns `null` on success.
 
 import { AddressSchema, BytesSchema } from "@ethernauta/core"
 import type {

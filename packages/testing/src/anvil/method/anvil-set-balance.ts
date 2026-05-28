@@ -1,9 +1,11 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#balance-and-code-manipulation
 //
-// `anvil_setBalance` overwrites an account's native-ETH balance
-// to the requested wei amount. Useful for funding test accounts
-// against a fork where the default pre-funded mnemonic accounts
-// do not exist. Anvil returns `null` on success.
+// Anvil signature: `anvil_set_balance(address: Address, balance:
+// U256) -> Result<()>` (see `crates/anvil/src/eth/api.rs`).
+// Overwrites an account's native-ETH balance to the requested
+// wei amount. Returns JSON `null` on success. Useful for
+// funding test accounts against a fork where the default
+// pre-funded mnemonic accounts do not exist.
 
 import { AddressSchema, UintSchema } from "@ethernauta/core"
 import type {

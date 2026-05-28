@@ -1,10 +1,14 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://github.com/foundry-rs/foundry/blob/master/crates/anvil/src/eth/api.rs
+// (the official getfoundry.sh "custom methods" page does not
+// document anvil_dumpState/loadState as of writing; the source
+// is the authoritative reference.)
 //
-// `anvil_loadState` restores chain state from a blob produced by
-// `anvil_dumpState`. Anvil returns `true` on success. Loading
-// merges into the current state rather than replacing it — call
-// `anvil_reset` (not currently wrapped) first if a clean swap is
-// needed.
+// Anvil signature: `anvil_load_state(buf: Bytes) -> Result<bool>`.
+// Restores chain state from a blob produced by
+// `anvil_dumpState`. Returns `true` on success. Loading merges
+// into the current state rather than replacing it — call
+// `anvil_reset` (not currently wrapped) first if a clean swap
+// is needed.
 
 import { BytesSchema } from "@ethernauta/core"
 import type {

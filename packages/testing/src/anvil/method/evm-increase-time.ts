@@ -1,19 +1,29 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#time-manipulation
 //
-// `evm_increaseTime` jumps the block-timestamp clock forward by
-// the requested number of seconds. Anvil returns the new
-// timestamp as a hex-encoded integer; we parse with `UintSchema`
-// to keep the value in the project's hex-string brand rather
-// than unboxing to JS bigint.
+// Anvil signature: `evm_increase_time(seconds: U256) ->
+// Result<i64>` (see `crates/anvil/src/eth/api.rs`). Jumps the
+// block-timestamp clock forward by the requested number of
+// seconds and returns the new timestamp as a signed 64-bit
+// integer — serialised as a plain JSON number, not a hex
+// string. We accept either a `number` or `bigint` from the wire
+// and normalise to `bigint` because i64 values can overflow
+// JS's safe-integer range under contrived test setups.
 
-import { UintSchema, type Uint } from "@ethernauta/core"
+import { UintSchema } from "@ethernauta/core"
 import type {
   ResolvedWriter,
   Writable,
 } from "@ethernauta/transport"
 import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, parse, tuple, union } from "valibot"
+import {
+  bigint,
+  number,
+  object,
+  parse,
+  tuple,
+  union,
+} from "valibot"
 
 const ParametersSchema = union([
   tuple([UintSchema]),
@@ -21,13 +31,15 @@ const ParametersSchema = union([
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
 
+const ResultSchema = union([number(), bigint()])
+
 export function evm_increaseTime(
   _parameters: Parameters,
-): Writable<Uint> {
+): Writable<bigint> {
   return async ([
     transports,
     _context,
-  ]: ResolvedWriter): Promise<Uint> => {
+  ]: ResolvedWriter): Promise<bigint> => {
     const method = "evm_increaseTime"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
@@ -37,7 +49,7 @@ export function evm_increaseTime(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(UintSchema, response.result)
-    return result
+    const result = parse(ResultSchema, response.result)
+    return BigInt(result)
   }
 }

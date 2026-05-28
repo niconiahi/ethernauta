@@ -1,10 +1,12 @@
-// https://book.getfoundry.sh/reference/anvil/#custom-methods
+// https://getfoundry.sh/anvil/custom-methods#state-snapshots
 //
-// `evm_revert` rolls the chain back to the state captured by a
-// prior `evm_snapshot`. Anvil returns `true` if the snapshot id
-// was valid and the revert succeeded, `false` otherwise (the id
-// was unknown or already consumed — anvil discards a snapshot
-// once it is reverted).
+// Anvil signature: `evm_revert(id: U256) -> Result<bool>` (see
+// `crates/anvil/src/eth/api.rs`). Rolls the chain back to the
+// state captured by a prior `evm_snapshot`. Returns `true` if
+// the id was valid, `false` otherwise — anvil discards a
+// snapshot once it is reverted. The parameter is the opaque
+// hex id `evm_snapshot` returned; we accept it as `Bytes` to
+// match `evm_snapshot`'s return shape.
 
 import { BytesSchema } from "@ethernauta/core"
 import type {
