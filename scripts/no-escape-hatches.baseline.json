@@ -11,7 +11,8 @@
   "_never_history": "Previous bumps logged in this file's git history. The counter only moves DOWN; intentional rises require a one-line `_never_bump_<date>_<reason>` key alongside the new number, mirroring the historical `_unknown_bump_2026_05_25_bytes64` entry below.",
   "never": 8,
   "_unknown_bump_2026_05_25_bytes64": "199 → 200: new bytes64Schema in @ethernauta/core adds one isBytes64(input: unknown) predicate, matching every other bytesN file in the package.",
-  "unknown": 200,
+  "_unknown_bump_2026_05_29_7677_context": "200 → 201: ERC-7677 ContextSchema = record(string(), unknown()). The paymaster-service context is paymaster-defined and opaque per spec — there is no narrower expressible value type at this boundary.",
+  "unknown": 201,
   "invariant_calls": 0,
   "redundant_annotations": 0
 }
