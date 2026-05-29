@@ -7,7 +7,7 @@ description: Guidelines for adding a new Ethereum Improvement Proposal under pac
 
 `@ethernauta/eip` ships implementations of EIPs that are **not** part of the base JSON-RPC surface (those live in `@ethernauta/eth`). Each EIP lives in its own subpath so consumers only pay for what they import; the `exports` map in `packages/eip/package.json:14-19` is `"./*": "./dist/*/index.js"`, so adding a new EIP under `packages/eip/src/<n>/` automatically becomes importable as `@ethernauta/eip/<n>`.
 
-Currently shipped: `191`, `712`, `1014`, `1102`, `1167`, `1193`, `1271`, `1967`, `2255`, `3085`, `3326`, `4337`, `4361`, `5267`, `5792`, `6492`, `6963`, `7702`.
+Currently shipped: `191`, `712`, `1014`, `1102`, `1167`, `1193`, `1271`, `1967`, `2255`, `3085`, `3326`, `3668`, `4337`, `4361`, `5267`, `5792`, `6492`, `6963`, `7702`.
 
 ## The ownership rule — non-negotiable
 

@@ -326,7 +326,7 @@ Same legend as above.
 
 | Standard | What it covers | Ethernauta | viem | ethers.js |
 |---|---|---|---|---|
-| **EIP-3668** CCIP-Read | Off-chain data resolution; required for ENS L2 names (basenames, OP names, wildcard resolvers) | ❌ | ✅ | ⚠️ partial |
+| **EIP-3668** CCIP-Read | Off-chain data resolution; required for ENS L2 names (basenames, OP names, wildcard resolvers) | ✅ `eth_call_ccip` wrapper + primitives via `@ethernauta/eip/3668`; routed into `@ethernauta/ens` | ✅ | ⚠️ partial |
 | **EIP-5267** Domain getter | `eip712Domain()` self-describing contracts | ✅ `get_domain` (Callable) | ✅ | ⚠️ manual |
 | **EIP-1167** Minimal proxy (clones) | Tiny proxy bytecode + factory pattern | ✅ `is_clone` / `get_clone_target` / `deploy_clone` | ⚠️ helper | ❌ |
 | **EIP-1967** Standard proxy slots | Impl/admin slot reads for TransparentUpgradeable | ✅ `get_implementation` / `get_admin` / `get_beacon` | ⚠️ helper | ❌ |
@@ -336,7 +336,7 @@ Same legend as above.
 | **ERC-2535** Diamond proxy | Multi-facet upgradeable contracts | ❌ | ❌ | ❌ |
 | **ERC-6551** Token Bound Accounts | NFT-as-wallet | ❌ | ❌ | ❌ |
 | **ERC-7579** Modular smart accounts | Module-based AA accounts (current frontier) | ❌ | ❌ | ❌ |
-| **ERC-7677** Paymaster web service | Paymaster RPC protocol | ❌ | ⚠️ via permissionless | ❌ |
+| **ERC-7677** Paymaster web service | Paymaster RPC protocol | ✅ `pm_getPaymasterStubData` + `pm_getPaymasterData` + `apply_to_user_op` (v0.6/v0.7) via `@ethernauta/erc/7677` | ⚠️ via permissionless | ❌ |
 | **ERC-7710** Delegation permissions | Delegated permissions schema | ❌ | ❌ | ❌ |
 | **ERC-7715** Wallet `requestPermissions` (new) | Dapp-requested wallet permissions | ❌ | ❌ | ❌ |
 | **ERC-5189** Bundler mempool validation | Bundler-side validation rules | ❌ | ❌ | ❌ |
@@ -378,7 +378,7 @@ Same legend as above.
 |---|---|---|---|
 | Bundler **client** (consumes any bundler via RPC) | ✅ (`@ethernauta/eip/4337`) | 📦 permissionless | ❌ |
 | Bundler **server** (`@ethernauta/bundler`) | ❌ proposed | ❌ | ❌ |
-| Paymaster **client** (ERC-7677) | ❌ | 📦 permissionless | ❌ |
+| Paymaster **client** (ERC-7677) | ✅ `@ethernauta/erc/7677` | 📦 permissionless | ❌ |
 | Paymaster **server** | ❌ proposed | ❌ | ❌ |
 | Etherscan / Sourcify ABI fetch | ❌ | ❌ | ❌ |
 | Contract verification (Etherscan submit) | ❌ | ❌ | ❌ |
@@ -390,7 +390,7 @@ Same legend as above.
 | OP Stack deposit/withdraw helpers | ❌ | ✅ `viem/op-stack` | ❌ |
 | Arbitrum L1→L2 message helpers | ❌ | ❌ | 📦 `@arbitrum/sdk` |
 | zkSync deposit/withdraw | ❌ | ✅ `viem/zksync` | 📦 `zksync-ethers` |
-| CCIP-Read for L2 ENS (depends on EIP-3668 above) | ❌ | ✅ | ⚠️ partial |
+| CCIP-Read for L2 ENS (depends on EIP-3668 above) | ✅ via `@ethernauta/ens` routed through `eth_call_ccip` | ✅ | ⚠️ partial |
 
 ---
 

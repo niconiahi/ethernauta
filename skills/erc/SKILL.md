@@ -9,7 +9,7 @@ description: Guidelines for adding a new Ethereum Request for Comment standard u
 
 Subpath publishing: `packages/erc/package.json:14-19` declares `"./*": "./dist/*/index.js"`, so `packages/erc/src/<n>/` automatically becomes importable as `@ethernauta/erc/<n>` after build.
 
-Currently shipped: `20` (with extensions `burnable`, `capped`, `flash-mint`, `mintable`, `pausable`, `permit`, `votes`, `wrapper`), `137` (ENS), `165`, `721` (with extensions), `1155`, `4626`, `5564`, `7683`.
+Currently shipped: `20` (with extensions `burnable`, `capped`, `flash-mint`, `mintable`, `pausable`, `permit`, `votes`, `wrapper`), `137` (ENS), `165`, `721` (with extensions), `1155`, `4626`, `5564`, `7677`, `7683`.
 
 ## Folder shape
 
