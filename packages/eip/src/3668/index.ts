@@ -20,5 +20,11 @@ export {
   OffchainLookupErrorSchema,
 } from "./schemas"
 export { build_callback_calldata } from "./build-callback-calldata"
+export {
+  CcipAllGatewaysFailedError,
+  CcipFetchError,
+  type FetchCcipArgs,
+  fetch_ccip,
+} from "./fetch-ccip"
 export { parse_offchain_lookup_revert } from "./parse-offchain-lookup-revert"
 export { substitute_url } from "./substitute-url"
