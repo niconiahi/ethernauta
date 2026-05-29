@@ -327,6 +327,9 @@ importers:
 
   packages/eip:
     dependencies:
+      '@ethernauta/abi':
+        specifier: workspace:*
+        version: link:../abi
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core
@@ -352,9 +355,6 @@ importers:
         specifier: ^0.18.1
         version: 0.18.1
     devDependencies:
-      '@ethernauta/abi':
-        specifier: workspace:*
-        version: link:../abi
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)

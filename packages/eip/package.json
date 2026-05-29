@@ -32,6 +32,7 @@
     "test:integration": "echo no integration tests"
   },
   "dependencies": {
+    "@ethernauta/abi": "workspace:*",
     "@ethernauta/core": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*",
@@ -45,7 +46,6 @@
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "@ethernauta/abi": "workspace:*",
     "tsdown": "^0.13.3",
     "valibot": "1.1.0"
   }
