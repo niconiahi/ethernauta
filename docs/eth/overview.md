@@ -86,6 +86,55 @@ Each method returns a resolver-shaped curried function. The first call binds the
 - `eth_subscribeNewHeads` — push new block headers.
 - `eth_subscribeNewPendingTransactions` — push pending tx hashes.
 
+### Debug tracers (Readable)
+
+Geth-namespace tracer methods. Sibling to `eth_*` because they ride the same transport — not a numbered standard, so they don't live under `@ethernauta/eip`. Supported by reth, erigon, anvil, and Alchemy / Tenderly gateways.
+
+- `debug_traceCall` — replay an `eth_call` at a historical block, return the configured tracer's payload.
+- `debug_traceTransaction` — replay a mined tx by hash with the configured tracer.
+- `debug_traceBlockByNumber` — trace every tx in a block; returns a tagged `BlockTraceEntry[]`.
+
+```ts
+import { parse } from "valibot";
+import { AddressSchema, BytesSchema } from "@ethernauta/core";
+import {
+  debug_traceCall,
+  TRACER_TYPE,
+  type TraceResult,
+} from "@ethernauta/eth";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://… (must expose debug_*)")] },
+]);
+
+const result: TraceResult = await debug_traceCall({
+  transaction: {
+    from: parse(AddressSchema, "0x0000000000000000000000000000000000000000"),
+    to: parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"),
+    input: parse(BytesSchema, "0x70a08231000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045"),
+  },
+  blockNumberOrTagOrHash: "latest",
+  tracerConfig: { tracer: TRACER_TYPE.CALL },
+})(reader({ chain_id: CHAIN_ID }));
+
+// `result` is a discriminated TraceResult; switch on `result.tracer`.
+void result;
+```
+
+The bindings parse the wire payload against the schema matching the request's tracer and tag the result with the tracer name, so consumers `switch` on a discriminated `TraceResult` instead of inspecting opaque JSON.
+
+| Tracer | Discriminator | Result shape | When to use |
+|---|---|---|---|
+| `callTracer` | `TRACER_TYPE.CALL` | Recursive `CallFrame` tree | Control flow, finding failing inner calls, surfacing revert reasons. |
+| `prestateTracer` | `TRACER_TYPE.PRESTATE` | `PreStateMap` or pre/post `PreStateDiff` (with `diffMode`) | Pre-flight checks, ERC-5189 / ERC-7562 bundler validation. |
+| `4byteTracer` | `TRACER_TYPE.FOURBYTE` | `FourByteTrace` — `record(selector, count)` | Cheap intent inference, surfacing unknown selectors. |
+| Default (struct) | `STRUCT_TYPE.literal` | `StructLogResult` — per-opcode log | Step-by-step EVM debugging. Largest payload. |
+
+Recursive shapes (`CallFrameSchema`) follow Valibot's canonical pattern — `lazy()` on the self-reference only, anchor type tagged with `R4-recursive-schema`. See [Concepts → folder-shaped standards](/concepts/folder-shaped-standards) for the placement reasoning.
+
 ## Quick examples
 
 ### Read

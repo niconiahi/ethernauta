@@ -7,7 +7,7 @@ order: 9
 
 # @ethernauta/ens
 
-High-level ENS resolution: name → address, address → name, avatars, text records. Plus ENSIP-15 name normalization (the "what counts as a valid name" rules). Composes the lower-level ERC-137 / ERC-181 / ERC-1577 / ERC-2304 method bindings into the multi-call flows dapps actually want.
+High-level ENS resolution: name → address, address → name, avatars, text records. Plus ENSIP-10 wildcard resolution (basenames, L2 ENS), ENSIP-15 name normalization (the "what counts as a valid name" rules), and CCIP-Read fall-through on every resolver call. Composes the lower-level ERC-137 / ERC-181 / ERC-1577 / ERC-2304 method bindings into the multi-call flows dapps actually want.
 
 ```bash
 pnpm add @ethernauta/ens
@@ -32,7 +32,7 @@ const address = await get_ens_address({ name: "vitalik.eth" })(
 void address;
 ```
 
-Walks: `namehash(name)` → look up resolver via registry → call `addr(node)` on resolver. Returns `null` if any step yields zero.
+Walks: `namehash(name)` → parent-walk to find the resolver (handles wildcard registrations at parent labels) → call `addr(node)` directly, or wrap as `resolve(dnsEncode(name), addr(node).calldata)` for ENSIP-10 wildcard resolvers. Every step routes through `eth_call_ccip` so off-chain resolution (basenames, L2 ENS) just works. Returns `null` if any step yields zero.
 
 ## Reverse resolution
 
@@ -140,7 +140,16 @@ Normalization is **mandatory** before hashing — `namehash` of `"Vitalik.eth"` 
 | `get_ens_name` | `Readable<string \| null>` | Reverse with forward-verification. |
 | `get_ens_text` | `Readable<string \| null>` | Text record. |
 | `get_ens_avatar` | `Readable<AvatarResult \| null>` | Decoded avatar. |
-| `get_ens_resolver` | `Readable<Address \| null>` | Resolver contract for a name. |
+| `get_ens_resolver` | `Readable<Address \| null>` | Resolver contract for a name (direct registry lookup, no parent walk). |
+| `find_resolver` | `(name, registry?, ctx) => Promise<FindResolverResult \| null>` | Parent-walk variant. Returns the resolver address plus the parent label it was found at — needed to decide between legacy `addr(node)` and ENSIP-10 `resolve(name, data)`. |
+
+### Wildcard (ENSIP-10)
+
+| Export | Purpose |
+|---|---|
+| `dns_encode` | DNS wire-format encoding for `resolve(name, data)`. |
+| `resolve` | ENSIP-10 outer call binding (`Callable<Bytes>`) — wraps an inner method's calldata for wildcard resolvers. |
+| `ENSIP10_INTERFACE_ID` | ERC-165 interface ID for `resolve(bytes,bytes)` (`0x9061b923`). |
 
 ### Normalization (ENSIP-15)
 
@@ -161,6 +170,7 @@ Normalization is **mandatory** before hashing — `namehash` of `"Vitalik.eth"` 
 
 ## See also
 
+- [EIP-3668](/eips/3668) — CCIP-Read, the protocol every resolver call falls through to.
 - [ERC-137](/ercs/137) — registry primitives.
 - [ERC-181](/ercs/181) — reverse record primitives.
 - [ERC-1577](/ercs/1577) — content hash.

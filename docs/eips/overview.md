@@ -33,6 +33,7 @@ import { discover_providers } from "@ethernauta/eip/6963";
 | [2930](/eips/2930) | Optional access lists | Type-1 tx + the `accessList` shape every later typed tx reuses. |
 | [3085](/eips/3085) | `wallet_addEthereumChain` | Adding a chain at runtime. |
 | [3326](/eips/3326) | `wallet_switchEthereumChain` | Switching active chain. |
+| [3668](/eips/3668) | CCIP-Read | Off-chain data resolution. Required for ENSIP-10 wildcard resolvers (basenames, L2 ENS). |
 | [4337](/eips/4337) | Account abstraction (entry-point + UserOperation) | Smart-account flows. |
 | [4361](/eips/4361) | Sign-In with Ethereum (SIWE) | Off-chain auth message. |
 | [4844](/eips/4844) | Shard blob transactions | Blob carriers + KZG commitments. |

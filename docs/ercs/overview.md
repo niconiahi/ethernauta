@@ -35,6 +35,7 @@ import { balanceOfBatch } from "@ethernauta/erc/1155";
 | [5564](/ercs/5564) | Stealth addresses | One-time receiving addresses. |
 | [5805](/ercs/5805) | Voting delegation | Delegation API for governance. |
 | [6372](/ercs/6372) | Contract clock | Block- or time-based mode. |
+| [7677](/ercs/7677) | Paymaster web service | Paymaster RPC protocol for ERC-4337 sponsorship. |
 | [7683](/ercs/7683) | Cross-chain orders | Cross-chain intent format. |
 
 ## Generation
