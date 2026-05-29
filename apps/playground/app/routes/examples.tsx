@@ -99,6 +99,10 @@ const OTHER_EXAMPLES = [
     to: "/examples/finalized-block",
     title: "finalized block tag",
   },
+  {
+    to: "/examples/debug-tracers",
+    title: "debug_* tracers",
+  },
 ] as const
 
 const RECIPE_EXAMPLES = [

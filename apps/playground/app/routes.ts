@@ -109,5 +109,9 @@ export default [
       "paymaster-7677",
       "./routes/examples/paymaster-7677.mdx",
     ),
+    route(
+      "debug-tracers",
+      "./routes/examples/debug-tracers.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

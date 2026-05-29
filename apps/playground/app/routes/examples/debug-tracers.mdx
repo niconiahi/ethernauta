@@ -1,0 +1,67 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/debug-tracers/demo.tsx?highlighted"
+import { DebugTracersDemo } from "../../examples/debug-tracers/demo"
+
+# debug_* tracers
+
+`debug_traceCall` against all four built-in tracers, with
+the response rendered per its typed shape. The library
+parses every payload through its matching schema and tags
+the result with the tracer name, so consumers switch on a
+discriminated `TraceResult` instead of inspecting opaque
+JSON.
+
+<DebugTracersDemo />
+
+<GithubLink path="apps/playground/app/examples/debug-tracers/demo.tsx" />
+
+## Why these schemas matter
+
+The geth `debug_*` namespace returns whatever the
+configured tracer emits, with no discriminator. Naive
+consumers shape-check the response at every call site.
+`@ethernauta/eth` instead:
+
+1. Carries one Valibot schema per tracer
+   (`CallFrameSchema`, `PreStateSchema`,
+   `FourByteTraceSchema`, `StructLogResultSchema`).
+2. The bindings (`debug_traceCall`,
+   `debug_traceTransaction`, `debug_traceBlockByNumber`)
+   parse the wire payload against the schema matching the
+   tracer passed in the request.
+3. The result is tagged with the tracer name so the
+   consumer gets a `TraceResult` variant they can `switch`
+   on. The discriminator `tracer` field is the literal
+   from `TRACER_TYPE` (`"callTracer"`, `"prestateTracer"`,
+   `"4byteTracer"`) or `STRUCT_TYPE.literal`
+   (`"struct"`) for the default tracer (the dapp-side tag
+   for the no-tracer case — geth doesn't echo a name
+   back).
+
+## The code
+
+<DemoSource html={demoHtml} />
+
+## What each tracer is for
+
+| Tracer | What it returns | When you reach for it |
+|---|---|---|
+| `callTracer` | Recursive `CallFrame` tree | Reading control flow, finding the failing inner call, surfacing revert reasons |
+| `prestateTracer` | Account-state map (or pre/post diff with `diffMode`) | Pre-flight checks, ERC-5189 / ERC-7562 bundler validation |
+| `4byteTracer` | Histogram of function selectors invoked | Cheap intent inference, surfacing unknown selectors |
+| `struct` (default) | Per-opcode `StructLog` array | Step-by-step EVM debugging; largest payload |
+
+## Provider support
+
+| Provider | `debug_traceCall` | Notes |
+|---|---|---|
+| Alchemy | ✅ paid tier | All four tracers |
+| Tenderly gateway | ✅ | Free for development |
+| Self-hosted geth / reth / erigon | ✅ free | The reference implementation |
+| Anvil (`@ethernauta/testing`) | ✅ partial | `callTracer`, `prestateTracer` work; `4byteTracer` and `struct` may not |
+
+The recipe in{" "}
+[Sponsored basename transfer](./sponsored-basename-transfer)
+uses `debug_traceTransaction` (after a UserOp is bundled)
+with the same `callTracer` schema for end-to-end visibility.
