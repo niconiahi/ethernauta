@@ -28,7 +28,11 @@ import {
   string_,
   tuple,
 } from "@ethernauta/abi"
-import { type Bytes, type NotFound } from "@ethernauta/core"
+import {
+  type Bytes,
+  BytesSchema,
+  type NotFound,
+} from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { parse } from "valibot"
 
@@ -37,7 +41,10 @@ import {
   OffchainLookupErrorSchema,
 } from "./schemas"
 
-const OFFCHAIN_LOOKUP_SELECTOR = "0x556f1830"
+const OFFCHAIN_LOOKUP_SELECTOR = parse(
+  BytesSchema,
+  "0x556f1830",
+)
 
 const offchain_lookup_codec = tuple({
   sender: address(),

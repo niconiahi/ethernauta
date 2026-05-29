@@ -94,11 +94,6 @@ function error_response(
   }
 }
 
-function ok_json(_body: unknown): Response_ {
-  return new Response(JSON.stringify(_body), { status: 200 })
-}
-type Response_ = Response
-
 describe("eth-call-ccip.ts", () => {
   it("returns the eth_call result directly when there is no revert", async () => {
     const transport = vi.fn(
@@ -141,10 +136,14 @@ describe("eth-call-ccip.ts", () => {
     expect(fetch_mock).toHaveBeenCalledOnce()
     // Second eth_call goes to the OffchainLookup sender, not the
     // original contract.
-    const second_call = transport.mock.calls[1][0]
+    const second_call_args = transport.mock.calls[1]
+    if (second_call_args === undefined)
+      throw new Error("no second call")
+    const second_call = second_call_args[0]
     expect(second_call[0]).toBe("eth_call")
     const params = second_call[1]
-    if (!Array.isArray(params)) throw new Error("expected array params")
+    if (!Array.isArray(params))
+      throw new Error("expected array params")
     const first_param = params[0]
     if (
       first_param === null ||

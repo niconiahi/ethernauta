@@ -30,6 +30,7 @@
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",
     "@ethernauta/core": "workspace:*",
+    "@ethernauta/eip": "workspace:*",
     "@ethernauta/erc": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*"

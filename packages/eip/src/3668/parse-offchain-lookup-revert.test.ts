@@ -17,7 +17,9 @@ import { describe, expect, it } from "vitest"
 
 import { parse_offchain_lookup_revert } from "./parse-offchain-lookup-revert"
 
-const SELECTOR_BYTES = [0x55, 0x6f, 0x18, 0x30]
+const SELECTOR_BYTES = new Uint8Array([
+  0x55, 0x6f, 0x18, 0x30,
+])
 
 const SENDER = parse(
   AddressSchema,
@@ -48,10 +50,7 @@ function build_offchain_lookup_revert(): `0x${string}` {
     extraData: EXTRA_DATA,
   })
   const out = new Uint8Array(4 + encoded.length)
-  out[0] = SELECTOR_BYTES[0]
-  out[1] = SELECTOR_BYTES[1]
-  out[2] = SELECTOR_BYTES[2]
-  out[3] = SELECTOR_BYTES[3]
+  out.set(SELECTOR_BYTES, 0)
   out.set(encoded, 4)
   return bytes_to_hex(out)
 }
@@ -105,10 +104,7 @@ describe("parse-offchain-lookup-revert.ts", () => {
 
   it("returns null when the OffchainLookup payload is malformed", () => {
     const truncated_payload = new Uint8Array(4 + 8)
-    truncated_payload[0] = SELECTOR_BYTES[0]
-    truncated_payload[1] = SELECTOR_BYTES[1]
-    truncated_payload[2] = SELECTOR_BYTES[2]
-    truncated_payload[3] = SELECTOR_BYTES[3]
+    truncated_payload.set(SELECTOR_BYTES, 0)
     const revert = parse(
       BytesSchema,
       bytes_to_hex(truncated_payload),

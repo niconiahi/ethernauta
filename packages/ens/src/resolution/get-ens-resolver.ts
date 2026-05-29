@@ -9,7 +9,7 @@ import {
   resolver,
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
-import { eth_call } from "@ethernauta/eth"
+import { eth_call_ccip } from "@ethernauta/eip/3668"
 import type {
   Readable,
   ResolvedReader,
@@ -40,9 +40,10 @@ export function get_ens_resolver(
       chain_id: context.chain_id,
       to: registry,
     })
-    const raw = await eth_call([
-      { to: callable.to, input: callable.data },
-    ])([transports, context])
+    const raw = await eth_call_ccip({
+      to: callable.to,
+      input: callable.data,
+    })([transports, context])
     const decoded = callable.decode(raw)
     if (decoded === ZERO_ADDRESS) return null
     return decoded

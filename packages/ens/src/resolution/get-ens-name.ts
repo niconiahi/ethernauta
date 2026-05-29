@@ -12,7 +12,7 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 import { name as name_method } from "@ethernauta/erc/181"
-import { eth_call } from "@ethernauta/eth"
+import { eth_call_ccip } from "@ethernauta/eip/3668"
 import type {
   Readable,
   ResolvedReader,
@@ -45,18 +45,20 @@ export function get_ens_name(
       chain_id: context.chain_id,
       to: registry,
     })
-    const resolver_raw = await eth_call([
-      { to: resolver_call.to, input: resolver_call.data },
-    ])([transports, context])
+    const resolver_raw = await eth_call_ccip({
+      to: resolver_call.to,
+      input: resolver_call.data,
+    })([transports, context])
     const resolver_addr = resolver_call.decode(resolver_raw)
     if (resolver_addr === ZERO_ADDRESS) return null
     const name_call = name_method({ node: reverse_node })({
       chain_id: context.chain_id,
       to: resolver_addr,
     })
-    const name_raw = await eth_call([
-      { to: name_call.to, input: name_call.data },
-    ])([transports, context])
+    const name_raw = await eth_call_ccip({
+      to: name_call.to,
+      input: name_call.data,
+    })([transports, context])
     const candidate = name_call.decode(name_raw)
     if (candidate.length === 0) return null
     const forward = await forward_resolve(
@@ -82,18 +84,20 @@ async function forward_resolve(
     chain_id: context.chain_id,
     to: registry,
   })
-  const resolver_raw = await eth_call([
-    { to: resolver_call.to, input: resolver_call.data },
-  ])([transports, context])
+  const resolver_raw = await eth_call_ccip({
+    to: resolver_call.to,
+    input: resolver_call.data,
+  })([transports, context])
   const resolver_addr = resolver_call.decode(resolver_raw)
   if (resolver_addr === ZERO_ADDRESS) return null
   const addr_call = addr({ node })({
     chain_id: context.chain_id,
     to: resolver_addr,
   })
-  const addr_raw = await eth_call([
-    { to: addr_call.to, input: addr_call.data },
-  ])([transports, context])
+  const addr_raw = await eth_call_ccip({
+    to: addr_call.to,
+    input: addr_call.data,
+  })([transports, context])
   const decoded = addr_call.decode(addr_raw)
   if (decoded === ZERO_ADDRESS) return null
   return decoded

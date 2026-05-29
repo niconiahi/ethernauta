@@ -31,9 +31,8 @@ function status_only(_status: number, _body = ""): Response {
 
 describe("fetch-ccip.ts", () => {
   it("GETs when the URL template contains {data}", async () => {
-    const fetch_mock = vi.fn(
-      async (_url: string | URL, _init?: RequestInit) =>
-        ok_json({ data: RESPONSE_DATA }),
+    const fetch_mock = vi.fn<typeof globalThis.fetch>(
+      async () => ok_json({ data: RESPONSE_DATA }),
     )
     const result = await fetch_ccip(
       {
@@ -45,7 +44,9 @@ describe("fetch-ccip.ts", () => {
     )
     expect(result).toBe(RESPONSE_DATA)
     expect(fetch_mock).toHaveBeenCalledOnce()
-    const [url, init] = fetch_mock.mock.calls[0]
+    const first_call = fetch_mock.mock.calls[0]
+    if (first_call === undefined) throw new Error("no call")
+    const [url, init] = first_call
     expect(String(url)).toBe(
       `https://gw.example.com/${SENDER_CHECKSUM.toLowerCase()}/${CALL_DATA}`,
     )
@@ -53,9 +54,8 @@ describe("fetch-ccip.ts", () => {
   })
 
   it("POSTs JSON when the URL template has no {data}", async () => {
-    const fetch_mock = vi.fn(
-      async (_url: string | URL, _init?: RequestInit) =>
-        ok_json({ data: RESPONSE_DATA }),
+    const fetch_mock = vi.fn<typeof globalThis.fetch>(
+      async () => ok_json({ data: RESPONSE_DATA }),
     )
     const result = await fetch_ccip(
       {
@@ -66,7 +66,9 @@ describe("fetch-ccip.ts", () => {
       fetch_mock,
     )
     expect(result).toBe(RESPONSE_DATA)
-    const [url, init] = fetch_mock.mock.calls[0]
+    const first_call = fetch_mock.mock.calls[0]
+    if (first_call === undefined) throw new Error("no call")
+    const [url, init] = first_call
     expect(String(url)).toBe("https://gw.example.com/lookup")
     expect(init?.method).toBe("POST")
     const body = JSON.parse(String(init?.body))
@@ -75,7 +77,7 @@ describe("fetch-ccip.ts", () => {
   })
 
   it("aborts the whole lookup on 4xx with CcipFetchError", async () => {
-    const fetch_mock = vi.fn(
+    const fetch_mock = vi.fn<typeof globalThis.fetch>(
       async () => status_only(404, "not found"),
     )
     await expect(
@@ -115,7 +117,9 @@ describe("fetch-ccip.ts", () => {
   })
 
   it("throws CcipAllGatewaysFailedError when every URL returns 5xx", async () => {
-    const fetch_mock = vi.fn(async () => status_only(502))
+    const fetch_mock = vi.fn<typeof globalThis.fetch>(
+      async () => status_only(502),
+    )
     const error = await fetch_ccip(
       {
         urls: [
@@ -130,13 +134,18 @@ describe("fetch-ccip.ts", () => {
     expect(error).toBeInstanceOf(CcipAllGatewaysFailedError)
     if (error instanceof CcipAllGatewaysFailedError) {
       expect(error.attempts).toHaveLength(2)
-      expect(error.attempts[0][1]).toBe(502)
+      const first_attempt = error.attempts[0]
+      if (first_attempt === undefined)
+        throw new Error("no attempt")
+      expect(first_attempt[1]).toBe(502)
     }
     expect(fetch_mock).toHaveBeenCalledTimes(2)
   })
 
   it("rejects malformed gateway responses (missing data field)", async () => {
-    const fetch_mock = vi.fn(async () => ok_json({ foo: 1 }))
+    const fetch_mock = vi.fn<typeof globalThis.fetch>(
+      async () => ok_json({ foo: 1 }),
+    )
     await expect(
       fetch_ccip(
         {

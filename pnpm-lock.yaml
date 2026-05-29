@@ -370,6 +370,9 @@ importers:
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core
+      '@ethernauta/eip':
+        specifier: workspace:*
+        version: link:../eip
       '@ethernauta/erc':
         specifier: workspace:*
         version: link:../erc
