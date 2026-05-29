@@ -1,3 +1,4 @@
+import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
@@ -62,7 +63,9 @@ describe("BlockSchema — post-Cancun shape", () => {
     }
     const parsed = parse(BlockSchema, block)
     expect(parsed.withdrawals).toHaveLength(1)
-    expect(parsed.withdrawals?.[0].address).toBe(ADDR)
+    const withdrawal0 = parsed.withdrawals?.[0]
+    invariant(withdrawal0, "expected one withdrawal")
+    expect(withdrawal0.address).toBe(ADDR)
     expect(parsed.withdrawalsRoot).toBe(HASH)
     expect(parsed.blobGasUsed).toBe("0x1")
     expect(parsed.excessBlobGas).toBe("0x2")

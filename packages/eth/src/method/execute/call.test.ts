@@ -7,6 +7,7 @@ import {
 import type { Call } from "@ethernauta/transport"
 import type { Response } from "@ethernauta/transport"
 import { RpcRequestError } from "@ethernauta/transport"
+import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
@@ -94,7 +95,9 @@ describe("eth_call wire shape", () => {
       { chain_id: "eip155:1" },
     ])
     expect(calls).toHaveLength(1)
-    const [method, params] = calls[0]
+    const call0 = calls[0]
+    invariant(call0, "expected one captured call")
+    const [method, params] = call0
     expect(method).toBe("eth_call")
     expect(params).toEqual([{ to: TO, input: CALLDATA }])
   })
@@ -105,7 +108,9 @@ describe("eth_call wire shape", () => {
       { to: TO, input: CALLDATA },
       "finalized",
     ])([[transport], { chain_id: "eip155:1" }])
-    const [, params] = calls[0]
+    const call0 = calls[0]
+    invariant(call0, "expected one captured call")
+    const [, params] = call0
     expect(params).toEqual([
       { to: TO, input: CALLDATA },
       "finalized",
@@ -118,7 +123,9 @@ describe("eth_call wire shape", () => {
       [{ to: TO, input: CALLDATA }],
       { [HOLDER]: { balance: BALANCE } },
     )([[transport], { chain_id: "eip155:1" }])
-    const [, params] = calls[0]
+    const call0 = calls[0]
+    invariant(call0, "expected one captured call")
+    const [, params] = call0
     expect(params).toEqual([
       { to: TO, input: CALLDATA },
       "latest",
@@ -132,7 +139,9 @@ describe("eth_call wire shape", () => {
       [{ to: TO, input: CALLDATA }, "safe"],
       { [HOLDER]: { balance: BALANCE } },
     )([[transport], { chain_id: "eip155:1" }])
-    const [, params] = calls[0]
+    const call0 = calls[0]
+    invariant(call0, "expected one captured call")
+    const [, params] = call0
     expect(params).toEqual([
       { to: TO, input: CALLDATA },
       "safe",
@@ -149,7 +158,9 @@ describe("eth_call wire shape", () => {
       },
       { [HOLDER]: { code: parse(BytesSchema, "0x6001") } },
     )([[transport], { chain_id: "eip155:1" }])
-    const [, params] = calls[0]
+    const call0 = calls[0]
+    invariant(call0, "expected one captured call")
+    const [, params] = call0
     expect(params).toEqual([
       { to: TO, input: CALLDATA },
       "latest",
