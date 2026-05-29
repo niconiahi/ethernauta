@@ -1,0 +1,84 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/ccip-read-3668/demo.tsx?highlighted"
+import { CcipRead3668Demo } from "../../examples/ccip-read-3668/demo"
+
+# EIP-3668 — CCIP-Read
+
+Step-by-step walk through the CCIP-Read protocol primitives
+exported by `@ethernauta/eip/3668`. Each panel below runs
+one primitive against a real basename resolver on Ethereum
+mainnet; the final panel runs the whole loop in one call
+via `eth_call_ccip` so you can compare the wrapped happy
+path against the protocol-level decomposition.
+
+<CcipRead3668Demo />
+
+<GithubLink path="apps/playground/app/examples/ccip-read-3668/demo.tsx" />
+
+## The protocol
+
+A CCIP-Read-aware contract reverts with the custom error
+
+```solidity
+error OffchainLookup(
+  address sender,
+  string[] urls,
+  bytes callData,
+  bytes4 callbackFunction,
+  bytes extraData
+);
+```
+
+Clients that recognise the selector
+(`0x556f1830`) follow this loop:
+
+1. Pick a URL from `urls`. Substitute `{sender}` (lowercased
+   per the spec) and `{data}` (the original `callData`).
+2. If the substituted URL contains `{data}`, GET it.
+   Otherwise POST `{ data, sender }` as JSON.
+3. 4xx response → abort the whole call.
+   5xx → try the next URL.
+4. On 2xx, ABI-decode the response into the bytes payload.
+5. Build callback calldata:
+   `callbackFunction ‖ abi.encode(response, extraData)`.
+6. Re-issue `eth_call(sender, callbackCalldata)`. If it
+   reverts with another `OffchainLookup` recurse, up to
+   `max_redirects` (default 4 per the spec).
+
+## The code
+
+<DemoSource html={demoHtml} />
+
+## Where the primitives live
+
+| Primitive | Imports from |
+|---|---|
+| `parse_offchain_lookup_revert` | `@ethernauta/eip/3668` |
+| `substitute_url` | `@ethernauta/eip/3668` |
+| `fetch_ccip` | `@ethernauta/eip/3668` |
+| `build_callback_calldata` | `@ethernauta/eip/3668` |
+| `eth_call_ccip` | `@ethernauta/eip/3668` |
+| `find_resolver` (setup) | `@ethernauta/ens` |
+| `dns_encode`, `resolve` (ENSIP-10 wildcard) | `@ethernauta/ens` |
+| `addr`, `namehash`, `normalize` | `@ethernauta/erc/137` |
+
+The CCIP-Read primitives know nothing about ENS — they
+only speak the EIP-3668 wire format. The basename setup
+uses ENS internals because that's where this particular
+`OffchainLookup` comes from, but the same primitives work
+against any CCIP-Read-enabled contract.
+
+## Why the wrapper exists
+
+`eth_call_ccip` is the wrapper most consumers want. The
+manual decomposition above exists for two reasons:
+
+1. **Auditability.** When something fails (wrong gateway
+   response shape, callback decode error, recursion
+   exhaustion) consumers can step through each primitive
+   to see exactly where the protocol broke.
+2. **Composition.** Specialised consumers — indexers,
+   bundler validation, anything that wants to cache the
+   gateway response — can call the primitives directly
+   without paying for the wrapper's full loop.

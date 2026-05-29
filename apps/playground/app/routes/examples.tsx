@@ -45,6 +45,10 @@ const EIP_EXAMPLES = [
     title: "EIP-5267 domain getter",
   },
   {
+    to: "/examples/ccip-read-3668",
+    title: "EIP-3668 CCIP-Read",
+  },
+  {
     to: "/examples/verify-1271",
     title: "EIP-1271 verify",
   },

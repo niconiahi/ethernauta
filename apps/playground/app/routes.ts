@@ -101,5 +101,9 @@ export default [
       "sponsored-basename-transfer",
       "./routes/examples/sponsored-basename-transfer.mdx",
     ),
+    route(
+      "ccip-read-3668",
+      "./routes/examples/ccip-read-3668.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
