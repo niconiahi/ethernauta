@@ -21,9 +21,21 @@ export {
 } from "./schemas"
 export { build_callback_calldata } from "./build-callback-calldata"
 export {
+  type CcipLookupErrorReason,
+  CcipLookupError,
+} from "./errors"
+export {
+  type EthCallCcipOptions,
+  EthCallCcipOptionsSchema,
+  type EthCallCcipParameters,
+  EthCallCcipParametersSchema,
+  eth_call_ccip,
+} from "./eth-call-ccip"
+export {
   CcipAllGatewaysFailedError,
   CcipFetchError,
   type FetchCcipArgs,
+  FetchCcipArgsSchema,
   fetch_ccip,
 } from "./fetch-ccip"
 export { parse_offchain_lookup_revert } from "./parse-offchain-lookup-revert"

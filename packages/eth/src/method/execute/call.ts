@@ -31,7 +31,7 @@ import { GenericTransactionSchema } from "../../core/transaction"
 // trailing / extra-key shapes by default, so the most specific
 // variant must come first or the union silently picks a
 // shorter shape and drops the rest.
-const ParametersSchema = union([
+export const EthCallParametersSchema = union([
   tuple([
     GenericTransactionSchema,
     BlockNumberOrTagOrHashSchema,
@@ -43,7 +43,9 @@ const ParametersSchema = union([
   }),
   object({ transaction: GenericTransactionSchema }),
 ])
-type Parameters = InferOutput<typeof ParametersSchema>
+export type EthCallParameters = InferOutput<
+  typeof EthCallParametersSchema
+>
 
 // https://geth.ethereum.org/docs/interacting-with-geth/rpc/ns-eth#eth-call
 // Per-address override applied for the duration of a single
@@ -79,7 +81,7 @@ export type StateOverride = InferOutput<
 >
 
 export function eth_call(
-  _parameters: Parameters,
+  _parameters: EthCallParameters,
   _state_override?: StateOverride,
 ): Readable<Bytes> {
   return async ([
@@ -87,7 +89,7 @@ export function eth_call(
     _context,
   ]: ResolvedReader): Promise<Bytes> => {
     const method = "eth_call"
-    const parameters = parse(ParametersSchema, _parameters)
+    const parameters = parse(EthCallParametersSchema, _parameters)
     const state_override =
       _state_override === undefined
         ? undefined
@@ -108,7 +110,7 @@ export function eth_call(
 }
 
 function build_params(
-  parameters: Parameters,
+  parameters: EthCallParameters,
   state_override: StateOverride | undefined,
 ): unknown[] {
   const transaction = Array.isArray(parameters)
