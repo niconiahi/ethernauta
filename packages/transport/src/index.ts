@@ -15,6 +15,7 @@ export {
 export * from "./read"
 export * from "./reader"
 export * from "./require-chain"
+export * from "./rpc-request-error"
 export * from "./signer"
 export * from "./subscriber"
 export * from "./websocket"

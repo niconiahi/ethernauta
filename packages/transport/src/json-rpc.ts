@@ -63,17 +63,18 @@ export type Notification = InferOutput<
 // `code` as `number` rather than enumerating literals — any code
 // outside that range is still a real JSON-RPC error response and
 // shouldn't be coerced into a different one to satisfy the schema.
-const ErrorSchema = object({
+export const RpcErrorSchema = object({
   data: optional(unknown()),
   message: string(),
   code: number(),
 })
+export type RpcError = InferOutput<typeof RpcErrorSchema>
 
 // https://www.jsonrpc.org/specification#response_object
 const FailedResponseSchema = object({
   id: IdSchema,
   jsonrpc: literal("2.0"),
-  error: ErrorSchema,
+  error: RpcErrorSchema,
 })
 export type FailedResponse = InferOutput<
   typeof FailedResponseSchema

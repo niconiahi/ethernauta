@@ -9,7 +9,10 @@ import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { CallSchema } from "@ethernauta/transport"
+import {
+  CallSchema,
+  RpcRequestError,
+} from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   check,
@@ -97,7 +100,7 @@ export function eth_call(
       transports.map((transport) => transport(call)),
     )
     if ("error" in response) {
-      throw new Error(response.error.message)
+      throw new RpcRequestError(response.error)
     }
     const result = parse(BytesSchema, response.result)
     return result

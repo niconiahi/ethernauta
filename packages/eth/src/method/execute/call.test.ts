@@ -6,6 +6,7 @@ import {
 } from "@ethernauta/core"
 import type { Call } from "@ethernauta/transport"
 import type { Response } from "@ethernauta/transport"
+import { RpcRequestError } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 import {
@@ -154,5 +155,30 @@ describe("eth_call wire shape", () => {
       "latest",
       { [HOLDER]: { code: "0x6001" } },
     ])
+  })
+
+  it("throws RpcRequestError carrying error.data on RPC failure", async () => {
+    const error_transport = async (
+      _call: Call,
+    ): Promise<Response> => ({
+      id: "1",
+      jsonrpc: "2.0",
+      error: {
+        code: 3,
+        message: "execution reverted",
+        data: "0x556f1830",
+      },
+    })
+    const promise = eth_call([{ to: TO, input: CALLDATA }])([
+      [error_transport],
+      { chain_id: "eip155:1" },
+    ])
+    const error = await promise.catch((e) => e)
+    expect(error).toBeInstanceOf(RpcRequestError)
+    if (error instanceof RpcRequestError) {
+      expect(error.message).toBe("execution reverted")
+      expect(error.code).toBe(3)
+      expect(error.data).toBe("0x556f1830")
+    }
   })
 })
