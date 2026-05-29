@@ -6,8 +6,12 @@ Guidance for Claude Code working on the Ethernauta monorepo. This file is a **ro
 
 A pnpm workspace that ships:
 
-1. A Chrome MV3 wallet extension (`packages/wallet/`, private) that holds an encrypted mnemonic in IndexedDB and signs requests from dapps via a `window.postMessage` ↔ `chrome.runtime` bridge.
-2. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps consume to talk to the wallet and the chain.
+1. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps or wallets' authors consume to talk to the wallet and the chain, respectively
+2. A Chrome MV3 wallet extension (`packages/wallet/`, private) that holds an encrypted mnemonic in IndexedDB and signs requests from dapps via a `window.postMessage` ↔ `chrome.runtime` bridge
+
+## Important information
+
+If you are about to implement a new ERC or EIP you MUST read the
 
 ## Maxims
 
