@@ -16,6 +16,9 @@ A functional yes/no matrix. The columns are what each library **can do** out of 
 | Capability | Ethernauta | ethers | viem |
 |---|---|---|---|
 | Read chain state (`eth_call`, balances, blocks, logs) | Yes | Yes | Yes |
+| `eth_call` with state overrides (`balance` / `code` / `state` / `stateDiff`) | Yes | Yes | Yes |
+| `safe` / `finalized` block tags | Yes | Yes | Yes |
+| Shanghai `withdrawals` + Cancun `blobGasUsed` / `excessBlobGas` block fields | Yes | Yes | Yes |
 | Subscribe to logs / blocks over WebSocket | Yes | Yes | Yes |
 | Send pre-signed raw transactions | Yes | Yes | Yes |
 | Batch JSON-RPC requests | Yes | Yes | Yes |
@@ -56,6 +59,14 @@ A functional yes/no matrix. The columns are what each library **can do** out of 
 | EIP-5792 — `wallet_sendCalls` (batched calls) | Yes | No | Yes |
 | EIP-6963 — multi-wallet discovery | Yes | No | Yes |
 | EIP-7702 — set-code (delegated) transactions | Yes | Partial | Yes |
+
+## Proxy and contract-shape standards
+
+| Capability | Ethernauta | ethers | viem |
+|---|---|---|---|
+| EIP-1167 — minimal-proxy detection + deploy bytecode | Yes | No | Partial |
+| EIP-1967 — proxy storage slot reads (implementation / admin / beacon) | Yes | No | Partial |
+| EIP-5267 — self-describing EIP-712 domain (`eip712Domain()`) | Yes | No | Yes |
 
 ## Signature verification
 

@@ -138,6 +138,37 @@ const result_bytes = await eth_call([{ to: contract_address, input: calldata }])
 
 For typed contract calls, use `@ethernauta/erc/<n>/methods/*` — the ERC bindings wrap `eth_call` with a decoder.
 
+### Call with state overrides
+
+`eth_call` accepts an optional second function argument: a per-address override applied for the duration of the call. The chain itself is untouched. Pin a balance, swap in a code stub, replace a single storage slot — same shape as geth's `eth_call` third RPC parameter.
+
+```ts
+import { eth_call } from "@ethernauta/eth";
+import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
+import { eip155_1 } from "@ethernauta/chain/eip155-1";
+import { AddressSchema, BytesSchema } from "@ethernauta/core";
+import { parse } from "valibot";
+
+const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
+const reader = create_reader([
+  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
+]);
+
+const contract_address = parse(AddressSchema, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+const calldata = parse(BytesSchema, "0x18160ddd"); // totalSupply()
+
+// 10-byte stub: returns 0x000…02a (decimal 42) for any selector.
+const stub = parse(BytesSchema, "0x602a60005260206000f3");
+
+const overridden = await eth_call(
+  [{ to: contract_address, input: calldata }],
+  { [contract_address]: { code: stub } },
+)(reader({ chain_id: CHAIN_ID }));
+void overridden;
+```
+
+The override schema rejects per-entry `state` and `stateDiff` together (the geth spec says they are mutually exclusive). Omitting the second argument keeps the JSON-RPC params array two-element for backwards compatibility.
+
 ### Submit (path 2)
 
 ```ts

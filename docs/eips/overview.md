@@ -24,9 +24,11 @@ import { discover_providers } from "@ethernauta/eip/6963";
 | [712](/eips/712) | Typed structured data hashing and signing | Typed-data signing. |
 | [1014](/eips/1014) | CREATE2 | Deterministic contract address derivation. |
 | [1102](/eips/1102) | Opt-in account exposure | `eth_requestAccounts`. |
+| [1167](/eips/1167) | Minimal proxy | 45-byte clone runtime; detection + deploy bytecode. |
 | [1193](/eips/1193) | Provider JavaScript API | The 1193 envelope itself. |
 | [1271](/eips/1271) | Standard signature validation for contracts | Smart-account signatures. |
 | [1559](/eips/1559) | Fee market change | Type-2 tx, base-fee arithmetic, `INITIAL_BASE_FEE` / elasticity constants. |
+| [1967](/eips/1967) | Proxy storage slots | Implementation / admin / beacon slot reads. |
 | [2255](/eips/2255) | Wallet permissions | Permission-prompt protocol. |
 | [2930](/eips/2930) | Optional access lists | Type-1 tx + the `accessList` shape every later typed tx reuses. |
 | [3085](/eips/3085) | `wallet_addEthereumChain` | Adding a chain at runtime. |
@@ -34,6 +36,7 @@ import { discover_providers } from "@ethernauta/eip/6963";
 | [4337](/eips/4337) | Account abstraction (entry-point + UserOperation) | Smart-account flows. |
 | [4361](/eips/4361) | Sign-In with Ethereum (SIWE) | Off-chain auth message. |
 | [4844](/eips/4844) | Shard blob transactions | Blob carriers + KZG commitments. |
+| [5267](/eips/5267) | Typed-data domain getter | Self-describing EIP-712 domain (`eip712Domain()`). |
 | [5792](/eips/5792) | Wallet calls | Batched call submission (`wallet_sendCalls`). |
 | [6492](/eips/6492) | Counterfactual signatures | Pre-deployment signatures. |
 | [6963](/eips/6963) | Multi-injected provider discovery | Multi-wallet discovery. |
