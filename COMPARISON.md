@@ -315,7 +315,7 @@ Same legend as above.
 | Method / capability | Ethernauta | viem | ethers.js |
 |---|---|---|---|
 | `eth_simulateV1` (multi-call state-overrided sim) | ❌ | ✅ | ❌ |
-| `debug_traceTransaction` / `debug_traceCall` (geth tracers) | ❌ | ⚠️ via raw `request` | ⚠️ via raw `send` |
+| `debug_traceTransaction` / `debug_traceCall` / `debug_traceBlockByNumber` (geth tracers) | ✅ typed callTracer / prestateTracer / 4byteTracer / struct via `@ethernauta/eth` | ⚠️ via raw `request` | ⚠️ via raw `send` |
 | `trace_*` (Parity / Erigon / Reth) | ❌ | ⚠️ via raw `request` | ⚠️ via raw `send` |
 | `ots_*` (Otterscan extensions) | ❌ | ❌ | ❌ |
 | State overrides in `eth_call` (`stateDiff`, `code`, `balance`) | ✅ third arg on `eth_call` | ✅ `simulateContract` | ✅ `Contract.staticCall` w/ overrides |
