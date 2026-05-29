@@ -1,6 +1,8 @@
 import {
   type Address,
   AddressSchema,
+  type Byte,
+  ByteSchema,
   type Bytes,
   type Bytes4,
   Bytes4Schema,
@@ -216,6 +218,10 @@ function make_bytes_fixed<T extends `0x${string}`>(
       )
     },
   }
+}
+
+export function bytes1(): AbiCodec<Byte> {
+  return make_bytes_fixed(1, "bytes1", ByteSchema)
 }
 
 export function bytes4(): AbiCodec<Bytes4> {
