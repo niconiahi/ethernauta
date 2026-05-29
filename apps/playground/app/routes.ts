@@ -105,5 +105,9 @@ export default [
       "ccip-read-3668",
       "./routes/examples/ccip-read-3668.mdx",
     ),
+    route(
+      "paymaster-7677",
+      "./routes/examples/paymaster-7677.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

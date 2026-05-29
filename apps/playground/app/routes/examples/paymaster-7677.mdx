@@ -1,0 +1,67 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/paymaster-7677/demo.tsx?highlighted"
+import { Paymaster7677Demo } from "../../examples/paymaster-7677/demo"
+
+# ERC-7677 — paymaster RPC
+
+Standalone walk through the two paymaster RPC methods and
+the `apply_to_user_op` helper. No bundler submission, no
+EOA signing — just the paymaster surface, exposed step by
+step.
+
+<Paymaster7677Demo />
+
+<GithubLink path="apps/playground/app/examples/paymaster-7677/demo.tsx" />
+
+## The two-call pattern
+
+`pm_getPaymasterStubData` and `pm_getPaymasterData` exist
+because the v0.7 userOpHash depends on the paymaster
+fields, and the bundler's `eth_estimateUserOperationGas`
+needs realistic gas limits to estimate against. The flow
+splits in two:
+
+1. **Stub.** Paymaster returns dummy `paymaster` +
+   `paymasterData` (same shape and length as the real
+   signature) plus realistic
+   `paymasterVerificationGasLimit` and
+   `paymasterPostOpGasLimit`. Bundler estimates against
+   these; client signs nothing yet.
+2. **Final.** After estimation, the client asks for the
+   real `paymaster` + `paymasterData`. The paymaster
+   has now committed to sponsoring the call against the
+   final UserOp shape. The client signs the userOpHash
+   over this shape and submits.
+
+If the spec had a single call, the round-trip would
+require the paymaster to sign before the client knew the
+final gas — circular dependency. The split breaks the
+cycle.
+
+## v0.6 vs v0.7
+
+ERC-7677 supports both EntryPoint versions. The schemas
+in `@ethernauta/erc/7677/paymaster` carry both variants
+behind a union; v0.7 is first so it wins on ambiguous
+payloads (its required-key set is a strict superset of
+v0.6's). `apply_to_user_op` only handles v0.7 responses —
+v0.6 carries a single packed `paymasterAndData` blob that
+has no slot in the v0.7 `UserOperation` schema, so the
+helper throws a typed error pointing v0.6 callers at
+manual composition.
+
+## The code
+
+<DemoSource html={demoHtml} />
+
+## Composing with `@ethernauta/eip/4337`
+
+The `apply_to_user_op` output is just a `UserOperation`
+with the paymaster fields populated. The next steps —
+`eth_estimateUserOperationGas`, `get_user_op_hash`,
+`sign_user_op`, `eth_sendUserOperation` — come from
+`@ethernauta/eip/4337` and don't know or care that a
+paymaster was involved. See the{" "}
+[Sponsored basename transfer](./sponsored-basename-transfer)
+recipe for the full end-to-end flow.

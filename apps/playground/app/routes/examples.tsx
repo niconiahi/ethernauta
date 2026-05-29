@@ -25,6 +25,10 @@ const ERC_EXAMPLES = [
     title: "ERC-5564 stealth addresses",
   },
   { to: "/examples/ens-137", title: "ERC-137 ENS" },
+  {
+    to: "/examples/paymaster-7677",
+    title: "ERC-7677 paymaster",
+  },
 ] as const
 
 const EIP_EXAMPLES = [
