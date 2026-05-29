@@ -18,8 +18,12 @@ import {
 
 // The userOp subset the paymaster sees pre-sponsorship.
 // No paymaster fields (those are what we're asking for), no
-// signature (paymaster signs over the rest).
-export const PaymasterUserOperationSchema = object({
+// signature (paymaster signs over the rest). The wire shape
+// follows the targeted EntryPoint version: v0.6 carries
+// `initCode`; v0.7 splits it into optional `factory` +
+// `factoryData` (both absent for already-deployed accounts).
+
+export const PaymasterUserOperationV06Schema = object({
   sender: AddressSchema,
   nonce: UintSchema,
   initCode: BytesSchema,
@@ -30,6 +34,35 @@ export const PaymasterUserOperationSchema = object({
   maxFeePerGas: UintSchema,
   maxPriorityFeePerGas: UintSchema,
 })
+export type PaymasterUserOperationV06 = InferOutput<
+  typeof PaymasterUserOperationV06Schema
+>
+
+export const PaymasterUserOperationV07Schema = object({
+  sender: AddressSchema,
+  nonce: UintSchema,
+  factory: optional(AddressSchema),
+  factoryData: optional(BytesSchema),
+  callData: BytesSchema,
+  callGasLimit: UintSchema,
+  verificationGasLimit: UintSchema,
+  preVerificationGas: UintSchema,
+  maxFeePerGas: UintSchema,
+  maxPriorityFeePerGas: UintSchema,
+})
+export type PaymasterUserOperationV07 = InferOutput<
+  typeof PaymasterUserOperationV07Schema
+>
+
+// v0.6 first: its required `initCode` is the only field that
+// discriminates the variants on the input side. With the
+// reverse order a v0.6 payload would silently match v0.7
+// (whose only v0.7-specific fields are optional) and drop
+// `initCode` on the way to the wire.
+export const PaymasterUserOperationSchema = union([
+  PaymasterUserOperationV06Schema,
+  PaymasterUserOperationV07Schema,
+])
 export type PaymasterUserOperation = InferOutput<
   typeof PaymasterUserOperationSchema
 >

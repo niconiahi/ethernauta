@@ -7,7 +7,19 @@ import {
   PaymasterDataV07Schema,
   PaymasterStubDataSchema,
   PaymasterStubDataV07Schema,
+  PaymasterUserOperationSchema,
 } from "./paymaster"
+
+const SHARED_USER_OP_FIELDS = {
+  sender: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  nonce: "0x0",
+  callData: "0xdeadbeef",
+  callGasLimit: "0x186a0",
+  verificationGasLimit: "0x186a0",
+  preVerificationGas: "0xc350",
+  maxFeePerGas: "0x6fc23ac00",
+  maxPriorityFeePerGas: "0x77359400",
+} as const
 
 describe("PaymasterStubDataSchema (v0.7 first)", () => {
   it("parses a v0.7 stub response", () => {
@@ -81,6 +93,42 @@ describe("PaymasterDataSchema (final, v0.7 first)", () => {
     expect(() =>
       parse(PaymasterDataV06Schema, {
         paymasterAndData: "not-hex",
+      }),
+    ).toThrow(ValiError)
+  })
+})
+
+describe("PaymasterUserOperationSchema (v0.6 first)", () => {
+  it("parses a v0.6 userOp (initCode)", () => {
+    const result = parse(PaymasterUserOperationSchema, {
+      ...SHARED_USER_OP_FIELDS,
+      initCode: "0x",
+    })
+    expect("initCode" in result).toBe(true)
+  })
+
+  it("parses a v0.7 userOp with factory + factoryData", () => {
+    const result = parse(PaymasterUserOperationSchema, {
+      ...SHARED_USER_OP_FIELDS,
+      factory: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      factoryData: "0xabcd",
+    })
+    expect("factory" in result).toBe(true)
+    expect("initCode" in result).toBe(false)
+  })
+
+  it("parses a v0.7 userOp without factory (pre-deployed account)", () => {
+    const result = parse(
+      PaymasterUserOperationSchema,
+      SHARED_USER_OP_FIELDS,
+    )
+    expect("initCode" in result).toBe(false)
+  })
+
+  it("rejects a payload missing required fields", () => {
+    expect(() =>
+      parse(PaymasterUserOperationSchema, {
+        sender: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       }),
     ).toThrow(ValiError)
   })
