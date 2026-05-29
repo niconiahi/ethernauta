@@ -1,0 +1,97 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/sponsored-basename-transfer/demo.tsx?highlighted"
+import { SponsoredBasenameTransferDemo } from "../../examples/sponsored-basename-transfer/demo"
+
+# Sponsored basename transfer
+
+End-to-end recipe that ties three landings together: resolve
+a Base-side basename through CCIP-Read, sponsor the resulting
+UserOperation through an ERC-7677 paymaster, submit it via a
+4337 bundler, and trace the executed transaction with the
+geth `callTracer`.
+
+The recipe spans two chains. The basename resolution happens
+on Ethereum mainnet (read-only, public RPC); the sponsored
+UserOp lives on Sepolia (bundler + paymaster + tracer).
+
+<SponsoredBasenameTransferDemo />
+
+<GithubLink path="apps/playground/app/examples/sponsored-basename-transfer/demo.tsx" />
+
+## What's happening
+
+1. **Recipient (mainnet).** `get_ens_address({ name })` from
+   `@ethernauta/ens` runs the ENS resolution flow. The Base
+   resolver lives on mainnet but returns the address record
+   off-chain — the resolver `eth_call` reverts with
+   `OffchainLookup`, and the library's `eth_call_ccip`
+   wrapper follows the revert to the gateway and replays
+   with the response. EIP-3668 is invisible to the call
+   site; it just works.
+2. **Stub data (Sepolia).** `pm_getPaymasterStubData` on the
+   paymaster URL returns dummy `paymaster` + `paymasterData`
+   plus realistic `paymasterVerificationGasLimit` /
+   `paymasterPostOpGasLimit`. `apply_to_user_op` merges the
+   response onto the v0.7 `UserOperation`. The stub is what
+   the bundler estimates against — the real paymaster
+   signature comes later, but the gas shape needs to be
+   known up front so `eth_estimateUserOperationGas` returns
+   correct values.
+3. **Estimate (Sepolia).** `eth_estimateUserOperationGas`
+   refines `callGasLimit`, `verificationGasLimit`, and
+   `preVerificationGas` against the current Sepolia state.
+4. **Final data + sign (Sepolia).** `pm_getPaymasterData`
+   on the paymaster URL returns the real signed paymaster
+   payload (the paymaster has now committed to sponsoring
+   the call). `apply_to_user_op` merges it; `sign_user_op`
+   asks the wallet to `personal_sign` the v0.7 userOpHash.
+5. **Submit (Sepolia).** `eth_sendUserOperation` posts the
+   signed op to the bundler mempool. The bundler returns
+   the userOpHash.
+6. **Receipt (Sepolia).** `eth_getUserOperationReceipt`
+   polls for inclusion. Once the bundler bundles into a
+   block the receipt carries the on-chain tx hash.
+7. **Trace (Sepolia).** `debug_traceTransaction` with
+   `{ tracer: TRACER_TYPE.CALL }` replays the bundled tx
+   through a debug-capable node. The library parses the
+   response against `CallFrameSchema` (recursive — `lazy()`
+   on the self-reference per Valibot's canonical pattern)
+   and tags it with `tracer: "callTracer"` so the consumer
+   gets a discriminated `TraceResult`.
+
+## The code
+
+<DemoSource html={demoHtml} />
+
+## URLs you'll need
+
+- **Paymaster URL** — Pimlico (`https://api.pimlico.io/v2/sepolia/rpc?apikey=…`)
+  serves both the bundler and the paymaster RPC on a single
+  URL. Alchemy and Biconomy expose separate endpoints. Any
+  ERC-7677-compliant paymaster works.
+- **Bundler URL** — same Pimlico URL, or a separate one if
+  using Alchemy.
+- **Debug-capable Sepolia RPC** — most public endpoints do
+  not expose `debug_*`. Alchemy's `debug_traceTransaction`
+  works on the standard endpoint with the right key tier;
+  Tenderly's gateway works universally; self-hosted geth /
+  reth / erigon work for free.
+
+## Why this is the integration demo
+
+Three landings, one screen:
+
+- **EIP-3668** — the recipient lookup is impossible without
+  CCIP-Read once you involve any L2 basename (Base, OP,
+  Linea). The library bakes it into `@ethernauta/ens` so
+  consumers don't choose between "ENS works" and "ENS
+  works on L2".
+- **ERC-7677** — the paymaster RPC is the line between
+  "we support the on-chain AA envelope" and "we support
+  the full client surface". Two schema-validated method
+  bindings + `apply_to_user_op` is all it takes.
+- **`debug_*` tracers** — visible proof of what executed,
+  parsed into a typed `CallFrame` tree. Prereq for the
+  pending `@ethernauta/bundler` (ERC-5189 / 7562 use the
+  prestateTracer for mempool validation).

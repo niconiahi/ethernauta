@@ -93,6 +93,13 @@ const OTHER_EXAMPLES = [
   },
 ] as const
 
+const RECIPE_EXAMPLES = [
+  {
+    to: "/examples/sponsored-basename-transfer",
+    title: "Sponsored basename transfer",
+  },
+] as const
+
 const UTILITY_EXAMPLES = [
   { to: "/examples/multicall", title: "Multicall" },
   {
@@ -118,6 +125,7 @@ const UTILITY_EXAMPLES = [
 ] as const
 
 const SECTIONS = [
+  { heading: "Recipes", items: RECIPE_EXAMPLES },
   { heading: "Utilities", items: UTILITY_EXAMPLES },
   { heading: "ERCs", items: ERC_EXAMPLES },
   { heading: "EIPs", items: EIP_EXAMPLES },

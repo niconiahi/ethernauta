@@ -97,5 +97,9 @@ export default [
       "gas-estimate-zksync",
       "./routes/examples/gas-estimate-zksync.mdx",
     ),
+    route(
+      "sponsored-basename-transfer",
+      "./routes/examples/sponsored-basename-transfer.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

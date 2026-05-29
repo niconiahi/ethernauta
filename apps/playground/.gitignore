@@ -11,3 +11,8 @@
 .wrangler
 .dev.vars*
 
+# Env
+.env
+.env.*
+!.env.example
+
