@@ -99,4 +99,12 @@ describe.skip("ens resolution against mainnet", () => {
     })(ctx)
     expect(addr).toBeNull()
   }, 20_000)
+
+  it("should forward-resolve a basename via ENSIP-10 + CCIP-Read", async () => {
+    const addr = await get_ens_address({
+      name: "jesse.base.eth",
+    })(ctx)
+    expect(addr).not.toBeNull()
+    expect(addr).toMatch(/^0x[0-9a-fA-F]{40}$/)
+  }, 30_000)
 })
