@@ -1,0 +1,24 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/eip-1967/demo.tsx?highlighted"
+import { Eip1967Demo } from "../../examples/eip-1967/demo"
+
+# EIP-1967 — proxy slot reads
+
+[EIP-1967](https://eips.ethereum.org/EIPS/eip-1967) defines
+three fixed storage slots that TransparentUpgradeable proxies
+use to record the implementation, the admin, and (for beacon
+proxies) the beacon contract. Each slot is `keccak256("<name>") - 1`,
+so reading them is a straight `eth_getStorageAt` against a
+known constant — no ABI involved.
+
+The address used below is USDC mainnet — a known
+TransparentUpgradeable deployment.
+
+<Eip1967Demo />
+
+<GithubLink path="apps/playground/app/examples/eip-1967/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

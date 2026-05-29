@@ -41,6 +41,10 @@ const EIP_EXAMPLES = [
     title: "EIP-4337 user operation",
   },
   {
+    to: "/examples/eip-5267",
+    title: "EIP-5267 domain getter",
+  },
+  {
     to: "/examples/verify-1271",
     title: "EIP-1271 verify",
   },
@@ -51,6 +55,14 @@ const EIP_EXAMPLES = [
   {
     to: "/examples/deploy-contract",
     title: "EIP-1014 deploy",
+  },
+  {
+    to: "/examples/eip-1967",
+    title: "EIP-1967 proxy slots",
+  },
+  {
+    to: "/examples/eip-1167",
+    title: "EIP-1167 minimal proxy",
   },
   {
     to: "/examples/eip-6963",
@@ -70,6 +82,14 @@ const OTHER_EXAMPLES = [
   {
     to: "/examples/provider-reads",
     title: "provider.reader reads",
+  },
+  {
+    to: "/examples/state-overrides",
+    title: "eth_call state overrides",
+  },
+  {
+    to: "/examples/finalized-block",
+    title: "finalized block tag",
   },
 ] as const
 

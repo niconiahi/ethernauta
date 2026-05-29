@@ -1,0 +1,27 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/eip-5267/demo.tsx?highlighted"
+import { Eip5267Demo } from "../../examples/eip-5267/demo"
+
+# EIP-5267 — typed-data domain getter
+
+[EIP-5267](https://eips.ethereum.org/EIPS/eip-5267) lets a
+contract self-describe its EIP-712 domain via
+`eip712Domain()`. The function returns the seven-tuple
+`(bytes1 fields, string name, string version, uint256 chainId,
+address verifyingContract, bytes32 salt, uint256[] extensions)`;
+the `fields` bitmap signals which of the five members are
+actually part of the domain separator.
+
+The Ethernauta binding `get_domain()` builds the calldata,
+decodes the tuple, decodes the bitmap, and drops members
+whose bit is unset — so what comes back is ready to hash
+against the contract's own domain separator.
+
+<Eip5267Demo />
+
+<GithubLink path="apps/playground/app/examples/eip-5267/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

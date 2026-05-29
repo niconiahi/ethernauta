@@ -21,6 +21,17 @@ export default [
   ),
   route("examples", "./routes/examples.tsx", [
     index("./routes/examples/index.tsx"),
+    route("eip-1167", "./routes/examples/eip-1167.mdx"),
+    route("eip-1967", "./routes/examples/eip-1967.mdx"),
+    route("eip-5267", "./routes/examples/eip-5267.mdx"),
+    route(
+      "state-overrides",
+      "./routes/examples/state-overrides.mdx",
+    ),
+    route(
+      "finalized-block",
+      "./routes/examples/finalized-block.mdx",
+    ),
     route("multicall", "./routes/examples/multicall.mdx"),
     route("portfolio", "./routes/examples/portfolio.mdx"),
     route(

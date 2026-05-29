@@ -1,0 +1,27 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/eip-1167/demo.tsx?highlighted"
+import { Eip1167Demo } from "../../examples/eip-1167/demo"
+
+# EIP-1167 — minimal proxy (clones)
+
+[EIP-1167](https://eips.ethereum.org/EIPS/eip-1167) standardises
+a 45-byte runtime that delegates every call to a hard-coded
+target. Two operations:
+
+- **Detection** — `is_clone(address)` fetches the contract's
+  code and matches against the fixed prefix / suffix.
+  `get_clone_target(address)` extracts the 20-byte target
+  address embedded in the middle.
+- **Deployment** — `deploy_clone(target)` returns the
+  initialisation + runtime bytecode to put on a CREATE
+  transaction. Broadcasting is the consumer's call
+  (M3 path 1 or path 2).
+
+<Eip1167Demo />
+
+<GithubLink path="apps/playground/app/examples/eip-1167/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

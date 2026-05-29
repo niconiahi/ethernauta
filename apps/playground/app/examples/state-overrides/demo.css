@@ -1,0 +1,45 @@
+.state-overrides-root {
+  margin: 16px 0 24px;
+}
+
+.state-overrides-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.state-overrides-loading {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.state-overrides-error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.state-overrides-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.state-overrides-row:last-child {
+  border-bottom: none;
+}
+
+.state-overrides-row-label {
+  color: var(--text-muted);
+}
+
+.state-overrides-row-value {
+  font-family: monospace;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-align: right;
+}

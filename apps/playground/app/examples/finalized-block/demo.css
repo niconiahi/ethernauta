@@ -1,0 +1,45 @@
+.finalized-block-root {
+  margin: 16px 0 24px;
+}
+
+.finalized-block-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.finalized-block-loading {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.finalized-block-error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.finalized-block-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.finalized-block-row:last-child {
+  border-bottom: none;
+}
+
+.finalized-block-row-label {
+  color: var(--text-muted);
+}
+
+.finalized-block-row-value {
+  font-family: monospace;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-align: right;
+}

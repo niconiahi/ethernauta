@@ -1,0 +1,45 @@
+.eip-5267-root {
+  margin: 16px 0 24px;
+}
+
+.eip-5267-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.eip-5267-loading {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.eip-5267-error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.eip-5267-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.eip-5267-row:last-child {
+  border-bottom: none;
+}
+
+.eip-5267-row-label {
+  color: var(--text-muted);
+}
+
+.eip-5267-row-value {
+  font-family: monospace;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-align: right;
+}

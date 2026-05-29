@@ -1,0 +1,33 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/state-overrides/demo.tsx?highlighted"
+import { StateOverridesDemo } from "../../examples/state-overrides/demo"
+
+# `eth_call` state overrides
+
+`eth_call` accepts an optional third parameter that replaces
+parts of the world state for the duration of one call —
+balance, nonce, code, individual storage slots, or the whole
+storage trie. The chain state itself is untouched. This is
+how viem's `simulateContract` and ethers' `Contract.staticCall
+.with(overrides)` work under the hood.
+
+The Ethernauta binding exposes the override as an optional
+second argument on the curried `eth_call`:
+
+```ts
+await eth_call(args, { [address]: { code, balance, stateDiff } })(reader({ chain_id }))
+```
+
+The demo below calls `USDC.totalSupply()` twice — once
+normally, once with USDC's code replaced by a 10-byte stub
+that returns 42 from any function selector. Same call,
+different simulated world.
+
+<StateOverridesDemo />
+
+<GithubLink path="apps/playground/app/examples/state-overrides/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

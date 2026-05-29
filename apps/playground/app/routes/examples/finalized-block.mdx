@@ -1,0 +1,25 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/finalized-block/demo.tsx?highlighted"
+import { FinalizedBlockDemo } from "../../examples/finalized-block/demo"
+
+# `finalized` block tag + post-merge block fields
+
+Post-merge JSON-RPC added two new block tags — `safe` (last
+justified) and `finalized` (last finalised under
+Casper-FFG). The Shanghai upgrade added `withdrawals` to the
+block envelope; Cancun added `blobGasUsed` and
+`excessBlobGas`.
+
+Ethernauta's `BlockTagSchema` admits both new tags, and the
+block envelope already carries the Shanghai + Cancun
+additions as optional fields — no consumer-side schema
+extension required.
+
+<FinalizedBlockDemo />
+
+<GithubLink path="apps/playground/app/examples/finalized-block/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />
