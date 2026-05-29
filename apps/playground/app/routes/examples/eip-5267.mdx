@@ -18,6 +18,12 @@ decodes the tuple, decodes the bitmap, and drops members
 whose bit is unset — so what comes back is ready to hash
 against the contract's own domain separator.
 
+The address used below is Ethena's **USDe** — a
+post-OZ-4.9 token that ships `eip712Domain()` via its
+upgradeable EIP-712 mixin. Tokens deployed before
+November 2022 (USDC, USDT, DAI) typically predate 5267
+and the binding's `eth_call` will revert.
+
 <Eip5267Demo />
 
 <GithubLink path="apps/playground/app/examples/eip-5267/demo.tsx" />

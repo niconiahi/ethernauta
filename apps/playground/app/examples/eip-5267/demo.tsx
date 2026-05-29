@@ -19,14 +19,17 @@ const MAINNET_CHAIN_ID = encode_chain_id({
   reference: eip155_1.chainId,
 })
 
-// USDC mainnet — modern OZ-based tokens implement 5267 via
-// the EIP712Upgradeable abstract contract. If the call
-// reverts on a given target, the demo surfaces that
-// gracefully — the dapp should branch on the absence of
-// eip712Domain() and fall back to hard-coded domain values.
+// Ethena USDe mainnet — a post-OZ-4.9 token that ships
+// `eip712Domain()` via the `EIP712Upgradeable` mixin.
+// Verified to return a well-formed domain with the
+// `verifyingContract` and `salt` bits cleared (bitmap 0x0f).
+// If the call reverts on any other target, the demo
+// surfaces that gracefully — the dapp should branch on the
+// absence of eip712Domain() and fall back to hard-coded
+// domain values.
 const TARGET = parse(
   AddressSchema,
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
 )
 
 const reader = create_reader([
@@ -34,8 +37,6 @@ const reader = create_reader([
     chainId: MAINNET_CHAIN_ID,
     transports: [
       http("https://ethereum-rpc.publicnode.com"),
-      http("https://eth.llamarpc.com"),
-      http("https://cloudflare-eth.com"),
     ],
   },
 ])

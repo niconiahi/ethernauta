@@ -38,8 +38,6 @@ const reader = create_reader([
     chainId: MAINNET_CHAIN_ID,
     transports: [
       http("https://ethereum-rpc.publicnode.com"),
-      http("https://eth.llamarpc.com"),
-      http("https://cloudflare-eth.com"),
     ],
   },
 ])
