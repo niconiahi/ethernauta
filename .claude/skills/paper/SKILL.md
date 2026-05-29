@@ -1,5 +1,5 @@
 ---
-name: erc_and_eip
+name: paper
 description: Patterns to follow when creating a new EIP under packages/eip/src/<n>/ or a new ERC under packages/erc/src/<n>/. Read this before introducing a new standard folder.
 ---
 
@@ -44,6 +44,58 @@ packages/eip/src/<n>/
 ```
 
 Primitives (constants, magic values, predicates) are **not** their own files. They live next to the operation that uses them. If `MAGIC_VALUE` is consumed by `verify-hash.ts`, declare it inside `verify-hash.ts`. Only promote a primitive to a sibling file if two or more operation files in the same standard folder share it — and even then, the sibling file name reflects what the primitive *is*, not the abstract concept "primitive".
+
+**Never create a `schemas/` (or `types/`, or `constants/`) folder.** That a file exports schemas is an implementation detail — it does not deserve a directory. Name the sibling file after the *thing*: `call.ts` for the callTracer's `CallFrameSchema`, `prestate.ts` for the prestateTracer's `PreStateSchema`, `fourbyte.ts`, `struct.ts`. Flat sibling files at the standard folder's root, never a kind-of-thing subfolder. If you find yourself reaching for `schemas/` because there are "a lot of schemas," the answer is more flat files, not a folder.
+
+**Prefer one-word filenames.** `config.ts`, `result.ts`, `call.ts`, `prestate.ts`, `fourbyte.ts`, `struct.ts` — not `tracer-config.ts`, `trace-result.ts`, `call-tracer.ts`. The enclosing folder already supplies the namespace (`debug/`, `<n>/`); repeating it in every filename is noise. Reach for two- or three-word filenames only when the single word is genuinely ambiguous *within the folder*. Same rule applies to helper files (`tag.ts`, not `tag-result.ts`).
+
+**No magic strings — name every discriminator as an `as const` constant + a `picklist` schema.** When the spec hands you a small set of literal values (tracer names, status codes, room types, opcode classes), give them a `SHOUTY_SNAKE_CASE` constant object and a Valibot `picklist` over `Object.values(...)`. The pattern:
+
+```ts
+export const TRACER_TYPE = {
+  CALL: "callTracer",
+  PRESTATE: "prestateTracer",
+  FOURBYTE: "4byteTracer",
+} as const
+export type TracerType =
+  (typeof TRACER_TYPE)[keyof typeof TRACER_TYPE]
+export const TracerTypeSchema = picklist(
+  Object.values(TRACER_TYPE),
+)
+```
+
+The canonical existing precedent is `packages/eth/src/lib/post-byzantium.ts:RECEIPT_STATUS` (`0x0` / `0x1`). Use the same shape everywhere — never leave the literal strings to drift as `"callTracer"` magic at call sites. Refer to values as `TRACER_TYPE.CALL`, never as `"callTracer"`. The `(typeof X)[keyof typeof X]` derivation is the standard local idiom; no shared `ObjectValues<T>` helper exists yet.
+
+Naming convention: constant = `<NOUN>_TYPE` (e.g. `TRACER_TYPE`, `ROOM_TYPE`). Type alias = `<Noun>Type` (`TracerType`, `RoomType`). Schema = `<Noun>TypeSchema` (`TracerTypeSchema`, `RoomTypeSchema`). The matched `_TYPE` / `Type` / `TypeSchema` triple is the local convention.
+
+**Each discriminator value lives with the thing it discriminates.** A grouped constant (`TRACER_TYPE`) only collects values that share a category at the spec level — the three real tracers geth's `tracer:` field accepts. A synthetic / sibling-but-not-same-category value (e.g. `"struct"`, which is a dapp-side tag for the default tracer, not a wire-accepted tracer name) gets its own one-off Valibot literal schema in the file that owns the concept:
+
+```ts
+// struct.ts
+import { type InferOutput, literal } from "valibot"
+export const STRUCT_TYPE = literal("struct")
+export type StructType = InferOutput<typeof STRUCT_TYPE>
+```
+
+The single-value case uses `v.literal(...)` directly — the schema IS the constant. Call sites that need the bare string read it as `STRUCT_TYPE.literal`. Never fall back to `"struct" as const`; Valibot owns validation, even for one-value sets. Don't pad a grouped `_TYPE` constant with values that don't belong to the same category just to consolidate — give them their own `literal()` instead.
+
+**Recursive schemas: use Valibot's canonical pattern, not whole-schema `lazy`.** When a schema references itself (`CallFrame.calls: CallFrame[]`, `AbiInput.components: AbiInput[]`), the right shape per [Valibot's own docs](https://valibot.dev/guides/other/) is `lazy()` only around the self-reference, not wrapping the entire object — and a hand-rolled type anchor tagged with `// allow-violation: R4-recursive-schema` on the line above per `skills/no-violations/SKILL.md`. The TypeScript limitation that forces the anchor is intrinsic; no Valibot primitive exists that avoids it.
+
+```ts
+// allow-violation: R4-recursive-schema
+export type CallFrame = {
+  type: CallType
+  // ...
+  calls?: CallFrame[]
+}
+export const CallFrameSchema: GenericSchema<CallFrame> = object({
+  type: CallTypeSchema,
+  // ...
+  calls: optional(array(lazy(() => CallFrameSchema))),
+})
+```
+
+The wrapping-the-whole-object form (`const X: GenericSchema<...> = lazy(() => object({...}))`) also works but rebuilds the object schema on every parse — prefer the inline `lazy` on the recursive field only. Apply both rules together: hand-rolled type with the allow-violation tag, plus inline `lazy()` around the self-reference.
 
 ### 2.2. ERC
 
