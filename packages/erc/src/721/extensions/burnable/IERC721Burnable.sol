@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC721} from "./IERC721.sol";
+import {IERC721} from "../../IERC721.sol";
 
 /// @dev OpenZeppelin-pattern burnable extension for ERC-721 (no numbered ERC).
 interface IERC721Burnable is IERC721 {

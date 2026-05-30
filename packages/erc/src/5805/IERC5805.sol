@@ -3,7 +3,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC6372} from "./IERC6372.sol";
+import {IERC6372} from "../6372/IERC6372.sol";
 
 /// @dev Interface of ERC-5805 (Voting with delegation).
 interface IERC5805 is IERC6372 {

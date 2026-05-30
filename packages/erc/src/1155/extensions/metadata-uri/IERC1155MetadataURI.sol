@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC1155} from "./IERC1155.sol";
+import {IERC1155} from "../../IERC1155.sol";
 
 /// @dev Optional metadata-URI extension of the ERC-1155 standard.
 interface IERC1155MetadataURI is IERC1155 {

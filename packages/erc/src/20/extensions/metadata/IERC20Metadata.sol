@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC20} from "./IERC20.sol";
+import {IERC20} from "../../IERC20.sol";
 
 /// @dev Optional metadata extension of the ERC-20 standard.
 interface IERC20Metadata is IERC20 {

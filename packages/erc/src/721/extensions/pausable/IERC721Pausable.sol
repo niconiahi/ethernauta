@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC721} from "./IERC721.sol";
+import {IERC721} from "../../IERC721.sol";
 
 /// @dev OpenZeppelin-pattern pausable extension for ERC-721 (no numbered ERC).
 interface IERC721Pausable is IERC721 {

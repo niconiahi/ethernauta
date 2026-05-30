@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC20} from "./IERC20.sol";
+import {IERC20} from "../../IERC20.sol";
 
 /// @dev OpenZeppelin-pattern burnable extension (no numbered ERC).
 interface IERC20Burnable is IERC20 {

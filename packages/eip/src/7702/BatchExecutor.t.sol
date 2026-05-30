@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-import {BatchExecutor} from "../src/BatchExecutor.sol";
+import {BatchExecutor} from "./BatchExecutor.sol";
 
 contract Sink {
     uint256 public total;

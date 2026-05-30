@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC721} from "./IERC721.sol";
+import {IERC721} from "../../IERC721.sol";
 
 /// @dev Optional metadata extension of the ERC-721 standard.
 interface IERC721Metadata is IERC721 {

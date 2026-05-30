@@ -3,7 +3,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC3156FlashBorrower} from "./IERC3156FlashBorrower.sol";
+import {IERC3156FlashBorrower} from "../flash-borrower/IERC3156FlashBorrower.sol";
 
 /// @dev Interface of the ERC-3156 (Flash Loans) lender.
 interface IERC3156FlashLender {

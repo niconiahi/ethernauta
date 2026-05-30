@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Script, console} from "forge-std/Script.sol";
-import {BatchExecutor} from "../src/BatchExecutor.sol";
+import {BatchExecutor} from "./BatchExecutor.sol";
 
 contract DeployBatchExecutor is Script {
     function run() external returns (BatchExecutor exec) {

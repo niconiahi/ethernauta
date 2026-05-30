@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC20} from "./IERC20.sol";
+import {IERC20} from "../../IERC20.sol";
 
 /// @dev OpenZeppelin-pattern pausable extension (no numbered ERC).
 interface IERC20Pausable is IERC20 {

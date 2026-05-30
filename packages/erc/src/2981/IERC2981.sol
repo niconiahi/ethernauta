@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC165} from "./IERC165.sol";
+import {IERC165} from "../165/IERC165.sol";
 
 /// @dev Interface of ERC-2981 (NFT Royalty Standard).
 interface IERC2981 is IERC165 {

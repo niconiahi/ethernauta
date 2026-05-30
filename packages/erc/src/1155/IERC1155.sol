@@ -4,7 +4,7 @@
 
 pragma solidity >=0.6.2;
 
-import {IERC165} from "./IERC165.sol";
+import {IERC165} from "../165/IERC165.sol";
 
 /// @dev Required interface of an ERC-1155 compliant contract.
 interface IERC1155 is IERC165 {
