@@ -1,7 +1,8 @@
-import type { Http } from "@ethernauta/transport"
 import {
   type ChainEntry,
   ChainIdSchema,
+  create_dispatcher,
+  type Dispatcher,
   require_chain,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
@@ -22,7 +23,7 @@ type TrackInput = InferOutput<typeof TrackContextSchema>
  */
 export type TrackContext = TrackInput & { store: Store }
 
-export type ResolvedTracker = [Http[], TrackContext]
+export type ResolvedTracker = [Dispatcher, TrackContext]
 
 /**
  * Verbs that complete with a value go through this shape.
@@ -60,9 +61,12 @@ export function create_tracker(
 ): (_input: TrackInput) => ResolvedTracker {
   return (_input: TrackInput): ResolvedTracker => {
     const input = parse(TrackContextSchema, _input)
-    const transports = require_chain(chains, input.chain_id)
+    const { transports, strategy } = require_chain(
+      chains,
+      input.chain_id,
+    )
     return [
-      transports,
+      create_dispatcher(transports, strategy),
       { chain_id: input.chain_id, store: config.store },
     ]
   }

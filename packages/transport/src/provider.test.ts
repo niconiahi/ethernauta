@@ -113,19 +113,16 @@ describe("create_signer", () => {
 })
 
 describe("create_provider", () => {
-  it("returns a reader whose transport delegates to provider.request", async () => {
+  it("returns a reader whose dispatcher delegates to provider.request", async () => {
     const { provider, captured } = fake_provider({
       request: async () => "0xaa36a7",
     })
     const resolver = create_provider(provider)
-    const [transports, context] = resolver.reader({
+    const [dispatcher, context] = resolver.reader({
       chain_id: "eip155:11155111",
     })
     expect(context.chain_id).toBe("eip155:11155111")
-    expect(transports).toHaveLength(1)
-    const [transport] = transports
-    invariant(transport, "expected one transport")
-    const response = await transport(["eth_chainId", []])
+    const response = await dispatcher(["eth_chainId", []])
     expect(captured.last?.method).toBe("eth_chainId")
     expect("result" in response && response.result).toBe(
       "0xaa36a7",

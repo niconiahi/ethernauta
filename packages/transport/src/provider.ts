@@ -14,6 +14,10 @@ import {
 } from "valibot"
 
 import type { Call } from "./call"
+import {
+  create_dispatcher,
+  DEFAULT_STRATEGY,
+} from "./dispatcher"
 import type { Http } from "./http"
 import type { Response } from "./json-rpc"
 import type { ReadContext, ResolvedReader } from "./reader"
@@ -151,7 +155,10 @@ export function create_provider(
   const signer = create_signer(provider)
   return {
     reader: (context: ReadContext): ResolvedReader => {
-      return [[http], parse(ReadContextSchema, context)]
+      return [
+        create_dispatcher([http], DEFAULT_STRATEGY),
+        parse(ReadContextSchema, context),
+      ]
     },
     signer,
   }

@@ -3,6 +3,7 @@ import { parse } from "valibot"
 
 import { CallSchema } from "./call"
 import type { Callable } from "./contract"
+import { create_dispatcher } from "./dispatcher"
 import {
   type ChainEntry,
   require_chain,
@@ -12,14 +13,19 @@ export function create_read(
   chains: ChainEntry[],
 ): <T>(_call: Callable<T>) => Promise<T> {
   return async <T>(_call: Callable<T>): Promise<T> => {
-    const transports = require_chain(chains, _call.chain_id)
+    const { transports, strategy } = require_chain(
+      chains,
+      _call.chain_id,
+    )
+    const dispatcher = create_dispatcher(
+      transports,
+      strategy,
+    )
     const call = parse(CallSchema, [
       "eth_call",
       [{ to: _call.to, input: _call.data }, "latest"],
     ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

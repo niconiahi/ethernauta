@@ -2,7 +2,10 @@ import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
 import { ChainIdSchema } from "./chain/chain-id"
-import type { Http } from "./http"
+import {
+  create_dispatcher,
+  type Dispatcher,
+} from "./dispatcher"
 import {
   type ChainEntry,
   require_chain,
@@ -15,7 +18,7 @@ export type ReadContext = InferOutput<
   typeof ReadContextSchema
 >
 
-export type ResolvedReader = [Http[], ReadContext]
+export type ResolvedReader = [Dispatcher, ReadContext]
 
 export type Readable<T> = (
   _resolved: ResolvedReader,
@@ -26,11 +29,14 @@ export function create_reader(
 ): (_input: ReadContext) => ResolvedReader {
   return (_input: ReadContext): ResolvedReader => {
     const context = parse(ReadContextSchema, _input)
-    const transports = require_chain(
+    const { transports, strategy } = require_chain(
       chains,
       context.chain_id,
     )
-    return [transports, context]
+    return [
+      create_dispatcher(transports, strategy),
+      context,
+    ]
   }
 }
 

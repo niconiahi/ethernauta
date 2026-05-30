@@ -28,6 +28,7 @@ import {
 import { CallSchema as RpcCallSchema } from "./call"
 import { ChainIdSchema } from "./chain/chain-id"
 import type { Callable } from "./contract"
+import { create_dispatcher } from "./dispatcher"
 import {
   type ChainEntry,
   require_chain,
@@ -141,7 +142,14 @@ export function create_multicall(_chains: ChainEntry[]) {
         })),
       ] as const,
     })
-    const transports = require_chain(_chains, chain_id)
+    const { transports, strategy } = require_chain(
+      _chains,
+      chain_id,
+    )
+    const dispatcher = create_dispatcher(
+      transports,
+      strategy,
+    )
     const rpc_call = parse(RpcCallSchema, [
       "eth_call",
       [
@@ -152,9 +160,7 @@ export function create_multicall(_chains: ChainEntry[]) {
         "latest",
       ],
     ])
-    const response = await Promise.any(
-      transports.map((t) => t(rpc_call)),
-    )
+    const response = await dispatcher(rpc_call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }
