@@ -186,7 +186,7 @@ Legend:
 | Request batching (window + max size) | ✅ | ✅ | ⚠️ manual |
 | Custom headers | ✅ | ✅ | ✅ |
 | Multicall3 aggregator | ✅ `create_multicall` w/ allowFailure | ✅ `multicall` action | 📦 ethers-multicall |
-| Fallback / load-balanced transport | ❌ | ✅ `fallback` | ⚠️ `FallbackProvider` |
+| Fallback / load-balanced transport | ✅ [`strategy: { type: "sequential" \| "parallel" }`](docs/concepts/transport-strategy.md) | ✅ `fallback` | ⚠️ `FallbackProvider` |
 | EIP-1193 injected adapter | ✅ `create_injected_transport` | ✅ `custom` | ✅ `BrowserProvider` |
 
 ---
@@ -280,7 +280,7 @@ Legend:
 | Ships a real wallet | ✅ MV3 | ❌ | ❌ |
 | Ecosystem maturity / community | ⚠️ new | ✅ large | ✅ largest |
 | AA bundler/paymaster client | ❌ (by M4) | 📦 permissionless | ❌ |
-| Fallback / load-balanced transport | ❌ | ✅ | ✅ |
+| Fallback / load-balanced transport | ✅ [`strategy`](docs/concepts/transport-strategy.md) | ✅ | ✅ |
 | IPC transport | ❌ | ✅ | ✅ |
 
 ---
@@ -298,11 +298,10 @@ Legend:
 ## Where viem / ethers Still Win
 
 1. **`abitype`-grade static ABI inference** (viem) — Ethernauta's codec-based system is runtime-safe but doesn't infer call-site arg types from an ABI `as const` the way viem does.
-2. **Fallback / load-balanced transports** (both) — Ethernauta has retry+batch but no multi-endpoint fallback.
-3. **IPC transport** (both).
-4. **AA bundler/paymaster clients** — viem's `permissionless` ecosystem; Ethernauta deliberately stops at the on-chain envelope (M4).
-5. **Community size, ecosystem integrations, documentation breadth** — both competitors are years older with vast tutorial coverage.
-6. **Legacy tx schema** — present in both, only "raw bytes" in Ethernauta.
+2. **IPC transport** (both).
+3. **AA bundler/paymaster clients** — viem's `permissionless` ecosystem; Ethernauta deliberately stops at the on-chain envelope (M4).
+4. **Community size, ecosystem integrations, documentation breadth** — both competitors are years older with vast tutorial coverage.
+5. **Legacy tx schema** — present in both, only "raw bytes" in Ethernauta.
 
 ---
 
@@ -348,7 +347,7 @@ Same legend as above.
 | Feature | Ethernauta | viem | ethers.js |
 |---|---|---|---|
 | IPC transport (Unix socket / Windows named pipe) | ❌ | ✅ | ✅ |
-| Fallback / round-robin transport | ❌ | ✅ `fallback` | ✅ `FallbackProvider` |
+| Fallback / round-robin transport | ✅ [`strategy: { type: "sequential" \| "parallel" }`](docs/concepts/transport-strategy.md) | ✅ `fallback` | ✅ `FallbackProvider` |
 | Rate-limited transport wrapper | ❌ | ⚠️ user-side | ⚠️ user-side |
 | WebSocket reconnect / heartbeat | ⚠️ verify | ✅ | ✅ |
 
@@ -396,7 +395,7 @@ Same legend as above.
 
 ## Gap Reading
 
-- The non-grant-relevant gaps (IPC, fallback transport, keystore JSON, L2 deposit helpers) are real but boring — fix them when a user actually complains.
+- The non-grant-relevant gaps (IPC, keystore JSON, L2 deposit helpers) are real but boring — fix them when a user actually complains.
 - The grant-relevant gaps cluster in two tracks: **AA stack** (3668, 7212, 7579, 7677, 7710, 7715, bundler, paymaster) and **ENS-on-L2** (3668, universal resolver). Both tracks are ESP-shaped.
 - Adding the proxy patterns (1167, 1967, 1822, 2535) isn't a grant in itself but it's the kind of completeness that makes reviewers stop nitpicking.
 
