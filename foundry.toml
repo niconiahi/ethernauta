@@ -1,10 +1,24 @@
 [profile.default]
-src = "src"
-test = "test"
-script = "script"
-out = "out"
-cache_path = "cache"
-libs = ["../lib"]
+# Solidity sources are colocated under packages/<pkg>/src/...
+# alongside the TypeScript that consumes them (see CLAUDE.md M2 /
+# Hard rule 11). `forge build`/`forge test`/`forge script` scope is
+# narrowed to packages/eip/src/7702 (the only directory currently
+# carrying a buildable contract — BatchExecutor + tests + deploy).
+# The ERC interfaces still live colocated and are compilable on
+# demand via `forge inspect <path>:<Contract> abi` (the walker's
+# .abi -> ABI extraction path); they don't need to be in the default
+# build set. Narrow scope also avoids forge walking pnpm's recursive
+# node_modules and re-compiling the same files dozens of times.
+src = "packages"
+test = "packages"
+script = "packages"
+out = "foundry-out"
+cache_path = "foundry-cache"
+libs = ["lib"]
+# Skip pnpm's recursive node_modules + per-package dist; otherwise
+# forge walks every nested symlink of @ethernauta/eip and re-
+# compiles BatchExecutor dozens of times.
+skip = ["**/node_modules/**", "**/dist/**"]
 solc_version = "0.8.28"
 optimizer = true
 optimizer_runs = 200

@@ -10,3 +10,8 @@ tsconfig.docs-check.json
 
 # Foundry lib dependencies
 /lib/
+
+# Foundry build artifacts (root-level workspace)
+foundry-out/
+foundry-cache/
+broadcast/
