@@ -3,15 +3,16 @@ import { GithubLink } from "../../components/github-link"
 import demoHtml from "../../examples/gas-estimate/demo.tsx?highlighted"
 import { GasEstimateDemo } from "../../examples/gas-estimate/demo"
 
-# @ethernauta/gas — fee estimation (EIP-1559)
+# @ethernauta/eth — fee estimation (EIP-1559)
 
 `estimate_1559_fees({ base_fee_multiplier, priority_percentile })`
 is the primitive for any EIP-1559 EVM chain that isn't part of an
 L2 fee family. Mainnet, every testnet, every sidechain — anything
-that prices gas exclusively via `eth_feeHistory` lands here.
+that prices gas exclusively via `eth_feeHistory` lands here. It
+ships from `@ethernauta/eth` alongside the underlying RPC method.
 
 For chains in an L2 fee family the consumer imports the matching
-helper directly:
+helper from `@ethernauta/gas` directly:
 
 - **OP-stack** (Base, Optimism, Mode, Zora, Mantle, World Chain,
   Soneium, Lisk) → `calculate_gas_op_stack`.

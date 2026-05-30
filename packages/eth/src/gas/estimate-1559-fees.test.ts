@@ -1,10 +1,20 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { create_testing_reader } from "@ethernauta/testing"
+import type { Call, Response } from "@ethernauta/transport"
 import { encode_chain_id } from "@ethernauta/transport"
 import { describe, expect, it } from "vitest"
 
 import { estimate_1559_fees } from "./estimate-1559-fees"
-import { stub_http } from "./test-helpers"
+
+function stub_http<T>(
+  response_result: T,
+): (_call: Call) => Promise<Response> {
+  return async (_call: Call) => ({
+    id: "test",
+    jsonrpc: "2.0" as const,
+    result: response_result,
+  })
+}
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",

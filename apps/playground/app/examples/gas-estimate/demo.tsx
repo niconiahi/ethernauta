@@ -7,7 +7,7 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import type { Uint } from "@ethernauta/core"
-import { estimate_1559_fees } from "@ethernauta/gas"
+import { estimate_1559_fees } from "@ethernauta/eth"
 import { useProvider } from "@ethernauta/react"
 import { encode_chain_id } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"

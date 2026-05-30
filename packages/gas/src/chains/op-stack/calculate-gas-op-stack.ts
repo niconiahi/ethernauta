@@ -21,6 +21,7 @@ import {
   UintSchema,
 } from "@ethernauta/core"
 import {
+  estimate_1559_fees,
   eth_estimateGas,
   eth_getTransactionCount,
 } from "@ethernauta/eth"
@@ -40,8 +41,6 @@ import {
   parse,
   pipe,
 } from "valibot"
-
-import { estimate_1559_fees } from "../../estimate-1559-fees"
 
 import { estimate_l1_fee } from "./estimate-l1-fee"
 

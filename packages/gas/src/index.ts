@@ -25,13 +25,6 @@ export {
   calculate_gas_zksync,
 } from "./chains/zksync/calculate-gas-zksync"
 export {
-  type Estimate1559FeesParameters,
-  Estimate1559FeesParametersSchema,
-  estimate_1559_fees,
-  type Fees1559,
-  Fees1559Schema,
-} from "./estimate-1559-fees"
-export {
   type EstimatePriorityFeeParameters,
   EstimatePriorityFeeParametersSchema,
   estimate_priority_fee,

@@ -1,48 +1,22 @@
 // https://eips.ethereum.org/EIPS/eip-1559
 
-import { type Uint, UintSchema } from "@ethernauta/core"
-import { eth_feeHistory } from "@ethernauta/eth"
+import { UintSchema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
 import { bigint_to_hex } from "@ethernauta/utils"
-import type { InferOutput } from "valibot"
+import { parse, tupleWithRest } from "valibot"
+import { eth_feeHistory } from "../method/fee-market"
+import { type Fees1559, Fees1559Schema } from "./fees"
 import {
-  maxValue,
-  minValue,
-  number,
-  object,
-  parse,
-  pipe,
-  tupleWithRest,
-} from "valibot"
-
-const PercentileSchema = pipe(
-  number(),
-  minValue(0),
-  maxValue(100),
-)
-const MultiplierSchema = pipe(number(), minValue(1))
-
-export const Estimate1559FeesParametersSchema = object({
-  base_fee_multiplier: MultiplierSchema,
-  priority_percentile: PercentileSchema,
-})
-export type Estimate1559FeesParameters = InferOutput<
-  typeof Estimate1559FeesParametersSchema
->
-
-export const Fees1559Schema = object({
-  base_fee_per_gas: UintSchema,
-  max_priority_fee_per_gas: UintSchema,
-  max_fee_per_gas: UintSchema,
-})
-export type Fees1559 = InferOutput<typeof Fees1559Schema>
+  type Estimate1559FeesParameters,
+  Estimate1559FeesParametersSchema,
+} from "./parameters"
 
 // Sample window matches viem's default: enough blocks to
 // smooth single-block volatility, few enough to react quickly.
-const SAMPLE_BLOCK_COUNT: Uint = parse(UintSchema, "0x4")
+const SAMPLE_BLOCK_COUNT = parse(UintSchema, "0x4")
 // Fixed-point precision for the base-fee × multiplier step.
 // 1e6 keeps the multiplier resolution at 6 decimal digits
 // while staying within safe-integer math.
