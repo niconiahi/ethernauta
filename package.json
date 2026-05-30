@@ -11,6 +11,7 @@
     "lint": "pnpm --recursive --parallel run lint",
     "lint:fix": "pnpm --recursive --parallel run lint:fix",
     "lint:ratchet": "bash scripts/no-escape-hatches.sh",
+    "regen": "pnpm --filter @ethernauta/cli run build && node packages/cli/dist/bin.js abi && find packages -type d -name methods -not -path '*/node_modules/*' -not -path '*/dist/*' -print0 | xargs -0 pnpm exec biome check --write",
     "format": "pnpm --recursive run format",
     "typecheck": "pnpm --recursive --parallel run typecheck",
     "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish",
