@@ -19,14 +19,3 @@ export {
   CalculateGasZksyncParametersSchema,
   calculate_gas_zksync,
 } from "./chains/zksync/calculate-gas-zksync"
-export {
-  ARBITRUM_CHAIN_IDS,
-  type ArbitrumChainId,
-  type FamilyForChainId,
-  type GasFamily,
-  gas_family,
-  OP_STACK_CHAIN_IDS,
-  type OpStackChainId,
-  ZKSYNC_CHAIN_IDS,
-  type ZksyncChainId,
-} from "./families"
