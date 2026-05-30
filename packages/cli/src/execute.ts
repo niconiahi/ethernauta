@@ -1,9 +1,12 @@
+import { execFileSync } from "node:child_process"
 import {
+  existsSync,
   readdirSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from "node:fs"
-import { join, resolve } from "node:path"
+import { basename, dirname, join, resolve } from "node:path"
 import {
   type Description,
   DescriptionSchema,
@@ -62,6 +65,29 @@ function load_abi(path: string): unknown[] {
   )
 }
 
+function is_solidity_source(path: string): boolean {
+  return (
+    path.endsWith(".abi") && !path.endsWith(".abi.json")
+  )
+}
+
+function load_abi_source(path: string): Description[] {
+  if (is_solidity_source(path)) {
+    const contract_name = basename(path).replace(
+      /\.abi$/,
+      "",
+    )
+    const target = `${path}:${contract_name}`
+    const stdout = execFileSync(
+      "forge",
+      ["inspect", target, "abi"],
+      { encoding: "utf8" },
+    )
+    return parse(array(DescriptionSchema), JSON.parse(stdout))
+  }
+  return parse(array(DescriptionSchema), load_abi(path))
+}
+
 function signature_key(d: Description): string {
   if (d.type !== "function") return d.type
   const param_types = d.inputs.map((i) => i.type).join(",")
@@ -102,8 +128,8 @@ function write_barrel(
     if (seen.has(js_name)) continue
     if (!generated_emit_names.has(js_name)) continue
     seen.add(js_name)
-    const basename = emit_file_basename_for(f, functions)
-    lines.push(`export { ${js_name} } from "./${basename}"`)
+    const file_basename = emit_file_basename_for(f, functions)
+    lines.push(`export * from "./${file_basename}"`)
   }
   writeFileSync(
     join(out_dir, "methods", "index.ts"),
@@ -116,10 +142,43 @@ function is_generatable(d: Description): boolean {
   return true
 }
 
+function regenerate_one(source_path: string): void {
+  const out_dir = dirname(source_path)
+  const descriptions = load_abi_source(source_path)
+  const functions = dedupe_by_signature(
+    descriptions.filter((d) => d.type === "function"),
+  )
+  const generatable = functions.filter(is_generatable)
+  const methods_dir = join(out_dir, "methods")
+  if (existsSync(methods_dir)) {
+    rmSync(methods_dir, { recursive: true, force: true })
+  }
+  const result = generate(generatable, out_dir)
+  write_barrel(
+    out_dir,
+    generatable,
+    new Set(result.generated),
+  )
+  console.log(
+    `regenerated ${result.generated.length} methods into ${out_dir}/methods/`,
+  )
+  if (result.skipped.length > 0) {
+    console.warn(
+      `skipped ${result.skipped.length} method(s) in ${source_path}:`,
+    )
+    for (const s of result.skipped) {
+      console.warn(`  - ${s.name}: ${s.reason}`)
+    }
+  }
+}
+
 export function execute_abi(args: string[]): void {
+  if (args.length === 0) {
+    execute_walk()
+    return
+  }
   const { in_path, out_dir } = parse_flags(args)
-  const raw = load_abi(in_path)
-  const descriptions = parse(array(DescriptionSchema), raw)
+  const descriptions = load_abi_source(in_path)
   const functions = dedupe_by_signature(
     descriptions.filter((d) => d.type === "function"),
   )
@@ -140,6 +199,115 @@ export function execute_abi(args: string[]): void {
     for (const s of result.skipped) {
       console.warn(`  - ${s.name}: ${s.reason}`)
     }
+  }
+}
+
+const SKIP_DIRS = new Set([
+  "node_modules",
+  "dist",
+  ".git",
+])
+
+function find_workspace_root(start: string): string {
+  let dir = start
+  while (true) {
+    if (existsSync(join(dir, "pnpm-workspace.yaml"))) {
+      return dir
+    }
+    const parent = dirname(dir)
+    if (parent === dir) {
+      throw new Error(
+        `pnpm-workspace.yaml not found above ${start}`,
+      )
+    }
+    dir = parent
+  }
+}
+
+function discover_abi_sources(packages_root: string): string[] {
+  const found: string[] = []
+  const stack = [packages_root]
+  while (stack.length > 0) {
+    const dir = stack.pop()
+    if (!dir) break
+    for (const entry of readdirSync(dir, {
+      withFileTypes: true,
+    })) {
+      const full = join(dir, entry.name)
+      if (entry.isDirectory()) {
+        if (SKIP_DIRS.has(entry.name)) continue
+        stack.push(full)
+        continue
+      }
+      if (entry.name.endsWith(".abi.json")) {
+        found.push(full)
+      } else if (entry.name.endsWith(".abi")) {
+        found.push(full)
+      }
+    }
+  }
+  return found.sort()
+}
+
+function group_by_directory(
+  sources: string[],
+): Map<string, string[]> {
+  const groups = new Map<string, string[]>()
+  for (const source of sources) {
+    const dir = dirname(source)
+    const existing = groups.get(dir)
+    if (existing) {
+      existing.push(source)
+    } else {
+      groups.set(dir, [source])
+    }
+  }
+  return groups
+}
+
+function ensure_forge_available(): void {
+  try {
+    execFileSync("forge", ["--version"], {
+      stdio: ["ignore", "ignore", "ignore"],
+    })
+  } catch {
+    throw new Error(
+      "forge is required to compile .abi (Solidity) sources but was not found on PATH.\n" +
+        "Install Foundry: curl -L https://foundry.paradigm.xyz | bash && foundryup",
+    )
+  }
+}
+
+export function execute_walk(): void {
+  const root = find_workspace_root(process.cwd())
+  const packages_root = join(root, "packages")
+  if (!existsSync(packages_root)) {
+    throw new Error(
+      `packages/ not found at workspace root ${root}`,
+    )
+  }
+  const sources = discover_abi_sources(packages_root)
+  if (sources.length === 0) {
+    console.log("no .abi.json or .abi files found under packages/")
+    return
+  }
+  const groups = group_by_directory(sources)
+  for (const [dir, files] of groups) {
+    if (files.length > 1) {
+      const names = files.map((f) => basename(f)).join(", ")
+      throw new Error(
+        `multiple ABI sources in ${dir}: ${names}. One ABI per folder — split each into its own subfolder.`,
+      )
+    }
+  }
+  const has_solidity = sources.some((s) =>
+    is_solidity_source(s),
+  )
+  if (has_solidity) {
+    ensure_forge_available()
+  }
+  for (const source of sources) {
+    regenerate_one(source)
   }
 }
 
