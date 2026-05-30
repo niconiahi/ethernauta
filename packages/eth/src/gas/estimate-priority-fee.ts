@@ -1,7 +1,6 @@
 // https://eips.ethereum.org/EIPS/eip-1559
 
 import { type Uint, UintSchema } from "@ethernauta/core"
-import { eth_feeHistory } from "@ethernauta/eth"
 import type {
   Readable,
   ResolvedReader,
@@ -17,6 +16,7 @@ import {
   pipe,
   tupleWithRest,
 } from "valibot"
+import { eth_feeHistory } from "../method/fee-market/fee-history"
 
 const PercentileSchema = pipe(
   number(),

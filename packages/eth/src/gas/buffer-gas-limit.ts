@@ -1,8 +1,4 @@
 import { type Uint, UintSchema } from "@ethernauta/core"
-import {
-  eth_estimateGas,
-  GenericTransactionSchema,
-} from "@ethernauta/eth"
 import type {
   Readable,
   ResolvedReader,
@@ -16,6 +12,8 @@ import {
   parse,
   pipe,
 } from "valibot"
+import { GenericTransactionSchema } from "../core/transaction/generic"
+import { eth_estimateGas } from "../method/execute/estimate-gas"
 
 const MultiplierSchema = pipe(number(), minValue(1))
 
