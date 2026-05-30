@@ -1,6 +1,7 @@
 export * from "./call"
 export * from "./chain"
 export * from "./contract"
+export * from "./dispatcher"
 export * from "./http"
 export * from "./json-rpc"
 export * from "./multicall"
