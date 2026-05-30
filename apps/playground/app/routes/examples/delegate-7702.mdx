@@ -58,7 +58,7 @@ contract BatchExecutor {
 }
 ```
 
-Source + Foundry tests in `contracts/src/BatchExecutor.sol`.
+Source + Foundry tests in `packages/eip/src/7702/BatchExecutor.sol`.
 The `msg.sender == address(this)` guard is what makes this
 safe under 7702: after delegation, `address(this)` *is* the
 EOA, so only the EOA itself can drive the batch.

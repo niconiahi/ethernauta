@@ -40,8 +40,8 @@ const SEPOLIA_CHAIN_REF_HEX = parse(
   `0x${eip155_11155111.chainId.toString(16)}`,
 )
 
-// contracts/src/BatchExecutor.sol deployed to Sepolia.
-// Source + forge tests are in the `contracts/` package;
+// packages/eip/src/7702/BatchExecutor.sol deployed to Sepolia.
+// Source + forge tests are colocated next to the EIP-7702 binding;
 // re-deploy via `forge create` if you want your own copy.
 const BATCH_EXECUTOR = parse(
   AddressSchema,

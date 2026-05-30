@@ -2,20 +2,21 @@
 //
 // Run: bun packages/erc/scripts/regenerate.ts
 //
-// Source of truth: `contracts/src/I*.sol` files compiled by Foundry. Each
-// file declares ONE interface whose name matches the file basename and
-// carries a spec-link header `// https://eips.ethereum.org/EIPS/eip-<N>`.
-// The link is what routes the file — host number comes from the EIP, the
-// extension suffix comes from whatever's left of the basename after
-// stripping the matching `IERC<N>` prefix (when present) or just the
-// leading `I`.
+// DEPRECATED: superseded by `@ethernauta/cli`'s walker mode
+// (`ethernauta abi` with no flags). The walker discovers
+// packages/**/*.abi.json + packages/**/*.abi and regenerates
+// methods/ next to each ABI source. This script's source-of-truth
+// directory (`contracts/src/I*.sol`) was dissolved in phase 01 — the
+// .sol files now live colocated inside their matching package folder.
+// Kept for historical reference; do not invoke until rewritten to
+// walk the new colocated layout.
 //
-//   contracts/src/IERC20.sol           (// eip-20) -> packages/erc/src/20/
-//   contracts/src/IERC20Burnable.sol   (// eip-20) -> packages/erc/src/20/extensions/burnable/
-//   contracts/src/IERC1155MetadataURI.sol (// eip-1155) -> packages/erc/src/1155/extensions/metadata-uri/
-//   contracts/src/IERC137Resolver.sol  (// eip-137) -> packages/erc/src/137/extensions/resolver/
-//   contracts/src/IOriginSettler.sol   (// eip-7683) -> packages/erc/src/7683/extensions/origin-settler/
-//   contracts/src/IDestinationSettler.sol (// eip-7683) -> packages/erc/src/7683/extensions/destination-settler/
+//   packages/erc/src/20/IERC20.sol           (// eip-20)
+//   packages/erc/src/20/extensions/burnable/IERC20Burnable.sol
+//   packages/erc/src/1155/extensions/metadata-uri/IERC1155MetadataURI.sol
+//   packages/erc/src/137/extensions/resolver/IERC137Resolver.sol
+//   packages/erc/src/7683/extensions/origin-settler/IOriginSettler.sol
+//   packages/erc/src/7683/extensions/destination-settler/IDestinationSettler.sol
 //
 // Files with no spec-link comment are skipped only when they declare a
 // `contract` (implementation) or no top-level declaration at all. Any
