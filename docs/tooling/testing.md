@@ -201,10 +201,61 @@ before `pnpm test`:
 
 That's the whole CI story. We do not automate around it.
 
+## Unit-testing methods without anvil
+
+Anvil is the right tool for integration tests. For unit tests
+of a single method binding — you control the RPC response, you
+just want to call the method against a fake transport — anvil
+is overkill. `create_testing_reader` / `create_testing_writer`
+wrap a single `Http` transport into a `ResolvedReader` /
+`ResolvedWriter` so you don't repeat the resolver-tuple
+boilerplate at every call site.
+
+```ts
+import { create_testing_reader } from "@ethernauta/testing"
+import { eth_getBalance } from "@ethernauta/eth"
+import type { Call, Response } from "@ethernauta/transport"
+
+const testing_reader = create_testing_reader() // defaults to chain_id "eip155:1"
+
+const fake_transport = async (_call: Call): Promise<Response> => ({
+  jsonrpc: "2.0",
+  id: "1",
+  result: "0xde0b6b3a7640000",
+})
+
+const balance = await eth_getBalance([HOLDER, "latest"])(
+  testing_reader(fake_transport),
+)
+expect(balance).toBe("0xde0b6b3a7640000")
+```
+
+The factory accepts `{ chain_id }` for tests that target a
+specific chain — pair with `encode_chain_id` to keep the
+chain id branded:
+
+```ts
+import { create_testing_reader } from "@ethernauta/testing"
+import { encode_chain_id } from "@ethernauta/transport"
+import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
+
+const CHAIN_ID = encode_chain_id({
+  namespace: "eip155",
+  reference: eip155_8453.chainId,
+})
+const testing_reader = create_testing_reader({ chain_id: CHAIN_ID })
+```
+
+`create_testing_writer` is the matching shape for
+`ResolvedWriter`; both wrap into a single-transport
+`Dispatcher` under the hood so the method's call shape is
+identical to production.
+
 ## Exports
 
 Everything ships from the package root — `anvil()`,
 `anvil_account`, `anvil_accounts`, `create_testing_provider`,
+`create_testing_reader`, `create_testing_writer`,
 `without_isolation`, the config schemas, the
 `ethernauta_anvil()` vitest plugin, and the anvil RPC
 bindings (`evm_*`, `anvil_*`). No subpaths.

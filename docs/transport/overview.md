@@ -50,6 +50,8 @@ const ctx = contract({ chain_id: CHAIN_ID_1, to: token });
 
 Each factory accepts a `Chain[]` and returns a function `({ chain_id, ... }) => ResolvedX`. Pass the resolved object as the second curried argument to any method.
 
+A `ChainEntry` may also declare an explicit `strategy` to control how multiple transports for one chain are coordinated (race vs primary+fallback). See [Per-chain transport strategy](/transport/strategy). Omit it and you get the default `{ type: "parallel" }`.
+
 ## HTTP transport
 
 ```ts
@@ -197,10 +199,12 @@ Use these if you're building a custom transport (e.g. an in-memory mock for test
 | `Call`, `ContractContext` | for `Callable<T>` builders |
 | `RequestArguments`, `Request`, `Response` | JSON-RPC wire types |
 | `ProviderRpcError` | EIP-1193 error type |
+| `Dispatcher`, `DispatcherStrategy` | per-chain transport strategy — see [strategy page](/transport/strategy) |
 
 ## See also
 
 - [Concepts → resolver shapes](/concepts/resolver-shapes) — the philosophy behind the four shapes.
+- [Per-chain transport strategy](/transport/strategy) — race vs primary+fallback over multiple RPC endpoints.
 - [@ethernauta/eth](/eth/overview) — methods that return these shapes.
 - [@ethernauta/chain](/chain/overview) — `Chain[]` consumers.
 - [EIP-1193](/eips/1193) — the provider envelope.
