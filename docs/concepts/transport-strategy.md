@@ -1,8 +1,8 @@
 ---
 title: Per-chain transport strategy
-section: Overview
-section_order: 7
-order: 10
+section: Concepts
+section_order: 2
+order: 8
 ---
 
 # Per-chain transport strategy
