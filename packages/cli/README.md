@@ -4,8 +4,20 @@
 
 This module ships a CLI for working with ABIs in an Ethernauta codebase. Two subcommands:
 
-- `ethernauta abi` — generate ready-to-use TypeScript methods from an ABI JSON or a Foundry artifact
+- `ethernauta abi` — generate ready-to-use TypeScript methods from an ABI JSON, a Foundry artifact, or a Solidity source (`.abi`). With no flags it walks `packages/**/*.abi.json` and `packages/**/*.abi` and regenerates `methods/` next to each ABI source.
 - `ethernauta registry` — walk a directory of ABI JSONs and emit a 4-byte selector → method-metadata map (used by the wallet to surface human-readable function names)
+
+## Prerequisites
+
+- **Node 20+** — runtime for the CLI itself.
+- **Foundry's `forge`** — required when the walker encounters a `.abi` (Solidity) source, since the ABI is extracted inline via `forge inspect <path>:<Contract> abi`. Install:
+
+  ```bash
+  curl -L https://foundry.paradigm.xyz | bash
+  foundryup
+  ```
+
+  Not required when only `.abi.json` files are walked.
 
 ## Modules
 
@@ -28,13 +40,25 @@ This module ships a CLI for working with ABIs in an Ethernauta codebase. Two sub
 
 ### `ethernauta abi`
 
-Regenerate contract method TypeScript files from an ABI JSON or a Foundry artifact.
+Regenerate contract method TypeScript files. Two modes:
+
+#### Walker mode (no flags)
+
+```bash
+npx ethernauta abi
+```
+
+Discovers every `packages/**/*.abi.json` and `packages/**/*.abi` under the workspace root (the directory holding `pnpm-workspace.yaml`), skipping `node_modules`, `dist`, and `.git`. One ABI per folder is required; multiple ABIs in the same folder is an error. `methods/` is fully overwritten next to each ABI source. For `.abi` files (Solidity sources) the walker invokes `forge inspect <path>:<ContractName> abi` — the contract name must match the filename.
+
+This is the common case in the Ethernauta monorepo. A repo-level `regen` script chains it with a Biome format pass to keep generated files canonical.
+
+#### Single-file mode
 
 ```bash
 npx ethernauta abi --in abis/IERC20.abi.json --out app/methods
 ```
 
-Each function in the ABI emits one file under `<out>/methods/`. View / pure functions emit `Callable<T>`; state-changing functions emit `Signable<Bytes>`. A barrel file at `<out>/methods/index.ts` re-exports everything.
+Each function in the ABI emits one file under `<out>/methods/`. View / pure functions emit `Callable<T>`; state-changing functions emit `Signable<Bytes>`. A barrel file at `<out>/methods/index.ts` re-exports everything. Use this form when consuming the CLI from outside the monorepo, or for one-off regeneration of a single contract.
 
 A typical setup wires this into a `package.json` script so generated methods stay in sync with the contract:
 
