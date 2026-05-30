@@ -1,8 +1,6 @@
 import { AddressSchema } from "@ethernauta/core"
-import {
-  encode_chain_id,
-  type ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -15,6 +13,9 @@ const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "324",
 })
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
+})
 
 describe("zks_estimate_fee", () => {
   it("parses the four-field zks_estimateFee response", async () => {
@@ -25,10 +26,9 @@ describe("zks_estimate_fee", () => {
       max_fee_per_gas: "0x2b275d0",
       max_priority_fee_per_gas: "0x0",
     }
-    const resolved: ResolvedReader = [
-      [stub_http(result_payload)],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(
+      stub_http(result_payload),
+    )
     const fee = await zks_estimate_fee({
       from: parse(
         AddressSchema,

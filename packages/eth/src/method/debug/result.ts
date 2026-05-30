@@ -21,7 +21,10 @@ import { literal, object, variant } from "valibot"
 import { CallFrameSchema } from "./call"
 import { FourByteTraceSchema } from "./fourbyte"
 import { PreStateSchema } from "./prestate"
-import { STRUCT_TYPE, StructLogResultSchema } from "./struct"
+import {
+  STRUCT_TYPE,
+  StructLogResultSchema,
+} from "./struct"
 import { TRACER_TYPE } from "./tracer"
 
 export const TraceResultSchema = variant("tracer", [
@@ -42,7 +45,9 @@ export const TraceResultSchema = variant("tracer", [
     result: StructLogResultSchema,
   }),
 ])
-export type TraceResult = InferOutput<typeof TraceResultSchema>
+export type TraceResult = InferOutput<
+  typeof TraceResultSchema
+>
 
 export const BlockTraceEntrySchema = object({
   txHash: Hash32Schema,

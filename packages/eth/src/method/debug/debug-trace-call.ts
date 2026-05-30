@@ -17,7 +17,13 @@ import {
   RpcRequestError,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
-import { object, optional, parse, tuple, union } from "valibot"
+import {
+  object,
+  optional,
+  parse,
+  tuple,
+  union,
+} from "valibot"
 import { BlockNumberOrTagOrHashSchema } from "../../core/block"
 import { GenericTransactionSchema } from "../../core/transaction"
 import { TracerConfigSchema } from "./config"
@@ -30,7 +36,10 @@ export const DebugTraceCallParametersSchema = union([
     BlockNumberOrTagOrHashSchema,
     TracerConfigSchema,
   ]),
-  tuple([GenericTransactionSchema, BlockNumberOrTagOrHashSchema]),
+  tuple([
+    GenericTransactionSchema,
+    BlockNumberOrTagOrHashSchema,
+  ]),
   object({
     transaction: GenericTransactionSchema,
     blockNumberOrTagOrHash: BlockNumberOrTagOrHashSchema,
@@ -45,7 +54,7 @@ export function debug_traceCall(
   _parameters: DebugTraceCallParameters,
 ): Readable<TraceResult> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<TraceResult> => {
     const method = "debug_traceCall"
@@ -61,9 +70,7 @@ export function debug_traceCall(
         ? [method, [transaction, block]]
         : [method, [transaction, block, tracer_config]],
     )
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new RpcRequestError(response.error)
     }
@@ -71,7 +78,9 @@ export function debug_traceCall(
   }
 }
 
-function split_parameters(parameters: DebugTraceCallParameters) {
+function split_parameters(
+  parameters: DebugTraceCallParameters,
+) {
   if (Array.isArray(parameters)) {
     return {
       transaction: parameters[0],

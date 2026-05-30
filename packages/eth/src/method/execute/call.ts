@@ -85,11 +85,14 @@ export function eth_call(
   _state_override?: StateOverride,
 ): Readable<Bytes> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Bytes> => {
     const method = "eth_call"
-    const parameters = parse(EthCallParametersSchema, _parameters)
+    const parameters = parse(
+      EthCallParametersSchema,
+      _parameters,
+    )
     const state_override =
       _state_override === undefined
         ? undefined
@@ -98,9 +101,7 @@ export function eth_call(
       method,
       build_params(parameters, state_override),
     ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new RpcRequestError(response.error)
     }
@@ -116,12 +117,11 @@ function build_params(
   const transaction = Array.isArray(parameters)
     ? parameters[0]
     : parameters.transaction
-  const block =
-    Array.isArray(parameters)
-      ? parameters[1]
-      : "blockNumberOrTagOrHash" in parameters
-        ? parameters.blockNumberOrTagOrHash
-        : undefined
+  const block = Array.isArray(parameters)
+    ? parameters[1]
+    : "blockNumberOrTagOrHash" in parameters
+      ? parameters.blockNumberOrTagOrHash
+      : undefined
   if (state_override === undefined) {
     return block === undefined
       ? [transaction]

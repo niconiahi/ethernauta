@@ -18,12 +18,12 @@ export function get_admin(
   _address: Address,
 ): Readable<Address | NotFound> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Address | NotFound> => {
     const address = parse(AddressSchema, _address)
     return read_address_slot(
-      transports,
+      dispatcher,
       address,
       ADMIN_SLOT,
     )

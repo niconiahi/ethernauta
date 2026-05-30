@@ -21,15 +21,13 @@ export function eth_getFilterChanges(
   _parameters: Parameters,
 ): Readable<FilterResults> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<FilterResults> => {
     const method = "eth_getFilterChanges"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

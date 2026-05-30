@@ -9,14 +9,12 @@ import { SyncingStatusSchema } from "../../core/client"
 
 export function eth_syncing(): Readable<SyncingStatus> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<SyncingStatus> => {
     const method = "eth_syncing"
     const call = parse(CallSchema, [method])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

@@ -17,7 +17,13 @@ import {
 } from "@ethernauta/transport"
 import { Hash32Schema } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
-import { object, optional, parse, tuple, union } from "valibot"
+import {
+  object,
+  optional,
+  parse,
+  tuple,
+  union,
+} from "valibot"
 import { TracerConfigSchema } from "./config"
 import type { TraceResult } from "./result"
 import { tag } from "./tag"
@@ -38,7 +44,7 @@ export function debug_traceTransaction(
   _parameters: DebugTraceTransactionParameters,
 ): Readable<TraceResult> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<TraceResult> => {
     const method = "debug_traceTransaction"
@@ -54,9 +60,7 @@ export function debug_traceTransaction(
         ? [method, [transaction_hash]]
         : [method, [transaction_hash, tracer_config]],
     )
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new RpcRequestError(response.error)
     }

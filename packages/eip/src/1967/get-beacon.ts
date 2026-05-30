@@ -18,12 +18,12 @@ export function get_beacon(
   _address: Address,
 ): Readable<Address | NotFound> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Address | NotFound> => {
     const address = parse(AddressSchema, _address)
     return read_address_slot(
-      transports,
+      dispatcher,
       address,
       BEACON_SLOT,
     )

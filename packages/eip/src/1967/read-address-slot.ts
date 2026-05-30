@@ -18,12 +18,12 @@ import {
 } from "@ethernauta/core"
 import {
   CallSchema,
-  type Http,
+  type Dispatcher,
 } from "@ethernauta/transport"
 import { parse } from "valibot"
 
 export async function read_address_slot(
-  transports: Http[],
+  dispatcher: Dispatcher,
   address: Address,
   slot: Bytes32,
 ): Promise<Address | NotFound> {
@@ -31,9 +31,7 @@ export async function read_address_slot(
     "eth_getStorageAt",
     [address, slot, "latest"],
   ])
-  const response = await Promise.any(
-    transports.map((transport) => transport(call)),
-  )
+  const response = await dispatcher(call)
   if ("error" in response) {
     throw new Error(response.error.message)
   }

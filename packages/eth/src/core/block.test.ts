@@ -1,10 +1,7 @@
 import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import {
-  BlockSchema,
-  BlockTagSchema,
-} from "./block"
+import { BlockSchema, BlockTagSchema } from "./block"
 
 const ADDR = "0x70997970c51812dc3a010c7d01b50e0d17dc79c8"
 const HASH = `0x${"a".repeat(64)}`
@@ -15,15 +12,20 @@ const BLOOM_256 = `0x${"00".repeat(256)}`
 const ANY_BYTES = "0xab"
 
 describe("BlockTagSchema", () => {
-  it.each(["earliest", "latest", "pending", "safe", "finalized"])(
-    "admits %s",
-    (tag) => {
-      expect(parse(BlockTagSchema, tag)).toBe(tag)
-    },
-  )
+  it.each([
+    "earliest",
+    "latest",
+    "pending",
+    "safe",
+    "finalized",
+  ])("admits %s", (tag) => {
+    expect(parse(BlockTagSchema, tag)).toBe(tag)
+  })
 
   it("rejects unknown tag", () => {
-    expect(() => parse(BlockTagSchema, "yesterday")).toThrow()
+    expect(() =>
+      parse(BlockTagSchema, "yesterday"),
+    ).toThrow()
   })
 })
 

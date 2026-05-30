@@ -18,14 +18,12 @@ import { parse } from "valibot"
 
 export function evm_snapshot(): Readable<Bytes> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Bytes> => {
     const method = "evm_snapshot"
     const call = parse(CallSchema, [method])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

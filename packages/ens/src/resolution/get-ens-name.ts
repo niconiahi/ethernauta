@@ -30,7 +30,7 @@ export function get_ens_name(
   _parameters: Parameters,
 ): Readable<string | null> {
   return async ([
-    transports,
+    dispatcher,
     context,
   ]: ResolvedReader): Promise<string | null> => {
     const parameters = parse(ParametersSchema, _parameters)
@@ -48,7 +48,7 @@ export function get_ens_name(
     const resolver_raw = await eth_call_ccip({
       to: resolver_call.to,
       input: resolver_call.data,
-    })([transports, context])
+    })([dispatcher, context])
     const resolver_addr = resolver_call.decode(resolver_raw)
     if (resolver_addr === ZERO_ADDRESS) return null
     const name_call = name_method({ node: reverse_node })({
@@ -58,11 +58,11 @@ export function get_ens_name(
     const name_raw = await eth_call_ccip({
       to: name_call.to,
       input: name_call.data,
-    })([transports, context])
+    })([dispatcher, context])
     const candidate = name_call.decode(name_raw)
     if (candidate.length === 0) return null
     const forward = await forward_resolve(
-      [transports, context],
+      [dispatcher, context],
       registry,
       candidate,
     )
@@ -78,7 +78,7 @@ async function forward_resolve(
   registry: Address,
   name: string,
 ): Promise<Address | null> {
-  const [transports, context] = resolved
+  const [dispatcher, context] = resolved
   const node = namehash(name)
   const resolver_call = resolver({ node })({
     chain_id: context.chain_id,
@@ -87,7 +87,7 @@ async function forward_resolve(
   const resolver_raw = await eth_call_ccip({
     to: resolver_call.to,
     input: resolver_call.data,
-  })([transports, context])
+  })([dispatcher, context])
   const resolver_addr = resolver_call.decode(resolver_raw)
   if (resolver_addr === ZERO_ADDRESS) return null
   const addr_call = addr({ node })({
@@ -97,7 +97,7 @@ async function forward_resolve(
   const addr_raw = await eth_call_ccip({
     to: addr_call.to,
     input: addr_call.data,
-  })([transports, context])
+  })([dispatcher, context])
   const decoded = addr_call.decode(addr_raw)
   if (decoded === ZERO_ADDRESS) return null
   return decoded

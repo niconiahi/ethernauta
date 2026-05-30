@@ -39,7 +39,7 @@ export function get_ens_address(
   _parameters: Parameters,
 ): Readable<Address | null> {
   return async ([
-    transports,
+    dispatcher,
     context,
   ]: ResolvedReader): Promise<Address | null> => {
     const parameters = parse(ParametersSchema, _parameters)
@@ -47,7 +47,7 @@ export function get_ens_address(
     const found = await find_resolver(
       name,
       parameters.registry,
-      [transports, context],
+      [dispatcher, context],
     )
     if (found === null) return null
     const node = namehash(name)
@@ -59,7 +59,7 @@ export function get_ens_address(
       const raw = await eth_call_ccip({
         to: addr_call.to,
         input: addr_call.data,
-      })([transports, context])
+      })([dispatcher, context])
       const decoded = addr_call.decode(raw)
       if (decoded === ZERO_ADDRESS) return null
       return decoded
@@ -73,7 +73,7 @@ export function get_ens_address(
     const supports_raw = await eth_call_ccip({
       to: supports_call.to,
       input: supports_call.data,
-    })([transports, context])
+    })([dispatcher, context])
     if (!supports_call.decode(supports_raw)) return null
     const resolve_call = resolve({
       name: dns_encode(name),
@@ -85,7 +85,7 @@ export function get_ens_address(
     const resolve_raw = await eth_call_ccip({
       to: resolve_call.to,
       input: resolve_call.data,
-    })([transports, context])
+    })([dispatcher, context])
     const inner = resolve_call.decode(resolve_raw)
     const decoded = addr_call.decode(inner)
     if (decoded === ZERO_ADDRESS) return null

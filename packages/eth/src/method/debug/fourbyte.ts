@@ -9,7 +9,10 @@
 import type { InferOutput } from "valibot"
 import { number, record, string } from "valibot"
 
-export const FourByteTraceSchema = record(string(), number())
+export const FourByteTraceSchema = record(
+  string(),
+  number(),
+)
 export type FourByteTrace = InferOutput<
   typeof FourByteTraceSchema
 >

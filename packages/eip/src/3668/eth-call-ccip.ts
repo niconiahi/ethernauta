@@ -64,7 +64,7 @@ export function eth_call_ccip(
   _fetch?: typeof globalThis.fetch,
 ): Readable<Bytes> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Bytes> => {
     const parameters = parse(
@@ -83,9 +83,7 @@ export function eth_call_ccip(
         "eth_call",
         [{ to, input }, "latest"],
       ])
-      const response = await Promise.any(
-        transports.map((transport) => transport(call)),
-      )
+      const response = await dispatcher(call)
       if (!("error" in response)) {
         return parse(BytesSchema, response.result)
       }

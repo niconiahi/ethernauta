@@ -1,4 +1,7 @@
-import { AddressSchema, BytesSchema } from "@ethernauta/core"
+import {
+  AddressSchema,
+  BytesSchema,
+} from "@ethernauta/core"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -8,10 +11,7 @@ const SENDER_CHECKSUMMED = parse(
   AddressSchema,
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 )
-const CALL_DATA = parse(
-  BytesSchema,
-  "0xdeadbeefcafe",
-)
+const CALL_DATA = parse(BytesSchema, "0xdeadbeefcafe")
 
 describe("substitute-url.ts", () => {
   it("lowercases {sender} per the spec", () => {

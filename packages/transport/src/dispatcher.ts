@@ -1,4 +1,9 @@
-import { type InferOutput, literal, object, union } from "valibot"
+import {
+  type InferOutput,
+  literal,
+  object,
+  union,
+} from "valibot"
 
 import type { Call } from "./call"
 import type { Http } from "./http"
@@ -34,9 +39,7 @@ function create_parallel(transports: Http[]): Dispatcher {
     )
 }
 
-function create_sequential(
-  transports: Http[],
-): Dispatcher {
+function create_sequential(transports: Http[]): Dispatcher {
   return async (call) => {
     const errors: Error[] = []
     for (const transport of transports) {

@@ -25,15 +25,13 @@ export function eth_uninstallFilter(
   _parameters: Parameters,
 ): Readable<boolean> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<boolean> => {
     const method = "eth_uninstallFilter"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

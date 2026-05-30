@@ -23,7 +23,7 @@ export function eth_sendUserOperation({
   entryPoint: Address
 }): Writable<Hash32> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedWriter): Promise<Hash32> => {
     const method = "eth_sendUserOperation"
@@ -32,9 +32,7 @@ export function eth_sendUserOperation({
       method,
       [validated, entryPoint],
     ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

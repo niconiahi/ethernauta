@@ -33,4 +33,6 @@ export const TracerConfigSchema = object({
   timeout: optional(string()),
   tracerConfig: optional(TracerConfigOptionsSchema),
 })
-export type TracerConfig = InferOutput<typeof TracerConfigSchema>
+export type TracerConfig = InferOutput<
+  typeof TracerConfigSchema
+>

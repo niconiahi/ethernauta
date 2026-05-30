@@ -7,25 +7,23 @@ import {
 } from "@ethernauta/core"
 import {
   CallSchema,
+  type Dispatcher,
   type Readable,
   type ResolvedReader,
 } from "@ethernauta/transport"
 import { parse } from "valibot"
 
-import {
-  RUNTIME_PREFIX,
-  RUNTIME_SUFFIX,
-} from "./bytecode"
+import { RUNTIME_PREFIX, RUNTIME_SUFFIX } from "./bytecode"
 
 export function is_clone(
   _address: Address,
 ): Readable<boolean> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<boolean> => {
     const address = parse(AddressSchema, _address)
-    const code = await get_code(transports, address)
+    const code = await get_code(dispatcher, address)
     return matches_runtime(code)
   }
 }
@@ -38,16 +36,14 @@ export function matches_runtime(code: string): boolean {
 }
 
 async function get_code(
-  transports: ResolvedReader[0],
+  dispatcher: Dispatcher,
   address: Address,
 ): Promise<string> {
   const call = parse(CallSchema, [
     "eth_getCode",
     [address, "latest"],
   ])
-  const response = await Promise.any(
-    transports.map((transport) => transport(call)),
-  )
+  const response = await dispatcher(call)
   if ("error" in response) {
     throw new Error(response.error.message)
   }

@@ -4,10 +4,8 @@ import {
   BytesSchema,
   UintSchema,
 } from "@ethernauta/core"
-import {
-  encode_chain_id,
-  type ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -18,6 +16,9 @@ import { calculate_gas_op_stack } from "./calculate-gas-op-stack"
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_8453.chainId,
+})
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
 })
 
 describe("calculate_gas_op_stack", () => {
@@ -43,10 +44,7 @@ describe("calculate_gas_op_stack", () => {
       eth_estimateGas: "0x5208",
       eth_call: l1_fee_padded,
     })
-    const resolved: ResolvedReader = [
-      [transport],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(transport)
     const fees = await calculate_gas_op_stack({
       tx: {
         to: parse(

@@ -1,9 +1,9 @@
 import { address, uint256 } from "@ethernauta/abi"
 import { AddressSchema, UintSchema } from "@ethernauta/core"
+import { create_testing_reader } from "@ethernauta/testing"
 import type {
   Call,
   Http,
-  ResolvedReader,
   Response,
 } from "@ethernauta/transport"
 import { array, object, parse, string } from "valibot"
@@ -57,6 +57,8 @@ const TO_PADDED =
 const ONE_ETH_DATA =
   "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000"
 
+const testing_reader = create_testing_reader()
+
 const LOG_FIXTURE = {
   removed: false,
   logIndex: "0x0",
@@ -72,10 +74,7 @@ const LOG_FIXTURE = {
 describe("get_contract_events", () => {
   it("issues eth_getLogs with the computed topic[0] and decodes results", async () => {
     const { http, captured } = fake_transport([LOG_FIXTURE])
-    const resolved: ResolvedReader = [
-      [http],
-      { chain_id: "eip155:1" },
-    ]
+    const resolved = testing_reader(http)
     const logs = await get_contract_events({
       address: CONTRACT,
       name: "Transfer",
@@ -102,10 +101,7 @@ describe("get_contract_events", () => {
 
   it("forwards indexed value filters into the topic list", async () => {
     const { http, captured } = fake_transport([])
-    const resolved: ResolvedReader = [
-      [http],
-      { chain_id: "eip155:1" },
-    ]
+    const resolved = testing_reader(http)
     await get_contract_events({
       address: CONTRACT,
       name: "Transfer",

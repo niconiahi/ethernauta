@@ -5,10 +5,8 @@ import {
 } from "@ethernauta/core"
 // EOA path moved to @ethernauta/crypto/verify-message-deployed; this file
 // now only covers the on-chain `isValidSignature` branch.
-import type {
-  Http,
-  ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import type { Http } from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -51,9 +49,9 @@ function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
   return parse(BytesSchema, bytes_to_hex(out))
 }
 
-function resolved_with(transport: Http): ResolvedReader {
-  return [[transport], { chain_id: CHAIN_ID }]
-}
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
+})
 
 function ok_response(result: unknown) {
   return { jsonrpc: "2.0" as const, id: 1, result }
@@ -88,7 +86,7 @@ describe("verify-hash.ts — contract path", () => {
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(true)
   })
 
@@ -102,7 +100,7 @@ describe("verify-hash.ts — contract path", () => {
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -114,7 +112,7 @@ describe("verify-hash.ts — contract path", () => {
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -126,7 +124,7 @@ describe("verify-hash.ts — contract path", () => {
       address: CONTRACT_ADDRESS,
       hash: HASH,
       signature: wrong_signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 })

@@ -28,7 +28,7 @@ export function get_ens_text(
   _parameters: Parameters,
 ): Readable<string | null> {
   return async ([
-    transports,
+    dispatcher,
     context,
   ]: ResolvedReader): Promise<string | null> => {
     const parameters = parse(ParametersSchema, _parameters)
@@ -44,7 +44,7 @@ export function get_ens_text(
     const resolver_raw = await eth_call_ccip({
       to: resolver_call.to,
       input: resolver_call.data,
-    })([transports, context])
+    })([dispatcher, context])
     const resolver_addr = resolver_call.decode(resolver_raw)
     if (resolver_addr === ZERO_ADDRESS) return null
     const text_call = text({ node, key: parameters.key })({
@@ -54,7 +54,7 @@ export function get_ens_text(
     const text_raw = await eth_call_ccip({
       to: text_call.to,
       input: text_call.data,
-    })([transports, context])
+    })([dispatcher, context])
     const decoded = text_call.decode(text_raw)
     if (decoded.length === 0) return null
     return decoded

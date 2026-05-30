@@ -1,9 +1,7 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { UintSchema } from "@ethernauta/core"
-import {
-  encode_chain_id,
-  type ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -13,6 +11,9 @@ import { stub_http } from "./test-helpers"
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_1.chainId,
+})
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
 })
 const BLOCK_COUNT_4 = parse(UintSchema, "0x4")
 
@@ -29,10 +30,9 @@ describe("estimate_priority_fee", () => {
         ["0x3b9aca00"],
       ],
     }
-    const resolved: ResolvedReader = [
-      [stub_http(result_payload)],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(
+      stub_http(result_payload),
+    )
     const priority = await estimate_priority_fee({
       block_count: BLOCK_COUNT_4,
       percentile: 10,
@@ -48,10 +48,9 @@ describe("estimate_priority_fee", () => {
       gasUsedRatio: [0.5, 0.5, 0.5, 0.5],
       reward: [["0x1"], ["0x3"], ["0x5"], ["0x7"]],
     }
-    const resolved: ResolvedReader = [
-      [stub_http(result_payload)],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(
+      stub_http(result_payload),
+    )
     const priority = await estimate_priority_fee({
       block_count: BLOCK_COUNT_4,
       percentile: 50,

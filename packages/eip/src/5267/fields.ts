@@ -12,7 +12,12 @@
 // Bits 5–7 are reserved and must be zero per the spec.
 
 import { ByteSchema } from "@ethernauta/core"
-import { type InferOutput, boolean, object, parse } from "valibot"
+import {
+  type InferOutput,
+  boolean,
+  object,
+  parse,
+} from "valibot"
 
 export const FIELD_NAME = 0b00001
 export const FIELD_VERSION = 0b00010

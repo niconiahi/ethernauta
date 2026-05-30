@@ -17,7 +17,10 @@ import { CallFrameSchema } from "./call"
 import { FourByteTraceSchema } from "./fourbyte"
 import { PreStateSchema } from "./prestate"
 import type { TraceResult } from "./result"
-import { STRUCT_TYPE, StructLogResultSchema } from "./struct"
+import {
+  STRUCT_TYPE,
+  StructLogResultSchema,
+} from "./struct"
 import { TRACER_TYPE, type TracerType } from "./tracer"
 
 export function tag(

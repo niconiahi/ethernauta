@@ -30,19 +30,25 @@ export const AccountStateSchema = object({
   code: optional(BytesSchema),
   storage: optional(record(Bytes32Schema, Bytes32Schema)),
 })
-export type AccountState = InferOutput<typeof AccountStateSchema>
+export type AccountState = InferOutput<
+  typeof AccountStateSchema
+>
 
 export const PreStateMapSchema = record(
   AddressSchema,
   AccountStateSchema,
 )
-export type PreStateMap = InferOutput<typeof PreStateMapSchema>
+export type PreStateMap = InferOutput<
+  typeof PreStateMapSchema
+>
 
 export const PreStateDiffSchema = object({
   pre: PreStateMapSchema,
   post: PreStateMapSchema,
 })
-export type PreStateDiff = InferOutput<typeof PreStateDiffSchema>
+export type PreStateDiff = InferOutput<
+  typeof PreStateDiffSchema
+>
 
 export const PreStateSchema = union([
   PreStateDiffSchema,

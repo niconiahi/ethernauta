@@ -25,7 +25,10 @@ function ok_json(_body: unknown): Response {
   })
 }
 
-function status_only(_status: number, _body = ""): Response {
+function status_only(
+  _status: number,
+  _body = "",
+): Response {
   return new Response(_body, { status: _status })
 }
 
@@ -69,7 +72,9 @@ describe("fetch-ccip.ts", () => {
     const first_call = fetch_mock.mock.calls[0]
     if (first_call === undefined) throw new Error("no call")
     const [url, init] = first_call
-    expect(String(url)).toBe("https://gw.example.com/lookup")
+    expect(String(url)).toBe(
+      "https://gw.example.com/lookup",
+    )
     expect(init?.method).toBe("POST")
     const body = JSON.parse(String(init?.body))
     expect(body.data).toBe(CALL_DATA)
@@ -100,7 +105,9 @@ describe("fetch-ccip.ts", () => {
     const fetch_mock = vi
       .fn<typeof globalThis.fetch>()
       .mockResolvedValueOnce(status_only(503, "down"))
-      .mockResolvedValueOnce(ok_json({ data: RESPONSE_DATA }))
+      .mockResolvedValueOnce(
+        ok_json({ data: RESPONSE_DATA }),
+      )
     const result = await fetch_ccip(
       {
         urls: [

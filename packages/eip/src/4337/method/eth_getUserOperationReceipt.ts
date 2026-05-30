@@ -18,16 +18,14 @@ export function eth_getUserOperationReceipt(
   _hash: Hash32,
 ): Readable<UserOperationReceipt | NotFound> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<
     UserOperationReceipt | NotFound
   > => {
     const method = "eth_getUserOperationReceipt"
     const call = parse(CallSchema, [method, [_hash]])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

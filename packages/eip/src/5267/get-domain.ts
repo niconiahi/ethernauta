@@ -31,7 +31,12 @@ import type {
   ContractContext,
 } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
-import { type InferOutput, array as v_array, object, parse } from "valibot"
+import {
+  type InferOutput,
+  array as v_array,
+  object,
+  parse,
+} from "valibot"
 
 import {
   type TypedDataDomain,
@@ -60,7 +65,9 @@ export type DomainResult = InferOutput<
 export function get_domain(): (
   context: ContractContext,
 ) => Callable<DomainResult> {
-  return (context: ContractContext): Callable<DomainResult> => {
+  return (
+    context: ContractContext,
+  ): Callable<DomainResult> => {
     const calldata = encode_function_call({
       name: "eip712Domain",
       args: [] as const,
@@ -97,4 +104,3 @@ export function get_domain(): (
     }
   }
 }
-

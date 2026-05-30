@@ -36,14 +36,15 @@ import { TracerConfigSchema } from "./config"
 import type { BlockTraceEntry } from "./result"
 import { tag } from "./tag"
 
-export const DebugTraceBlockByNumberParametersSchema = union([
-  tuple([BlockNumberOrTagSchema, TracerConfigSchema]),
-  tuple([BlockNumberOrTagSchema]),
-  object({
-    blockNumberOrTag: BlockNumberOrTagSchema,
-    tracerConfig: optional(TracerConfigSchema),
-  }),
-])
+export const DebugTraceBlockByNumberParametersSchema =
+  union([
+    tuple([BlockNumberOrTagSchema, TracerConfigSchema]),
+    tuple([BlockNumberOrTagSchema]),
+    object({
+      blockNumberOrTag: BlockNumberOrTagSchema,
+      tracerConfig: optional(TracerConfigSchema),
+    }),
+  ])
 export type DebugTraceBlockByNumberParameters = InferOutput<
   typeof DebugTraceBlockByNumberParametersSchema
 >
@@ -57,7 +58,7 @@ export function debug_traceBlockByNumber(
   _parameters: DebugTraceBlockByNumberParameters,
 ): Readable<BlockTraceEntry[]> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<BlockTraceEntry[]> => {
     const method = "debug_traceBlockByNumber"
@@ -65,16 +66,15 @@ export function debug_traceBlockByNumber(
       DebugTraceBlockByNumberParametersSchema,
       _parameters,
     )
-    const { block, tracer_config } = split_parameters(parameters)
+    const { block, tracer_config } =
+      split_parameters(parameters)
     const call = parse(
       CallSchema,
       tracer_config === undefined
         ? [method, [block]]
         : [method, [block, tracer_config]],
     )
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new RpcRequestError(response.error)
     }

@@ -34,15 +34,13 @@ export function eth_getProof(
   _parameters: Parameters,
 ): Readable<AccountProof> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<AccountProof> => {
     const method = "eth_getProof"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

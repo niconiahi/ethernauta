@@ -1,7 +1,4 @@
-import {
-  Bytes4Schema,
-  BytesSchema,
-} from "@ethernauta/core"
+import { Bytes4Schema, BytesSchema } from "@ethernauta/core"
 import { hex_to_bytes } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"

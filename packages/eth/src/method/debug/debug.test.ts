@@ -13,6 +13,7 @@ import {
   Hash32Schema,
   UintSchema,
 } from "@ethernauta/core"
+import { create_testing_reader } from "@ethernauta/testing"
 import type {
   Call,
   Response,
@@ -26,8 +27,14 @@ import { debug_traceBlockByNumber } from "./debug-trace-block-by-number"
 import { debug_traceCall } from "./debug-trace-call"
 import { debug_traceTransaction } from "./debug-trace-transaction"
 import { FourByteTraceSchema } from "./fourbyte"
-import { PreStateMapSchema, PreStateSchema } from "./prestate"
-import { STRUCT_TYPE, StructLogResultSchema } from "./struct"
+import {
+  PreStateMapSchema,
+  PreStateSchema,
+} from "./prestate"
+import {
+  STRUCT_TYPE,
+  StructLogResultSchema,
+} from "./struct"
 import { TRACER_TYPE } from "./tracer"
 
 const FROM = parse(
@@ -43,19 +50,15 @@ const GAS = parse(UintSchema, "0x5208")
 const GAS_USED = parse(UintSchema, "0x5208")
 const INPUT = parse(BytesSchema, "0xdeadbeef")
 const OUTPUT = parse(BytesSchema, "0x")
-const TX_HASH = parse(
-  Hash32Schema,
-  `0x${"a".repeat(64)}`,
-)
-const TX_HASH_2 = parse(
-  Hash32Schema,
-  `0x${"b".repeat(64)}`,
-)
+const TX_HASH = parse(Hash32Schema, `0x${"a".repeat(64)}`)
+const TX_HASH_2 = parse(Hash32Schema, `0x${"b".repeat(64)}`)
 const SLOT = parse(Bytes32Schema, `0x${"0".repeat(64)}`)
 const SLOT_VALUE = parse(
   Bytes32Schema,
   `0x${"f".repeat(64)}`,
 )
+
+const testing_reader = create_testing_reader()
 
 function make_capturing_transport(canned: Response): {
   transport: (call: Call) => Promise<Response>
@@ -97,7 +100,9 @@ describe("CallFrameSchema", () => {
       output: OUTPUT,
       calls: [inner],
     }
-    expect(() => parse(CallFrameSchema, outer)).not.toThrow()
+    expect(() =>
+      parse(CallFrameSchema, outer),
+    ).not.toThrow()
   })
 
   it("rejects a call type the schema doesn't list", () => {
@@ -119,14 +124,20 @@ describe("PreStateSchema", () => {
       [FROM]: { balance: parse(UintSchema, "0x1") },
       [TO]: { storage: { [SLOT]: SLOT_VALUE } },
     }
-    expect(() => parse(PreStateMapSchema, map)).not.toThrow()
+    expect(() =>
+      parse(PreStateMapSchema, map),
+    ).not.toThrow()
     expect(() => parse(PreStateSchema, map)).not.toThrow()
   })
 
   it("round-trips a { pre, post } shape (diffMode)", () => {
     const diff = {
-      pre: { [FROM]: { balance: parse(UintSchema, "0x1") } },
-      post: { [FROM]: { balance: parse(UintSchema, "0x2") } },
+      pre: {
+        [FROM]: { balance: parse(UintSchema, "0x1") },
+      },
+      post: {
+        [FROM]: { balance: parse(UintSchema, "0x2") },
+      },
     }
     expect(() => parse(PreStateSchema, diff)).not.toThrow()
   })
@@ -178,7 +189,7 @@ describe("debug_traceCall — wire shape + dispatch", () => {
     const result = await debug_traceCall([
       { to: TO, input: INPUT },
       "latest",
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     expect(calls).toHaveLength(1)
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
@@ -208,7 +219,7 @@ describe("debug_traceCall — wire shape + dispatch", () => {
       { to: TO, input: INPUT },
       "latest",
       { tracer: TRACER_TYPE.CALL },
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
@@ -231,7 +242,7 @@ describe("debug_traceCall — wire shape + dispatch", () => {
       { to: TO, input: INPUT },
       "latest",
       { tracer: TRACER_TYPE.PRESTATE },
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     expect(result.tracer).toBe(TRACER_TYPE.PRESTATE)
   })
 
@@ -243,7 +254,7 @@ describe("debug_traceCall — wire shape + dispatch", () => {
       { to: TO, input: INPUT },
       "latest",
       { tracer: TRACER_TYPE.FOURBYTE },
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     expect(result.tracer).toBe(TRACER_TYPE.FOURBYTE)
   })
 
@@ -255,7 +266,7 @@ describe("debug_traceCall — wire shape + dispatch", () => {
       transaction: { to: TO, input: INPUT },
       blockNumberOrTagOrHash: "latest",
       tracerConfig: { tracer: TRACER_TYPE.FOURBYTE },
-    })([[transport], { chain_id: "eip155:1" }])
+    })(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
@@ -277,10 +288,9 @@ describe("debug_traceTransaction — wire shape + dispatch", () => {
         structLogs: [],
       }),
     )
-    const result = await debug_traceTransaction([TX_HASH])([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const result = await debug_traceTransaction([TX_HASH])(
+      testing_reader(transport),
+    )
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [method, params] = call0
@@ -296,11 +306,14 @@ describe("debug_traceTransaction — wire shape + dispatch", () => {
     await debug_traceTransaction([
       TX_HASH,
       { tracer: TRACER_TYPE.FOURBYTE },
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
-    expect(params).toEqual([TX_HASH, { tracer: TRACER_TYPE.FOURBYTE }])
+    expect(params).toEqual([
+      TX_HASH,
+      { tracer: TRACER_TYPE.FOURBYTE },
+    ])
   })
 })
 
@@ -322,7 +335,7 @@ describe("debug_traceBlockByNumber — wire shape + per-entry dispatch", () => {
     const entries = await debug_traceBlockByNumber([
       block,
       { tracer: TRACER_TYPE.FOURBYTE },
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     expect(call0[0]).toBe("debug_traceBlockByNumber")

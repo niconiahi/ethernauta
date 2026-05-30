@@ -3,10 +3,8 @@ import {
   AddressSchema,
   BytesSchema,
 } from "@ethernauta/core"
-import {
-  encode_chain_id,
-  type ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -16,6 +14,9 @@ import { stub_http } from "./test-helpers"
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_1.chainId,
+})
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
 })
 const TRANSFER_TARGET = parse(
   AddressSchema,
@@ -30,10 +31,7 @@ const INPUT_DATA = parse(BytesSchema, "0xdeadbeef")
 describe("buffer_gas_limit", () => {
   it("returns the estimate unchanged at multiplier 1.0", async () => {
     // eth_estimateGas → 0x5208 (21000 — native transfer baseline).
-    const resolved: ResolvedReader = [
-      [stub_http("0x5208")],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(stub_http("0x5208"))
     const buffered = await buffer_gas_limit({
       tx: { to: TRANSFER_TARGET },
       multiplier: 1.0,
@@ -43,10 +41,7 @@ describe("buffer_gas_limit", () => {
 
   it("buffers by 1.2× and rounds up", async () => {
     // 21000 × 1.2 = 25200 = 0x6270.
-    const resolved: ResolvedReader = [
-      [stub_http("0x5208")],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(stub_http("0x5208"))
     const buffered = await buffer_gas_limit({
       tx: { to: TRANSFER_TARGET },
       multiplier: 1.2,
@@ -56,10 +51,7 @@ describe("buffer_gas_limit", () => {
 
   it("buffers by 2.0× on a contract call", async () => {
     // 0x186a0 = 100_000. × 2 = 200_000 = 0x30d40.
-    const resolved: ResolvedReader = [
-      [stub_http("0x186a0")],
-      { chain_id: CHAIN_ID },
-    ]
+    const resolved = testing_reader(stub_http("0x186a0"))
     const buffered = await buffer_gas_limit({
       tx: {
         to: CONTRACT_TARGET,

@@ -59,7 +59,8 @@ export function parse_offchain_lookup_revert(
 ): OffchainLookupError | NotFound {
   const reason = decode_revert_reason(_revert_data ?? null)
   if (reason.kind !== "custom") return null
-  if (reason.selector !== OFFCHAIN_LOOKUP_SELECTOR) return null
+  if (reason.selector !== OFFCHAIN_LOOKUP_SELECTOR)
+    return null
   try {
     const decoded = offchain_lookup_codec.decode(
       hex_to_bytes(reason.data),

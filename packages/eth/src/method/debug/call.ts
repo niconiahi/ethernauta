@@ -74,7 +74,9 @@ export const CallFrameLogSchema = object({
   data: BytesSchema,
   position: optional(number()),
 })
-export type CallFrameLog = InferOutput<typeof CallFrameLogSchema>
+export type CallFrameLog = InferOutput<
+  typeof CallFrameLogSchema
+>
 
 // allow-violation: R4-recursive-schema
 export type CallFrame = {
@@ -91,21 +93,23 @@ export type CallFrame = {
   calls?: CallFrame[]
   logs?: CallFrameLog[]
 }
-export const CallFrameSchema: GenericSchema<unknown, CallFrame> =
-  object({
-    type: CallTypeSchema,
-    from: AddressSchema,
-    to: optional(AddressSchema),
-    value: optional(UintSchema),
-    gas: UintSchema,
-    gasUsed: UintSchema,
-    input: BytesSchema,
-    output: optional(BytesSchema),
-    error: optional(string()),
-    revertReason: optional(string()),
-    calls: optional(array(lazy(() => CallFrameSchema))),
-    logs: optional(array(CallFrameLogSchema)),
-  })
+export const CallFrameSchema: GenericSchema<
+  unknown,
+  CallFrame
+> = object({
+  type: CallTypeSchema,
+  from: AddressSchema,
+  to: optional(AddressSchema),
+  value: optional(UintSchema),
+  gas: UintSchema,
+  gasUsed: UintSchema,
+  input: BytesSchema,
+  output: optional(BytesSchema),
+  error: optional(string()),
+  revertReason: optional(string()),
+  calls: optional(array(lazy(() => CallFrameSchema))),
+  logs: optional(array(CallFrameLogSchema)),
+})
 
 export const CallTracerConfigSchema = object({
   onlyTopCall: optional(boolean()),

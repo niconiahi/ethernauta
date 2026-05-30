@@ -128,7 +128,8 @@ describe("PaymasterUserOperationSchema (v0.6 first)", () => {
   it("rejects a payload missing required fields", () => {
     expect(() =>
       parse(PaymasterUserOperationSchema, {
-        sender: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        sender:
+          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       }),
     ).toThrow(ValiError)
   })

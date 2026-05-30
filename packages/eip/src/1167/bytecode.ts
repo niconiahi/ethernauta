@@ -14,7 +14,8 @@
 //   f3 (RETURN: return memory[0..45])
 
 export const RUNTIME_PREFIX = "0x363d3d373d3d3d363d73"
-export const RUNTIME_SUFFIX = "5af43d82803e903d91602b57fd5bf3"
+export const RUNTIME_SUFFIX =
+  "5af43d82803e903d91602b57fd5bf3"
 export const INIT_PREFIX = "0x3d602d80600a3d3981f3"
 
 export const RUNTIME_LENGTH_BYTES = 45

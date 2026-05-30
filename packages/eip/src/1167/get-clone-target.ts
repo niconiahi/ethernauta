@@ -20,7 +20,7 @@ export function get_clone_target(
   _address: Address,
 ): Readable<Address | NotFound> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Address | NotFound> => {
     const address = parse(AddressSchema, _address)
@@ -28,9 +28,7 @@ export function get_clone_target(
       "eth_getCode",
       [address, "latest"],
     ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

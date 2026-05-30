@@ -26,6 +26,7 @@ import {
   CallSchema,
   type Readable,
   type ResolvedReader,
+  type Response,
 } from "@ethernauta/transport"
 import {
   bytes_to_hex,
@@ -77,7 +78,7 @@ export function verify_hash(
   _parameters: VerifyHashParameters,
 ): Readable<boolean> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<boolean> => {
     const parameters = parse(
@@ -92,13 +93,9 @@ export function verify_hash(
       "eth_call",
       [{ to: parameters.address, input }, "latest"],
     ])
-    let response: Awaited<
-      ReturnType<(typeof transports)[number]>
-    >
+    let response: Response
     try {
-      response = await Promise.any(
-        transports.map((transport) => transport(call)),
-      )
+      response = await dispatcher(call)
     } catch {
       return false
     }

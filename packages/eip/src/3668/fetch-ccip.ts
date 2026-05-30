@@ -61,7 +61,9 @@ export class CcipFetchError extends Error {
 }
 
 export class CcipAllGatewaysFailedError extends Error {
-  readonly attempts: ReadonlyArray<readonly [string, number]>
+  readonly attempts: ReadonlyArray<
+    readonly [string, number]
+  >
   constructor(
     _attempts: ReadonlyArray<readonly [string, number]>,
   ) {

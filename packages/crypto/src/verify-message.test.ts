@@ -16,10 +16,8 @@ import {
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { MAGIC_BYTES } from "@ethernauta/eip/6492"
-import type {
-  Http,
-  ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import type { Http } from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -53,9 +51,9 @@ const OTHER_ADDRESS = parse(
 )
 const CHAIN_ID = "eip155:1"
 
-function resolved_with(transport: Http): ResolvedReader {
-  return [[transport], { chain_id: CHAIN_ID }]
-}
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
+})
 
 function ok(result: unknown) {
   return { jsonrpc: "2.0" as const, id: 1, result }
@@ -92,7 +90,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: ADDRESS,
       message,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(true)
     expect(transport).toHaveBeenCalledOnce()
   })
@@ -122,7 +120,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: ADDRESS,
       message: siwe_message,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(true)
   })
 
@@ -138,7 +136,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: ADDRESS,
       message: bytes,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(true)
   })
 
@@ -155,7 +153,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: ADDRESS,
       message,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -169,7 +167,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: OTHER_ADDRESS,
       message,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -183,7 +181,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: ADDRESS,
       message,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -195,7 +193,7 @@ describe("verify_message_deployed — EOA branch", () => {
       address: ADDRESS,
       message: "hello",
       signature: parse(BytesSchema, "0xdeadbeef"),
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 })
@@ -211,7 +209,7 @@ describe("verify_message — router on the 6492 wrap suffix", () => {
       address: ADDRESS,
       message,
       signature,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(true)
     // deployed-path on an EOA = one eth_getCode call, no eth_call
     expect(transport).toHaveBeenCalledOnce()
@@ -233,7 +231,7 @@ describe("verify_message — router on the 6492 wrap suffix", () => {
       address: ADDRESS,
       message: "hello",
       signature,
-    })(resolved_with(transport)).catch(() => undefined)
+    })(testing_reader(transport)).catch(() => undefined)
     const methods = transport.mock.calls.map(
       (call) => call[0][0],
     )

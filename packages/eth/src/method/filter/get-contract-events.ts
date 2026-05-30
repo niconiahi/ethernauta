@@ -53,7 +53,7 @@ export function get_contract_events<
   },
 ): Readable<DecodedEventLog[]> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<DecodedEventLog[]> => {
     const { args } = _parameters
@@ -79,7 +79,7 @@ export function get_contract_events<
     })
     const results = await eth_getLogs([
       { address, fromBlock, toBlock, topics },
-    ])([transports, _context])
+    ])([dispatcher, _context])
     return results.map((entry) => {
       const log = parse(LogSchema, entry)
       return decode_event_log({

@@ -3,10 +3,8 @@ import {
   BytesSchema,
   Hash32Schema,
 } from "@ethernauta/core"
-import type {
-  Http,
-  ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import type { Http } from "@ethernauta/transport"
 import { invariant } from "@ethernauta/utils"
 import {
   object,
@@ -30,9 +28,9 @@ const HASH = parse(
 const SIGNATURE = parse(BytesSchema, `0x${"ab".repeat(65)}`)
 const CHAIN_ID = "eip155:1"
 
-function resolved_with(transport: Http): ResolvedReader {
-  return [[transport], { chain_id: CHAIN_ID }]
-}
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
+})
 
 function ok(result: unknown) {
   return { jsonrpc: "2.0" as const, id: 1, result }
@@ -55,7 +53,7 @@ describe("verify-hash.ts (6492)", () => {
       address: ADDRESS,
       hash: HASH,
       signature: SIGNATURE,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(true)
   })
 
@@ -67,7 +65,7 @@ describe("verify-hash.ts (6492)", () => {
       address: ADDRESS,
       hash: HASH,
       signature: SIGNATURE,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -79,7 +77,7 @@ describe("verify-hash.ts (6492)", () => {
       address: ADDRESS,
       hash: HASH,
       signature: SIGNATURE,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -91,7 +89,7 @@ describe("verify-hash.ts (6492)", () => {
       address: ADDRESS,
       hash: HASH,
       signature: SIGNATURE,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -103,7 +101,7 @@ describe("verify-hash.ts (6492)", () => {
       address: ADDRESS,
       hash: HASH,
       signature: SIGNATURE,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toBe(false)
   })
 
@@ -115,7 +113,7 @@ describe("verify-hash.ts (6492)", () => {
       address: ADDRESS,
       hash: HASH,
       signature: SIGNATURE,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     const [recorded] = transport.mock.calls
     invariant(
       recorded,

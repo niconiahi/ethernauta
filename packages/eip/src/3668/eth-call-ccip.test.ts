@@ -11,6 +11,7 @@ import {
   Bytes4Schema,
   BytesSchema,
 } from "@ethernauta/core"
+import { create_testing_reader } from "@ethernauta/testing"
 import type { Call, Response } from "@ethernauta/transport"
 import { RpcRequestError } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
@@ -34,6 +35,8 @@ const GATEWAY_PAYLOAD = parse(BytesSchema, "0xfeed")
 const CALLBACK_SELECTOR = parse(Bytes4Schema, "0xf4d4d2f8")
 const EXTRA_DATA = parse(BytesSchema, "0xcafe")
 const ORIGINAL_CALLDATA = parse(BytesSchema, "0xbeef")
+
+const testing_reader = create_testing_reader()
 
 const lookup_codec = tuple({
   sender: address(),
@@ -77,7 +80,10 @@ function offchain_lookup_response(
   }
 }
 
-function ok_response(_id: string, _result: string): Response {
+function ok_response(
+  _id: string,
+  _result: string,
+): Response {
   return { id: _id, jsonrpc: "2.0", result: _result }
 }
 
@@ -96,15 +102,15 @@ function error_response(
 
 describe("eth-call-ccip.ts", () => {
   it("returns the eth_call result directly when there is no revert", async () => {
-    const transport = vi.fn(
-      async (_call: Call) => ok_response("1", FINAL_RESULT),
+    const transport = vi.fn(async (_call: Call) =>
+      ok_response("1", FINAL_RESULT),
     )
     const fetch_mock = vi.fn()
     const result = await eth_call_ccip(
       { to: CONTRACT, input: INITIAL_INPUT },
       undefined,
       fetch_mock,
-    )([[transport], { chain_id: "eip155:1" }])
+    )(testing_reader(transport))
     expect(result).toBe(FINAL_RESULT)
     expect(transport).toHaveBeenCalledOnce()
     expect(fetch_mock).not.toHaveBeenCalled()
@@ -130,7 +136,7 @@ describe("eth-call-ccip.ts", () => {
       { to: CONTRACT, input: INITIAL_INPUT },
       undefined,
       fetch_mock,
-    )([[transport], { chain_id: "eip155:1" }])
+    )(testing_reader(transport))
     expect(result).toBe(FINAL_RESULT)
     expect(transport).toHaveBeenCalledTimes(2)
     expect(fetch_mock).toHaveBeenCalledOnce()
@@ -150,26 +156,26 @@ describe("eth-call-ccip.ts", () => {
       typeof first_param !== "object"
     )
       throw new Error("expected tx object")
-    const to_field = "to" in first_param ? first_param.to : null
+    const to_field =
+      "to" in first_param ? first_param.to : null
     expect(to_field).toBe(CALLBACK_TARGET)
   })
 
   it("rethrows non-OffchainLookup reverts via the typed rpc error", async () => {
-    const transport = vi.fn(
-      async (_call: Call) =>
-        error_response(
-          "1",
-          3,
-          "execution reverted",
-          "0xdeadbeef",
-        ),
+    const transport = vi.fn(async (_call: Call) =>
+      error_response(
+        "1",
+        3,
+        "execution reverted",
+        "0xdeadbeef",
+      ),
     )
     const fetch_mock = vi.fn()
     const error = await eth_call_ccip(
       { to: CONTRACT, input: INITIAL_INPUT },
       undefined,
       fetch_mock,
-    )([[transport], { chain_id: "eip155:1" }]).catch(
+    )(testing_reader(transport)).catch(
       (e) => e,
     )
     expect(error).toBeInstanceOf(RpcRequestError)
@@ -178,11 +184,10 @@ describe("eth-call-ccip.ts", () => {
   })
 
   it("throws CcipLookupError when max_redirects is exhausted", async () => {
-    const transport = vi.fn(
-      async (_call: Call) =>
-        offchain_lookup_response("1", [
-          "https://gw.example.com/{data}",
-        ]),
+    const transport = vi.fn(async (_call: Call) =>
+      offchain_lookup_response("1", [
+        "https://gw.example.com/{data}",
+      ]),
     )
     const fetch_mock = vi.fn(
       async () =>
@@ -195,7 +200,7 @@ describe("eth-call-ccip.ts", () => {
       { to: CONTRACT, input: INITIAL_INPUT },
       { max_redirects: 2 },
       fetch_mock,
-    )([[transport], { chain_id: "eip155:1" }]).catch(
+    )(testing_reader(transport)).catch(
       (e) => e,
     )
     expect(error).toBeInstanceOf(CcipLookupError)
@@ -207,11 +212,10 @@ describe("eth-call-ccip.ts", () => {
   })
 
   it("uses the default max_redirects of 4 when options are omitted", async () => {
-    const transport = vi.fn(
-      async (_call: Call) =>
-        offchain_lookup_response("1", [
-          "https://gw.example.com/{data}",
-        ]),
+    const transport = vi.fn(async (_call: Call) =>
+      offchain_lookup_response("1", [
+        "https://gw.example.com/{data}",
+      ]),
     )
     const fetch_mock = vi.fn(
       async () =>
@@ -224,7 +228,7 @@ describe("eth-call-ccip.ts", () => {
       { to: CONTRACT, input: INITIAL_INPUT },
       undefined,
       fetch_mock,
-    )([[transport], { chain_id: "eip155:1" }]).catch(
+    )(testing_reader(transport)).catch(
       (e) => e,
     )
     expect(error).toBeInstanceOf(CcipLookupError)

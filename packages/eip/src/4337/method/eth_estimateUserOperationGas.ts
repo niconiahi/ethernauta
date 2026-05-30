@@ -24,7 +24,7 @@ export function eth_estimateUserOperationGas({
   entryPoint: Address
 }): Readable<EstimateUserOperationGasResult> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<EstimateUserOperationGasResult> => {
     const method = "eth_estimateUserOperationGas"
@@ -33,9 +33,7 @@ export function eth_estimateUserOperationGas({
       method,
       [validated, entryPoint],
     ])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

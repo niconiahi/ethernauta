@@ -53,7 +53,7 @@ const reader = create_reader([
 ])
 
 const ctx = reader({ chain_id: MAINNET_CHAIN_ID })
-const [transports] = ctx
+const [dispatcher] = ctx
 
 type SetupData = {
   resolver: Address
@@ -163,9 +163,7 @@ export function CcipRead3668Demo() {
           "latest",
         ],
       ])
-      const response = await Promise.any(
-        transports.map((t) => t(call)),
-      )
+      const response = await dispatcher(call)
       if (!("error" in response)) {
         set_error(
           "Expected a revert but got a successful response — this contract did not trigger OffchainLookup.",
@@ -250,9 +248,7 @@ export function CcipRead3668Demo() {
         "eth_call",
         [{ to: lookup.sender, input: callback }, "latest"],
       ])
-      const response = await Promise.any(
-        transports.map((t) => t(call)),
-      )
+      const response = await dispatcher(call)
       if ("error" in response) {
         throw new RpcRequestError(response.error)
       }

@@ -4,16 +4,13 @@ import {
   BytesSchema,
   UintSchema,
 } from "@ethernauta/core"
-import type { Call } from "@ethernauta/transport"
-import type { Response } from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import type { Call, Response } from "@ethernauta/transport"
 import { RpcRequestError } from "@ethernauta/transport"
 import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
-import {
-  eth_call,
-  StateOverrideEntrySchema,
-} from "./call"
+import { eth_call, StateOverrideEntrySchema } from "./call"
 
 const TO = parse(
   AddressSchema,
@@ -24,15 +21,14 @@ const HOLDER = parse(
   "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
 )
 const CALLDATA = parse(BytesSchema, "0xdeadbeef")
-const SLOT = parse(
-  Bytes32Schema,
-  `0x${"0".repeat(64)}`,
-)
+const SLOT = parse(Bytes32Schema, `0x${"0".repeat(64)}`)
 const VALUE_BYTES32 = parse(
   Bytes32Schema,
   `0x${"f".repeat(64)}`,
 )
 const BALANCE = parse(UintSchema, "0x1")
+
+const testing_reader = create_testing_reader()
 
 function make_capturing_transport(): {
   transport: (_call: Call) => Promise<Response>
@@ -90,10 +86,9 @@ describe("StateOverrideEntrySchema", () => {
 describe("eth_call wire shape", () => {
   it("omits trailing nulls when no override given (tuple, no block)", async () => {
     const { transport, calls } = make_capturing_transport()
-    await eth_call([{ to: TO, input: CALLDATA }])([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    await eth_call([{ to: TO, input: CALLDATA }])(
+      testing_reader(transport),
+    )
     expect(calls).toHaveLength(1)
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
@@ -107,7 +102,7 @@ describe("eth_call wire shape", () => {
     await eth_call([
       { to: TO, input: CALLDATA },
       "finalized",
-    ])([[transport], { chain_id: "eip155:1" }])
+    ])(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
@@ -119,10 +114,9 @@ describe("eth_call wire shape", () => {
 
   it("appends override as third positional, defaulting block to latest", async () => {
     const { transport, calls } = make_capturing_transport()
-    await eth_call(
-      [{ to: TO, input: CALLDATA }],
-      { [HOLDER]: { balance: BALANCE } },
-    )([[transport], { chain_id: "eip155:1" }])
+    await eth_call([{ to: TO, input: CALLDATA }], {
+      [HOLDER]: { balance: BALANCE },
+    })(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
@@ -135,10 +129,9 @@ describe("eth_call wire shape", () => {
 
   it("uses caller-provided block tag alongside override", async () => {
     const { transport, calls } = make_capturing_transport()
-    await eth_call(
-      [{ to: TO, input: CALLDATA }, "safe"],
-      { [HOLDER]: { balance: BALANCE } },
-    )([[transport], { chain_id: "eip155:1" }])
+    await eth_call([{ to: TO, input: CALLDATA }, "safe"], {
+      [HOLDER]: { balance: BALANCE },
+    })(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
@@ -157,7 +150,7 @@ describe("eth_call wire shape", () => {
         blockNumberOrTagOrHash: "latest",
       },
       { [HOLDER]: { code: parse(BytesSchema, "0x6001") } },
-    )([[transport], { chain_id: "eip155:1" }])
+    )(testing_reader(transport))
     const call0 = calls[0]
     invariant(call0, "expected one captured call")
     const [, params] = call0
@@ -180,10 +173,9 @@ describe("eth_call wire shape", () => {
         data: "0x556f1830",
       },
     })
-    const promise = eth_call([{ to: TO, input: CALLDATA }])([
-      [error_transport],
-      { chain_id: "eip155:1" },
-    ])
+    const promise = eth_call([{ to: TO, input: CALLDATA }])(
+      testing_reader(error_transport),
+    )
     const error = await promise.catch((e) => e)
     expect(error).toBeInstanceOf(RpcRequestError)
     if (error instanceof RpcRequestError) {

@@ -39,10 +39,8 @@ export function zks_estimate_fee(
       "zks_estimateFee",
       [tx],
     ])
-    const [transports] = resolved
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const [dispatcher] = resolved
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

@@ -1,4 +1,5 @@
 import { AddressSchema } from "@ethernauta/core"
+import { create_testing_reader } from "@ethernauta/testing"
 import type { Call, Response } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
@@ -19,6 +20,8 @@ const PROXY = parse(
 const IMPL = "0x43506849d7c04f9138d1a2050bbf3a0c054402dd"
 const ADMIN = "0x7e4a8391c728fed9069b2962699ab416628b19fa"
 const BEACON = "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"
+
+const testing_reader = create_testing_reader()
 
 function transport_for(
   expected_slot: string,
@@ -51,10 +54,7 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       `0x000000000000000000000000${IMPL.slice(2)}`,
     )
-    const result = await get_implementation(PROXY)([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const result = await get_implementation(PROXY)(testing_reader(transport))
     expect(result).toBe(IMPL)
   })
 
@@ -63,19 +63,16 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       IMPL,
     )
-    const result = await get_implementation(PROXY)([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const result = await get_implementation(PROXY)(testing_reader(transport))
     expect(result).toBe(IMPL)
   })
 
   it("returns not_found for a zero slot (minified)", async () => {
-    const transport = transport_for(IMPLEMENTATION_SLOT, "0x0")
-    const result = await get_implementation(PROXY)([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const transport = transport_for(
+      IMPLEMENTATION_SLOT,
+      "0x0",
+    )
+    const result = await get_implementation(PROXY)(testing_reader(transport))
     expect(result).toBeNull()
   })
 
@@ -84,10 +81,7 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       `0x${"0".repeat(64)}`,
     )
-    const result = await get_implementation(PROXY)([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const result = await get_implementation(PROXY)(testing_reader(transport))
     expect(result).toBeNull()
   })
 })
@@ -98,10 +92,7 @@ describe("get_admin", () => {
       ADMIN_SLOT,
       `0x000000000000000000000000${ADMIN.slice(2)}`,
     )
-    const result = await get_admin(PROXY)([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const result = await get_admin(PROXY)(testing_reader(transport))
     expect(result).toBe(ADMIN)
   })
 })
@@ -112,10 +103,7 @@ describe("get_beacon", () => {
       BEACON_SLOT,
       `0x000000000000000000000000${BEACON.slice(2)}`,
     )
-    const result = await get_beacon(PROXY)([
-      [transport],
-      { chain_id: "eip155:1" },
-    ])
+    const result = await get_beacon(PROXY)(testing_reader(transport))
     expect(result).toBe(BEACON)
   })
 })

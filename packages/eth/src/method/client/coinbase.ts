@@ -9,14 +9,12 @@ import { parse } from "valibot"
 
 export function eth_coinbase(): Readable<Address> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<Address> => {
     const method = "eth_coinbase"
     const call = parse(CallSchema, [method])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

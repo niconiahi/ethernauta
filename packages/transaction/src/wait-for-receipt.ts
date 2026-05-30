@@ -57,7 +57,7 @@ export function wait_for_receipt(
   _parameters: Parameters,
 ): Trackable<ConfirmedReceipt> {
   return async ([
-    transports,
+    dispatcher,
     context,
   ]): Promise<ConfirmedReceipt> => {
     const parameters = parse(ParametersSchema, _parameters)
@@ -76,10 +76,10 @@ export function wait_for_receipt(
       }
       const receipt = await eth_getTransactionReceipt([
         hash,
-      ])([transports, context])
+      ])([dispatcher, context])
       if (receipt !== null) {
         const current_hex = await eth_blockNumber()([
-          transports,
+          dispatcher,
           context,
         ])
         const current = hex_to_number(current_hex)

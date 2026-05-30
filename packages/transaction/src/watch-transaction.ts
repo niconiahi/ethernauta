@@ -31,11 +31,11 @@ export function watch_transaction(
   hash: Hash32,
   callback: (transaction: Transaction) => void,
 ): Watchable {
-  return ([transports, context]): (() => void) => {
+  return ([dispatcher, context]): (() => void) => {
     const interval_id = setInterval(async () => {
       const receipt = await eth_getTransactionReceipt([
         hash,
-      ])([transports, context])
+      ])([dispatcher, context])
       if (!receipt) return
       if (!is_post_byzantium(receipt)) return
       if (receipt.status === RECEIPT_STATUS.SUCCESS) {

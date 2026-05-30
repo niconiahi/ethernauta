@@ -9,10 +9,8 @@ import {
   Hash32Schema,
 } from "@ethernauta/core"
 import { MAGIC_VALUE } from "@ethernauta/eip/1271"
-import type {
-  Http,
-  ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import type { Http } from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -62,9 +60,9 @@ function sign_to_hex(digest: Uint8Array, priv: Uint8Array) {
   return parse(BytesSchema, bytes_to_hex(out))
 }
 
-function resolved_with(transport: Http): ResolvedReader {
-  return [[transport], { chain_id: CHAIN_ID }]
-}
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
+})
 
 function ok(result: unknown) {
   return { jsonrpc: "2.0" as const, id: 1, result }
@@ -85,7 +83,7 @@ describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
       EOA_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport),
+      testing_reader(transport),
     )
     expect(result).toBe(true)
     expect(transport).toHaveBeenCalledOnce()
@@ -99,7 +97,7 @@ describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
       OTHER_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport),
+      testing_reader(transport),
     )
     expect(result).toBe(false)
     expect(transport).toHaveBeenCalledOnce()
@@ -113,7 +111,7 @@ describe("verify_hash_deployed — EOA branch (eth_getCode 0x)", () => {
       EOA_ADDRESS,
       HASH,
       parse(BytesSchema, "0xdeadbeef"),
-      resolved_with(transport),
+      testing_reader(transport),
     )
     expect(result).toBe(false)
   })
@@ -135,7 +133,7 @@ describe("verify_hash_deployed — contract branch (eth_getCode non-empty)", () 
       CONTRACT_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport),
+      testing_reader(transport),
     )
     expect(result).toBe(true)
   })
@@ -152,7 +150,7 @@ describe("verify_hash_deployed — contract branch (eth_getCode non-empty)", () 
       CONTRACT_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport),
+      testing_reader(transport),
     )
     expect(result).toBe(false)
   })
@@ -167,7 +165,7 @@ describe("verify_hash_deployed — eth_getCode failure", () => {
       EOA_ADDRESS,
       HASH,
       VALID_SIGNATURE,
-      resolved_with(transport),
+      testing_reader(transport),
     )
     expect(result).toBe(false)
   })

@@ -32,7 +32,7 @@ export type FindResolverResult = InferOutput<
 export async function find_resolver(
   _normalized_name: string,
   _registry_override: Address | undefined,
-  [transports, context]: ResolvedReader,
+  [dispatcher, context]: ResolvedReader,
 ): Promise<FindResolverResult | null> {
   const registry = get_registry_address(
     context.chain_id,
@@ -52,7 +52,7 @@ export async function find_resolver(
     const raw = await eth_call_ccip({
       to: call.to,
       input: call.data,
-    })([transports, context])
+    })([dispatcher, context])
     const decoded = call.decode(raw)
     if (decoded !== ZERO_ADDRESS) {
       return { resolver: decoded, found_at: candidate }

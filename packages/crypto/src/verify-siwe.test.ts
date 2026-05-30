@@ -4,10 +4,8 @@ import {
 } from "@ethernauta/core"
 import { build_personal_message } from "@ethernauta/eip/191"
 import { build_siwe_message } from "@ethernauta/eip/4361"
-import type {
-  Http,
-  ResolvedReader,
-} from "@ethernauta/transport"
+import { create_testing_reader } from "@ethernauta/testing"
+import type { Http } from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bytes,
@@ -32,9 +30,9 @@ const ADDRESS = parse(
 )
 const CHAIN_ID = "eip155:1"
 
-function resolved_with(transport: Http): ResolvedReader {
-  return [[transport], { chain_id: CHAIN_ID }]
-}
+const testing_reader = create_testing_reader({
+  chain_id: CHAIN_ID,
+})
 
 function personal_sign(message: string, priv: Uint8Array) {
   const digest = keccak_256(build_personal_message(message))
@@ -88,7 +86,7 @@ describe("verify.ts — verify_siwe_message", () => {
         address: ADDRESS,
       },
       now: NOW,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toEqual({
       ok: true,
       fields: valid_fields(),
@@ -107,7 +105,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: NOW,
-    })(resolved_with(vi.fn<Http>()))
+    })(testing_reader(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "domain_mismatch",
@@ -125,7 +123,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "not-the-nonce",
       },
       now: NOW,
-    })(resolved_with(vi.fn<Http>()))
+    })(testing_reader(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "nonce_mismatch",
@@ -143,7 +141,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: new Date("2024-06-01T14:00:00Z"),
-    })(resolved_with(vi.fn<Http>()))
+    })(testing_reader(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "expired",
@@ -164,7 +162,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: NOW,
-    })(resolved_with(vi.fn<Http>()))
+    })(testing_reader(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "not_yet_valid",
@@ -195,7 +193,7 @@ describe("verify.ts — verify_siwe_message", () => {
         nonce: "abc12345",
       },
       now: NOW,
-    })(resolved_with(transport))
+    })(testing_reader(transport))
     expect(result).toEqual({
       ok: false,
       reason: "invalid_signature",
@@ -208,7 +206,7 @@ describe("verify.ts — verify_siwe_message", () => {
       signature: parse(BytesSchema, "0x00"),
       expected: { domain: "example.com", nonce: "x" },
       now: NOW,
-    })(resolved_with(vi.fn<Http>()))
+    })(testing_reader(vi.fn<Http>()))
     expect(result).toEqual({
       ok: false,
       reason: "malformed_message",

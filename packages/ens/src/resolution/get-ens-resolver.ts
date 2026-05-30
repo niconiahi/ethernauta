@@ -27,7 +27,7 @@ export function get_ens_resolver(
   _parameters: Parameters,
 ): Readable<Address | null> {
   return async ([
-    transports,
+    dispatcher,
     context,
   ]: ResolvedReader): Promise<Address | null> => {
     const parameters = parse(ParametersSchema, _parameters)
@@ -43,7 +43,7 @@ export function get_ens_resolver(
     const raw = await eth_call_ccip({
       to: callable.to,
       input: callable.data,
-    })([transports, context])
+    })([dispatcher, context])
     const decoded = callable.decode(raw)
     if (decoded === ZERO_ADDRESS) return null
     return decoded

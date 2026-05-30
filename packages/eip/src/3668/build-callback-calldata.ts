@@ -13,7 +13,11 @@
 // (mirroring `6492/abi.ts` and the 4337 packer) to keep this
 // package free of an `@ethernauta/abi` runtime dependency.
 
-import { type Bytes, type Bytes4, BytesSchema } from "@ethernauta/core"
+import {
+  type Bytes,
+  type Bytes4,
+  BytesSchema,
+} from "@ethernauta/core"
 import {
   bytes_to_hex,
   hex_to_bytes,

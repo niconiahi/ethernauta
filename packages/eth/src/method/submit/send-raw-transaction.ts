@@ -20,15 +20,13 @@ export function eth_sendRawTransaction(
   _parameters: Parameters,
 ): Writable<Hash32> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedWriter): Promise<Hash32> => {
     const method = "eth_sendRawTransaction"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

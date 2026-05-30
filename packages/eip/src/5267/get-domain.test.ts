@@ -102,7 +102,9 @@ describe("decode_fields", () => {
     expect(decode_fields("0x01").version).toBe(false)
     expect(decode_fields("0x02").version).toBe(true)
     expect(decode_fields("0x04").chainId).toBe(true)
-    expect(decode_fields("0x08").verifyingContract).toBe(true)
+    expect(decode_fields("0x08").verifyingContract).toBe(
+      true,
+    )
     expect(decode_fields("0x10").salt).toBe(true)
   })
 

@@ -22,15 +22,13 @@ export function eth_getBlockReceipts(
   _parameters: Parameters,
 ): Readable<ReceiptInfo[] | NotFound> {
   return async ([
-    transports,
+    dispatcher,
     _context,
   ]: ResolvedReader): Promise<ReceiptInfo[] | NotFound> => {
     const method = "eth_getBlockReceipts"
     const parameters = parse(ParametersSchema, _parameters)
     const call = parse(CallSchema, [method, parameters])
-    const response = await Promise.any(
-      transports.map((transport) => transport(call)),
-    )
+    const response = await dispatcher(call)
     if ("error" in response) {
       throw new Error(response.error.message)
     }

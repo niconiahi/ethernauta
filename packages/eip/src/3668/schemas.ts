@@ -11,7 +11,12 @@ import {
   BytesSchema,
   Bytes4Schema,
 } from "@ethernauta/core"
-import { type InferOutput, array, object, string } from "valibot"
+import {
+  type InferOutput,
+  array,
+  object,
+  string,
+} from "valibot"
 
 export const OffchainLookupErrorSchema = object({
   sender: AddressSchema,

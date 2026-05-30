@@ -11,7 +11,10 @@ import {
   Bytes4Schema,
   BytesSchema,
 } from "@ethernauta/core"
-import { bytes_to_hex, hex_to_bytes } from "@ethernauta/utils"
+import {
+  bytes_to_hex,
+  hex_to_bytes,
+} from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
@@ -73,9 +76,13 @@ describe("parse-offchain-lookup-revert.ts", () => {
 
   it("returns null for an empty revert", () => {
     expect(parse_offchain_lookup_revert(null)).toBeNull()
-    expect(parse_offchain_lookup_revert(undefined)).toBeNull()
     expect(
-      parse_offchain_lookup_revert(parse(BytesSchema, "0x")),
+      parse_offchain_lookup_revert(undefined),
+    ).toBeNull()
+    expect(
+      parse_offchain_lookup_revert(
+        parse(BytesSchema, "0x"),
+      ),
     ).toBeNull()
   })
 
