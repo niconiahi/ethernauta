@@ -318,6 +318,9 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
     devDependencies:
+      '@ethernauta/testing':
+        specifier: workspace:*
+        version: link:../testing
       '@types/node':
         specifier: ^24.3.0
         version: 24.12.4
@@ -355,6 +358,9 @@ importers:
         specifier: ^0.18.1
         version: 0.18.1
     devDependencies:
+      '@ethernauta/testing':
+        specifier: workspace:*
+        version: link:../testing
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)
@@ -460,6 +466,9 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
     devDependencies:
+      '@ethernauta/testing':
+        specifier: workspace:*
+        version: link:../testing
       bun:
         specifier: ^1.2.20
         version: 1.3.14
@@ -491,6 +500,9 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
     devDependencies:
+      '@ethernauta/testing':
+        specifier: workspace:*
+        version: link:../testing
       tsdown:
         specifier: ^0.13.3
         version: 0.13.5(@typescript/native-preview@7.0.0-dev.20260519.1)(typescript@5.8.3)

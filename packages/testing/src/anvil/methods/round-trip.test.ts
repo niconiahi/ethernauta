@@ -9,6 +9,10 @@ import type {
   ResolvedWriter,
 } from "@ethernauta/transport"
 import { http } from "@ethernauta/transport"
+import {
+  create_testing_reader,
+  create_testing_writer,
+} from "../../test/create-testing-reader"
 import { parse } from "valibot"
 import {
   afterAll,
@@ -49,14 +53,13 @@ describe.skipIf(!is_enabled)("anvil RPC bindings", () => {
     handle = spawn_anvil({ port, extra_args: ["--silent"] })
     await await_ready({ handle, timeout_ms: 10_000 })
     const transport = http(`http://127.0.0.1:${port}`)
-    resolved_reader = [
-      [transport],
-      { chain_id: "eip155:31337" },
-    ]
-    resolved_writer = [
-      [transport],
-      { chain_id: "eip155:31337" },
-    ]
+    const resolver_options = { chain_id: "eip155:31337" }
+    resolved_reader = create_testing_reader(
+      resolver_options,
+    )(transport)
+    resolved_writer = create_testing_writer(
+      resolver_options,
+    )(transport)
   })
 
   afterAll(() => {

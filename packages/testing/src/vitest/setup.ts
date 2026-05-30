@@ -1,8 +1,4 @@
 import type { Bytes } from "@ethernauta/core"
-import type {
-  ResolvedReader,
-  ResolvedWriter,
-} from "@ethernauta/transport"
 import { http } from "@ethernauta/transport"
 import { parse as devalue_parse } from "devalue"
 import { parse } from "valibot"
@@ -14,6 +10,10 @@ import { pick_free_port } from "../spawner/pick-free-port"
 import { register_cleanup } from "../spawner/signals"
 import { spawn_anvil } from "../spawner/spawn-anvil"
 import { TestConfigSchema } from "../test/config"
+import {
+  create_testing_reader,
+  create_testing_writer,
+} from "../test/create-testing-reader"
 import {
   DEFAULT_ANVIL_MNEMONIC,
   set_endpoint,
@@ -61,14 +61,13 @@ set_mnemonic(options.mnemonic ?? DEFAULT_ANVIL_MNEMONIC)
 const isolate = options.isolate ?? true
 if (isolate) {
   const transport = http(url)
-  const reader: ResolvedReader = [
-    [transport],
-    { chain_id: "eip155:31337" },
-  ]
-  const writer: ResolvedWriter = [
-    [transport],
-    { chain_id: "eip155:31337" },
-  ]
+  const resolver_options = { chain_id: "eip155:31337" }
+  const reader = create_testing_reader(resolver_options)(
+    transport,
+  )
+  const writer = create_testing_writer(resolver_options)(
+    transport,
+  )
   let snapshot_id: Bytes | undefined
 
   beforeEach(async () => {

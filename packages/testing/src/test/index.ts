@@ -1,6 +1,7 @@
 export * from "./accounts"
 export * from "./config"
 export * from "./create-testing-provider"
+export * from "./create-testing-reader"
 export * from "./endpoint-store"
 export * from "./isolation-state"
 export * from "./test"
