@@ -34,8 +34,9 @@ OP Stack chains are EVM-equivalent at the execution layer. What differs from L1:
 | `optimism_syncStatus` | `Readable<SyncStatus>` | Head / safe / finalized L1+L2 block refs. |
 | `optimism_version` | `Readable<string>` | Answering op-node's version string. |
 | `estimate_op_fees` | `Readable<OpFees>` | 1559 fee triple + L1 calldata fee, composed in one call. |
+| `require_deploy_addresses` | `(chain: Chain) => OpDeploys` | Per-chain L1 deployment addresses (portal, dispute factory, batcher, etc) for the six supported OP Stack chains. See [`/op/chains`](/op/chains). |
 
-Response sub-types — `OutputResponse`, `RollupConfig`, `SyncStatus`, `L1BlockRef`, `L2BlockRef`, `SystemConfig`, `Genesis` — are exported from the root and from `@ethernauta/op/core`.
+Response sub-types — `OutputResponse`, `RollupConfig`, `SyncStatus`, `L1BlockRef`, `L2BlockRef`, `SystemConfig`, `Genesis`, `OpDeploys` — are exported from the root and from `@ethernauta/op/core`.
 
 ## End-to-end — estimate gas on Base
 
