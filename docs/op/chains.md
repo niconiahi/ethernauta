@@ -7,93 +7,170 @@ order: 5
 
 # Chains
 
-> 🚧 **In progress — landing with slice 4 of the OP package plan.** Typed chain entries (`packages/op/lib/chains/*`) and the address registry (`packages/op/lib/addresses.ts`) ship in slice 4, sourced from [`ethereum-optimism/superchain-registry`](https://github.com/ethereum-optimism/superchain-registry). Today the package surface depends on a chain ID via the standard [`@ethernauta/chain`](/chain/overview) entries (`eip155-10`, `eip155-8453`, …) — that already works for everything except per-chain deployment addresses.
+OP Stack ships as a *family* of chains. Same code, same L2 predeploys
+at the `0x4200…` namespace, same op-node — but each chain has its own
+L1 deployment (portal address, dispute-game factory address, batcher
+EOA, sequencer feeds, fault-proof settings).
 
-OP Stack ships as a *family* of chains. Same code, same predeploy addresses, same op-node — but each chain has its own L1 deployment (portal address, dispute-game factory address, batcher EOA, sequencer feeds, fault-proof settings). The `@ethernauta/op` `lib/chains/*` layer carries those typed per-chain entries.
+`@ethernauta/op` ships those L1 addresses as data, sourced from the
+[superchain-registry](https://github.com/ethereum-optimism/superchain-registry) at a pinned SHA.
+Dapps look them up by passing the same `Chain` object they already
+use everywhere else.
 
-## Target chain list (v1)
+## Supported chains (v1)
 
-Drawn from the canonical [superchain-registry](https://github.com/ethereum-optimism/superchain-registry) — the OP-maintained source of truth for OP Stack chain definitions.
-
-### Production
-
-| Chain | chain_id | Docs | Registry entry |
+| Chain | chain_id | `EthLockboxProxy` | `FaultDisputeGame` |
 |---|---|---|---|
-| Optimism Mainnet | `10` | [docs.optimism.io](https://docs.optimism.io/) | [superchain-registry/optimism/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/op.toml) |
-| Base | `8453` | [docs.base.org](https://docs.base.org/) | [superchain-registry/base/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/base.toml) |
-| Mode | `34443` | [docs.mode.network](https://docs.mode.network/) | [superchain-registry/mode/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/mode.toml) |
-| Zora | `7777777` | [docs.zora.co](https://docs.zora.co/) | [superchain-registry/zora/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/zora.toml) |
-| World Chain | `480` | [docs.world.org/world-chain](https://docs.world.org/world-chain/quick-start/info) | [superchain-registry/worldchain/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/worldchain.toml) |
-| Soneium | `1868` | [docs.soneium.org](https://docs.soneium.org/) | [superchain-registry/soneium/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/soneium.toml) |
-| Lisk | `1135` | [docs.lisk.com](https://docs.lisk.com/) | [superchain-registry/lisk/](https://github.com/ethereum-optimism/superchain-registry/tree/main/superchain/configs/mainnet/lisk.toml) |
+| OP Mainnet | 10 | ✓ | ✓ |
+| OP Sepolia | 11155420 | ✓ | ✓ |
+| Worldchain | 480 | — | — |
+| Soneium | 1868 | ✓ | — |
+| Mode | 34443 | — | — |
+| Zora | 7777777 | — | — |
 
-### Testnets
+Base (8453) and Base Sepolia (84532) are not in the superchain-registry
+(Coinbase publishes Base deployments separately). They will land in a
+future bump once a secondary source is wired in.
 
-| Chain | chain_id | Docs |
-|---|---|---|
-| OP Sepolia | `11155420` | [docs.optimism.io](https://docs.optimism.io/) |
-| Base Sepolia | `84532` | [docs.base.org](https://docs.base.org/) |
-| Mode Sepolia | `919` | [docs.mode.network](https://docs.mode.network/) |
-| Zora Sepolia | `999999999` | [docs.zora.co](https://docs.zora.co/) |
-| World Sepolia | `4801` | [docs.world.org](https://docs.world.org/world-chain) |
-| Soneium Minato | `1946` | [docs.soneium.org](https://docs.soneium.org/) |
+The two `?`-marked contracts have legitimate normative reasons to be
+absent on some chains — see [Optional contracts](#optional-contracts)
+below.
 
-The full list is large and growing. The canonical and always-current source is the [superchain-registry repository](https://github.com/ethereum-optimism/superchain-registry) — `@ethernauta/op` slice 4 will track this list mechanically via `scripts/pull-superchain-registry.ts`.
-
-## Typed chain entries (planned shape)
+## Lookup
 
 ```ts
 import { eip155_10 } from "@ethernauta/chain/eip155-10"
-import { type OpDeployments, OpDeploymentsSchema } from "@ethernauta/op"
-import { parse } from "valibot"
+import { require_deploy_addresses } from "@ethernauta/op"
 
-export const op_mainnet = {
-  base: eip155_10,
-  deployments: parse(OpDeploymentsSchema, {
-    l1_standard_bridge: "0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1",
-    l1_cross_domain_messenger: "0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1",
-    optimism_portal: "0xbEb5Fc579115071764c7423A4f12eDde41f106Ed",
-    l2_output_oracle: "0xdfe97868233d1aa3e83a5b04e62a9b9fdaab1395",
-    l2_standard_bridge: "0x4200000000000000000000000000000000000010",
-    // …
-  }),
+const deploys = require_deploy_addresses(eip155_10)
+deploys.contracts.OptimismPortalProxy
+// → "0xbEb5Fc579115071764c7423A4f12eDde41f106Ed"
+
+deploys.roles.Guardian
+// → "0x09f7150D8c019BeF34450d6920f6B3608ceFdAf2"
+```
+
+`require_deploy_addresses(chain)` takes a `Chain` from
+`@ethernauta/chain` and returns the parsed `OpDeploys` for that
+chain. If the chain isn't an OP Stack chain we ship deploy data
+for, it throws.
+
+The Chain object is the only identifier the function deals in — no
+CAIP-2 strings, no raw chain_ids. Internally the lookup keys the
+registry by `encode_chain_id({ namespace: "eip155", reference: chain.chainId })`
+so the chain primitive and the deploy primitive can't drift.
+
+## Shape
+
+```ts
+type OpDeploys = {
+  contracts: {
+    AddressManager: Address
+    AnchorStateRegistryProxy: Address
+    DelayedWETHProxy: Address
+    DisputeGameFactoryProxy: Address
+    EthLockboxProxy?: Address
+    FaultDisputeGame?: Address
+    L1CrossDomainMessengerProxy: Address
+    L1ERC721BridgeProxy: Address
+    L1StandardBridgeProxy: Address
+    MIPS: Address
+    OptimismMintableERC20FactoryProxy: Address
+    OptimismPortalProxy: Address
+    PermissionedDisputeGame: Address
+    PreimageOracle: Address
+    ProxyAdmin: Address
+    SuperchainConfig: Address
+    SystemConfigProxy: Address
+  }
+  roles: {
+    BatchSubmitter: Address
+    Challenger: Address
+    Guardian: Address
+    Proposer: Address
+    ProxyAdminOwner: Address
+    SystemConfigOwner: Address
+    UnsafeBlockSigner: Address
+  }
 }
 ```
 
-`OpDeploymentsSchema` is precise — no `unknown`, no widely-typed union. Each OP Stack chain has the same deployment *shape*; only the addresses differ.
+The split mirrors upstream's own
+[`validation/standard/`](https://github.com/ethereum-optimism/superchain-registry/tree/main/validation/standard)
+TOMLs:
 
-The `base` field references the existing chain definition in [`@ethernauta/chain`](/chain/overview) — RPC URLs, chain ID, native-token symbol, explorers. The `deployments` field is the OP-specific addition.
+- **`contracts`** — proxied implementations and singleton contracts on
+  L1. Callable.
+- **`roles`** — EOAs or multisigs holding privileged roles
+  (batch submitter, challenger, guardian, proxy-admin owner, etc).
 
-## Using a chain entry today
+Field names are taken verbatim from upstream — a dev reading
+`deploys.contracts.DisputeGameFactoryProxy` can grep
+superchain-registry directly without learning a renaming map.
 
-Until slice 4 lands, work directly off the existing `@ethernauta/chain` entries:
+## Optional contracts
+
+Two fields are `optional()` in the schema with normative backing from
+the [Standard Rollup Charter](https://gov.optimism.io/t/season-6-draft-standard-rollup-charter/8135)
+via the registry's
+[`validation/standard/standard-versions-mainnet.toml`](https://github.com/ethereum-optimism/superchain-registry/blob/main/validation/standard/standard-versions-mainnet.toml).
+
+- **`EthLockboxProxy`** — added in `op-contracts/v6.0.0`. Pre-v6 chains
+  legitimately do not deploy it. Present on OP Mainnet, OP Sepolia,
+  and Soneium; absent on Worldchain, Mode, and Zora.
+- **`FaultDisputeGame`** — required by the Charter for a "standard
+  chain", but absent on chains still running permissioned-only
+  dispute games (pre-graduation from `PermissionedDisputeGame`).
+  Present only on OP Mainnet and OP Sepolia.
+
+Every other field is required for every chain we ship.
+
+## Composition with reads
+
+The deploys are plain `Address` values. Compose with the standard
+reader/contract resolvers in the usual way — there's no special
+"OP-aware" call shape:
 
 ```ts
-import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
-import { create_reader, encode_chain_id, http } from "@ethernauta/transport"
-import { estimate_op_fees } from "@ethernauta/op"
+import { eip155_10 } from "@ethernauta/chain/eip155-10"
+import { balance_of } from "@ethernauta/erc/20"
+import { require_deploy_addresses } from "@ethernauta/op"
+import {
+  create_contract,
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
-  reference: eip155_8453.chainId,
+  reference: eip155_10.chainId,
 })
-const reader = create_reader([
+const contract = create_contract([
   {
     chainId: CHAIN_ID,
-    transports: [http("https://base-rpc.publicnode.com")],
+    transports: [http("https://mainnet.optimism.io")],
   },
 ])
+const { contracts } = require_deploy_addresses(eip155_10)
 
-// All predeploy reads work — they live at 0x420… on every OP Stack chain.
-const fees = await estimate_op_fees({ /* … */ })(reader({ chain_id: CHAIN_ID }))
+const portal_balance = await balance_of({
+  address: contracts.OptimismPortalProxy,
+  // …
+})(contract({ chain_id: CHAIN_ID }))
 ```
 
-The L1 deployment addresses (portal, dispute-game factory, etc.) you need to hardcode or pull manually from the superchain-registry. Slice 4 fixes that.
+## Bumping
+
+`pnpm --filter @ethernauta/op pull-superchain-registry` regenerates the
+per-chain files from the pinned SHA. Bump cadence + procedure:
+[`packages/op/src/deploys/SOURCES.md`](https://github.com/niconiahi/ethernauta/blob/main/packages/op/src/deploys/SOURCES.md).
 
 ## See also
 
 - [`/op/overview`](/op/overview) — package introduction.
-- [`/op/predeploys`](/op/predeploys) — the L2-side predeploys (same address on every chain).
-- [`/chain/overview`](/chain/overview) — base `@ethernauta/chain` definitions this layer builds on.
+- [`/op/predeploys`](/op/predeploys) — the L2-side predeploys at the
+  `0x4200…` namespace (constant across every OP Stack chain).
+- [`/chain/overview`](/chain/overview) — base `@ethernauta/chain`
+  definitions this layer keys off.
+- [Standard Rollup Charter (Season 6)](https://gov.optimism.io/t/season-6-draft-standard-rollup-charter/8135) — governance definition of a "standard chain".
 - [superchain-registry](https://github.com/ethereum-optimism/superchain-registry) — source of truth for OP Stack chain definitions.
-- [Superchain explainer](https://docs.optimism.io/superchain/superchain-explainer) — what membership in the Superchain entails.
