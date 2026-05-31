@@ -5,6 +5,7 @@ export * from "./dispatcher"
 export * from "./http"
 export * from "./json-rpc"
 export * from "./multicall"
+export * from "./number"
 export {
   create_injected_transport,
   create_provider,

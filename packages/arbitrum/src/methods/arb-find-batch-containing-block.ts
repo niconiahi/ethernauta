@@ -10,35 +10,18 @@ import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { CallSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
 import {
-  number,
-  object,
-  parse,
-  pipe,
-  string,
-  tuple,
-  union,
-} from "valibot"
+  CallSchema,
+  RpcNumberSchema,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const ParametersSchema = union([
   tuple([UintSchema]),
   object({ blockNumber: UintSchema }),
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
-
-// Plain `uint64` upstream → JSON number on the wire. Accept both
-// shapes; see arb_getL1Confirmations for the rationale.
-const ResultSchema = union([pipe(string()), number()])
-
-function normalize_uint64(_value: string | number): Uint64 {
-  const big =
-    typeof _value === "string" && _value.startsWith("0x")
-      ? BigInt(_value)
-      : BigInt(_value)
-  return parse(Uint64Schema, `0x${big.toString(16)}`)
-}
 
 /**
  * @returns The L1 batch index containing the given L2 block. Throws
@@ -62,7 +45,9 @@ export function arb_findBatchContainingBlock(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(ResultSchema, response.result)
-    return normalize_uint64(result)
+    return parse(
+      Uint64Schema,
+      parse(RpcNumberSchema, response.result),
+    )
   }
 }

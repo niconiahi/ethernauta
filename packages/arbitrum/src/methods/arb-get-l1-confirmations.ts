@@ -11,37 +11,18 @@ import type {
   Readable,
   ResolvedReader,
 } from "@ethernauta/transport"
-import { CallSchema } from "@ethernauta/transport"
-import type { InferOutput } from "valibot"
 import {
-  number,
-  object,
-  parse,
-  pipe,
-  string,
-  tuple,
-  union,
-} from "valibot"
+  CallSchema,
+  RpcNumberSchema,
+} from "@ethernauta/transport"
+import type { InferOutput } from "valibot"
+import { object, parse, tuple, union } from "valibot"
 
 const ParametersSchema = union([
   tuple([UintSchema]),
   object({ blockNumber: UintSchema }),
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
-
-// Upstream signature is plain `uint64` (no `hexutil.Uint64`), so
-// geth's rpc framework emits the result as a JSON number. Accept
-// both shapes to be robust against operator-side encoding shims
-// (some RPC providers wrap with `hexutil.Uint64` themselves).
-const ResultSchema = union([pipe(string()), number()])
-
-function normalize_uint64(_value: string | number): Uint64 {
-  const big =
-    typeof _value === "string" && _value.startsWith("0x")
-      ? BigInt(_value)
-      : BigInt(_value)
-  return parse(Uint64Schema, `0x${big.toString(16)}`)
-}
 
 /**
  * @returns The number of L1 confirmations for the batch containing
@@ -65,7 +46,9 @@ export function arb_getL1Confirmations(
     if ("error" in response) {
       throw new Error(response.error.message)
     }
-    const result = parse(ResultSchema, response.result)
-    return normalize_uint64(result)
+    return parse(
+      Uint64Schema,
+      parse(RpcNumberSchema, response.result),
+    )
   }
 }
