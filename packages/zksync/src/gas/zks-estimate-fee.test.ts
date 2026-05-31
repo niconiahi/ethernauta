@@ -1,17 +1,26 @@
+import { eip155_324 } from "@ethernauta/chain/eip155-324"
 import { AddressSchema } from "@ethernauta/core"
 import { create_testing_reader } from "@ethernauta/testing"
+import type { Call, Response } from "@ethernauta/transport"
 import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { stub_http } from "../../test-helpers"
-
 import { zks_estimate_fee } from "./zks-estimate-fee"
 
-// zkSync Era mainnet CAIP-2.
+function stub_http<T>(
+  response_result: T,
+): (_call: Call) => Promise<Response> {
+  return async (_call: Call) => ({
+    id: "test",
+    jsonrpc: "2.0" as const,
+    result: response_result,
+  })
+}
+
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
-  reference: "324",
+  reference: eip155_324.chainId,
 })
 const testing_reader = create_testing_reader({
   chain_id: CHAIN_ID,

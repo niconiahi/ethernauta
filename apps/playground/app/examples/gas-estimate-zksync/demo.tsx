@@ -1,17 +1,17 @@
-// `calculate_gas_zksync({ tx })` against zkSync Era. Single
+// `estimate_zksync_fees({ tx })` against zkSync Era. Single
 // zks_estimateFee RPC call — the zkSync node returns the four fee
 // components zkSync charges in one shot.
 
 import "./demo.css"
 import { eip155_324 } from "@ethernauta/chain/eip155-324"
 import { AddressSchema, type Uint } from "@ethernauta/core"
-import { calculate_gas_zksync } from "@ethernauta/gas"
 import {
   create_reader,
   encode_chain_id,
   http,
 } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
+import { estimate_zksync_fees } from "@ethernauta/zksync"
 import { useState } from "react"
 import { parse } from "valibot"
 
@@ -59,7 +59,7 @@ export function GasEstimateZksyncDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const result = await calculate_gas_zksync({
+      const result = await estimate_zksync_fees({
         tx: { from: DEFAULT_FROM, to: DEFAULT_TO },
       })(reader({ chain_id: CHAIN_ID }))
       set_fees({

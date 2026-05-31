@@ -1,10 +1,7 @@
 // https://docs.zksync.io/zksync-protocol/api/zks-rpc#zks-estimatefee
 // Non-standard JSON-RPC method served by zkSync Era nodes. Takes a
 // generic transaction (same shape as eth_call's input) and returns
-// the four fee components zkSync charges. Lives inside @ethernauta/
-// gas because the method is zkSync-specific and the only consumer
-// is the v4 gas helper — per M11 it does NOT belong under
-// @ethernauta/eth's standard `eth_*` namespace.
+// the four fee components zkSync charges.
 
 import { UintSchema } from "@ethernauta/core"
 import { GenericTransactionSchema } from "@ethernauta/eth"
