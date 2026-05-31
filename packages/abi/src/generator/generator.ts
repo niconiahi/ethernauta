@@ -85,18 +85,27 @@ function count_names(
 }
 
 // Real ABIs can have functions whose names differ only by case
-// (`DECIMALS` vs `decimals` on OP's GasPriceOracle). camel_to_kebab
-// lowercases both to `decimals`, which collides on the emitted
-// filename even though the JS identifier is distinct. Counting
-// kebab-cased basenames catches that class of collision so the
-// suffix branch fires for both siblings.
+// (`DECIMALS` vs `decimals` on OP's GasPriceOracle) or by case-vs-
+// underscore (`MIN_WITHDRAWAL_AMOUNT` vs `minWithdrawalAmount` on
+// L1FeeVault). camel_to_kebab lowercases case-boundary transitions
+// to dashes but keeps existing underscores intact — the two L1FeeVault
+// names produce `min-withdrawal-amount` and `min_withdrawal_amount`,
+// which look distinct under camel_to_kebab alone but collide
+// downstream because `signature_const_name` replaces dashes with
+// underscores before uppercasing. `normalized_basename` collapses
+// both into the same key so the suffix branch fires whenever ANY
+// downstream identifier would clash.
+function normalized_basename(name: string): string {
+  return camel_to_kebab(name).replace(/-/g, "_")
+}
+
 function count_filename_basenames(
   descriptions: Description[],
 ): Map<string, number> {
   const counts = new Map<string, number>()
   for (const d of descriptions) {
     if (d.type !== "function") continue
-    const base = camel_to_kebab(d.name)
+    const base = normalized_basename(d.name)
     counts.set(base, (counts.get(base) || 0) + 1)
   }
   return counts
@@ -109,7 +118,7 @@ export function emit_name_for(
   if (description.type !== "function") return ""
   const name_counts = count_names(descriptions)
   const file_counts = count_filename_basenames(descriptions)
-  const base = camel_to_kebab(description.name)
+  const base = normalized_basename(description.name)
   const overloaded =
     (name_counts.get(description.name) || 0) > 1
   const file_collides = (file_counts.get(base) || 0) > 1
@@ -441,6 +450,17 @@ function compose_abi_imports(
 } from "@ethernauta/abi"`
 }
 
+// Solidity public state-variable getters (e.g. `mapping(bytes32 => bool)
+// public failedMessages`) auto-emit an ABI entry whose `inputs[].name`
+// is the empty string. Synthesize a stable positional key so the object
+// form of the parameters union stays usable: `fn({ arg_0: ... })`.
+function input_key(
+  input: FunctionInput,
+  index: number,
+): string {
+  return input.name === "" ? `arg_${index}` : input.name
+}
+
 function compose_parameters_block(
   inputs: FunctionInput[],
   infos: TypeInfo[],
@@ -452,7 +472,7 @@ function compose_parameters_block(
   const object_items = inputs
     .map(
       (input, i) =>
-        `${input.name}: ${infos[i]?.param_schema}`,
+        `${input_key(input, i)}: ${infos[i]?.param_schema}`,
     )
     .join(", ")
   return `const ParametersSchema = union([
@@ -472,7 +492,7 @@ function compose_values_extraction(
     .map((_input, i) => `parameters[${i}]`)
     .join(", ")
   const by_name = inputs
-    .map((i) => `parameters.${i.name}`)
+    .map((input, i) => `parameters.${input_key(input, i)}`)
     .join(", ")
   // Each branch builds a fresh tuple via `as const` so TS infers the
   // readonly per-position tuple type that lines up with the codec
@@ -510,7 +530,7 @@ function compose_signature_const(
 ): string {
   const canonical = canonical_signature(name, inputs)
   const names = inputs
-    .map((i) => JSON.stringify(i.name))
+    .map((input, i) => JSON.stringify(input_key(input, i)))
     .join(", ")
   return `export const ${signature_const_name(emit_name)} = {
   signature: ${JSON.stringify(canonical)},
