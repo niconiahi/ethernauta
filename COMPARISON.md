@@ -212,7 +212,7 @@ Legend:
 | EIP-1559 base-fee math | ✅ `calculate_base_fee` | ✅ | ⚠️ manual |
 | Priority-fee estimation | ✅ | ✅ | ✅ |
 | Gas-limit buffer helper | ✅ | ⚠️ manual | ⚠️ manual |
-| Arbitrum L2 gas | ✅ `calculate_gas_arbitrum` | ⚠️ chain-specific actions | ❌ |
+| Arbitrum L2 gas | ✅ `estimate_arbitrum_fees` | ⚠️ chain-specific actions | ❌ |
 | OP-Stack L2 gas | ✅ | ✅ via `viem/op-stack` | ❌ |
 | zkSync L2 gas | ✅ | ✅ via `viem/zksync` | ❌ |
 | Gas-family detection per chain | ✅ `gas_family()` | ❌ | ❌ |
