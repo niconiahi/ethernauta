@@ -44,6 +44,7 @@ const DEFAULT_RPC_URLS: Record<number, string> = {
   1: "https://eth.drpc.org",
   11155111: "https://sepolia.drpc.org",
   42161: "https://arb1.arbitrum.io/rpc",
+  8453: "https://mainnet.base.org",
 }
 
 const CAST_RETRIES = 3

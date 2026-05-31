@@ -1,13 +1,21 @@
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { eip155_1729 } from "@ethernauta/chain/eip155-1729"
 import { eip155_1996 } from "@ethernauta/chain/eip155-1996"
+import { eip155_2187 } from "@ethernauta/chain/eip155-2187"
+import { eip155_2911 } from "@ethernauta/chain/eip155-2911"
+import { eip155_7887 } from "@ethernauta/chain/eip155-7887"
 import { eip155_33139 } from "@ethernauta/chain/eip155-33139"
+import { eip155_41455 } from "@ethernauta/chain/eip155-41455"
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
 import { eip155_42170 } from "@ethernauta/chain/eip155-42170"
 import { eip155_70700 } from "@ethernauta/chain/eip155-70700"
 import { eip155_98865 } from "@ethernauta/chain/eip155-98865"
+import { eip155_111188 } from "@ethernauta/chain/eip155-111188"
 import { eip155_421614 } from "@ethernauta/chain/eip155-421614"
 import { eip155_660279 } from "@ethernauta/chain/eip155-660279"
+import { eip155_10241024 } from "@ethernauta/chain/eip155-10241024"
+import { eip155_21000000 } from "@ethernauta/chain/eip155-21000000"
+import { eip155_666666666 } from "@ethernauta/chain/eip155-666666666"
 import { eip155_1380012617 } from "@ethernauta/chain/eip155-1380012617"
 import { describe, expect, it } from "vitest"
 
@@ -25,6 +33,14 @@ describe("require_deploy_addresses", () => {
     eip155_1380012617,
     eip155_1729,
     eip155_98865,
+    eip155_666666666,
+    eip155_2187,
+    eip155_2911,
+    eip155_10241024,
+    eip155_7887,
+    eip155_41455,
+    eip155_111188,
+    eip155_21000000,
   ])("round-trips a payload for $name", (chain) => {
     const deploys = require_deploy_addresses(chain)
     expect(deploys.name).toBeTypeOf("string")

@@ -23,6 +23,14 @@ Read from L1 via `cast call` against the Rollup contract on the parent chain. Ro
 - RARI Chain (`eip155-1380012617`) — rollup `0x2e988Ea0873C9d712628F0bf38DAFdE754927C89` on parent eip155:42161 — L2BEAT slug `rari`
 - Reya Network (`eip155-1729`) — rollup `0x448Bbd134dE1B23976073aB4F2915849b2dcD73A` on parent eip155:1 — L2BEAT slug `reya`
 - Plume (`eip155-98865`) — rollup `0x4eD3F488a5a4417839BbC39712EB76D8Aaee6eE8` on parent eip155:1 — L2BEAT slug `plumenetwork`
+- Degen Chain (`eip155-666666666`) — rollup `0xD34F3a11F10DB069173b32d84F02eDA578709143` on parent eip155:8453 — L2BEAT slug `degen`
+- Game7 (`eip155-2187`) — rollup `0x60DAdF13101C66F14C958E9141498b0C0eaE0773` on parent eip155:42161 — L2BEAT slug `game7`
+- HYCHAIN (`eip155-2911`) — rollup `0x8f98f9ae2f2836Ed3a628c23311Ad9976B9fBF1B` on parent eip155:1 — L2BEAT slug `hychain`
+- AlienX (`eip155-10241024`) — rollup `0x6fa8b24c85409A4fcb541c9964766862aA007f39` on parent eip155:1 — L2BEAT slug `alienx`
+- Kinto (`eip155-7887`) — rollup `0x5073dA9cA4810f3E0aA01c20c7d9d02C3f522e11` on parent eip155:1 — L2BEAT slug `kinto`
+- Aleph Zero EVM (`eip155-41455`) — rollup `0x1CA12290D954CFe022323b6A6Df92113ed6b1C98` on parent eip155:1 — L2BEAT slug `alephzero`
+- re.al (`eip155-111188`) — rollup `0xc4F7B37bE2bBbcF07373F28c61b1A259dfe49d2a` on parent eip155:1 — L2BEAT slug `real`
+- Corn (`eip155-21000000`) — rollup `0x09eD7e66Dd7c7129Ec3994498A521B502Ca7D61b` on parent eip155:1 — L2BEAT slug `corn`
 
 ## isBold probe
 
