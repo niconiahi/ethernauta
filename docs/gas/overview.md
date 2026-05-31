@@ -7,7 +7,9 @@ order: 7.5
 
 # @ethernauta/gas
 
-Fee estimation as composable primitives. One package, four families: standard EIP-1559, OP-stack, Arbitrum, zkSync. The wallet's gas UI and a path-2 dapp consume the same code.
+Fee estimation as composable primitives, for the L2 families that don't have their own family package yet. The wallet's gas UI and a path-2 dapp consume the same code.
+
+> ⓘ **OP Stack moved.** Slice 1 of the [`@ethernauta/op`](/op/overview) plan relocated the OP-specific gas helper out of `@ethernauta/gas` and into `@ethernauta/op`, renaming it `estimate_op_fees`. See [`/op/gas`](/op/gas) for the current OP-Stack fee estimation surface. Arbitrum and zkSync still live here until their family packages land.
 
 ```bash
 pnpm add @ethernauta/gas
@@ -25,80 +27,14 @@ EIP-1559 spec constants and arithmetic (`INITIAL_BASE_FEE`, `BASE_FEE_MAX_CHANGE
 
 | Export | Shape | Purpose |
 |---|---|---|
-| `estimate_priority_fee` | `Readable<Uint>` | Percentile model over `eth_feeHistory`'s `reward[]` matrix. |
-| `estimate_1559_fees` | `Readable<Fees1559>` | `base × multiplier + priority` composition. |
-| `buffer_gas_limit` | `Readable<Uint>` | `eth_estimateGas` × safety margin. |
-| `calculate_gas_op_stack` | `Readable<CalculateGasOpStackFees>` | OP-stack: 1559 triple + L1 data fee via `GasPriceOracle`. |
 | `calculate_gas_arbitrum` | `Readable<CalculateGasArbitrumFees>` | Arbitrum: `NodeInterface.gasEstimateComponents` (L1 + L2 in one shot). |
 | `calculate_gas_zksync` | `Readable<CalculateGasZksyncFees>` | zkSync: `zks_estimateFee` (non-standard RPC). |
-| `gas_family` | `(chain) => GasFamily` | Chain-family dispatch: `"1559" \| "op-stack" \| "arbitrum" \| "zksync"`. |
-| `OP_STACK_CHAIN_IDS`, `ARBITRUM_CHAIN_IDS`, `ZKSYNC_CHAIN_IDS` | `readonly number[]` | The chain-ID literal arrays that drive `gas_family`. |
-| `FamilyForChainId<Id>` | conditional type | Compile-time mirror of `gas_family`. |
 
-## Quick example — standard 1559
-
-```ts
-import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
-import { estimate_1559_fees, buffer_gas_limit } from "@ethernauta/gas";
-import { eip155_1 } from "@ethernauta/chain/eip155-1";
-import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
-import { parse } from "valibot";
-
-const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_1.chainId });
-const reader = create_reader([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
-const ctx = reader({ chain_id: CHAIN_ID });
-
-const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
-const amount = parse(UintSchema, "0x0");
-
-const fees = await estimate_1559_fees({
-  base_fee_multiplier: 1.5,
-  priority_percentile: 10,
-})(ctx);
-// { base_fee_per_gas, max_priority_fee_per_gas, max_fee_per_gas }
-
-const gas = await buffer_gas_limit({
-  tx: { to: recipient, value: amount, input: parse(BytesSchema, "0x") },
-  multiplier: 1.2,
-})(ctx);
-```
-
-The multiplier and percentile choices belong to the call site. The library ships no `DEFAULT_PERCENTILE` constant — it has no opinion.
+For the 1559 baseline (`estimate_priority_fee`, `estimate_1559_fees`, `buffer_gas_limit`) see [`/eth/overview`](/eth/overview) — those moved into `@ethernauta/eth` alongside the rest of the substrate fee surface. For OP Stack (`estimate_op_fees`, `estimate_l1_fee`) see [`/op/gas`](/op/gas).
 
 ## L2 families
 
-OP-stack, Arbitrum, and zkSync each get their own coarse helper. They orchestrate the chain-specific reads and return a kind-tagged result, so a dapp that branches on `kind` can render one UI per family without re-parsing.
-
-### OP-stack (Optimism, Base, Mode, Zora, Mantle, World Chain, Soneium, Lisk)
-
-```ts
-import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
-import { calculate_gas_op_stack } from "@ethernauta/gas";
-import { eip155_8453 } from "@ethernauta/chain/eip155-8453";
-import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
-import { parse } from "valibot";
-
-const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: eip155_8453.chainId });
-const reader = create_reader([
-  { chainId: CHAIN_ID, transports: [http("https://base-rpc.publicnode.com")] },
-]);
-
-const recipient = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
-const value = parse(UintSchema, "0x0");
-
-const fees = await calculate_gas_op_stack({
-  tx: { to: recipient, value, input: parse(BytesSchema, "0x") },
-  base_fee_multiplier: 1.5,
-  priority_percentile: 10,
-})(reader({ chain_id: CHAIN_ID }));
-
-// { kind: "op-stack", base_fee_per_gas, max_priority_fee_per_gas,
-//   max_fee_per_gas, l1_fee }
-```
-
-Four reads run in parallel where they're independent: `eth_feeHistory` + `eth_getTransactionCount` + `eth_estimateGas`, then `GasPriceOracle.getL1Fee(bytes)` against the predeploy at `0x420…0F`.
+Arbitrum and zkSync each get their own coarse helper that orchestrates the chain-specific reads and returns a kind-tagged result. OP Stack moved to [`@ethernauta/op`](/op/gas).
 
 ### Arbitrum (One, Nova)
 
@@ -155,57 +91,7 @@ One call to `zks_estimateFee` — a non-standard RPC method, hand-bound here bec
 
 ## Picking the family
 
-For dispatch by chain, use `gas_family`:
-
-```ts
-import {
-  gas_family,
-  calculate_gas_op_stack,
-  calculate_gas_arbitrum,
-  calculate_gas_zksync,
-  estimate_1559_fees,
-} from "@ethernauta/gas";
-import { create_reader, encode_chain_id, http } from "@ethernauta/transport";
-import { eip155_1 } from "@ethernauta/chain/eip155-1";
-import { AddressSchema, BytesSchema, UintSchema } from "@ethernauta/core";
-import type { Chain } from "@ethernauta/chain";
-import { parse } from "valibot";
-
-const chain: Chain = eip155_1;
-const CHAIN_ID = encode_chain_id({ namespace: "eip155", reference: chain.chainId });
-const reader = create_reader([
-  { chainId: CHAIN_ID, transports: [http("https://ethereum-rpc.publicnode.com")] },
-]);
-const ctx = reader({ chain_id: CHAIN_ID });
-
-const to = parse(AddressSchema, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
-const value = parse(UintSchema, "0x0");
-const input = parse(BytesSchema, "0x");
-
-async function pick() {
-  switch (gas_family(chain)) {
-    case "op-stack":
-      return calculate_gas_op_stack({
-        tx: { to, value, input },
-        base_fee_multiplier: 1.5,
-        priority_percentile: 10,
-      })(ctx);
-    case "arbitrum":
-      return calculate_gas_arbitrum({ tx: { to, input } })(ctx);
-    case "zksync":
-      return calculate_gas_zksync({ tx: { to, value, input } })(ctx);
-    case "1559":
-      return estimate_1559_fees({
-        base_fee_multiplier: 1.5,
-        priority_percentile: 10,
-      })(ctx);
-  }
-}
-```
-
-The coarse helpers are exported directly rather than hidden behind a single `calculate_gas(chain, …)` dispatcher. Each family's parameter and return shape is different enough that a unified call is more friction than service.
-
-If your codepath only ever runs on a single chain, skip `gas_family` and call the helper directly.
+There's no runtime `gas_family(chain)` dispatcher anymore — each L2 family lives in its own package (`@ethernauta/op` for OP Stack, this package for Arbitrum + zkSync), and the import statement *is* the family choice. If your code path needs to branch by chain, switch on a chain-ID set you control and call the right helper directly.
 
 ## What this package does not do
 
@@ -215,7 +101,8 @@ If your codepath only ever runs on a single chain, skip `gas_family` and call th
 
 ## See also
 
-- [EIP-1559](/eips/1559) — the spec constants and base-fee arithmetic this package builds on.
-- [Concepts → resolver shapes](/concepts/resolver-shapes) — what `Readable<T>` means.
-- [Concepts → two paths](/concepts/two-paths) — wallet-routed vs primitive composition.
-- [@ethernauta/eth](/eth/overview) — `eth_feeHistory`, `eth_estimateGas`, `eth_getTransactionCount`.
+- [`/op/gas`](/op/gas) — OP Stack fee estimation (`estimate_op_fees`, `estimate_l1_fee`). Moved out of `@ethernauta/gas`.
+- [`/eth/overview`](/eth/overview) — the 1559 baseline (`estimate_1559_fees`, `estimate_priority_fee`, `buffer_gas_limit`) and the underlying `eth_feeHistory` / `eth_estimateGas` / `eth_getTransactionCount` methods.
+- [`/eips/1559`](/eips/1559) — the spec constants and base-fee arithmetic this package builds on.
+- [`/concepts/resolver-shapes`](/concepts/resolver-shapes) — what `Readable<T>` means.
+- [`/concepts/two-paths`](/concepts/two-paths) — wallet-routed vs primitive composition.
