@@ -7,6 +7,10 @@ export {
   L2BlockRefSchema,
 } from "./block-ref"
 export {
+  type OpDeploys,
+  OpDeploysSchema,
+} from "./deploys"
+export {
   type Genesis,
   GenesisSchema,
 } from "./genesis"

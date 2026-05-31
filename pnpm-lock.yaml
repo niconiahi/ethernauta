@@ -515,6 +515,9 @@ importers:
       '@ethernauta/abi':
         specifier: workspace:*
         version: link:../abi
+      '@ethernauta/chain':
+        specifier: workspace:*
+        version: link:../chain
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core
