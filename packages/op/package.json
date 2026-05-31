@@ -13,6 +13,16 @@
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "import": "./dist/*/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -20,6 +30,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
+    "pull-contracts": "node scripts/pull-contracts.ts",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",

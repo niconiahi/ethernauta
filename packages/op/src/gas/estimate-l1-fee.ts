@@ -19,8 +19,10 @@ import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
-import { getL1Fee } from "./gas-price-oracle/methods/get-l1-fee"
-import { GAS_PRICE_ORACLE_PREDEPLOY } from "./predeploy"
+import {
+  GAS_PRICE_ORACLE_ADDRESS,
+  getL1Fee,
+} from "../predeploys/gas-price-oracle"
 
 export const EstimateL1FeeParametersSchema = object({
   tx: Transaction1559UnsignedSchema,
@@ -48,11 +50,11 @@ export function estimate_l1_fee(
     )
     const callable = getL1Fee({ _data: data_hex })({
       chain_id: resolved[1].chain_id,
-      to: GAS_PRICE_ORACLE_PREDEPLOY,
+      to: GAS_PRICE_ORACLE_ADDRESS,
     })
     const result = await eth_call([
       {
-        to: GAS_PRICE_ORACLE_PREDEPLOY,
+        to: GAS_PRICE_ORACLE_ADDRESS,
         input: callable.data,
       },
     ])(resolved)
