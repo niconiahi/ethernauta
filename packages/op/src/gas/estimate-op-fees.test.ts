@@ -5,13 +5,30 @@ import {
   UintSchema,
 } from "@ethernauta/core"
 import { create_testing_reader } from "@ethernauta/testing"
+import type { Call, Response } from "@ethernauta/transport"
 import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { stub_http_by_method } from "../../test-helpers"
+import { estimate_op_fees } from "./estimate-op-fees"
 
-import { calculate_gas_op_stack } from "./calculate-gas-op-stack"
+function stub_http_by_method<T>(
+  results: Record<string, T>,
+): (_call: Call) => Promise<Response> {
+  return async (_call: Call) => {
+    const method = _call[0]
+    if (!(method in results)) {
+      throw new Error(
+        `stub_http_by_method: no fixture for "${method}"`,
+      )
+    }
+    return {
+      id: "test",
+      jsonrpc: "2.0" as const,
+      result: results[method],
+    }
+  }
+}
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -21,7 +38,7 @@ const testing_reader = create_testing_reader({
   chain_id: CHAIN_ID,
 })
 
-describe("calculate_gas_op_stack", () => {
+describe("estimate_op_fees", () => {
   it("composes feeHistory + nonce + estimateGas + getL1Fee on Base", async () => {
     // L2 base fee = 0x64 = 100, priority = 0x4 = 4 → max_fee at 1.5x = 154 = 0x9a.
     // Nonce = 0x7. Gas limit = 0x5208 = 21000.
@@ -45,7 +62,7 @@ describe("calculate_gas_op_stack", () => {
       eth_call: l1_fee_padded,
     })
     const resolved = testing_reader(transport)
-    const fees = await calculate_gas_op_stack({
+    const fees = await estimate_op_fees({
       tx: {
         to: parse(
           AddressSchema,
@@ -57,7 +74,6 @@ describe("calculate_gas_op_stack", () => {
       base_fee_multiplier: 1.5,
       priority_percentile: 10,
     })(resolved)
-    expect(fees.kind).toBe("op-stack")
     expect(fees.base_fee_per_gas).toBe("0x64")
     expect(fees.max_priority_fee_per_gas).toBe("0x4")
     expect(fees.max_fee_per_gas).toBe("0x9a")

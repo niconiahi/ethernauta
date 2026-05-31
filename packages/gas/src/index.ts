@@ -6,13 +6,6 @@ export {
   calculate_gas_arbitrum,
 } from "./chains/arbitrum/calculate-gas-arbitrum"
 export {
-  type CalculateGasOpStackFees,
-  CalculateGasOpStackFeesSchema,
-  type CalculateGasOpStackParameters,
-  CalculateGasOpStackParametersSchema,
-  calculate_gas_op_stack,
-} from "./chains/op-stack/calculate-gas-op-stack"
-export {
   type CalculateGasZksyncFees,
   CalculateGasZksyncFeesSchema,
   type CalculateGasZksyncParameters,

@@ -6,13 +6,22 @@ import {
   UintSchema,
 } from "@ethernauta/core"
 import { create_testing_reader } from "@ethernauta/testing"
+import type { Call, Response } from "@ethernauta/transport"
 import { encode_chain_id } from "@ethernauta/transport"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { stub_http } from "../../test-helpers"
-
 import { estimate_l1_fee } from "./estimate-l1-fee"
+
+function stub_http<T>(
+  response_result: T,
+): (_call: Call) => Promise<Response> {
+  return async (_call: Call) => ({
+    id: "test",
+    jsonrpc: "2.0" as const,
+    result: response_result,
+  })
+}
 
 const CHAIN_ID = encode_chain_id({
   namespace: "eip155",

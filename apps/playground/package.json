@@ -26,6 +26,7 @@
     "@ethernauta/erc": "workspace:*",
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/gas": "workspace:*",
+    "@ethernauta/op": "workspace:*",
     "@ethernauta/react": "workspace:*",
     "@ethernauta/transaction": "workspace:*",
     "@ethernauta/transport": "workspace:*",

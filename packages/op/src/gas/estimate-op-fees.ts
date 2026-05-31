@@ -32,7 +32,6 @@ import type {
 import { decode_chain_id } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
-  literal,
   maxValue,
   minValue,
   number,
@@ -51,7 +50,7 @@ const PercentileSchema = pipe(
 )
 const MultiplierSchema = pipe(number(), minValue(1))
 
-export const CalculateGasOpStackParametersSchema = object({
+export const EstimateOpFeesParametersSchema = object({
   tx: object({
     to: AddressSchema,
     value: optional(UintSchema),
@@ -60,20 +59,17 @@ export const CalculateGasOpStackParametersSchema = object({
   base_fee_multiplier: MultiplierSchema,
   priority_percentile: PercentileSchema,
 })
-export type CalculateGasOpStackParameters = InferOutput<
-  typeof CalculateGasOpStackParametersSchema
+export type EstimateOpFeesParameters = InferOutput<
+  typeof EstimateOpFeesParametersSchema
 >
 
-export const CalculateGasOpStackFeesSchema = object({
-  kind: literal("op-stack"),
+export const OpFeesSchema = object({
   base_fee_per_gas: UintSchema,
   max_priority_fee_per_gas: UintSchema,
   max_fee_per_gas: UintSchema,
   l1_fee: UintSchema,
 })
-export type CalculateGasOpStackFees = InferOutput<
-  typeof CalculateGasOpStackFeesSchema
->
+export type OpFees = InferOutput<typeof OpFeesSchema>
 
 const ZERO_UINT: Uint = parse(UintSchema, "0x0")
 const EMPTY_BYTES: Bytes = parse(BytesSchema, "0x")
@@ -89,14 +85,14 @@ function reference_to_uint(_reference: string): Uint {
   return parse(UintSchema, `0x${big.toString(16)}`)
 }
 
-export function calculate_gas_op_stack(
-  _parameters: CalculateGasOpStackParameters,
-): Readable<CalculateGasOpStackFees> {
+export function estimate_op_fees(
+  _parameters: EstimateOpFeesParameters,
+): Readable<OpFees> {
   return async (
     resolved: ResolvedReader,
-  ): Promise<CalculateGasOpStackFees> => {
+  ): Promise<OpFees> => {
     const parameters = parse(
-      CalculateGasOpStackParametersSchema,
+      EstimateOpFeesParametersSchema,
       _parameters,
     )
     const { reference } = decode_chain_id(
@@ -148,8 +144,7 @@ export function calculate_gas_op_stack(
       `0x${BigInt(l1_fee_256).toString(16)}`,
     )
 
-    return parse(CalculateGasOpStackFeesSchema, {
-      kind: "op-stack",
+    return parse(OpFeesSchema, {
       base_fee_per_gas: fees_1559.base_fee_per_gas,
       max_priority_fee_per_gas:
         fees_1559.max_priority_fee_per_gas,

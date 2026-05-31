@@ -1,4 +1,4 @@
-// `calculate_gas_op_stack({ tx, ... })` against a picker of Base or
+// `estimate_op_fees({ tx, ... })` against a picker of Base or
 // Optimism. Both chains use the same family helper — this demo is
 // the visual proof that the L1 fee read (GasPriceOracle.getL1Fee on
 // the 0x420…000F predeploy) composes the same way regardless of
@@ -10,7 +10,7 @@ import type { Chain } from "@ethernauta/chain"
 import { eip155_10 } from "@ethernauta/chain/eip155-10"
 import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
 import { AddressSchema, type Uint } from "@ethernauta/core"
-import { calculate_gas_op_stack } from "@ethernauta/gas"
+import { estimate_op_fees } from "@ethernauta/op"
 import {
   create_reader,
   encode_chain_id,
@@ -84,7 +84,7 @@ export function GasEstimateOpStackDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const result = await calculate_gas_op_stack({
+      const result = await estimate_op_fees({
         tx: { to: DEFAULT_TO },
         base_fee_multiplier: multiplier,
         priority_percentile: percentile,
