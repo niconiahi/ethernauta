@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
+    "@ethernauta/arbitrum": "workspace:*",
     "@ethernauta/chain": "workspace:*",
     "@ethernauta/cli": "workspace:*",
     "@ethernauta/core": "workspace:*",

@@ -1,12 +1,12 @@
-// `calculate_gas_arbitrum({ tx })` against Arbitrum One. Single read
+// `estimate_arbitrum_fees({ tx })` against Arbitrum One. Single read
 // of the NodeInterface precompile's
 // gasEstimateComponents(to, false, data) — the Nitro node hands back
 // the L2 execution + L1 batch-posting split in one shot.
 
 import "./demo.css"
+import { estimate_arbitrum_fees } from "@ethernauta/arbitrum"
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
 import { AddressSchema, type Uint } from "@ethernauta/core"
-import { calculate_gas_arbitrum } from "@ethernauta/gas"
 import {
   create_reader,
   encode_chain_id,
@@ -50,7 +50,7 @@ export function GasEstimateArbitrumDemo() {
     set_in_flight(true)
     set_error(null)
     try {
-      const result = await calculate_gas_arbitrum({
+      const result = await estimate_arbitrum_fees({
         tx: { to: DEFAULT_TO },
       })(reader({ chain_id: CHAIN_ID }))
       set_fees({

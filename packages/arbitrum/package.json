@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@ethernauta/arbitrum",
+  "type": "module",
+  "version": "0.0.46",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niconiahi/ethernauta"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "import": "./dist/*/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write --unsafe .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest",
+    "test:integration": "echo no integration tests"
+  },
+  "dependencies": {
+    "@ethernauta/abi": "workspace:*",
+    "@ethernauta/chain": "workspace:*",
+    "@ethernauta/core": "workspace:*",
+    "@ethernauta/eth": "workspace:*",
+    "@ethernauta/transport": "workspace:*",
+    "@ethernauta/utils": "workspace:*"
+  },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
+  "devDependencies": {
+    "@ethernauta/testing": "workspace:*",
+    "tsdown": "^0.13.3"
+  }
+}
