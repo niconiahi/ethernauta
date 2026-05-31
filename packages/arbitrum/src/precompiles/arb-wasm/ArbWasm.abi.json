@@ -1,0 +1,401 @@
+[
+  {
+    "type": "function",
+    "name": "activateProgram",
+    "inputs": [
+      {
+        "name": "program",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "version",
+        "type": "uint16"
+      },
+      {
+        "name": "dataFee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "blockCacheSize",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "count",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "codehashAsmSize",
+    "inputs": [
+      {
+        "name": "codehash",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "size",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "codehashKeepalive",
+    "inputs": [
+      {
+        "name": "codehash",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "codehashVersion",
+    "inputs": [
+      {
+        "name": "codehash",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "version",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "expiryDays",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "_days",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "freePages",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "pages",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initCostScalar",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "percent",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "inkPrice",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "price",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "keepaliveDays",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "_days",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "maxStackDepth",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "depth",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "minInitGas",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "gas",
+        "type": "uint64"
+      },
+      {
+        "name": "cached",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pageGas",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "gas",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pageLimit",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "limit",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pageRamp",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "ramp",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "programInitGas",
+    "inputs": [
+      {
+        "name": "program",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "gas",
+        "type": "uint64"
+      },
+      {
+        "name": "gasWhenCached",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "programMemoryFootprint",
+    "inputs": [
+      {
+        "name": "program",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "footprint",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "programTimeLeft",
+    "inputs": [
+      {
+        "name": "program",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "_secs",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "programVersion",
+    "inputs": [
+      {
+        "name": "program",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "version",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "stylusVersion",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "version",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "ProgramActivated",
+    "inputs": [
+      {
+        "name": "codehash",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "moduleHash",
+        "type": "bytes32",
+        "indexed": false
+      },
+      {
+        "name": "program",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "dataFee",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "version",
+        "type": "uint16",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProgramLifetimeExtended",
+    "inputs": [
+      {
+        "name": "codehash",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "dataFee",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "ProgramExpired",
+    "inputs": [
+      {
+        "name": "ageInSeconds",
+        "type": "uint64"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ProgramInsufficientValue",
+    "inputs": [
+      {
+        "name": "have",
+        "type": "uint256"
+      },
+      {
+        "name": "want",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ProgramKeepaliveTooSoon",
+    "inputs": [
+      {
+        "name": "ageInSeconds",
+        "type": "uint64"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ProgramNeedsUpgrade",
+    "inputs": [
+      {
+        "name": "version",
+        "type": "uint16"
+      },
+      {
+        "name": "stylusVersion",
+        "type": "uint16"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ProgramNotActivated",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProgramNotWasm",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProgramUpToDate",
+    "inputs": []
+  }
+]

@@ -1,0 +1,274 @@
+[
+  {
+    "type": "function",
+    "name": "blockL1Num",
+    "inputs": [
+      {
+        "name": "l2BlockNum",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "l1BlockNum",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "constructOutboxProof",
+    "inputs": [
+      {
+        "name": "size",
+        "type": "uint64"
+      },
+      {
+        "name": "leaf",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "send",
+        "type": "bytes32"
+      },
+      {
+        "name": "root",
+        "type": "bytes32"
+      },
+      {
+        "name": "proof",
+        "type": "bytes32[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "estimateRetryableTicket",
+    "inputs": [
+      {
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "name": "deposit",
+        "type": "uint256"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "l2CallValue",
+        "type": "uint256"
+      },
+      {
+        "name": "excessFeeRefundAddress",
+        "type": "address"
+      },
+      {
+        "name": "callValueRefundAddress",
+        "type": "address"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "findBatchContainingBlock",
+    "inputs": [
+      {
+        "name": "blockNum",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "batch",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "gasEstimateComponents",
+    "inputs": [
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "contractCreation",
+        "type": "bool"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "gasEstimate",
+        "type": "uint64"
+      },
+      {
+        "name": "gasEstimateForL1",
+        "type": "uint64"
+      },
+      {
+        "name": "baseFee",
+        "type": "uint256"
+      },
+      {
+        "name": "l1BaseFeeEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "gasEstimateL1Component",
+    "inputs": [
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "contractCreation",
+        "type": "bool"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "gasEstimateForL1",
+        "type": "uint64"
+      },
+      {
+        "name": "baseFee",
+        "type": "uint256"
+      },
+      {
+        "name": "l1BaseFeeEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "getL1Confirmations",
+    "inputs": [
+      {
+        "name": "blockHash",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "confirmations",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "l2BlockRangeForL1",
+    "inputs": [
+      {
+        "name": "blockNum",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "firstBlock",
+        "type": "uint64"
+      },
+      {
+        "name": "lastBlock",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "legacyLookupMessageBatchProof",
+    "inputs": [
+      {
+        "name": "batchNum",
+        "type": "uint256"
+      },
+      {
+        "name": "index",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "proof",
+        "type": "bytes32[]"
+      },
+      {
+        "name": "path",
+        "type": "uint256"
+      },
+      {
+        "name": "l2Sender",
+        "type": "address"
+      },
+      {
+        "name": "l1Dest",
+        "type": "address"
+      },
+      {
+        "name": "l2Block",
+        "type": "uint256"
+      },
+      {
+        "name": "l1Block",
+        "type": "uint256"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "name": "calldataForL1",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "nitroGenesisBlock",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "number",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure"
+  }
+]

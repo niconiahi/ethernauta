@@ -30,6 +30,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
+    "pull-contracts": "node scripts/pull-contracts.ts",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",

@@ -1,0 +1,192 @@
+[
+  {
+    "type": "function",
+    "name": "becomeChainOwner",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "customRevert",
+    "inputs": [
+      {
+        "name": "number",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "events",
+    "inputs": [
+      {
+        "name": "flag",
+        "type": "bool"
+      },
+      {
+        "name": "value",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "eventsView",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "legacyError",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "overwriteContractCode",
+    "inputs": [
+      {
+        "name": "target",
+        "type": "address"
+      },
+      {
+        "name": "newCode",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "oldCode",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "panic",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "Basic",
+    "inputs": [
+      {
+        "name": "flag",
+        "type": "bool",
+        "indexed": false
+      },
+      {
+        "name": "value",
+        "type": "bytes32",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Mixed",
+    "inputs": [
+      {
+        "name": "flag",
+        "type": "bool",
+        "indexed": true
+      },
+      {
+        "name": "not",
+        "type": "bool",
+        "indexed": false
+      },
+      {
+        "name": "value",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "conn",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "caller",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Store",
+    "inputs": [
+      {
+        "name": "flag",
+        "type": "bool",
+        "indexed": true
+      },
+      {
+        "name": "field",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "number",
+        "type": "uint24",
+        "indexed": false
+      },
+      {
+        "name": "value",
+        "type": "bytes32",
+        "indexed": false
+      },
+      {
+        "name": "store",
+        "type": "bytes",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "Custom",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint64"
+      },
+      {
+        "name": "",
+        "type": "string"
+      },
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "Unused",
+    "inputs": []
+  }
+]

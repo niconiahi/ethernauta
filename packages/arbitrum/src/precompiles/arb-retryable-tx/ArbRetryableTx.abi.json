@@ -1,0 +1,263 @@
+[
+  {
+    "type": "function",
+    "name": "cancel",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getBeneficiary",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getCurrentRedeemer",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getLifetime",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getTimeout",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "keepalive",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "redeem",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "submitRetryable",
+    "inputs": [
+      {
+        "name": "requestId",
+        "type": "bytes32"
+      },
+      {
+        "name": "l1BaseFee",
+        "type": "uint256"
+      },
+      {
+        "name": "deposit",
+        "type": "uint256"
+      },
+      {
+        "name": "callvalue",
+        "type": "uint256"
+      },
+      {
+        "name": "gasFeeCap",
+        "type": "uint256"
+      },
+      {
+        "name": "gasLimit",
+        "type": "uint64"
+      },
+      {
+        "name": "maxSubmissionFee",
+        "type": "uint256"
+      },
+      {
+        "name": "feeRefundAddress",
+        "type": "address"
+      },
+      {
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "name": "retryTo",
+        "type": "address"
+      },
+      {
+        "name": "retryData",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "Canceled",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "LifetimeExtended",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "newTimeout",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RedeemScheduled",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "retryTxHash",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "sequenceNum",
+        "type": "uint64",
+        "indexed": true
+      },
+      {
+        "name": "donatedGas",
+        "type": "uint64",
+        "indexed": false
+      },
+      {
+        "name": "gasDonor",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "maxRefund",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "submissionFeeRefund",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Redeemed",
+    "inputs": [
+      {
+        "name": "userTxHash",
+        "type": "bytes32",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TicketCreated",
+    "inputs": [
+      {
+        "name": "ticketId",
+        "type": "bytes32",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "NoTicketWithID",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotCallable",
+    "inputs": []
+  }
+]
