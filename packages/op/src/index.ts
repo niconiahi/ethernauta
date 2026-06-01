@@ -1,3 +1,4 @@
+export * from "./bridge"
 export * from "./core"
 export * from "./gas"
 export * from "./lib"

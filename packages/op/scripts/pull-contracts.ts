@@ -1,13 +1,17 @@
-// Vendor OP Stack predeploy ABIs from ethereum-optimism/optimism at a
-// pinned SHA. Run when bumping to a newer op-contracts tag.
+// Vendor OP Stack predeploy + bridge ABIs from
+// ethereum-optimism/optimism at a pinned SHA. Run when bumping to a
+// newer op-contracts tag.
 //
 // Usage:  pnpm --filter @ethernauta/op pull-contracts
 //
-// Outputs:  packages/op/src/predeploys/<kebab>/<Pascal>.abi.json
+// Outputs:
+//   packages/op/src/predeploys/<kebab>/<Pascal>.abi.json
+//   packages/op/src/bridge/<kebab>/<Pascal>.abi.json
 //
 // Bump cadence: refresh on every new op-contracts/vN.0.0 stable release
 // (roughly quarterly). RC tags do not qualify. The SHA below is mirrored
-// in packages/op/src/predeploys/SOURCES.md — keep them in sync.
+// in packages/op/src/predeploys/SOURCES.md and
+// packages/op/src/bridge/SOURCES.md — keep them in sync.
 
 import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, join, resolve } from "node:path"
@@ -56,7 +60,7 @@ const RecipeSchema = object({
 })
 type Recipe = InferOutput<typeof RecipeSchema>
 
-const RECIPES = [
+const PREDEPLOY_RECIPES = [
   parse(RecipeSchema, {
     pascal: "GasPriceOracle",
     kebab: "gas-price-oracle",
@@ -85,6 +89,13 @@ const RECIPES = [
   }),
 ]
 
+const BRIDGE_RECIPES = [
+  parse(RecipeSchema, {
+    pascal: "L1StandardBridge",
+    kebab: "l1-standard-bridge",
+  }),
+]
+
 function apply_subset(
   entries: Description[],
   allowlist: ReadonlySet<string>,
@@ -107,10 +118,7 @@ async function fetch_abi(pascal: string) {
   return parse(AbiSchema, raw)
 }
 
-async function vendor_one(
-  recipe: Recipe,
-  predeploys_root: string,
-) {
+async function vendor_one(recipe: Recipe, target_root: string) {
   const upstream = await fetch_abi(recipe.pascal)
   const allowlist = recipe.function_allowlist
     ? new Set(recipe.function_allowlist)
@@ -118,7 +126,7 @@ async function vendor_one(
   const out = allowlist
     ? apply_subset(upstream, allowlist)
     : upstream
-  const out_dir = join(predeploys_root, recipe.kebab)
+  const out_dir = join(target_root, recipe.kebab)
   mkdirSync(out_dir, { recursive: true })
   const out_path = join(
     out_dir,
@@ -148,17 +156,31 @@ async function main() {
     "src",
     "predeploys",
   )
+  const bridge_root = resolve(here, "..", "src", "bridge")
   console.log(
     `Pulling OP Stack predeploys from ${OP_CONTRACTS_VERSION} (${OP_CONTRACTS_SHA.slice(0, 12)}…)`,
   )
-  for (const recipe of RECIPES) {
+  for (const recipe of PREDEPLOY_RECIPES) {
     const { kept, dropped } = await vendor_one(
       recipe,
       predeploys_root,
     )
     const note = dropped > 0 ? ` (dropped ${dropped})` : ""
     console.log(
-      `  ${recipe.pascal} → ${recipe.kebab}/${recipe.pascal}.abi.json — ${kept} functions${note}`,
+      `  ${recipe.pascal} → predeploys/${recipe.kebab}/${recipe.pascal}.abi.json — ${kept} functions${note}`,
+    )
+  }
+  console.log(
+    `Pulling OP Stack bridge ABIs from ${OP_CONTRACTS_VERSION} (${OP_CONTRACTS_SHA.slice(0, 12)}…)`,
+  )
+  for (const recipe of BRIDGE_RECIPES) {
+    const { kept, dropped } = await vendor_one(
+      recipe,
+      bridge_root,
+    )
+    const note = dropped > 0 ? ` (dropped ${dropped})` : ""
+    console.log(
+      `  ${recipe.pascal} → bridge/${recipe.kebab}/${recipe.pascal}.abi.json — ${kept} functions${note}`,
     )
   }
   console.log(
