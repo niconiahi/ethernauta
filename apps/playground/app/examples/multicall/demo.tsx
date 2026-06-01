@@ -1,12 +1,12 @@
 import "./demo.css"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { AddressSchema } from "@ethernauta/core"
+import { totalSupply } from "@ethernauta/erc/20"
 import {
   decimals,
   name,
   symbol,
-  totalSupply,
-} from "@ethernauta/erc/20"
+} from "@ethernauta/erc/20/extensions/metadata"
 import {
   contract,
   create_multicall,

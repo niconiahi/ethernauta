@@ -6,12 +6,12 @@ import {
   Uint256Schema,
 } from "@ethernauta/core"
 import { supportsInterface } from "@ethernauta/erc/165"
+import { ownerOf } from "@ethernauta/erc/721"
+import { totalSupply } from "@ethernauta/erc/721/extensions/enumerable"
 import {
   name,
-  ownerOf,
   tokenURI,
-  totalSupply,
-} from "@ethernauta/erc/721"
+} from "@ethernauta/erc/721/extensions/metadata"
 import {
   contract,
   create_multicall,

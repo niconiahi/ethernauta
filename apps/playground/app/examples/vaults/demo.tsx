@@ -4,11 +4,11 @@ import {
   AddressSchema,
   Uint256Schema,
 } from "@ethernauta/core"
+import { totalSupply } from "@ethernauta/erc/20"
 import {
   decimals,
   symbol,
-  totalSupply,
-} from "@ethernauta/erc/20"
+} from "@ethernauta/erc/20/extensions/metadata"
 import {
   asset,
   convertToAssets,
