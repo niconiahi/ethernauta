@@ -17,9 +17,17 @@ import { eip155_10241024 } from "@ethernauta/chain/eip155-10241024"
 import { eip155_21000000 } from "@ethernauta/chain/eip155-21000000"
 import { eip155_666666666 } from "@ethernauta/chain/eip155-666666666"
 import { eip155_1380012617 } from "@ethernauta/chain/eip155-1380012617"
+import { encode_chain_id } from "@ethernauta/transport"
 import { describe, expect, it } from "vitest"
 
 import { require_deploy_addresses } from "./deploy"
+
+function id_of(chain: { chainId: number }) {
+  return encode_chain_id({
+    namespace: "eip155",
+    reference: chain.chainId,
+  })
+}
 
 describe("require_deploy_addresses", () => {
   it.each([
@@ -42,7 +50,7 @@ describe("require_deploy_addresses", () => {
     eip155_111188,
     eip155_21000000,
   ])("round-trips a payload for $name", (chain) => {
-    const deploys = require_deploy_addresses(chain)
+    const deploys = require_deploy_addresses(id_of(chain))
     expect(deploys.name).toBeTypeOf("string")
     expect(deploys.parentChainId).toBeTypeOf("number")
     expect(deploys.confirmPeriodBlocks).toBeTypeOf("number")
@@ -62,7 +70,7 @@ describe("require_deploy_addresses", () => {
   })
 
   it("returns Arbitrum One's well-known canonical addresses", () => {
-    const deploys = require_deploy_addresses(eip155_42161)
+    const deploys = require_deploy_addresses(id_of(eip155_42161))
     expect(deploys.name).toBe("Arbitrum One")
     expect(deploys.parentChainId).toBe(1)
     expect(deploys.isBold).toBe(true)
@@ -88,7 +96,7 @@ describe("require_deploy_addresses", () => {
 
   it("throws on a non-arbitrum-family chain", () => {
     expect(() =>
-      require_deploy_addresses(eip155_1),
+      require_deploy_addresses(id_of(eip155_1)),
     ).toThrow(/not an arbitrum-family chain/i)
   })
 })

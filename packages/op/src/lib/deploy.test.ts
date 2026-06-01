@@ -5,9 +5,17 @@ import { eip155_1868 } from "@ethernauta/chain/eip155-1868"
 import { eip155_34443 } from "@ethernauta/chain/eip155-34443"
 import { eip155_7777777 } from "@ethernauta/chain/eip155-7777777"
 import { eip155_11155420 } from "@ethernauta/chain/eip155-11155420"
+import { encode_chain_id } from "@ethernauta/transport"
 import { describe, expect, it } from "vitest"
 
 import { require_deploy_addresses } from "./deploy"
+
+function id_of(chain: { chainId: number }) {
+  return encode_chain_id({
+    namespace: "eip155",
+    reference: chain.chainId,
+  })
+}
 
 describe("require_deploy_addresses", () => {
   it.each([
@@ -38,7 +46,7 @@ describe("require_deploy_addresses", () => {
   ])(
     "returns the deploys for $chain.name",
     ({ chain, portal }) => {
-      const deploys = require_deploy_addresses(chain)
+      const deploys = require_deploy_addresses(id_of(chain))
       expect(deploys.contracts.OptimismPortalProxy).toBe(
         portal,
       )
@@ -46,7 +54,7 @@ describe("require_deploy_addresses", () => {
   )
 
   it("returns a structurally-complete payload with contracts + roles", () => {
-    const deploys = require_deploy_addresses(eip155_10)
+    const deploys = require_deploy_addresses(id_of(eip155_10))
     expect(Object.keys(deploys)).toEqual([
       "contracts",
       "roles",
@@ -58,7 +66,7 @@ describe("require_deploy_addresses", () => {
 
   it("throws on a non-op-stack chain", () => {
     expect(() =>
-      require_deploy_addresses(eip155_1),
+      require_deploy_addresses(id_of(eip155_1)),
     ).toThrow(/not an op stack chain/i)
   })
 })

@@ -1,4 +1,3 @@
-import type { Chain } from "@ethernauta/chain"
 import { eip155_1729 } from "@ethernauta/chain/eip155-1729"
 import { eip155_1996 } from "@ethernauta/chain/eip155-1996"
 import { eip155_2187 } from "@ethernauta/chain/eip155-2187"
@@ -41,41 +40,34 @@ import { eip155_21000000_deploys } from "../deploys/eip155-21000000"
 import { eip155_666666666_deploys } from "../deploys/eip155-666666666"
 import { eip155_1380012617_deploys } from "../deploys/eip155-1380012617"
 
-function key_for(chain: Chain): ChainId {
-  return encode_chain_id({
-    namespace: "eip155",
-    reference: chain.chainId,
-  })
-}
-
 const DEPLOYS: Record<ChainId, ArbitrumDeploys> = {
-  [key_for(eip155_42161)]: eip155_42161_deploys,
-  [key_for(eip155_42170)]: eip155_42170_deploys,
-  [key_for(eip155_421614)]: eip155_421614_deploys,
-  [key_for(eip155_660279)]: eip155_660279_deploys,
-  [key_for(eip155_33139)]: eip155_33139_deploys,
-  [key_for(eip155_1996)]: eip155_1996_deploys,
-  [key_for(eip155_70700)]: eip155_70700_deploys,
-  [key_for(eip155_1380012617)]: eip155_1380012617_deploys,
-  [key_for(eip155_1729)]: eip155_1729_deploys,
-  [key_for(eip155_98865)]: eip155_98865_deploys,
-  [key_for(eip155_666666666)]: eip155_666666666_deploys,
-  [key_for(eip155_2187)]: eip155_2187_deploys,
-  [key_for(eip155_2911)]: eip155_2911_deploys,
-  [key_for(eip155_10241024)]: eip155_10241024_deploys,
-  [key_for(eip155_7887)]: eip155_7887_deploys,
-  [key_for(eip155_41455)]: eip155_41455_deploys,
-  [key_for(eip155_111188)]: eip155_111188_deploys,
-  [key_for(eip155_21000000)]: eip155_21000000_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_42161.chainId })]: eip155_42161_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_42170.chainId })]: eip155_42170_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_421614.chainId })]: eip155_421614_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_660279.chainId })]: eip155_660279_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_33139.chainId })]: eip155_33139_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_1996.chainId })]: eip155_1996_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_70700.chainId })]: eip155_70700_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_1380012617.chainId })]: eip155_1380012617_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_1729.chainId })]: eip155_1729_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_98865.chainId })]: eip155_98865_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_666666666.chainId })]: eip155_666666666_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_2187.chainId })]: eip155_2187_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_2911.chainId })]: eip155_2911_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_10241024.chainId })]: eip155_10241024_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_7887.chainId })]: eip155_7887_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_41455.chainId })]: eip155_41455_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_111188.chainId })]: eip155_111188_deploys,
+  [encode_chain_id({ namespace: "eip155", reference: eip155_21000000.chainId })]: eip155_21000000_deploys,
 }
 
 export function require_deploy_addresses(
-  chain: Chain,
+  chain_id: ChainId,
 ): ArbitrumDeploys {
-  const deploys = DEPLOYS[key_for(chain)]
+  const deploys = DEPLOYS[chain_id]
   if (!deploys) {
     throw new Error(
-      `not an arbitrum-family chain: chainId=${chain.chainId} (${chain.name})`,
+      `not an arbitrum-family chain: chain_id=${chain_id}`,
     )
   }
   return deploys
