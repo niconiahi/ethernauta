@@ -1,0 +1,142 @@
+[
+  {
+    "type": "function",
+    "name": "allowedBytecodeTypesToDeploy",
+    "inputs": [],
+    "outputs": [{ "name": "mode", "type": "uint8" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getNewAddressCreate2",
+    "inputs": [
+      { "name": "_sender", "type": "address" },
+      { "name": "_bytecodeHash", "type": "bytes32" },
+      { "name": "_salt", "type": "bytes32" },
+      { "name": "_input", "type": "bytes" }
+    ],
+    "outputs": [
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getNewAddressCreate",
+    "inputs": [
+      { "name": "_sender", "type": "address" },
+      { "name": "_senderNonce", "type": "uint256" }
+    ],
+    "outputs": [
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "create2",
+    "inputs": [
+      { "name": "_salt", "type": "bytes32" },
+      { "name": "_bytecodeHash", "type": "bytes32" },
+      { "name": "_input", "type": "bytes" }
+    ],
+    "outputs": [
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "create2Account",
+    "inputs": [
+      { "name": "_salt", "type": "bytes32" },
+      { "name": "_bytecodeHash", "type": "bytes32" },
+      { "name": "_input", "type": "bytes" },
+      { "name": "_aaVersion", "type": "uint8" }
+    ],
+    "outputs": [
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "create",
+    "inputs": [
+      { "name": "_salt", "type": "bytes32" },
+      { "name": "_bytecodeHash", "type": "bytes32" },
+      { "name": "_input", "type": "bytes" }
+    ],
+    "outputs": [
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "createAccount",
+    "inputs": [
+      { "name": "", "type": "bytes32" },
+      { "name": "_bytecodeHash", "type": "bytes32" },
+      { "name": "_input", "type": "bytes" },
+      { "name": "_aaVersion", "type": "uint8" }
+    ],
+    "outputs": [
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "getAccountInfo",
+    "inputs": [{ "name": "_address", "type": "address" }],
+    "outputs": [
+      {
+        "name": "info",
+        "type": "tuple",
+        "components": [
+          { "name": "supportedAAVersion", "type": "uint8" },
+          { "name": "nonceOrdering", "type": "uint8" }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "extendedAccountVersion",
+    "inputs": [{ "name": "_address", "type": "address" }],
+    "outputs": [{ "name": "", "type": "uint8" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "updateAccountVersion",
+    "inputs": [{ "name": "_version", "type": "uint8" }],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "createEVM",
+    "inputs": [{ "name": "_initCode", "type": "bytes" }],
+    "outputs": [
+      { "name": "evmGasUsed", "type": "uint256" },
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "create2EVM",
+    "inputs": [
+      { "name": "_salt", "type": "bytes32" },
+      { "name": "_initCode", "type": "bytes" }
+    ],
+    "outputs": [
+      { "name": "evmGasUsed", "type": "uint256" },
+      { "name": "newAddress", "type": "address" }
+    ],
+    "stateMutability": "payable"
+  }
+]

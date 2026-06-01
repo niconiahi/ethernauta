@@ -38,6 +38,7 @@
     "test:integration": "echo no integration tests"
   },
   "dependencies": {
+    "@ethernauta/abi": "workspace:*",
     "@ethernauta/chain": "workspace:*",
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eth": "workspace:*",

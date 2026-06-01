@@ -1,0 +1,92 @@
+[
+  {
+    "type": "function",
+    "name": "getMinNonce",
+    "inputs": [{ "name": "_address", "type": "address" }],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getKeyedNonce",
+    "inputs": [
+      { "name": "_address", "type": "address" },
+      { "name": "_key", "type": "uint192" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getRawNonce",
+    "inputs": [{ "name": "_address", "type": "address" }],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "increaseMinNonce",
+    "inputs": [{ "name": "_value", "type": "uint256" }],
+    "outputs": [
+      { "name": "oldMinNonce", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "incrementMinNonceIfEquals",
+    "inputs": [
+      { "name": "_expectedNonce", "type": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "incrementMinNonceIfEqualsKeyed",
+    "inputs": [
+      { "name": "_expectedNonce", "type": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getDeploymentNonce",
+    "inputs": [{ "name": "_address", "type": "address" }],
+    "outputs": [
+      { "name": "deploymentNonce", "type": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "incrementDeploymentNonce",
+    "inputs": [{ "name": "_address", "type": "address" }],
+    "outputs": [
+      { "name": "prevDeploymentNonce", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "validateNonceUsage",
+    "inputs": [
+      { "name": "_address", "type": "address" },
+      { "name": "_key", "type": "uint256" },
+      { "name": "_shouldBeUsed", "type": "bool" }
+    ],
+    "outputs": [],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isNonceUsed",
+    "inputs": [
+      { "name": "_address", "type": "address" },
+      { "name": "_nonce", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "bool" }],
+    "stateMutability": "view"
+  }
+]
