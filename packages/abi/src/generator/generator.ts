@@ -673,13 +673,18 @@ function build_signable(
 ): string {
   const { name, inputs } = description
   const input_infos = inputs.map((i) => get_type_info(i))
+  const is_payable =
+    description.stateMutability === "payable"
   const agg = empty_aggregate()
   for (const info of input_infos) fold_input(agg, info)
   // The emitted eth_signTransaction payload routes its `value` and
   // `input` fields through parse(UintSchema, "0x0") and
   // parse(BytesSchema, bytes_to_hex(...)) — Signable<Bytes> requires
   // the brand on `data`, GenericTransactionSchema requires brands on
-  // both fields.
+  // both fields. Payable methods read `value` from the resolver
+  // context (defaulting to `0x0` when omitted); non-payable methods
+  // hardcode `0x0` because non-payable contracts revert on
+  // `msg.value > 0`.
   agg.core_schemas.add("BytesSchema")
   agg.core_schemas.add("UintSchema")
 
@@ -714,7 +719,7 @@ export function ${emit_name}(${inputs.length > 0 ? "_parameters: Parameters" : "
     return eth_signTransaction(
       [{
         to: context.to,
-        value: parse(UintSchema, "0x0"),
+        value: ${is_payable ? 'context.value ?? parse(UintSchema, "0x0")' : 'parse(UintSchema, "0x0")'},
         input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: ${signature_const_name(emit_name)},

@@ -1,4 +1,4 @@
-import { AddressSchema } from "@ethernauta/core"
+import { AddressSchema, UintSchema } from "@ethernauta/core"
 import {
   array,
   type InferOutput,
@@ -9,9 +9,16 @@ import {
 
 import { ChainIdSchema } from "./chain/chain-id"
 
+// `value` rides on the context (not on per-call params) because
+// it's a transaction-envelope field, not a Solidity-ABI argument.
+// Thin Signable bindings for payable contract methods route it
+// into the `eth_signTransaction` envelope's `value` field; the
+// codegen defaults it to `0x0` for non-payable methods to match
+// the on-chain `payable` rule.
 export const SignContextSchema = object({
   chain_id: ChainIdSchema,
   to: optional(AddressSchema),
+  value: optional(UintSchema),
 })
 export type SignContext = InferOutput<
   typeof SignContextSchema

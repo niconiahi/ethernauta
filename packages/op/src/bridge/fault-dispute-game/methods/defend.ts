@@ -75,7 +75,7 @@ export function defend(
     return eth_signTransaction([
       {
         to: context.to,
-        value: parse(UintSchema, "0x0"),
+        value: context.value ?? parse(UintSchema, "0x0"),
         input: parse(BytesSchema, bytes_to_hex(calldata)),
         _ethernauta: {
           function: DEFEND_SIGNATURE,

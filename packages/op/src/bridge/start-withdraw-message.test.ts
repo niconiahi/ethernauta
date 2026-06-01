@@ -54,7 +54,7 @@ const PAYLOAD = parse(
   BytesSchema,
   "0xa9059cbb0000000000000000000000001111111111111111111111111111111111111111000000000000000000000000000000000000000000000000016345785d8a0000",
 )
-const SIGNED_BYTES = parse(
+const SIGNED_TRANSACTION = parse(
   BytesSchema,
   "0x02f86c0184deadbeef841dcd6500841dcd6500825208941111111111111111111111111111111111111111880de0b6b3a764000080c001a01111111111111111111111111111111111111111111111111111111111111111a02222222222222222222222222222222222222222222222222222222222222222",
 )
@@ -113,7 +113,7 @@ describe("start_withdraw_message", () => {
     const signer: Signer = async (method, _params) => {
       const [tx] = parse(SignParamsSchema, _params)
       signer_calls.push({ method, tx })
-      return SIGNED_BYTES
+      return SIGNED_TRANSACTION
     }
     const reader_calls: { method: string; bytes: Bytes }[] =
       []
@@ -167,7 +167,7 @@ describe("start_withdraw_message", () => {
     const sent = reader_calls[0]
     if (!sent) throw new Error("expected one reader call")
     expect(sent.method).toBe("eth_sendRawTransaction")
-    expect(sent.bytes).toBe(SIGNED_BYTES)
+    expect(sent.bytes).toBe(SIGNED_TRANSACTION)
   })
 
   it("throws when origin.signer is undefined", async () => {

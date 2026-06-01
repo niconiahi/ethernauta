@@ -1,11 +1,12 @@
 // L1→L2 arbitrary message through the OP-stack OptimismPortal.
 //
 // Composes:
-//   - `depositTransaction(address,uint256,uint64,bool,bytes)`
-//     calldata encoding
+//   - the thin
+//     `depositTransaction(address,uint256,uint64,bool,bytes)`
+//     Signable binding from `optimism-portal/methods`, which
+//     encodes calldata + signs via `eth_signTransaction`
 //   - OptimismPortalProxy address lookup by destination
 //     L2 chain id
-//   - origin-side (L1) wallet signs via `eth_signTransaction`
 //   - origin-side (L1) dispatcher broadcasts via
 //     `eth_sendRawTransaction`, returning the L1 tx hash
 //
@@ -18,14 +19,6 @@
 // Slice 2 of phase 05 — see tmp/plans/05_bridge_package/.
 
 import {
-  address as address_codec,
-  bool as bool_codec,
-  bytes as bytes_codec,
-  encode_function_call,
-  uint64 as uint64_codec,
-  uint256 as uint256_codec,
-} from "@ethernauta/abi"
-import {
   AddressSchema,
   BytesSchema,
   type Hash32,
@@ -33,27 +26,15 @@ import {
   Uint256Schema,
   UintSchema,
 } from "@ethernauta/core"
-import {
-  eth_sendRawTransaction,
-  eth_signTransaction,
-} from "@ethernauta/eth"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 import type {
   Bridgeable,
   ResolvedBridge,
 } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { boolean, object, parse } from "valibot"
 import { require_deploy_addresses } from "../lib/deploy"
-import { DEPOSIT_TRANSACTION_SIGNATURE } from "./optimism-portal"
-
-const PARAM_CODECS = [
-  address_codec(),
-  uint256_codec(),
-  uint64_codec(),
-  bool_codec(),
-  bytes_codec(),
-] as const
+import { depositTransaction } from "./optimism-portal"
 
 const ParametersSchema = object({
   to: AddressSchema,
@@ -80,28 +61,21 @@ export function send_message(
     const portal_address = require_deploy_addresses(
       destination.chain_id,
     ).contracts.OptimismPortalProxy
-    const calldata = encode_function_call({
-      name: "depositTransaction",
-      args: PARAM_CODECS,
-      values: [
-        parameters.to,
-        parameters.value,
-        parameters.gas_limit,
-        parameters.is_creation,
-        parameters.data,
-      ],
-    })
-    const signed_bytes = await eth_signTransaction([
+    const signed_transaction = await depositTransaction([
+      parameters.to,
+      parameters.value,
+      parameters.gas_limit,
+      parameters.is_creation,
+      parameters.data,
+    ])([
+      origin.signer,
       {
+        chain_id: origin.chain_id,
         to: portal_address,
         value: parse(UintSchema, parameters.value),
-        input: parse(BytesSchema, bytes_to_hex(calldata)),
-        _ethernauta: {
-          function: DEPOSIT_TRANSACTION_SIGNATURE,
-        },
       },
-    ])([origin.signer, { chain_id: origin.chain_id }])
-    return eth_sendRawTransaction([signed_bytes])([
+    ])
+    return eth_sendRawTransaction([signed_transaction])([
       origin.reader,
       { chain_id: origin.chain_id },
     ])

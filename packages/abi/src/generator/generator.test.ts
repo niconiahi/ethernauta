@@ -76,6 +76,37 @@ describe("generator.ts", () => {
       expect(file).toContain('name: "mint"')
       expect(file).toContain("encode_function_call")
       expect(file).toContain("PARAM_CODECS = [string_()]")
+      expect(file).toContain(
+        'value: parse(UintSchema, "0x0")',
+      )
+      expect(file).not.toContain("context.value")
+    } finally {
+      rmSync(out_dir, { recursive: true, force: true })
+    }
+  })
+
+  it("should route context.value into the eth_signTransaction envelope for payable methods", () => {
+    const out_dir = make_tmp()
+    try {
+      generate(
+        [
+          {
+            type: "function",
+            name: "depositEth",
+            inputs: [{ name: "to", type: "address" }],
+            outputs: [],
+            stateMutability: "payable",
+          },
+        ],
+        out_dir,
+      )
+      const file = readFileSync(
+        join(out_dir, "methods", "deposit-eth.ts"),
+        "utf8",
+      )
+      expect(file).toContain(
+        'value: context.value ?? parse(UintSchema, "0x0")',
+      )
     } finally {
       rmSync(out_dir, { recursive: true, force: true })
     }

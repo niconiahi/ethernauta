@@ -2,11 +2,13 @@
 // L2StandardBridge predeploy.
 //
 // Composes:
-//   - `withdrawTo(address,address,uint256,uint32,bytes)`
-//     calldata encoding
+//   - the thin
+//     `withdrawTo(address,address,uint256,uint32,bytes)`
+//     Signable binding from
+//     `predeploys/l2-standard-bridge/methods`, which encodes
+//     calldata + signs via `eth_signTransaction`
 //   - L2StandardBridge predeploy address (fixed at
 //     `0x4200000000000000000000000000000000000010`)
-//   - origin-side (L2) wallet signs via `eth_signTransaction`
 //   - origin-side (L2) dispatcher broadcasts via
 //     `eth_sendRawTransaction`, returning the L2 tx hash
 //
@@ -18,46 +20,25 @@
 // Slice 2 of phase 05 — see tmp/plans/05_bridge_package/.
 
 import {
-  address as address_codec,
-  bytes as bytes_codec,
-  encode_function_call,
-  uint32 as uint32_codec,
-  uint256 as uint256_codec,
-} from "@ethernauta/abi"
-import {
   AddressSchema,
   BytesSchema,
   type Hash32,
   Uint32Schema,
   Uint256Schema,
-  UintSchema,
 } from "@ethernauta/core"
-import {
-  eth_sendRawTransaction,
-  eth_signTransaction,
-} from "@ethernauta/eth"
+import { eth_sendRawTransaction } from "@ethernauta/eth"
 import type {
   Bridgeable,
   ResolvedBridge,
 } from "@ethernauta/transport"
-import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, optional, parse } from "valibot"
 import {
   L2_STANDARD_BRIDGE_ADDRESS,
-  WITHDRAW_TO_SIGNATURE,
+  withdrawTo,
 } from "../predeploys/l2-standard-bridge"
 
-const PARAM_CODECS = [
-  address_codec(),
-  address_codec(),
-  uint256_codec(),
-  uint32_codec(),
-  bytes_codec(),
-] as const
-
 const EMPTY_BYTES = parse(BytesSchema, "0x")
-const ZERO_VALUE = parse(UintSchema, "0x0")
 
 const ParametersSchema = object({
   l2_token: AddressSchema,
@@ -81,28 +62,20 @@ export function start_withdraw_erc20(
     }
     const parameters = parse(ParametersSchema, _parameters)
     const extra_data = parameters.extra_data ?? EMPTY_BYTES
-    const calldata = encode_function_call({
-      name: "withdrawTo",
-      args: PARAM_CODECS,
-      values: [
-        parameters.l2_token,
-        parameters.to,
-        parameters.amount,
-        parameters.min_gas_limit,
-        extra_data,
-      ],
-    })
-    const signed_bytes = await eth_signTransaction([
+    const signed_transaction = await withdrawTo([
+      parameters.l2_token,
+      parameters.to,
+      parameters.amount,
+      parameters.min_gas_limit,
+      extra_data,
+    ])([
+      origin.signer,
       {
+        chain_id: origin.chain_id,
         to: L2_STANDARD_BRIDGE_ADDRESS,
-        value: ZERO_VALUE,
-        input: parse(BytesSchema, bytes_to_hex(calldata)),
-        _ethernauta: {
-          function: WITHDRAW_TO_SIGNATURE,
-        },
       },
-    ])([origin.signer, { chain_id: origin.chain_id }])
-    return eth_sendRawTransaction([signed_bytes])([
+    ])
+    return eth_sendRawTransaction([signed_transaction])([
       origin.reader,
       { chain_id: origin.chain_id },
     ])
