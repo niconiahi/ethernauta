@@ -24,12 +24,13 @@ const OP_SEPOLIA = encode_chain_id({
   reference: "11155420",
 })
 
-const L1_STANDARD_BRIDGE_PROXIES: Record<ChainId, Address> = {
-  [OP_SEPOLIA]: parse(
-    AddressSchema,
-    "0xFBb0621E0B23b5478B630BD55a5f21f67730B0F1",
-  ),
-}
+const L1_STANDARD_BRIDGE_PROXIES: Record<ChainId, Address> =
+  {
+    [OP_SEPOLIA]: parse(
+      AddressSchema,
+      "0xFBb0621E0B23b5478B630BD55a5f21f67730B0F1",
+    ),
+  }
 
 export function require_l1_standard_bridge_address(
   l2_chain_id: ChainId,

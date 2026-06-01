@@ -1,7 +1,10 @@
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 
-import { type ChainId, ChainIdSchema } from "./chain/chain-id"
+import {
+  type ChainId,
+  ChainIdSchema,
+} from "./chain/chain-id"
 import {
   create_dispatcher,
   type Dispatcher,
@@ -42,9 +45,7 @@ export type Bridgeable<T> = (
   _resolved: ResolvedBridge,
 ) => Promise<T>
 
-export function create_bridge(
-  chains: ChainEntry[],
-): (
+export function create_bridge(chains: ChainEntry[]): (
   _input: BridgeInput & {
     signer?: (_input: { chain_id: ChainId }) => Signer
   },

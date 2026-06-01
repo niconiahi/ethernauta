@@ -39,19 +39,26 @@ describe("require_deploy_addresses", () => {
     "returns the deploys for $chain.name",
     ({ chain, portal }) => {
       const deploys = require_deploy_addresses(chain)
-      expect(deploys.contracts.OptimismPortalProxy).toBe(portal)
+      expect(deploys.contracts.OptimismPortalProxy).toBe(
+        portal,
+      )
     },
   )
 
   it("returns a structurally-complete payload with contracts + roles", () => {
     const deploys = require_deploy_addresses(eip155_10)
-    expect(Object.keys(deploys)).toEqual(["contracts", "roles"])
-    expect(deploys.roles.Guardian).toMatch(/^0x[0-9a-fA-F]{40}$/)
+    expect(Object.keys(deploys)).toEqual([
+      "contracts",
+      "roles",
+    ])
+    expect(deploys.roles.Guardian).toMatch(
+      /^0x[0-9a-fA-F]{40}$/,
+    )
   })
 
   it("throws on a non-op-stack chain", () => {
-    expect(() => require_deploy_addresses(eip155_1)).toThrow(
-      /not an op stack chain/i,
-    )
+    expect(() =>
+      require_deploy_addresses(eip155_1),
+    ).toThrow(/not an op stack chain/i)
   })
 })

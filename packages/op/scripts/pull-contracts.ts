@@ -118,7 +118,10 @@ async function fetch_abi(pascal: string) {
   return parse(AbiSchema, raw)
 }
 
-async function vendor_one(recipe: Recipe, target_root: string) {
+async function vendor_one(
+  recipe: Recipe,
+  target_root: string,
+) {
   const upstream = await fetch_abi(recipe.pascal)
   const allowlist = recipe.function_allowlist
     ? new Set(recipe.function_allowlist)

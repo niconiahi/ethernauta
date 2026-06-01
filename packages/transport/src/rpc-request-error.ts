@@ -13,7 +13,7 @@
 // `if (e instanceof RpcRequestError) e.data` and parse via the
 // schema relevant to their call.
 
-import { type RpcError } from "./json-rpc"
+import type { RpcError } from "./json-rpc"
 
 export class RpcRequestError extends Error {
   readonly code: RpcError["code"]

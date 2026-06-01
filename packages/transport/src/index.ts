@@ -10,8 +10,8 @@ export * from "./number"
 export {
   create_injected_transport,
   create_provider,
-  ProviderResolverSchema,
   type ProviderResolver,
+  ProviderResolverSchema,
   ProviderRpcErrorSchema,
   type ProviderRpcErrorShape,
 } from "./provider"

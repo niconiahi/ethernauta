@@ -2,15 +2,14 @@ import type {
   Provider,
   RequestArguments,
 } from "@ethernauta/eip/1193"
-import { invariant } from "@ethernauta/utils"
 import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { CallSchema } from "./call"
 import {
-  create_signer,
   create_injected_transport,
   create_provider,
+  create_signer,
 } from "./provider"
 import { ReadContextSchema } from "./reader"
 
