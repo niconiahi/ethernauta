@@ -25,32 +25,8 @@ Keep this file in lockstep with the constants there.
 | `l1-block/L1Block.abi.json` | `snapshots/abi/L1Block.json` |
 | `l1-fee-vault/L1FeeVault.abi.json` | `snapshots/abi/L1FeeVault.json` |
 | `l2-cross-domain-messenger/L2CrossDomainMessenger.abi.json` | `snapshots/abi/L2CrossDomainMessenger.json` |
-| `l2-standard-bridge/L2StandardBridge.abi.json` | `snapshots/abi/L2StandardBridge.json` — **subset** |
+| `l2-standard-bridge/L2StandardBridge.abi.json` | `snapshots/abi/L2StandardBridge.json` |
 | `sequencer-fee-vault/SequencerFeeVault.abi.json` | `snapshots/abi/SequencerFeeVault.json` |
-
-## L2StandardBridge — subset rationale
-
-The vendored `L2StandardBridge.abi.json` only contains view-binding
-functions. The bridge-state-mutating surface
-(`bridgeERC20`, `bridgeERC20To`, `bridgeETH`, `bridgeETHTo`, `withdraw`,
-`withdrawTo`, `finalizeBridgeERC20`, `finalizeBridgeETH`, `initialize`)
-is filtered out by the allowlist in `pull-contracts.ts`.
-
-**Why.** Issuing a withdrawal is not a single contract call — it kicks
-off a multi-day, multi-step lifecycle (L2 initiate → 7-day fault
-window → L1 prove → L1 finalize). We don't want to expose bare
-`encode_function_call` bindings for those methods until we have the
-`Bridgable<T>` shape designed: a lifecycle tracker that owns the
-state machine rather than handing it to the dapp as a raw write.
-
-**Status.** Bridge methods land with the bridge phase (originally
-phase 05). When that ships, drop the `function_allowlist` entry for
-`L2StandardBridge` in `pull-contracts.ts` and re-run the vendoring
-script — the autogen will then emit the full ABI surface.
-
-Kept (8 view functions):
-`MESSENGER`, `OTHER_BRIDGE`, `deposits`, `l1TokenBridge`, `messenger`,
-`otherBridge`, `paused`, `version`.
 
 ## Bump cadence
 

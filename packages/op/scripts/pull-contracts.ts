@@ -36,21 +36,6 @@ const OP_CONTRACTS_SHA =
 
 const ABI_BASE_URL = `https://raw.githubusercontent.com/ethereum-optimism/optimism/${OP_CONTRACTS_SHA}/packages/contracts-bedrock/snapshots/abi`
 
-// L2StandardBridge predeploy ships in this slice as view-bindings only.
-// Bridge methods (deposit / withdraw / finalize) live in phase 05 once
-// the Bridgable shape is designed. Keep this list lockstep with the
-// note in SOURCES.md.
-const L2_STANDARD_BRIDGE_FUNCTION_ALLOWLIST = [
-  "MESSENGER",
-  "OTHER_BRIDGE",
-  "deposits",
-  "l1TokenBridge",
-  "messenger",
-  "otherBridge",
-  "paused",
-  "version",
-]
-
 const AbiSchema = array(DescriptionSchema)
 
 const RecipeSchema = object({
@@ -76,8 +61,6 @@ const PREDEPLOY_RECIPES = [
   parse(RecipeSchema, {
     pascal: "L2StandardBridge",
     kebab: "l2-standard-bridge",
-    function_allowlist:
-      L2_STANDARD_BRIDGE_FUNCTION_ALLOWLIST,
   }),
   parse(RecipeSchema, {
     pascal: "L1FeeVault",
