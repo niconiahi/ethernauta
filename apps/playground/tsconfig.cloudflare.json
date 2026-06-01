@@ -23,6 +23,7 @@
     "paths": {
       "~/*": ["./app/*"],
       "@ethernauta/abi": ["../../packages/abi/src"],
+      "@ethernauta/arbitrum": ["../../packages/arbitrum/src"],
       "@ethernauta/chain": ["../../packages/chain/src"],
       "@ethernauta/chain/*": [
         "../../packages/chain/src/chain/eip155/*"
@@ -33,12 +34,14 @@
       "@ethernauta/ens": ["../../packages/ens/src"],
       "@ethernauta/erc/*": ["../../packages/erc/src/*"],
       "@ethernauta/eth": ["../../packages/eth/src"],
+      "@ethernauta/op": ["../../packages/op/src"],
       "@ethernauta/react": ["../../packages/react/src"],
       "@ethernauta/transport": [
         "../../packages/transport/src"
       ],
       "@ethernauta/utils": ["../../packages/utils/src"],
-      "@ethernauta/wallet": ["../../packages/wallet/src"]
+      "@ethernauta/wallet": ["../../packages/wallet/src"],
+      "@ethernauta/zksync": ["../../packages/zksync/src"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true
