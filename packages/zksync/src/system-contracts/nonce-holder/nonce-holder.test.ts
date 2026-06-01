@@ -1,4 +1,5 @@
 import { to_selector } from "@ethernauta/abi"
+import { AddressSchema } from "@ethernauta/core"
 import {
   ChainIdSchema,
   type ContractContext,
@@ -30,7 +31,10 @@ describe("nonce-holder", () => {
 
   it("should encode getMinNonce calldata with the right selector", () => {
     const callable = getMinNonce([
-      "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      parse(
+        AddressSchema,
+        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      ),
     ])(TEST_CONTEXT)
     const expected_selector = bytes_to_hex(
       to_selector(GET_MIN_NONCE_SIGNATURE.signature),

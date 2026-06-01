@@ -1,7 +1,9 @@
 import { eip155_324 } from "@ethernauta/chain/eip155-324"
+import { Uint64Schema } from "@ethernauta/core"
 import { create_testing_reader } from "@ethernauta/testing"
 import type { Call, Response } from "@ethernauta/transport"
 import { encode_chain_id } from "@ethernauta/transport"
+import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { zks_getBlockDetails } from "./zks-get-block-details"
@@ -65,9 +67,9 @@ describe("zks_getBlockDetails", () => {
     const resolved = testing_reader(
       stub_http(BLOCK_PAYLOAD),
     )
-    const details = await zks_getBlockDetails(["0x2a"])(
-      resolved,
-    )
+    const details = await zks_getBlockDetails([
+      parse(Uint64Schema, "0x2a"),
+    ])(resolved)
     expect(details).not.toBeNull()
     if (details === null) return
     expect(details.number).toBe("0x2a")
@@ -87,7 +89,7 @@ describe("zks_getBlockDetails", () => {
   it("returns null when the node has no record of the block yet", async () => {
     const resolved = testing_reader(stub_http(null))
     const details = await zks_getBlockDetails({
-      blockNumber: "0xffffff",
+      blockNumber: parse(Uint64Schema, "0xffffff"),
     })(resolved)
     expect(details).toBeNull()
   })

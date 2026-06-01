@@ -1,5 +1,10 @@
 import { to_selector } from "@ethernauta/abi"
 import {
+  AddressSchema,
+  Bytes32Schema,
+  BytesSchema,
+} from "@ethernauta/core"
+import {
   ChainIdSchema,
   type ContractContext,
 } from "@ethernauta/transport"
@@ -27,12 +32,19 @@ describe("contract-deployer", () => {
 
   it("should encode getNewAddressCreate2 calldata with the right selector", () => {
     const callable = getNewAddressCreate2({
-      _sender: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-      _bytecodeHash:
+      _sender: parse(
+        AddressSchema,
+        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      ),
+      _bytecodeHash: parse(
+        Bytes32Schema,
         "0x0100000000000000000000000000000000000000000000000000000000000000",
-      _salt:
+      ),
+      _salt: parse(
+        Bytes32Schema,
         "0x0000000000000000000000000000000000000000000000000000000000000001",
-      _input: "0x",
+      ),
+      _input: parse(BytesSchema, "0x"),
     })(TEST_CONTEXT)
     const expected_selector = bytes_to_hex(
       to_selector(

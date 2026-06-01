@@ -1,4 +1,5 @@
 import { to_selector } from "@ethernauta/abi"
+import { Uint256Schema } from "@ethernauta/core"
 import {
   ChainIdSchema,
   type ContractContext,
@@ -36,7 +37,9 @@ describe("bridgehub", () => {
   })
 
   it("should encode getZKChain calldata with the right selector", () => {
-    const callable = getZKChain(["0x144"])(TEST_CONTEXT)
+    const callable = getZKChain([parse(Uint256Schema, "0x144")])(
+      TEST_CONTEXT,
+    )
     const expected_selector = bytes_to_hex(
       to_selector(GET_ZK_CHAIN_SIGNATURE.signature),
     )
