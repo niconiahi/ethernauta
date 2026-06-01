@@ -4,7 +4,13 @@
 //   - `bridgeETHTo(address,uint32,bytes)` calldata encoding
 //   - L1StandardBridgeProxy address lookup by destination
 //     L2 chain id
-//   - origin-side (L1) signer issuing eth_sendTransaction
+//   - origin-side (L1) wallet signs via `eth_signTransaction`
+//   - origin-side (L1) dispatcher broadcasts via
+//     `eth_sendRawTransaction`, returning the L1 tx hash
+//
+// Path-2 composition (per M3): the wallet only signs, the
+// dapp broadcasts. `eth_sendTransaction` is intentionally
+// not used.
 //
 // Slice 1 of phase 05 — see tmp/plans/05_bridge_package/.
 
@@ -18,10 +24,13 @@ import {
   AddressSchema,
   BytesSchema,
   type Hash32,
-  Hash32Schema,
   Uint32Schema,
   UintSchema,
 } from "@ethernauta/core"
+import {
+  eth_sendRawTransaction,
+  eth_signTransaction,
+} from "@ethernauta/eth"
 import type {
   Bridgeable,
   ResolvedBridge,
@@ -64,7 +73,9 @@ export function send_eth(
     }
     const parameters = parse(ParametersSchema, _parameters)
     const bridge_address =
-      require_l1_standard_bridge_address(destination.chain_id)
+      require_l1_standard_bridge_address(
+        destination.chain_id,
+      )
     const extra_data = parameters.extra_data ?? EMPTY_BYTES
     const calldata = encode_function_call({
       name: "bridgeETHTo",
@@ -75,7 +86,7 @@ export function send_eth(
         extra_data,
       ],
     })
-    const result = await origin.signer("eth_sendTransaction", [
+    const signed_bytes = await eth_signTransaction([
       {
         to: bridge_address,
         value: parameters.amount,
@@ -84,7 +95,10 @@ export function send_eth(
           function: BRIDGE_ETH_TO_SIGNATURE,
         },
       },
+    ])([origin.signer, { chain_id: origin.chain_id }])
+    return eth_sendRawTransaction([signed_bytes])([
+      origin.reader,
+      { chain_id: origin.chain_id },
     ])
-    return parse(Hash32Schema, result)
   }
 }
