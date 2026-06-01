@@ -54,7 +54,9 @@ describe("require_deploy_addresses", () => {
   )
 
   it("returns a structurally-complete payload with contracts + roles", () => {
-    const deploys = require_deploy_addresses(id_of(eip155_10))
+    const deploys = require_deploy_addresses(
+      id_of(eip155_10),
+    )
     expect(Object.keys(deploys)).toEqual([
       "contracts",
       "roles",

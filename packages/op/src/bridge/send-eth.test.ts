@@ -111,7 +111,8 @@ describe("send_eth", () => {
       signer_calls.push({ method, tx })
       return SIGNED_BYTES
     }
-    const reader_calls: { method: string; bytes: Bytes }[] = []
+    const reader_calls: { method: string; bytes: Bytes }[] =
+      []
     const reader: Dispatcher = async (
       call: Call,
     ): Promise<Response> => {
@@ -135,8 +136,7 @@ describe("send_eth", () => {
     expect(hash).toBe(RETURNED_HASH)
     expect(signer_calls.length).toBe(1)
     const signed = signer_calls[0]
-    if (!signed)
-      throw new Error("expected one signer call")
+    if (!signed) throw new Error("expected one signer call")
     expect(signed.method).toBe("eth_signTransaction")
     expect(signed.tx.to).toBe(L1_STANDARD_BRIDGE_PROXY)
     expect(signed.tx.value).toBe(amount)
@@ -160,8 +160,7 @@ describe("send_eth", () => {
     })
     expect(reader_calls.length).toBe(1)
     const sent = reader_calls[0]
-    if (!sent)
-      throw new Error("expected one reader call")
+    if (!sent) throw new Error("expected one reader call")
     expect(sent.method).toBe("eth_sendRawTransaction")
     expect(sent.bytes).toBe(SIGNED_BYTES)
   })
