@@ -6,9 +6,6 @@
 // so the bridge layer doesn't pull in the full superchain
 // deploy graph for a one-field lookup.
 //
-// Slice 1 ships OP Sepolia only — mainnet pairs follow in
-// slice 2 once verified per 02-phases.md.
-
 import {
   type Address,
   AddressSchema,
@@ -19,6 +16,11 @@ import {
 } from "@ethernauta/transport"
 import { parse } from "valibot"
 
+const OP_MAINNET = encode_chain_id({
+  namespace: "eip155",
+  reference: "10",
+})
+
 const OP_SEPOLIA = encode_chain_id({
   namespace: "eip155",
   reference: "11155420",
@@ -26,6 +28,10 @@ const OP_SEPOLIA = encode_chain_id({
 
 const L1_STANDARD_BRIDGE_PROXIES: Record<ChainId, Address> =
   {
+    [OP_MAINNET]: parse(
+      AddressSchema,
+      "0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1",
+    ),
     [OP_SEPOLIA]: parse(
       AddressSchema,
       "0xFBb0621E0B23b5478B630BD55a5f21f67730B0F1",

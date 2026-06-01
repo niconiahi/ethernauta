@@ -1,11 +1,14 @@
 import {
+  address,
   bool,
-  bytes4,
   decode_function_result,
   encode_function_call,
 } from "@ethernauta/abi"
 import type { Bytes } from "@ethernauta/core"
-import { Bytes4Schema, BytesSchema } from "@ethernauta/core"
+import {
+  AddressSchema,
+  BytesSchema,
+} from "@ethernauta/core"
 import type {
   Callable,
   ContractContext,
@@ -20,28 +23,30 @@ import {
   union,
 } from "valibot"
 
-const PARAM_CODECS = [bytes4()] as const
+const PARAM_CODECS = [address()] as const
 const OUTPUT_CODECS = [bool()] as const
 
-export const SUPPORTS_INTERFACE_SIGNATURE = {
-  signature: "supportsInterface(bytes4)",
-  names: ["interfaceId"],
+export const DISPUTE_GAME_BLACKLIST_SIGNATURE = {
+  signature: "disputeGameBlacklist(address)",
+  names: ["arg_0"],
 }
 
 const ParametersSchema = union([
-  tuple([Bytes4Schema]),
-  object({ interfaceId: Bytes4Schema }),
+  tuple([AddressSchema]),
+  object({ arg_0: AddressSchema }),
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
 
-export function supportsInterface(_parameters: Parameters) {
+export function disputeGameBlacklist(
+  _parameters: Parameters,
+) {
   return (context: ContractContext): Callable<boolean> => {
     const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
-      : ([parameters.interfaceId] as const)
+      : ([parameters.arg_0] as const)
     const calldata = encode_function_call({
-      name: "supportsInterface",
+      name: "disputeGameBlacklist",
       args: PARAM_CODECS,
       values,
     })

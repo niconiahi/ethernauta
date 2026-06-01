@@ -23,20 +23,55 @@ Keep this file in lockstep with the constants there and with
 | Folder | Upstream snapshot |
 |---|---|
 | `l1-standard-bridge/L1StandardBridge.abi.json` | `snapshots/abi/L1StandardBridge.json` |
+| `optimism-portal/OptimismPortal2.abi.json` | `snapshots/abi/OptimismPortal2.json` |
+| `dispute-game-factory/DisputeGameFactory.abi.json` | `snapshots/abi/DisputeGameFactory.json` |
+| `fault-dispute-game/FaultDisputeGame.abi.json` | `snapshots/abi/FaultDisputeGame.json` |
+| `anchor-state-registry/AnchorStateRegistry.abi.json` | `snapshots/abi/AnchorStateRegistry.json` |
+| `l2-to-l1-message-passer/L2ToL1MessagePasser.abi.json` | `snapshots/abi/L2ToL1MessagePasser.json` |
 
 ## What lives here
 
 L1-side contracts that bridge verbs in
-`packages/op/src/bridge/*.ts` compose. The L2-side counterparts
-(`L2StandardBridge`, `L2CrossDomainMessenger`, …) live under
-`packages/op/src/predeploys/` since they are predeployed at
-canonical L2 addresses.
+`packages/op/src/bridge/*.ts` compose, plus the
+`L2ToL1MessagePasser` L2 predeploy. The predeploy lives here
+(rather than under `packages/op/src/predeploys/` alongside
+`L2StandardBridge` / `L2CrossDomainMessenger`) because every
+binding it exposes is bridge-scoped — `initiateWithdrawal`,
+`sentMessages`, `messageNonce` — and the withdraw verbs
+compose it directly with the L1 portal / dispute-game
+contracts. Keeping the bridge subdir self-contained makes
+the withdrawal flow auditable without cross-folder jumps.
 
 Slice 1 ships `L1StandardBridge` only — the `send_eth` verb's
-single dependency. Slice 2 extends the recipe list with
-`OptimismPortal`, `L2OutputOracle`, and `L2ToL1MessagePasser`
-to cover the rest of the deposit family + the full withdraw
-flow.
+single dependency. Slice 2 extends the recipe list with the
+fault-proofs L1 contract set (`OptimismPortal2`,
+`DisputeGameFactory`, `FaultDisputeGame`,
+`AnchorStateRegistry`) plus `L2ToL1MessagePasser` to cover
+the rest of the deposit family + the full withdraw flow.
+
+### Fault-proofs note
+
+OP Sepolia and OP Mainnet are both live on fault proofs as
+of `op-contracts/v3.0.0` and `v6.0.0` respectively. The
+pre-fault-proofs `L2OutputOracle` is **no longer deployed**
+— the dispute-game family
+(`DisputeGameFactory` + `FaultDisputeGame` +
+`AnchorStateRegistry`) replaces it. The canonical
+`OptimismPortal` proxy address stays stable; what changes is
+the impl behind it (`OptimismPortal2`) and the prove call
+(`proveWithdrawalTransaction` now takes a
+`_disputeGameIndex` instead of an `_l2OutputIndex`). We
+vendor the impl ABI under `optimism-portal/` and refer to
+the proxy by its canonical "OptimismPortal" name in
+`address.ts` and docs.
+
+`FaultDisputeGame` is vendored as the read-side shape for
+the picked game proxy. Sibling game types
+(`PermissionedDisputeGame`, the Succinct variants) expose
+the same `status` / `createdAt` / `resolvedAt` / `rootClaim`
+/ `l2BlockNumber` / `wasRespectedGameTypeWhenCreated`
+selectors that the OP bridge verbs read, so the shared shape
+is sufficient. We do not vendor each variant.
 
 ## Bump cadence
 

@@ -1,0 +1,807 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_proofMaturityDelaySeconds",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "anchorStateRegistry",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "checkWithdrawal",
+    "inputs": [
+      {
+        "name": "_withdrawalHash",
+        "type": "bytes32"
+      },
+      {
+        "name": "_proofSubmitter",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "depositTransaction",
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "name": "_gasLimit",
+        "type": "uint64"
+      },
+      {
+        "name": "_isCreation",
+        "type": "bool"
+      },
+      {
+        "name": "_data",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "disputeGameBlacklist",
+    "inputs": [
+      {
+        "name": "_disputeGame",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "disputeGameFactory",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "disputeGameFinalityDelaySeconds",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "donateETH",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "ethLockbox",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "finalizeWithdrawalTransaction",
+    "inputs": [
+      {
+        "name": "_tx",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "name": "gasLimit",
+            "type": "uint256"
+          },
+          {
+            "name": "data",
+            "type": "bytes"
+          }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "finalizeWithdrawalTransactionExternalProof",
+    "inputs": [
+      {
+        "name": "_tx",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "name": "gasLimit",
+            "type": "uint256"
+          },
+          {
+            "name": "data",
+            "type": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "_proofSubmitter",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "finalizedWithdrawals",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "guardian",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initVersion",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "inputs": [
+      {
+        "name": "_systemConfig",
+        "type": "address"
+      },
+      {
+        "name": "_anchorStateRegistry",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "l2Sender",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "minimumGasLimit",
+    "inputs": [
+      {
+        "name": "_byteCount",
+        "type": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "numProofSubmitters",
+    "inputs": [
+      {
+        "name": "_withdrawalHash",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "params",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "prevBaseFee",
+        "type": "uint128"
+      },
+      {
+        "name": "prevBoughtGas",
+        "type": "uint64"
+      },
+      {
+        "name": "prevBlockNum",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "paused",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proofMaturityDelaySeconds",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proofSubmitters",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proveWithdrawalTransaction",
+    "inputs": [
+      {
+        "name": "_tx",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "name": "gasLimit",
+            "type": "uint256"
+          },
+          {
+            "name": "data",
+            "type": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "_disputeGameIndex",
+        "type": "uint256"
+      },
+      {
+        "name": "_outputRootProof",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "version",
+            "type": "bytes32"
+          },
+          {
+            "name": "stateRoot",
+            "type": "bytes32"
+          },
+          {
+            "name": "messagePasserStorageRoot",
+            "type": "bytes32"
+          },
+          {
+            "name": "latestBlockhash",
+            "type": "bytes32"
+          }
+        ]
+      },
+      {
+        "name": "_withdrawalProof",
+        "type": "bytes[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "provenWithdrawals",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "disputeGameProxy",
+        "type": "address"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proxyAdmin",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proxyAdminOwner",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "respectedGameType",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "respectedGameTypeUpdatedAt",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "superchainConfig",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "systemConfig",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "version",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "event",
+    "name": "Initialized",
+    "inputs": [
+      {
+        "name": "version",
+        "type": "uint8",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TransactionDeposited",
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "to",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "version",
+        "type": "uint256",
+        "indexed": true
+      },
+      {
+        "name": "opaqueData",
+        "type": "bytes",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "WithdrawalFinalized",
+    "inputs": [
+      {
+        "name": "withdrawalHash",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "success",
+        "type": "bool",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "WithdrawalProven",
+    "inputs": [
+      {
+        "name": "withdrawalHash",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "from",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "to",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "WithdrawalProvenExtension1",
+    "inputs": [
+      {
+        "name": "withdrawalHash",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "proofSubmitter",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "ContentLengthMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "EmptyItem",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidDataRemainder",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidHeader",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_AlreadyFinalized",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_BadTarget",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_CallPaused",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_CalldataTooLarge",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_GasEstimation",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_GasLimitTooLow",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_ImproperDisputeGame",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_InvalidDisputeGame",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_InvalidLockboxState",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_InvalidMerkleProof",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_InvalidOutputRootProof",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_InvalidProofTimestamp",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_InvalidRootClaim",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_NoReentrancy",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_NotAllowedOnCGTMode",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_ProofNotOldEnough",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OptimismPortal_Unproven",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OutOfGas",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProxyAdminOwnedBase_NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProxyAdminOwnedBase_NotProxyAdminOrProxyAdminOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProxyAdminOwnedBase_NotProxyAdminOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProxyAdminOwnedBase_NotResolvedDelegateProxy",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProxyAdminOwnedBase_NotSharedProxyAdminOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProxyAdminOwnedBase_ProxyAdminNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ReinitializableBase_ZeroInitVersion",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UnexpectedList",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UnexpectedString",
+    "inputs": []
+  }
+]

@@ -89,10 +89,38 @@ const PREDEPLOY_RECIPES = [
   }),
 ]
 
+// Slice 2 vendors the fault-proofs L1 contract set rather than
+// the pre-fault-proofs `OptimismPortal` + `L2OutputOracle` pair.
+// OP Sepolia / Mainnet are both on fault proofs (op-contracts v3
+// / v6); `L2OutputOracle` is no longer deployed. The proxy at
+// the canonical "OptimismPortal" address points at
+// `OptimismPortal2`; we vendor the impl ABI and refer to the
+// proxy by its canonical name in addresses + docs. See
+// `packages/op/src/bridge/SOURCES.md` for the per-file mapping.
 const BRIDGE_RECIPES = [
   parse(RecipeSchema, {
     pascal: "L1StandardBridge",
     kebab: "l1-standard-bridge",
+  }),
+  parse(RecipeSchema, {
+    pascal: "OptimismPortal2",
+    kebab: "optimism-portal",
+  }),
+  parse(RecipeSchema, {
+    pascal: "DisputeGameFactory",
+    kebab: "dispute-game-factory",
+  }),
+  parse(RecipeSchema, {
+    pascal: "FaultDisputeGame",
+    kebab: "fault-dispute-game",
+  }),
+  parse(RecipeSchema, {
+    pascal: "AnchorStateRegistry",
+    kebab: "anchor-state-registry",
+  }),
+  parse(RecipeSchema, {
+    pascal: "L2ToL1MessagePasser",
+    kebab: "l2-to-l1-message-passer",
   }),
 ]
 
