@@ -11,4 +11,6 @@
 export { L2_TO_L1_MESSAGE_PASSER_ADDRESS } from "./l2-to-l1-message-passer"
 
 // Verbs (one wildcard per file).
+export * from "./send-erc20"
 export * from "./send-eth"
+export * from "./send-message"
