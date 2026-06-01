@@ -1,0 +1,34 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-send-eth/demo.tsx?highlighted"
+import { BridgeSendEthDemo } from "../../examples/bridge-send-eth/demo"
+
+# Bridge — `send_eth` (Sepolia → OP Sepolia)
+
+`send_eth({ to, amount, min_gas_limit })` is the OP-stack
+L1→L2 ETH deposit verb. It composes:
+
+1. `bridgeETHTo(address,uint32,bytes)` calldata encoded against
+   the canonical ABI.
+2. The `L1StandardBridgeProxy` address looked up from the
+   destination L2 chain id.
+3. `eth_sendTransaction` issued through the bridge bundle's
+   origin-side signer.
+
+The verb returns the L1 transaction hash. The L2 credit lands
+~1 minute after L1 inclusion — the explorer link below points
+at the recipient on the L2 side.
+
+The bridge wiring is the same shape every OP / Arbitrum /
+zkSync verb takes: `create_bridge(CHAINS)` returns a resolver,
+each call picks `{ origin, destination, signer? }`, and the
+verb sees a `ResolvedBridge` bundle with per-side `reader`
+and (optional) `signer`.
+
+<BridgeSendEthDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-send-eth/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

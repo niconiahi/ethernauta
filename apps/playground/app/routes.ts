@@ -113,5 +113,9 @@ export default [
       "debug-tracers",
       "./routes/examples/debug-tracers.mdx",
     ),
+    route(
+      "bridge-send-eth",
+      "./routes/examples/bridge-send-eth.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

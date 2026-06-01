@@ -110,6 +110,10 @@ const RECIPE_EXAMPLES = [
     to: "/examples/sponsored-basename-transfer",
     title: "Sponsored basename transfer",
   },
+  {
+    to: "/examples/bridge-send-eth",
+    title: "Bridge — send_eth (OP)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [
