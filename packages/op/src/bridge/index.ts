@@ -9,6 +9,7 @@
 // `@ethernauta/op/bridge/<contract>` for those.
 
 export * from "./execute-withdraw"
+export * from "./fetch-message-proof"
 export { L2_TO_L1_MESSAGE_PASSER_ADDRESS } from "./l2-to-l1-message-passer"
 export * from "./op-message-proof"
 export * from "./prove-withdraw"

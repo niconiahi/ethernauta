@@ -44,6 +44,7 @@ export function execute_withdraw(
   _parameters: Parameters,
 ): Bridgeable<Hash32> {
   return async ({
+    origin,
     destination,
   }: ResolvedBridge): Promise<Hash32> => {
     if (!destination.signer) {
@@ -53,7 +54,7 @@ export function execute_withdraw(
     }
     const parameters = parse(ParametersSchema, _parameters)
     const portal_address = require_deploy_addresses(
-      destination.chain_id,
+      origin.chain_id,
     ).contracts.OptimismPortalProxy
     const signed_transaction =
       await finalizeWithdrawalTransaction([
