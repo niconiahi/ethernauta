@@ -1,3 +1,4 @@
+export * from "./bridge"
 export * from "./call"
 export * from "./chain"
 export * from "./contract"
