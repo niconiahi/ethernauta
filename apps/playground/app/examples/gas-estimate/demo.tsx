@@ -2,7 +2,8 @@
 // other EIP-1559 EVM chain that isn't an L2 family member) takes the
 // vanilla `eth_feeHistory` path — no L1 surcharge to factor in.
 // L2 demos (op-stack / arbitrum / zksync) import their own family
-// helper from `@ethernauta/gas`; there is no central dispatcher.
+// helper from the matching family package; there is no central
+// dispatcher.
 
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
