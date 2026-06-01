@@ -67,12 +67,18 @@ export function create2(
       args: PARAM_CODECS,
       values,
     })
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
     return eth_signTransaction([
       {
         to: context.to,
         value: parse(UintSchema, "0x0"),
         input: parse(BytesSchema, bytes_to_hex(calldata)),
-        _ethernauta: { function: CREATE2_SIGNATURE },
+        _ethernauta: {
+          function: CREATE2_SIGNATURE,
+        },
       },
     ])([signer, context])
   }

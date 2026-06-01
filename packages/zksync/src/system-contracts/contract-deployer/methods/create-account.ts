@@ -29,7 +29,7 @@ const PARAM_CODECS = [
 
 export const CREATE_ACCOUNT_SIGNATURE = {
   signature: "createAccount(bytes32,bytes32,bytes,uint8)",
-  names: ["", "_bytecodeHash", "_input", "_aaVersion"],
+  names: ["arg_0", "_bytecodeHash", "_input", "_aaVersion"],
 }
 
 const ParametersSchema = union([
@@ -40,10 +40,10 @@ const ParametersSchema = union([
     Uint8Schema,
   ]),
   object({
+    arg_0: Bytes32Schema,
     _bytecodeHash: Bytes32Schema,
     _input: BytesSchema,
     _aaVersion: Uint8Schema,
-    _salt: Bytes32Schema,
   }),
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
@@ -68,7 +68,7 @@ export function createAccount(
           parameters[3],
         ] as const)
       : ([
-          parameters._salt,
+          parameters.arg_0,
           parameters._bytecodeHash,
           parameters._input,
           parameters._aaVersion,
@@ -78,12 +78,18 @@ export function createAccount(
       args: PARAM_CODECS,
       values,
     })
+    // TODO(wallet): wallet fills nonce, gas, gasPrice / maxFeePerGas /
+    //               maxPriorityFeePerGas by querying the network
+    //               (eth_getTransactionCount, eth_estimateGas, eth_feeHistory).
+    //               Generator MUST leave these fields unset.
     return eth_signTransaction([
       {
         to: context.to,
         value: parse(UintSchema, "0x0"),
         input: parse(BytesSchema, bytes_to_hex(calldata)),
-        _ethernauta: { function: CREATE_ACCOUNT_SIGNATURE },
+        _ethernauta: {
+          function: CREATE_ACCOUNT_SIGNATURE,
+        },
       },
     ])([signer, context])
   }

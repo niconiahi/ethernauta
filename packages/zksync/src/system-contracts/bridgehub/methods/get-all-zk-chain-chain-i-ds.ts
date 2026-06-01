@@ -19,7 +19,7 @@ import { parse, array as v_array } from "valibot"
 const PARAM_CODECS = [] as const
 const OUTPUT_CODECS = [array(uint256())] as const
 
-export const GET_ALL_ZK_CHAIN_CHAIN_IDS_SIGNATURE = {
+export const GET_ALL_ZK_CHAIN_CHAIN_I_DS_SIGNATURE = {
   signature: "getAllZKChainChainIDs()",
   names: [],
 }

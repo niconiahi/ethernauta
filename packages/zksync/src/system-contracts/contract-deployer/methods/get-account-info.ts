@@ -1,4 +1,5 @@
 import {
+  tuple as abi_tuple,
   address,
   decode_function_result,
   encode_function_call,
@@ -19,7 +20,12 @@ import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 
 const PARAM_CODECS = [address()] as const
-const OUTPUT_CODECS = [uint8(), uint8()] as const
+const OUTPUT_CODECS = [
+  abi_tuple({
+    supportedAAVersion: uint8(),
+    nonceOrdering: uint8(),
+  }),
+] as const
 
 export const GET_ACCOUNT_INFO_SIGNATURE = {
   signature: "getAccountInfo(address)",
@@ -35,7 +41,10 @@ type Parameters = InferOutput<typeof ParametersSchema>
 export function getAccountInfo(_parameters: Parameters) {
   return (
     context: ContractContext,
-  ): Callable<[Uint8, Uint8]> => {
+  ): Callable<{
+    supportedAAVersion: Uint8
+    nonceOrdering: Uint8
+  }> => {
     const parameters = parse(ParametersSchema, _parameters)
     const values = Array.isArray(parameters)
       ? ([parameters[0]] as const)
@@ -49,15 +58,23 @@ export function getAccountInfo(_parameters: Parameters) {
       chain_id: context.chain_id,
       to: context.to,
       data: parse(BytesSchema, bytes_to_hex(calldata)),
-      decode: (result: Bytes): [Uint8, Uint8] => {
-        const decoded = decode_function_result(
+      decode: (
+        result: Bytes,
+      ): {
+        supportedAAVersion: Uint8
+        nonceOrdering: Uint8
+      } => {
+        const [decoded] = decode_function_result(
           OUTPUT_CODECS,
           result,
         )
-        return [
-          parse(Uint8Schema, decoded[0]),
-          parse(Uint8Schema, decoded[1]),
-        ]
+        return parse(
+          object({
+            supportedAAVersion: Uint8Schema,
+            nonceOrdering: Uint8Schema,
+          }),
+          decoded,
+        )
       },
     }
   }

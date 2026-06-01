@@ -30,10 +30,7 @@ export const GET_KEYED_NONCE_SIGNATURE = {
 
 const ParametersSchema = union([
   tuple([AddressSchema, Uint192Schema]),
-  object({
-    _address: AddressSchema,
-    _key: Uint192Schema,
-  }),
+  object({ _address: AddressSchema, _key: Uint192Schema }),
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
 
