@@ -30,6 +30,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
+    "pull-deploys": "node scripts/pull-deploys.ts",
     "lint": "biome check .",
     "lint:fix": "biome check --write --unsafe .",
     "format": "biome format --write .",

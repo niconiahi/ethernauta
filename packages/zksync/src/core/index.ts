@@ -25,6 +25,10 @@ export {
   ConversionRatioSchema,
 } from "./conversion-ratio"
 export {
+  type ZksyncDeploys,
+  ZksyncDeploysSchema,
+} from "./deploys"
+export {
   type EthTxFinalityStatus,
   EthTxFinalityStatusSchema,
 } from "./eth-tx-finality-status"
