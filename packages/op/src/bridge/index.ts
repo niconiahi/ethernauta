@@ -8,9 +8,10 @@
 // …) collide across contracts — consumers reach into
 // `@ethernauta/op/bridge/<contract>` for those.
 
+export * from "./execute-withdraw"
 export { L2_TO_L1_MESSAGE_PASSER_ADDRESS } from "./l2-to-l1-message-passer"
-
-// Verbs (one wildcard per file).
+export * from "./op-message-proof"
+export * from "./prove-withdraw"
 export * from "./send-erc20"
 export * from "./send-eth"
 export * from "./send-message"
