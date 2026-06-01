@@ -28,7 +28,7 @@ import {
   eth_sendRawTransaction,
   eth_signTransaction,
 } from "@ethernauta/eth"
-import { require_l1_standard_bridge_address } from "@ethernauta/op"
+import { require_deploy_addresses } from "@ethernauta/op"
 import { useProvider } from "@ethernauta/react"
 import {
   create_bridge,
@@ -84,8 +84,8 @@ const BRIDGE_ETH_TO_SELECTOR = function_selector(
   PARAM_CODECS,
 )
 const EMPTY_BYTES = parse(BytesSchema, "0x")
-const L1_BRIDGE_PROXY =
-  require_l1_standard_bridge_address(OP_SEPOLIA)
+const L1_BRIDGE_PROXY = require_deploy_addresses(OP_SEPOLIA)
+  .contracts.L1StandardBridgeProxy
 
 function format_wei(wei_hex: string): string {
   try {

@@ -38,10 +38,8 @@ import type {
 import { bytes_to_hex } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { object, optional, parse } from "valibot"
-import {
-  BRIDGE_ETH_TO_SIGNATURE,
-  require_l1_standard_bridge_address,
-} from "./l1-standard-bridge"
+import { require_deploy_addresses } from "../lib/deploy"
+import { BRIDGE_ETH_TO_SIGNATURE } from "./l1-standard-bridge"
 
 const PARAM_CODECS = [
   address_codec(),
@@ -72,10 +70,9 @@ export function send_eth(
       )
     }
     const parameters = parse(ParametersSchema, _parameters)
-    const bridge_address =
-      require_l1_standard_bridge_address(
-        destination.chain_id,
-      )
+    const bridge_address = require_deploy_addresses(
+      destination.chain_id,
+    ).contracts.L1StandardBridgeProxy
     const extra_data = parameters.extra_data ?? EMPTY_BYTES
     const calldata = encode_function_call({
       name: "bridgeETHTo",
