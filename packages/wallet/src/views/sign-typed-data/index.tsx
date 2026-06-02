@@ -1,11 +1,9 @@
 import { sign_typed_data } from "@ethernauta/crypto"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
 import type { ComponentChildren } from "preact"
 import { Button } from "../../components/button"
 import { get_private_key } from "../../utils/crypto"
-import type {
-  SignTypedDataResponse,
-  TransactionRejectedResponse,
-} from "../../utils/event"
+import { make_error, make_success } from "../../utils/event"
 import { row_key } from "../../utils/row-key"
 import { typed_data_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
@@ -136,12 +134,9 @@ export function SignTypedData() {
               typed_data,
               private_key,
             )
-            const response: SignTypedDataResponse = {
-              id: req.id,
-              type: "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA",
-              signature,
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_success(req.id, signature),
+            )
             window.close()
           }}
         >
@@ -150,11 +145,13 @@ export function SignTypedData() {
         <Button
           variant="secondary"
           onClick={() => {
-            const response: TransactionRejectedResponse = {
-              id: req.id,
-              type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED",
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_error(
+                req.id,
+                ERROR_CODE.USER_REJECTED_REQUEST,
+                "User rejected request",
+              ),
+            )
             window.close()
           }}
         >

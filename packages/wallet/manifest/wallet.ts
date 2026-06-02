@@ -1,40 +1,58 @@
 import { AddressesSchema } from "@ethernauta/core"
 import {
   create_provider,
-  ERROR_CODE,
-  invalid_params,
   type Provider,
   type RequestArguments,
 } from "@ethernauta/eip/1193"
-import { AddEthereumChainParametersSchema } from "@ethernauta/eip/3085"
 import { announce } from "@ethernauta/eip/6963"
 import { CallSchema, http } from "@ethernauta/transport"
 import { parse, safeParse } from "valibot"
 import icon from "../public/icons/icon-128.png?inline"
 import {
+  type Chain,
+  find_chain,
+  to_provider_chain_id,
+} from "../src/utils/chain"
+import {
   compose_calls_status,
   compose_capabilities,
 } from "../src/utils/calls-status"
-import {
-  CHAINS,
-  to_provider_chain_id,
-} from "../src/utils/chain"
 import { create_router } from "../src/utils/dispatch"
 import {
-  EthernautaNotificationSchema,
-  EthernautaResponseSchema,
-  SignTransactionRequestSchema,
+  make_request,
+  RpcNotificationSchema,
+  RpcResponseSchema,
 } from "../src/utils/event"
 
-const CHAIN_HEX_LIST = CHAINS.map(to_provider_chain_id)
-const known_chains = new Set<string>(CHAIN_HEX_LIST)
-let active_chain_id: string = CHAIN_HEX_LIST[0] ?? "0x1"
+// This module is injected into the page context by
+// browser.entry.ts, so it has *no* access to chrome.* APIs
+// (no chrome.storage, no chrome.runtime listeners).
+// Everything that needs the extension API runs in the
+// content script (browser.entry.ts), which sends us the
+// resolved chain via window.postMessage. We just hold the
+// active chain in memory, look it up against the bundled
+// registry on chain-change, and emit chainChanged when it
+// flips.
+const MAINNET: Chain = {
+  id: 1,
+  name: "Ethereum Mainnet",
+  rpc_url: "https://ethereum-rpc.publicnode.com",
+}
+let active_chain: Chain = MAINNET
+let active_chain_id: string = to_provider_chain_id(MAINNET)
 let accounts: string[] = []
 
-function set_active_chain(chain_id: string): void {
-  if (chain_id === active_chain_id) return
-  active_chain_id = chain_id
-  provider.emit("chainChanged", chain_id)
+async function apply_chain_id_hex(
+  chain_id_hex: string,
+): Promise<void> {
+  const numeric = Number.parseInt(chain_id_hex.slice(2), 16)
+  const resolved = await find_chain(numeric)
+  if (!resolved) return
+  const next_hex = to_provider_chain_id(resolved)
+  const changed = next_hex !== active_chain_id
+  active_chain = resolved
+  active_chain_id = next_hex
+  if (changed) provider.emit("chainChanged", next_hex)
 }
 
 function set_accounts(next: string[]): void {
@@ -64,32 +82,12 @@ function get_permissions(): Array<{
   ]
 }
 
-function extract_added_chain_id(
-  params: RequestArguments["params"],
-): string | undefined {
-  const result = safeParse(
-    AddEthereumChainParametersSchema,
-    params,
-  )
-  if (!result.success) return undefined
-  return result.output[0].chainId
-}
-
 async function rpc_call(
-  chain_id_hex: string,
+  _chain_id_hex: string,
   method: string,
   params: unknown,
 ): Promise<unknown> {
-  const chain_num = Number.parseInt(
-    chain_id_hex.slice(2),
-    16,
-  )
-  const chain = CHAINS.find((c) => c.id === chain_num)
-  if (!chain)
-    throw invalid_params(
-      `no RPC configured for chain: ${chain_id_hex}`,
-    )
-  const transport = http(chain.rpc_url)
+  const transport = http(active_chain.rpc_url)
   const call = parse(CallSchema, [method, params ?? []])
   const response = await transport(call)
   if ("error" in response) {
@@ -102,6 +100,12 @@ async function rpc_call(
   return response.result
 }
 
+// Post a JSON-RPC request onto the bus and resolve the
+// promise on the matching response. JSON-RPC 2.0 makes this
+// uniform: success → `result`, failure → `error` with code +
+// message. EIP-1193's `request` rejection contract maps
+// directly to the JSON-RPC error shape — no per-method
+// special-casing.
 function postmessage_and_wait(
   args: RequestArguments,
 ): Promise<unknown> {
@@ -111,69 +115,33 @@ function postmessage_and_wait(
       "message",
       function handler(event) {
         const parsed = safeParse(
-          EthernautaResponseSchema,
+          RpcResponseSchema,
           event.data,
         )
         if (!parsed.success) return
         const data = parsed.output
         if (data.id !== id) return
         window.removeEventListener("message", handler)
-        if (
-          data.type ===
-          "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"
-        ) {
+        if ("error" in data) {
           reject({
-            code: ERROR_CODE.USER_REJECTED_REQUEST,
-            message: "User rejected request",
+            code: data.error.code,
+            message: data.error.message,
+            data: data.error.data,
           })
           return
         }
-        if (
-          data.type ===
-          "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE"
-        ) {
-          reject({
-            code: ERROR_CODE.USER_REJECTED_REQUEST,
-            message: "Extension closed",
-          })
-          return
-        }
-        if (
-          data.type ===
-            "ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA" ||
-          data.type ===
-            "ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"
-        ) {
-          resolve(data.signature)
-          return
-        }
-        if (
-          data.type ===
-          "ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED"
-        ) {
-          resolve(null)
-          return
-        }
-        const payload = data.signed_transaction
-        if (args.method === "eth_requestAccounts") {
-          try {
-            resolve(JSON.parse(payload))
-          } catch {
-            resolve(payload)
-          }
-          return
-        }
-        resolve(payload)
+        resolve(data.result)
       },
     )
-    const request = parse(SignTransactionRequestSchema, {
-      type: "ETHERNAUTA_REQUEST_SIGN_TRANSACTION",
-      id,
-      method: args.method,
-      chainId: active_chain_id,
-      params: args.params,
-    })
-    window.postMessage(request, window.location.origin)
+    window.postMessage(
+      make_request({
+        id,
+        method: args.method,
+        params: args.params,
+        chainId: active_chain_id,
+      }),
+      window.location.origin,
+    )
   })
 }
 
@@ -197,18 +165,12 @@ async function forward_to_popup(
     const parsed = safeParse(AddressesSchema, result)
     set_accounts(parsed.success ? parsed.output : [])
   }
-  if (args.method === "wallet_addEthereumChain") {
-    const added = extract_added_chain_id(args.params)
-    if (added) known_chains.add(added)
-  }
   return result
 }
 
 const handle_request = create_router({
   get_active_chain: () => active_chain_id,
   get_accounts: () => accounts,
-  has_chain: (id) => known_chains.has(id),
-  set_active_chain,
   get_capabilities: () => compose_capabilities(),
   get_permissions,
   rpc_call,
@@ -223,22 +185,31 @@ const provider: Provider = create_provider({
 window.addEventListener("message", (event) => {
   if (event.source !== window) return
   const notification = safeParse(
-    EthernautaNotificationSchema,
+    RpcNotificationSchema,
     event.data,
   )
   if (!notification.success) return
   const note = notification.output
-  if (
-    note.type === "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"
-  ) {
-    if (!known_chains.has(note.chainId)) return
-    set_active_chain(note.chainId)
+  // EIP-1193 event names ride on the JSON-RPC notification
+  // envelope unchanged — `method` is the event name. The
+  // page-context provider re-emits to dapps under the same
+  // name. Wallet-internal notifications use a `wallet/*`
+  // method prefix and are ignored here.
+  if (note.method === "chainChanged") {
+    const params = note.params
+    const chain_id_hex = Array.isArray(params)
+      ? params[0]
+      : undefined
+    if (typeof chain_id_hex === "string") {
+      apply_chain_id_hex(chain_id_hex)
+    }
     return
   }
-  if (
-    note.type === "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"
-  ) {
-    set_accounts(note.accounts)
+  if (note.method === "accountsChanged") {
+    const params = note.params
+    const next = Array.isArray(params) ? params[0] : params
+    const parsed = safeParse(AddressesSchema, next)
+    if (parsed.success) set_accounts(parsed.output)
     return
   }
 })

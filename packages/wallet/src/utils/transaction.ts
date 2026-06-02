@@ -1,8 +1,7 @@
 import { TypedDataSchema } from "@ethernauta/eip/712"
-import { AddEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { SwitchEthereumChainParameterSchema } from "@ethernauta/eip/3326"
 import { SendCallsParameterSchema } from "@ethernauta/eip/5792"
 import { SendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
-import { ParametersSchema } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import {
   type InferOutput,
@@ -11,11 +10,12 @@ import {
   string,
 } from "valibot"
 import type { EthernautaRequest } from "./event"
+import { RpcParamsSchema } from "./event"
 
 export const TransactionSchema = object({
   id: string(),
   method: string(),
-  params: ParametersSchema,
+  params: RpcParamsSchema,
   to: optional(string()),
 })
 export type Transaction = InferOutput<
@@ -52,15 +52,15 @@ export type PersonalSignRequest = InferOutput<
 export const personal_sign_request =
   signal<PersonalSignRequest | null>(null)
 
-export const AddChainRequestSchema = object({
+export const SwitchChainRequestSchema = object({
   id: string(),
-  chain: AddEthereumChainParameterSchema,
+  parameter: SwitchEthereumChainParameterSchema,
 })
-export type AddChainRequest = InferOutput<
-  typeof AddChainRequestSchema
+export type SwitchChainRequest = InferOutput<
+  typeof SwitchChainRequestSchema
 >
-export const add_chain_request =
-  signal<AddChainRequest | null>(null)
+export const switch_chain_request =
+  signal<SwitchChainRequest | null>(null)
 
 export const SetCodeRequestSchema = object({
   id: string(),

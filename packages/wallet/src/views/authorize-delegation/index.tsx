@@ -8,6 +8,7 @@ import {
   sign_authorization,
   sign_set_code_transaction,
 } from "@ethernauta/eip/7702"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"
@@ -21,10 +22,7 @@ import {
   big_to_hex,
   get_private_key,
 } from "../../utils/crypto"
-import type {
-  SignTransactionResponse,
-  TransactionRejectedResponse,
-} from "../../utils/event"
+import { make_error, make_success } from "../../utils/event"
 import { get_nonce } from "../../utils/sign-transaction"
 import { set_code_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
@@ -174,12 +172,9 @@ export function AuthorizeDelegation() {
               await eth_sendRawTransaction([
                 parse(BytesSchema, bytes_to_hex(raw)),
               ])(writer({ chain_id }))
-            const response: SignTransactionResponse = {
-              id: req.id,
-              type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
-              signed_transaction: transaction_hash,
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_success(req.id, transaction_hash),
+            )
             window.close()
           }}
         >
@@ -188,11 +183,13 @@ export function AuthorizeDelegation() {
         <Button
           variant="secondary"
           onClick={() => {
-            const response: TransactionRejectedResponse = {
-              id: req.id,
-              type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED",
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_error(
+                req.id,
+                ERROR_CODE.USER_REJECTED_REQUEST,
+                "User rejected request",
+              ),
+            )
             window.close()
           }}
         >

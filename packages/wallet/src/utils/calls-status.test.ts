@@ -11,6 +11,7 @@ import {
   compose_capabilities,
   finalize_status,
 } from "./calls-status"
+import { past_chains } from "./chain"
 
 const HASH_A = parse(
   Hash32Schema,
@@ -52,10 +53,22 @@ function make_receipt(
 }
 
 describe("calls-status.ts — compose_capabilities", () => {
-  it("should declare unsupported atomic for every configured chain", () => {
+  it("declares unsupported atomic for every chain the user has previously selected", () => {
+    past_chains.value = [
+      {
+        id: 1,
+        name: "Ethereum Mainnet",
+        rpc_url: "https://example/mainnet",
+      },
+      {
+        id: 11155111,
+        name: "Sepolia",
+        rpc_url: "https://example/sepolia",
+      },
+    ]
     const caps = compose_capabilities()
     const keys = Object.keys(caps)
-    expect(keys.length).toBeGreaterThan(0)
+    expect(keys.length).toBe(2)
     for (const key of keys) {
       const chain_caps = parse(
         object({ atomic: object({ status: string() }) }),
@@ -63,6 +76,12 @@ describe("calls-status.ts — compose_capabilities", () => {
       )
       expect(chain_caps.atomic.status).toBe("unsupported")
     }
+  })
+
+  it("returns empty caps on a fresh wallet with no past chains", () => {
+    past_chains.value = []
+    const caps = compose_capabilities()
+    expect(Object.keys(caps).length).toBe(0)
   })
 })
 

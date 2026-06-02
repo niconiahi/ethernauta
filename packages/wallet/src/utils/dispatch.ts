@@ -7,11 +7,8 @@
 import {
   invalid_params,
   type RequestArguments,
-  unrecognized_chain,
   unsupported_method,
 } from "@ethernauta/eip/1193"
-import { SwitchEthereumChainParametersSchema } from "@ethernauta/eip/3326"
-import { safeParse } from "valibot"
 
 // Synchronous reads served from wallet-cached state. No
 // RPC, no popup, no chrome.storage.
@@ -19,7 +16,6 @@ export const WALLET_STATE_METHODS = new Set<string>([
   "eth_chainId",
   "eth_accounts",
   "net_version",
-  "wallet_switchEthereumChain",
   "wallet_getCapabilities",
   "wallet_getPermissions",
 ])
@@ -57,7 +53,11 @@ export const CHAIN_READ_METHODS = new Set<string>([
 ])
 
 // Methods that require user confirmation. Forwarded to
-// the popup via the bridge.
+// the popup via the bridge. `wallet_switchEthereumChain`
+// sits here per EIP-3326 §Security Considerations — the
+// wallet "should display a confirmation … clearly
+// identifying the requester and the chain that will be
+// switched to" rather than silently mutating active state.
 export const SIGNABLE_METHODS = new Set<string>([
   "eth_requestAccounts",
   "wallet_requestPermissions",
@@ -66,7 +66,7 @@ export const SIGNABLE_METHODS = new Set<string>([
   "personal_sign",
   "eth_sign",
   "eth_signTypedData_v4",
-  "wallet_addEthereumChain",
+  "wallet_switchEthereumChain",
   "wallet_sendCalls",
   "wallet_sendSetCodeTransaction",
 ])
@@ -82,8 +82,6 @@ export const WALLET_INTERNAL_METHODS = new Set<string>([
 export type RouterDeps = Readonly<{
   get_active_chain: () => string
   get_accounts: () => string[]
-  has_chain: (_chain_id: string) => boolean
-  set_active_chain: (_chain_id: string) => void
   get_capabilities: () => unknown
   get_permissions: () => unknown
   rpc_call: (
@@ -103,20 +101,6 @@ function chain_id_to_decimal(hex: string): string {
   return BigInt(hex).toString(10)
 }
 
-function extract_switch_chain_id(
-  params: RequestArguments["params"],
-): string {
-  const result = safeParse(
-    SwitchEthereumChainParametersSchema,
-    params,
-  )
-  if (!result.success)
-    throw invalid_params(
-      "wallet_switchEthereumChain expects [{ chainId }]",
-    )
-  return result.output[0].chainId
-}
-
 export function create_router(
   deps: RouterDeps,
 ): (_args: RequestArguments) => Promise<unknown> {
@@ -134,13 +118,6 @@ export function create_router(
         return deps.get_capabilities()
       case "wallet_getPermissions":
         return deps.get_permissions()
-      case "wallet_switchEthereumChain": {
-        const target = extract_switch_chain_id(args.params)
-        if (!deps.has_chain(target))
-          throw unrecognized_chain(target)
-        deps.set_active_chain(target)
-        return null
-      }
       default:
         throw unsupported_method(args.method)
     }

@@ -18,8 +18,6 @@ function make_deps(
   return {
     get_active_chain: () => "0x1",
     get_accounts: () => [],
-    has_chain: () => true,
-    set_active_chain: () => {},
     get_capabilities: () => ({}),
     get_permissions: () => [],
     rpc_call: vi.fn(async () => "0xdeadbeef"),
@@ -74,44 +72,18 @@ describe("create_router — wallet state", () => {
     ).toBe(caps)
   })
 
-  it("switches the active chain when known", async () => {
-    const set = vi.fn()
-    const deps = make_deps({
-      has_chain: (id) => id === "0xaa36a7",
-      set_active_chain: set,
-    })
+  it("routes wallet_switchEthereumChain to forward_to_popup for user confirmation", async () => {
+    const forward = vi.fn(async () => null)
+    const deps = make_deps({ forward_to_popup: forward })
     const handle = create_router(deps)
     const result = await handle({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: "0xaa36a7" }],
     })
     expect(result).toBeNull()
-    expect(set).toHaveBeenCalledWith("0xaa36a7")
-  })
-
-  it("throws 4902 when switching to an unknown chain", async () => {
-    const deps = make_deps({ has_chain: () => false })
-    const handle = create_router(deps)
-    await expect(
-      handle({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x999" }],
-      }),
-    ).rejects.toMatchObject({
-      code: ERROR_CODE.UNRECOGNIZED_CHAIN,
-    })
-  })
-
-  it("throws -32602 on malformed switch params", async () => {
-    const deps = make_deps()
-    const handle = create_router(deps)
-    await expect(
-      handle({
-        method: "wallet_switchEthereumChain",
-        params: [],
-      }),
-    ).rejects.toMatchObject({
-      code: ERROR_CODE.INVALID_PARAMS,
+    expect(forward).toHaveBeenCalledWith({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0xaa36a7" }],
     })
   })
 })

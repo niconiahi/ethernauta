@@ -298,6 +298,7 @@ describe("transaction.ts", () => {
     const ethernauta_signed = await sign_transaction({
       key,
       nonce,
+      chain_id: BigInt(sepolia.id),
       method,
       params,
     })
@@ -324,6 +325,7 @@ describe("transaction.ts", () => {
     const ethernauta_signed = await sign_transaction({
       key,
       nonce: 0n,
+      chain_id: BigInt(sepolia.id),
       method,
       params,
     })

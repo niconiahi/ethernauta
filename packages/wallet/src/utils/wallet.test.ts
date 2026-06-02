@@ -254,8 +254,10 @@ describe("set_active_index broadcast", () => {
     expect(send_message).toHaveBeenCalledTimes(1)
     const [payload] = send_message.mock.calls[0] ?? []
     expect(payload).toEqual({
-      type: "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED",
-      accounts: [EXPECTED_ADDRESSES[1]],
+      source: "ethernauta",
+      jsonrpc: "2.0",
+      method: "accountsChanged",
+      params: [[EXPECTED_ADDRESSES[1]]],
     })
   })
 

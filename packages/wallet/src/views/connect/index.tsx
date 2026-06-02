@@ -1,8 +1,6 @@
+import { ERROR_CODE } from "@ethernauta/eip/1193"
 import { Button } from "../../components/button"
-import type {
-  EthernautaResponse,
-  TransactionRejectedResponse,
-} from "../../utils/event"
+import { make_error, make_success } from "../../utils/event"
 import { connection_request } from "../../utils/transaction"
 import { active_account } from "../../utils/wallet"
 
@@ -37,12 +35,14 @@ export function Connect() {
       <div className="flex flex-col gap-2">
         <Button
           onClick={() => {
-            const response: EthernautaResponse = {
-              id: connection_request.value?.id ?? "",
-              type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
-              signed_transaction: JSON.stringify([address]),
-            }
-            chrome.runtime.sendMessage(response)
+            // eth_requestAccounts returns an array of
+            // hex-address strings per EIP-1102.
+            chrome.runtime.sendMessage(
+              make_success(
+                connection_request.value?.id ?? "",
+                [address],
+              ),
+            )
             connection_request.value = null
             window.close()
           }}
@@ -52,11 +52,13 @@ export function Connect() {
         <Button
           variant="secondary"
           onClick={() => {
-            const response: TransactionRejectedResponse = {
-              id: connection_request.value?.id ?? "",
-              type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED",
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_error(
+                connection_request.value?.id ?? "",
+                ERROR_CODE.USER_REJECTED_REQUEST,
+                "User rejected request",
+              ),
+            )
             connection_request.value = null
             window.close()
           }}

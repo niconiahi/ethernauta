@@ -1,5 +1,5 @@
+import { ChainSchema as RegistryChainSchema } from "@ethernauta/chain"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   create_reader,
   create_writer,
@@ -8,14 +8,23 @@ import {
 } from "@ethernauta/transport"
 import { signal } from "@preact/signals"
 import {
+  array,
   type InferOutput,
   number,
   object,
+  optional,
   parse,
+  record,
+  safeParse,
   string,
-  tupleWithRest,
 } from "valibot"
+import { make_notification } from "./event"
 
+// Wallet-side Chain shape — the *materialized* form persisted
+// in chrome.storage and read sync by views. Distinct from the
+// registry's full Chain (in `@ethernauta/chain`) which carries
+// faucets, explorers, slip44, etc. that the wallet doesn't need
+// in hot paths.
 export const ChainSchema = object({
   id: number(),
   name: string(),
@@ -23,27 +32,56 @@ export const ChainSchema = object({
 })
 export type Chain = InferOutput<typeof ChainSchema>
 
-// Non-empty tuple — `CHAINS[0]` types as `Chain` (not `Chain | undefined`)
-// so `selected_chain` can be initialised without a guard.
-const ChainsSchema = tupleWithRest(
-  [ChainSchema],
-  ChainSchema,
-)
+function to_local_chain(
+  registry: InferOutput<typeof RegistryChainSchema>,
+): Chain | undefined {
+  const rpc_url = registry.rpc[0]
+  if (!rpc_url) return undefined
+  return {
+    id: registry.chainId,
+    name: registry.name,
+    rpc_url,
+  }
+}
 
-export const CHAINS = parse(ChainsSchema, [
-  {
-    id: eip155_11155111.chainId,
-    name: eip155_11155111.name,
-    rpc_url: "https://ethereum-sepolia-rpc.publicnode.com",
-  },
-  {
-    id: eip155_1.chainId,
-    name: eip155_1.name,
-    rpc_url: "https://ethereum-rpc.publicnode.com",
-  },
-])
+const MAINNET = to_local_chain(eip155_1) ?? {
+  id: 1,
+  name: "Ethereum Mainnet",
+  rpc_url: "https://ethereum-rpc.publicnode.com",
+}
 
-export const selected_chain = signal<Chain>(CHAINS[0])
+export const selected_chain = signal<Chain>(MAINNET)
+export const past_chains = signal<Chain[]>([])
+
+const STORAGE_KEY_SELECTED = "selected_chain"
+const STORAGE_KEY_PAST = "past_chains"
+
+const StorageShapeSchema = object({
+  [STORAGE_KEY_SELECTED]: optional(ChainSchema),
+  [STORAGE_KEY_PAST]: optional(array(ChainSchema)),
+})
+
+export async function restore_chain(): Promise<void> {
+  const raw = await chrome.storage.local.get([
+    STORAGE_KEY_SELECTED,
+    STORAGE_KEY_PAST,
+  ])
+  const result = safeParse(StorageShapeSchema, raw)
+  if (!result.success) return
+  const stored_selected =
+    result.output[STORAGE_KEY_SELECTED]
+  const stored_past = result.output[STORAGE_KEY_PAST]
+  if (stored_selected)
+    selected_chain.value = stored_selected
+  if (stored_past) past_chains.value = stored_past
+}
+
+async function persist_chain(): Promise<void> {
+  await chrome.storage.local.set({
+    [STORAGE_KEY_SELECTED]: selected_chain.value,
+    [STORAGE_KEY_PAST]: past_chains.value,
+  })
+}
 
 const NAMESPACE = "eip155"
 
@@ -86,39 +124,79 @@ export function to_provider_chain_id(
   return `0x${chain.id.toString(16)}`
 }
 
-/**
- * Lookup a known chain by its numeric id. Returns undefined
- * when the wallet doesn't know about the chain — caller is
- * responsible for the "unknown chain" UX.
- */
-export function get_chain(id: number): Chain | undefined {
-  return CHAINS.find((chain) => chain.id === id)
+// Lazy loaders for every chain shipped under
+// `@ethernauta/chain/src/chain/eip155/`. `import.meta.glob`
+// produces one dynamic-import per match — Vite/Rollup
+// code-splits each chain into its own chunk, so the wallet's
+// initial bundle stays small and we only pay the per-chain
+// cost on first lookup. Bare-specifier `import(\`@scope/pkg
+// /sub-${id}\`)` would semantically be cleaner but doesn't
+// code-split in production builds because subpath exports
+// can't be statically enumerated by the bundler — the glob
+// against the workspace-relative source path is what makes
+// the lazy-load actually work end-to-end (dev + prod).
+const CHAIN_LOADERS = import.meta.glob<
+  Record<string, unknown>
+>("../../../chain/src/chain/eip155/eip155-*.ts")
+
+// Dynamic lookup against `@ethernauta/chain`'s 2,600+ chain
+// registry. Returns undefined when the id has no registry
+// entry or the chain has no usable RPC — that's the "no
+// preview, no existence" signal for the chain picker UX.
+export async function find_chain(
+  chain_id: number,
+): Promise<Chain | undefined> {
+  const loader =
+    CHAIN_LOADERS[
+      `../../../chain/src/chain/eip155/eip155-${chain_id}.ts`
+    ]
+  if (!loader) return undefined
+  try {
+    const raw_module = await loader()
+    const ModuleSchema = record(
+      string(),
+      RegistryChainSchema,
+    )
+    const parsed_module = parse(ModuleSchema, raw_module)
+    const registry = parsed_module[`eip155_${chain_id}`]
+    if (!registry) return undefined
+    return to_local_chain(registry)
+  } catch {
+    return undefined
+  }
 }
 
-/**
- * Activate a chain — updates the popup's selected_chain
- * signal AND fires a notification the page-context
- * provider listens for, so it can call
- * provider.set_active_chain (which emits `chainChanged`
- * to every connected dapp).
- */
-export function select_chain(chain: Chain): void {
+// Activate a chain — updates the popup's selected_chain
+// signal, pushes onto the recents list (move-to-front,
+// dedupe), persists both to chrome.storage, and fires a
+// notification the page-context provider listens for so it
+// can call provider.emit("chainChanged") for every connected
+// dapp.
+export async function select_chain(
+  chain: Chain,
+): Promise<void> {
   selected_chain.value = chain
-  chrome.runtime.sendMessage({
-    type: "ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED",
-    chainId: to_provider_chain_id(chain),
-  })
+  const others = past_chains.value.filter(
+    (entry) => entry.id !== chain.id,
+  )
+  past_chains.value = [chain, ...others]
+  await persist_chain()
+  // EIP-1193 chainChanged event ridden on a JSON-RPC
+  // notification — same method name end-to-end (popup →
+  // background → content script → page-context → dapp).
+  chrome.runtime.sendMessage(
+    make_notification("chainChanged", [
+      to_provider_chain_id(chain),
+    ]),
+  )
 }
 
-/**
- * Parse user input into a numeric chain id. Accepts:
- *  - decimal: "1"
- *  - hex:     "0x1"
- *  - CAIP-2:  "eip155:1"
- *
- * Returns undefined when the input doesn't match any of
- * those shapes.
- */
+// Parse user input into a numeric chain id. Accepts:
+//   - decimal:  "1"
+//   - hex:      "0x1"
+//   - CAIP-2:   "eip155:1"
+// Returns undefined when the input doesn't match any of
+// those shapes.
 export function parse_chain_input(
   input: string,
 ): number | undefined {

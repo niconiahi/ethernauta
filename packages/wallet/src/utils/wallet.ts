@@ -17,6 +17,7 @@ import {
   parse,
   string,
 } from "valibot"
+import { make_notification } from "./event"
 import { get_vault } from "./vault"
 
 const ACCOUNT_PATH = "m/44'/60'/0'/0"
@@ -207,10 +208,9 @@ function broadcast_accounts_changed(
   if (typeof chrome === "undefined") return
   if (!chrome.runtime?.sendMessage) return
   chrome.runtime
-    .sendMessage({
-      type: "ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED",
-      accounts: addresses,
-    })
+    .sendMessage(
+      make_notification("accountsChanged", [addresses]),
+    )
     .catch(() => {})
 }
 

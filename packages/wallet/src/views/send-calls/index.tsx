@@ -12,7 +12,7 @@ import {
   bytes_to_hex,
   hex_to_bytes,
 } from "@ethernauta/utils"
-import { useState } from "preact/hooks"
+import { useEffect, useState } from "preact/hooks"
 import { parse } from "valibot"
 import { Button } from "../../components/button"
 import {
@@ -20,8 +20,8 @@ import {
   set_batch,
 } from "../../utils/calls-registry"
 import {
-  CHAINS,
-  get_chain,
+  type Chain,
+  find_chain,
   get_reader,
   get_writer,
   selected_chain,
@@ -30,10 +30,8 @@ import {
   get_private_key,
   hex_to_big,
 } from "../../utils/crypto"
-import type {
-  SignTransactionResponse,
-  TransactionRejectedResponse,
-} from "../../utils/event"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
+import { make_error, make_success } from "../../utils/event"
 import {
   type Eip1559TransactionUnsigned,
   encode_eip155_transaction_unsigned,
@@ -51,24 +49,32 @@ const ZERO_UINT = parse(UintSchema, "0x0")
 const EMPTY_BYTES = parse(BytesSchema, "0x")
 
 export function SendCalls() {
-  const req = send_calls_request.value
+  const request = send_calls_request.value
   const [status, set_status] = useState<
     "idle" | "broadcasting" | "error"
   >("idle")
   const [error, set_error] = useState<string | null>(null)
-  if (!req) {
+  const [chain, set_chain] = useState<Chain | null>(null)
+  const chain_reference = request
+    ? Number(hex_to_big(request.parameter.chainId))
+    : 0
+  useEffect(() => {
+    if (!request) return
+    find_chain(chain_reference).then((chain) => {
+      set_chain(chain ?? null)
+    })
+  }, [request, chain_reference])
+  if (!request) {
     return (
       <main className="p-4 w-80 text-sm text-[var(--text-muted)]">
         No send-calls request pending.
       </main>
     )
   }
-  const param = req.parameter
-  const chain_ref = Number(hex_to_big(param.chainId))
-  const chain = get_chain(chain_ref)
+  const param = request.parameter
   const active_chain_id = selected_chain.value.id
   const wrong_chain =
-    chain !== undefined && chain_ref !== active_chain_id
+    chain !== null && chain_reference !== active_chain_id
   const atomic_required = param.atomicRequired === true
   return (
     <main className="flex flex-col gap-3 p-4 w-80 text-base">
@@ -125,8 +131,8 @@ export function SendCalls() {
       </section>
       {wrong_chain && (
         <p className="text-xs text-amber-700">
-          This batch is for {chain?.name} ({chain_ref}).
-          Your wallet is on {selected_chain.value.name} (
+          This batch is for {chain?.name} ({chain_reference}
+          ). Your wallet is on {selected_chain.value.name} (
           {active_chain_id}). Switch chains in the wallet,
           then retry.
         </p>
@@ -210,12 +216,9 @@ export function SendCalls() {
               const result: SendCallsResult = {
                 id: batch_id,
               }
-              const response: SignTransactionResponse = {
-                id: req.id,
-                type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
-                signed_transaction: JSON.stringify(result),
-              }
-              chrome.runtime.sendMessage(response)
+              chrome.runtime.sendMessage(
+                make_success(request.id, result),
+              )
               window.close()
             } catch (e) {
               set_status("error")
@@ -234,11 +237,13 @@ export function SendCalls() {
         <Button
           variant="secondary"
           onClick={() => {
-            const response: TransactionRejectedResponse = {
-              id: req.id,
-              type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED",
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_error(
+                request.id,
+                ERROR_CODE.USER_REJECTED_REQUEST,
+                "User rejected request",
+              ),
+            )
             window.close()
           }}
         >
@@ -248,9 +253,7 @@ export function SendCalls() {
       <p className="text-[10px] text-[var(--text-muted)] leading-snug">
         Sequential strategy: each call is sent as its own
         EIP-1559 transaction. Future versions can wrap the
-        batch atomically via EIP-7702 / ERC-4337.{" "}
-        {CHAINS.length} chain
-        {CHAINS.length === 1 ? "" : "s"} configured.
+        batch atomically via EIP-7702 / ERC-4337.
       </p>
     </main>
   )

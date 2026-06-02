@@ -27,7 +27,11 @@ import {
   type BatchRecord,
   get_batch,
 } from "./calls-registry"
-import { CHAINS, get_chain, get_reader } from "./chain"
+import {
+  find_chain,
+  get_reader,
+  past_chains,
+} from "./chain"
 
 const CALLS_STATUS_VERSION = "2.0.0"
 const STATUS_SUCCESS = parse(
@@ -45,7 +49,7 @@ function to_chain_ref(chain_id_hex: Uint): number {
 
 export function compose_capabilities(): Capabilities {
   const capabilities: Capabilities = {}
-  for (const chain of CHAINS) {
+  for (const chain of past_chains.value) {
     const key = parse(UintSchema, number_to_hex(chain.id))
     capabilities[key] = {
       atomic: { status: "unsupported" },
@@ -61,7 +65,9 @@ export async function compose_calls_status(
   if (!batch) {
     throw new Error(`unknown batch id: ${id}`)
   }
-  const chain = get_chain(to_chain_ref(batch.chainId))
+  const chain = await find_chain(
+    to_chain_ref(batch.chainId),
+  )
   if (!chain) {
     throw new Error(
       `unknown chain for batch: ${batch.chainId}`,

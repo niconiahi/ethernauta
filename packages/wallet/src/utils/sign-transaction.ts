@@ -3,7 +3,6 @@ import {
   encode_function_call,
   string_,
 } from "@ethernauta/abi"
-import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   type Address,
   AddressSchema,
@@ -17,6 +16,7 @@ import { keccak_256, sign_digest } from "@ethernauta/crypto"
 import {
   encode_rlp,
   eth_getTransactionCount,
+  EthSignTransactionParametersSchema,
   GenericTransactionSchema,
 } from "@ethernauta/eth"
 import type { ResolvedReader } from "@ethernauta/transport"
@@ -111,10 +111,6 @@ export async function get_nonce(
   return hex_to_big(transaction_count)
 }
 
-function get_chain_id(): bigint {
-  return BigInt(eip155_11155111.chainId) // Sepolia chain ID
-}
-
 function get_gas_limit(): bigint {
   // testnet: ceiling. unused gas is refunded under EIP-1559.
   // revisit once eth_estimateGas is wired through the wallet.
@@ -144,10 +140,20 @@ function get_fields_from_transaction(
 } {
   switch (method) {
     case "eth_signTransaction": {
-      const raw = Array.isArray(params)
-        ? params[0]
-        : params.transaction
-      const tx = parse(SignableTransactionSchema, raw)
+      const parsed = parse(
+        EthSignTransactionParametersSchema,
+        params,
+      )
+      const generic_tx = Array.isArray(parsed)
+        ? parsed[0]
+        : parsed.transaction
+      // Tighten: `to` is required for a Signable
+      // (contract-deployment goes via EIP-1014's deploy
+      // flow, not this signer).
+      const tx = parse(
+        SignableTransactionSchema,
+        generic_tx,
+      )
       const value_hex = tx.value ?? "0x0"
       const input_hex = tx.input ?? "0x"
       const data =
@@ -196,12 +202,14 @@ function get_fields_from_transaction(
 export async function sign_transaction({
   key,
   nonce,
+  chain_id,
   method,
   params,
   to,
 }: {
   key: HDKey
   nonce: bigint
+  chain_id: bigint
   method: Transaction["method"]
   params: Transaction["params"]
   to?: string
@@ -216,7 +224,7 @@ export async function sign_transaction({
     data,
     value,
     nonce,
-    chain_id: get_chain_id(),
+    chain_id,
     gas_limit: get_gas_limit(),
     access_list: get_access_list(),
     max_fee_per_gas: get_max_fee_per_gas(),

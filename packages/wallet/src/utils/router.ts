@@ -1,15 +1,15 @@
 import { TypedDataSchema } from "@ethernauta/eip/712"
-import { AddEthereumChainParameterSchema } from "@ethernauta/eip/3085"
+import { SwitchEthereumChainParametersSchema } from "@ethernauta/eip/3326"
 import { SendCallsParameterSchema } from "@ethernauta/eip/5792"
 import { SendSetCodeTransactionParametersSchema } from "@ethernauta/eip/7702"
 import { parse, string, tuple } from "valibot"
 import type { EthernautaRequest } from "./event"
 import {
-  add_chain_request,
   connection_request,
   personal_sign_request,
   send_calls_request,
   set_code_request,
+  switch_chain_request,
   transaction_request,
   typed_data_request,
 } from "./transaction"
@@ -51,16 +51,16 @@ export async function route_request(
     view.value = "personal-sign"
     return
   }
-  if (request.method === "wallet_addEthereumChain") {
-    const [chain] = parse(
-      tuple([AddEthereumChainParameterSchema]),
+  if (request.method === "wallet_switchEthereumChain") {
+    const [parameter] = parse(
+      SwitchEthereumChainParametersSchema,
       request.params,
     )
-    add_chain_request.value = {
+    switch_chain_request.value = {
       id: request.id,
-      chain,
+      parameter,
     }
-    view.value = "add-chain"
+    view.value = "switch-chain"
     return
   }
   if (request.method === "wallet_sendCalls") {

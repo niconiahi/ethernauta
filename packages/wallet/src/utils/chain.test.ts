@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
-  get_chain,
+  find_chain,
   parse_chain_input,
   to_provider_chain_id,
 } from "./chain"
@@ -37,32 +37,47 @@ describe("chain.ts — parse_chain_input", () => {
   })
 })
 
-describe("chain.ts — get_chain", () => {
-  it("should return Sepolia for id 11155111", () => {
-    const chain = get_chain(11155111)
+describe("chain.ts — find_chain", () => {
+  it("should return Sepolia for id 11155111", async () => {
+    const chain = await find_chain(11155111)
     expect(chain?.name).toContain("Sepolia")
   })
 
-  it("should return Mainnet for id 1", () => {
-    const chain = get_chain(1)
+  it("should return Mainnet for id 1", async () => {
+    const chain = await find_chain(1)
     expect(chain?.name).toContain("Mainnet")
   })
 
-  it("should return undefined for an unknown id", () => {
-    expect(get_chain(999_999_999)).toBeUndefined()
+  it("should return OP Sepolia for id 11155420", async () => {
+    const chain = await find_chain(11155420)
+    expect(chain?.name).toContain("OP Sepolia")
+  })
+
+  it("should return undefined for an unknown id", async () => {
+    expect(
+      await find_chain(123_456_789_123_456),
+    ).toBeUndefined()
   })
 })
 
 describe("chain.ts — to_provider_chain_id", () => {
-  it("should encode an integer id as 0x-prefixed hex", () => {
-    const chain = get_chain(11155111)
-    if (!chain) throw new Error("missing seed")
-    expect(to_provider_chain_id(chain)).toBe("0xaa36a7")
+  it("should encode mainnet as 0x1", () => {
+    expect(
+      to_provider_chain_id({
+        id: 1,
+        name: "Ethereum Mainnet",
+        rpc_url: "https://example",
+      }),
+    ).toBe("0x1")
   })
 
-  it("should encode mainnet as 0x1", () => {
-    const chain = get_chain(1)
-    if (!chain) throw new Error("missing seed")
-    expect(to_provider_chain_id(chain)).toBe("0x1")
+  it("should encode Sepolia as 0xaa36a7", () => {
+    expect(
+      to_provider_chain_id({
+        id: 11155111,
+        name: "Sepolia",
+        rpc_url: "https://example",
+      }),
+    ).toBe("0xaa36a7")
   })
 })

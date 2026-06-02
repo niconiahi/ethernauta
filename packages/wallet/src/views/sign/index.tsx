@@ -5,7 +5,10 @@ import {
 } from "@ethernauta/abi"
 import { AddressSchema } from "@ethernauta/core"
 import { REGISTRY } from "@ethernauta/erc/registry"
-import { GenericTransactionSchema } from "@ethernauta/eth"
+import {
+  EthSignTransactionParametersSchema,
+  GenericTransactionSchema,
+} from "@ethernauta/eth"
 import type { FunctionSignature } from "@ethernauta/transport"
 import { ParametersSchema } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
@@ -28,10 +31,8 @@ import {
   get_reader,
   selected_chain,
 } from "../../utils/chain"
-import type {
-  EthernautaResponse,
-  TransactionRejectedResponse,
-} from "../../utils/event"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
+import { make_error, make_success } from "../../utils/event"
 import { row_key } from "../../utils/row-key"
 import {
   get_nonce,
@@ -75,13 +76,6 @@ const DecodeEntrySchema = object({
   source: union([literal("sidecar"), literal("bundled")]),
 })
 type DecodeEntry = InferOutput<typeof DecodeEntrySchema>
-
-const TxSummarySchema = object({
-  to: optional(string()),
-  value: optional(string()),
-  input: optional(string()),
-})
-type TxSummary = InferOutput<typeof TxSummarySchema>
 
 function lookup_registry(
   selector: string,
@@ -141,16 +135,8 @@ function lookup_sidecar(
 function extract_ethernauta_function():
   | FunctionSignature
   | undefined {
-  const raw = transaction_request.value.params
-  const candidate = Array.isArray(raw)
-    ? raw[0]
-    : raw.transaction
-  const result = safeParse(
-    GenericTransactionSchema,
-    candidate,
-  )
-  if (!result.success) return undefined
-  return result.output._ethernauta?.function
+  const tx = extract_tx()
+  return tx?._ethernauta?.function
 }
 
 function find_decode_entry(
@@ -312,14 +298,17 @@ function Params() {
   )
 }
 
-function extract_tx(): TxSummary | null {
-  const raw = transaction_request.value.params
-  const candidate = Array.isArray(raw)
-    ? raw[0]
-    : raw.transaction
-  const result = safeParse(TxSummarySchema, candidate)
+function extract_tx(): InferOutput<
+  typeof GenericTransactionSchema
+> | null {
+  const result = safeParse(
+    EthSignTransactionParametersSchema,
+    transaction_request.value.params,
+  )
   if (!result.success) return null
-  return result.output
+  return Array.isArray(result.output)
+    ? result.output[0]
+    : result.output.transaction
 }
 
 function is_value_zero(value: string | undefined): boolean {
@@ -434,7 +423,7 @@ export function Sign() {
       </header>
       {decoded ? (
         <DecodedSign
-          to={tx?.to}
+          to={tx?.to ?? undefined}
           value={tx?.value}
           input={decoded.hex}
           entry={decoded.entry}
@@ -477,18 +466,17 @@ export function Sign() {
               await sign_transaction({
                 key,
                 nonce,
+                chain_id: BigInt(selected_chain.value.id),
                 method: transaction_request.value.method,
                 params: transaction_request.value.params,
                 to: transaction_request.value.to,
               })
-            const response: EthernautaResponse = {
-              id: transaction_request.value.id,
-              type: "ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION",
-              signed_transaction: bytes_to_hex(
-                signed_transaction,
+            chrome.runtime.sendMessage(
+              make_success(
+                transaction_request.value.id,
+                bytes_to_hex(signed_transaction),
               ),
-            }
-            chrome.runtime.sendMessage(response)
+            )
             window.close()
           }}
         >
@@ -497,11 +485,13 @@ export function Sign() {
         <Button
           variant="secondary"
           onClick={() => {
-            const response: TransactionRejectedResponse = {
-              id: transaction_request.value.id,
-              type: "ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED",
-            }
-            chrome.runtime.sendMessage(response)
+            chrome.runtime.sendMessage(
+              make_error(
+                transaction_request.value.id,
+                ERROR_CODE.USER_REJECTED_REQUEST,
+                "User rejected request",
+              ),
+            )
             window.close()
           }}
         >

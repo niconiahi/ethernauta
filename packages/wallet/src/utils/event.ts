@@ -1,10 +1,10 @@
 import {
-  array,
+  custom,
   type InferOutput,
   literal,
+  number,
   object,
   optional,
-  record,
   string,
   union,
   unknown,
@@ -15,128 +15,195 @@ export {
   FunctionSignatureSchema,
 } from "@ethernauta/transport"
 
-export const SignTransactionRequestSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_REQUEST_SIGN_TRANSACTION"),
+// The wallet's internal message bus speaks pure JSON-RPC 2.0.
+// EIP-1193 (the dapp ↔ provider contract) is a JS object API
+// that wraps the same call shape; routing it through our bus
+// means a 1193 `provider.request({ method, params })` becomes
+// a JSON-RPC request on the wire, and a 1193 event
+// (`chainChanged`, `accountsChanged`) becomes a JSON-RPC
+// notification. The wire shape is therefore identical to
+// what we already speak to public RPC nodes via
+// `@ethernauta/transport`'s `http()` transport — internal +
+// external transport collapse onto one protocol.
+//
+// We add a single `source: "ethernauta"` marker on every
+// envelope. `window.postMessage` is broadcast to every script
+// in the page; without the marker, another injected wallet's
+// JSON-RPC traffic would be indistinguishable from ours.
+// JSON-RPC 2.0 §5 explicitly permits implementations to
+// include additional fields, so the marker is spec-compliant.
+
+const SOURCE = "ethernauta"
+const SourceSchema = literal(SOURCE)
+const VersionSchema = literal("2.0")
+const IdSchema = string()
+// Matches `RequestArgumentsSchema` in `@ethernauta/eip/1193`
+// so a 1193 `request({ method, params })` lifts onto our
+// JSON-RPC envelope without coercion. Per JSON-RPC 2.0 §4.2
+// params MUST be a structured value (array or object).
+export const RpcParamsSchema = optional(
+  custom<readonly unknown[] | object>(
+    (value) =>
+      Array.isArray(value) ||
+      (typeof value === "object" && value !== null),
+  ),
+)
+const ParamsSchema = RpcParamsSchema
+
+// Wallet-internal notification method names. EIP-1193 event
+// names (`chainChanged`, `accountsChanged`) ride on the same
+// envelope unchanged — the page-context provider emits them
+// to the dapp under the same name they arrive with. The
+// `wallet/*` prefix is reserved for purely-internal signals
+// the dapp never sees.
+export const WALLET_METHOD = {
+  POPUP_READY: "wallet/popup_ready",
+} as const
+
+// JSON-RPC 2.0 request — dapp/popup boundary. The two extra
+// fields (`to`, `chainId`) are wallet-internal sidecars per
+// JSON-RPC §5: `to` carries an optional contract-address
+// hint for the sign view's decoder; `chainId` carries the
+// requesting page's active chain id for display. Strict
+// 1193 clients (MetaMask, Rabby) drop unknown fields.
+export const RpcRequestSchema = object({
+  source: SourceSchema,
+  jsonrpc: VersionSchema,
+  id: IdSchema,
   method: string(),
-  chainId: string(),
+  params: ParamsSchema,
   to: optional(string()),
-  params: optional(
-    union([array(unknown()), record(string(), unknown())]),
-  ),
+  chainId: optional(string()),
 })
-export type SignTransactionRequest = InferOutput<
-  typeof SignTransactionRequestSchema
+export type RpcRequest = InferOutput<
+  typeof RpcRequestSchema
 >
 
-export const SignTransactionResponseSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_RESPONSE_SIGNED_TRANSACTION"),
-  signed_transaction: string(),
+const RpcErrorSchema = object({
+  code: number(),
+  message: string(),
+  data: optional(unknown()),
 })
-export type SignTransactionResponse = InferOutput<
-  typeof SignTransactionResponseSchema
+export type RpcErrorPayload = InferOutput<
+  typeof RpcErrorSchema
 >
 
-export const SignTypedDataResponseSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_RESPONSE_SIGNED_TYPED_DATA"),
-  signature: string(),
+export const RpcSuccessResponseSchema = object({
+  source: SourceSchema,
+  jsonrpc: VersionSchema,
+  id: IdSchema,
+  result: unknown(),
 })
-export type SignTypedDataResponse = InferOutput<
-  typeof SignTypedDataResponseSchema
+export type RpcSuccessResponse = InferOutput<
+  typeof RpcSuccessResponseSchema
 >
 
-export const PersonalSignResponseSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_RESPONSE_PERSONAL_SIGNED"),
-  signature: string(),
+export const RpcErrorResponseSchema = object({
+  source: SourceSchema,
+  jsonrpc: VersionSchema,
+  id: IdSchema,
+  error: RpcErrorSchema,
 })
-export type PersonalSignResponse = InferOutput<
-  typeof PersonalSignResponseSchema
+export type RpcErrorResponse = InferOutput<
+  typeof RpcErrorResponseSchema
 >
 
-export const AddChainApprovedResponseSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_RESPONSE_ADD_CHAIN_APPROVED"),
-})
-export type AddChainApprovedResponse = InferOutput<
-  typeof AddChainApprovedResponseSchema
->
-
-export const EthernautaRequestSchema =
-  SignTransactionRequestSchema
-export type EthernautaRequest = InferOutput<
-  typeof EthernautaRequestSchema
->
-
-export const TransactionRejectedResponseSchema = object({
-  id: string(),
-  type: literal("ETHERNAUTA_RESPONSE_TRANSACTION_REJECTED"),
-})
-export type TransactionRejectedResponse = InferOutput<
-  typeof TransactionRejectedResponseSchema
->
-
-export const NativeExtensionCloseResponseSchema = object({
-  id: string(),
-  type: literal(
-    "ETHERNAUTA_RESPONSE_NATIVE_EXTENSION_CLOSE",
-  ),
-})
-export type NativeExtensionCloseResponse = InferOutput<
-  typeof NativeExtensionCloseResponseSchema
->
-
-export const EthernautaResponseSchema = union([
-  SignTransactionResponseSchema,
-  SignTypedDataResponseSchema,
-  PersonalSignResponseSchema,
-  AddChainApprovedResponseSchema,
-  TransactionRejectedResponseSchema,
-  NativeExtensionCloseResponseSchema,
+export const RpcResponseSchema = union([
+  RpcSuccessResponseSchema,
+  RpcErrorResponseSchema,
 ])
-export type EthernautaResponse = InferOutput<
-  typeof EthernautaResponseSchema
+export type RpcResponse = InferOutput<
+  typeof RpcResponseSchema
 >
 
-export const PopupReadyNotificationSchema = object({
-  type: literal("ETHERNAUTA_NOTIFICATION_POPUP_READY"),
+// JSON-RPC 2.0 notification — no `id`, no reply expected.
+// Carries EIP-1193 events (chainChanged, accountsChanged)
+// outward and wallet-internal one-way signals (popup_ready)
+// inward.
+export const RpcNotificationSchema = object({
+  source: SourceSchema,
+  jsonrpc: VersionSchema,
+  method: string(),
+  params: ParamsSchema,
 })
-export type PopupReadyNotification = InferOutput<
-  typeof PopupReadyNotificationSchema
+export type RpcNotification = InferOutput<
+  typeof RpcNotificationSchema
 >
 
-export const ChainSelectedNotificationSchema = object({
-  type: literal("ETHERNAUTA_NOTIFICATION_CHAIN_SELECTED"),
-  chainId: string(),
-})
-export type ChainSelectedNotification = InferOutput<
-  typeof ChainSelectedNotificationSchema
->
-
-export const AccountsChangedNotificationSchema = object({
-  type: literal("ETHERNAUTA_NOTIFICATION_ACCOUNTS_CHANGED"),
-  accounts: array(string()),
-})
-export type AccountsChangedNotification = InferOutput<
-  typeof AccountsChangedNotificationSchema
->
-
-export const EthernautaNotificationSchema = union([
-  PopupReadyNotificationSchema,
-  ChainSelectedNotificationSchema,
-  AccountsChangedNotificationSchema,
-])
-export type EthernautaNotification = InferOutput<
-  typeof EthernautaNotificationSchema
->
-
+// Top-level discriminator for the postMessage bus. Order
+// matters: requests (id + method) must be tried before
+// notifications (method, no id required) so a well-formed
+// request isn't misclassified as a notification.
 export const EthernautaEventSchema = union([
-  EthernautaRequestSchema,
-  EthernautaResponseSchema,
-  EthernautaNotificationSchema,
+  RpcRequestSchema,
+  RpcResponseSchema,
+  RpcNotificationSchema,
 ])
 export type EthernautaEvent = InferOutput<
   typeof EthernautaEventSchema
 >
+
+// The popup needs to differentiate "is this a wallet request
+// I should route to a view" vs "is this a wallet response/
+// notification I should ignore". `EthernautaRequestSchema`
+// is the popup-side narrowing.
+export const EthernautaRequestSchema = RpcRequestSchema
+export type EthernautaRequest = RpcRequest
+
+// Construct envelopes without restating the marker/version
+// at every call site.
+export function make_request(args: {
+  id: string
+  method: string
+  params?: RpcRequest["params"]
+  to?: string
+  chainId?: string
+}): RpcRequest {
+  return {
+    source: SOURCE,
+    jsonrpc: "2.0",
+    id: args.id,
+    method: args.method,
+    params: args.params,
+    to: args.to,
+    chainId: args.chainId,
+  }
+}
+
+export function make_success(
+  id: string,
+  result: unknown,
+): RpcSuccessResponse {
+  return {
+    source: SOURCE,
+    jsonrpc: "2.0",
+    id,
+    result,
+  }
+}
+
+export function make_error(
+  id: string,
+  code: number,
+  message: string,
+  data?: unknown,
+): RpcErrorResponse {
+  return {
+    source: SOURCE,
+    jsonrpc: "2.0",
+    id,
+    error: { code, message, data },
+  }
+}
+
+export function make_notification(
+  method: string,
+  params?: RpcNotification["params"],
+): RpcNotification {
+  return {
+    source: SOURCE,
+    jsonrpc: "2.0",
+    method,
+    params,
+  }
+}
