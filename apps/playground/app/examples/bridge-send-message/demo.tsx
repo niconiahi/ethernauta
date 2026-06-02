@@ -1,10 +1,10 @@
 // Sepolia → OP Sepolia arbitrary message via the OP
-// OptimismPortal.depositTransaction. Composes the
-// `depositTransaction(address,uint256,uint64,bool,bytes)` call
-// from the bridge bundle's origin signer. The wallet only
-// signs (path 2 per M3); this dapp broadcasts via
-// eth_sendRawTransaction. msg.value mirrors the `value` ABI
-// parameter — the L1 ETH locked equals the L2 mint amount.
+// OptimismPortal.depositTransaction. Calls the `send_message`
+// verb through the OP-wrapped `create_bridge` factory:
+//   send_message({...})(bridge({ l1, l2, signer }))
+//
+// msg.value mirrors the `value` ABI parameter — the L1 ETH
+// locked equals the L2 mint amount.
 
 import "./demo.css"
 import {
@@ -20,7 +20,6 @@ import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { eip155_11155420 } from "@ethernauta/chain/eip155-11155420"
 import {
   AddressSchema,
-  type Bytes,
   BytesSchema,
   type Hash32,
   Uint64Schema,
@@ -28,16 +27,12 @@ import {
   UintSchema,
 } from "@ethernauta/core"
 import {
-  eth_sendRawTransaction,
-  eth_signTransaction,
-} from "@ethernauta/eth"
-import { require_deploy_addresses } from "@ethernauta/op"
-import { useProvider } from "@ethernauta/react"
-import {
   create_bridge,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
+  require_deploy_addresses,
+  send_message,
+} from "@ethernauta/op"
+import { useProvider } from "@ethernauta/react"
+import { encode_chain_id, http } from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bigint,
@@ -51,18 +46,18 @@ import { use_session } from "../../lib/auth/use-session"
 import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 import { Row } from "../send-calls/row"
 
-const SEPOLIA = encode_chain_id({
+const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155111.chainId,
 })
-const OP_SEPOLIA = encode_chain_id({
+const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155420.chainId,
 })
 
 const bridge = create_bridge([
   {
-    chainId: SEPOLIA,
+    chainId: SEPOLIA_CHAIN_ID,
     transports: [
       http("https://ethereum-sepolia-rpc.publicnode.com"),
       http("https://sepolia.gateway.tenderly.co"),
@@ -70,8 +65,13 @@ const bridge = create_bridge([
     ],
   },
   {
-    chainId: OP_SEPOLIA,
-    transports: [http("https://sepolia.optimism.io")],
+    chainId: OP_SEPOLIA_CHAIN_ID,
+    transports: [
+      http("https://sepolia.optimism.io"),
+      http(
+        "https://optimism-sepolia.gateway.tenderly.co",
+      ),
+    ],
   },
 ])
 
@@ -92,9 +92,9 @@ const DEPOSIT_TRANSACTION_SELECTOR = function_selector(
   "depositTransaction",
   PARAM_CODECS,
 )
-const PORTAL_PROXY =
-  require_deploy_addresses(OP_SEPOLIA).contracts
-    .OptimismPortalProxy
+const PORTAL_PROXY = require_deploy_addresses(
+  OP_SEPOLIA_CHAIN_ID,
+).contracts.OptimismPortalProxy
 
 function format_wei(wei_hex: string): string {
   try {
@@ -165,28 +165,24 @@ export function BridgeSendMessageDemo() {
   const session = use_session()
   const owner = session?.address ?? null
   const provider = useProvider({ key: PROVIDER_STORE_KEY })
-  const [to, set_to] = useState(DEFAULT_TO)
-  const [value, set_value] = useState(DEFAULT_VALUE_HEX)
-  const [gas_limit, set_gas_limit] = useState(
+  const [_to, set_to] = useState(DEFAULT_TO)
+  const [_value, set_value] = useState(DEFAULT_VALUE_HEX)
+  const [_gas_limit, set_gas_limit] = useState(
     DEFAULT_GAS_LIMIT_HEX,
   )
   const [is_creation, set_is_creation] = useState(false)
-  const [data, set_data] = useState(DEFAULT_DATA_HEX)
-  const [signed_bytes, set_signed_bytes] =
-    useState<Bytes | null>(null)
+  const [_data, set_data] = useState(DEFAULT_DATA_HEX)
   const [tx_hash, set_tx_hash] = useState<Hash32 | null>(
     null,
   )
   const [error, set_error] = useState<string | null>(null)
-  const [phase, set_phase] = useState<
-    "idle" | "signing" | "broadcasting"
-  >("idle")
+  const [in_flight, set_in_flight] = useState(false)
 
   const preview = useMemo(() => {
-    const to_result = safeParse(AddressSchema, to)
-    const value_result = safeParse(Uint256Schema, value)
-    const gas_result = safeParse(Uint64Schema, gas_limit)
-    const data_result = safeParse(BytesSchema, data)
+    const to_result = safeParse(AddressSchema, _to)
+    const value_result = safeParse(Uint256Schema, _value)
+    const gas_result = safeParse(Uint64Schema, _gas_limit)
+    const data_result = safeParse(BytesSchema, _data)
     const creation_result = safeParse(
       boolean(),
       is_creation,
@@ -215,89 +211,49 @@ export function BridgeSendMessageDemo() {
     )
     return {
       calldata,
-      value_label: format_wei(value),
-      gas_label: format_uint(gas_limit),
+      value_label: format_wei(_value),
+      gas_label: format_uint(_gas_limit),
     }
-  }, [to, value, gas_limit, is_creation, data])
+  }, [_to, _value, _gas_limit, is_creation, _data])
 
   if (!owner) return <SignInHint />
 
   async function run() {
     if (!provider) return
     set_error(null)
-    set_signed_bytes(null)
     set_tx_hash(null)
+    set_in_flight(true)
     try {
-      const resolved = bridge({
-        origin: SEPOLIA,
-        destination: OP_SEPOLIA,
-        signer: ({ chain_id }) => {
-          const [signer] = provider.signer({ chain_id })
-          return signer
-        },
-      })
-      const origin_signer = resolved.origin.signer
-      if (!origin_signer)
-        throw new Error(
-          "bridge did not wire an origin signer",
-        )
-      const parsed_to = parse(AddressSchema, to)
-      const parsed_value = parse(Uint256Schema, value)
-      const parsed_gas = parse(Uint64Schema, gas_limit)
-      const parsed_data = parse(BytesSchema, data)
-      const calldata = encode_function_call({
-        name: "depositTransaction",
-        args: PARAM_CODECS,
-        values: [
-          parsed_to,
-          parsed_value,
-          parsed_gas,
-          is_creation,
-          parsed_data,
-        ],
-      })
-      set_phase("signing")
-      const signed = await eth_signTransaction([
-        {
-          to: PORTAL_PROXY,
-          value: parse(UintSchema, parsed_value),
-          input: parse(BytesSchema, bytes_to_hex(calldata)),
-          _ethernauta: {
-            function: {
-              signature:
-                "depositTransaction(address,uint256,uint64,bool,bytes)",
-              names: [
-                "_to",
-                "_value",
-                "_gasLimit",
-                "_isCreation",
-                "_data",
-              ],
-            },
-          },
-        },
-      ])([origin_signer, { chain_id: SEPOLIA }])
-      set_signed_bytes(signed)
-      set_phase("broadcasting")
-      const hash = await eth_sendRawTransaction([signed])([
-        resolved.origin.reader,
-        { chain_id: SEPOLIA },
-      ])
+      const to = parse(AddressSchema, _to)
+      const value = parse(Uint256Schema, _value)
+      const gas_limit = parse(Uint64Schema, _gas_limit)
+      const data = parse(BytesSchema, _data)
+      const hash = await send_message({
+        to,
+        value,
+        gas_limit,
+        is_creation,
+        data,
+      })(
+        bridge({
+          l1: SEPOLIA_CHAIN_ID,
+          l2: OP_SEPOLIA_CHAIN_ID,
+          signer: provider.signer({
+            chain_id: SEPOLIA_CHAIN_ID,
+          }),
+        }),
+      )
       set_tx_hash(hash)
     } catch (e) {
       set_error(format_error(e))
     } finally {
-      set_phase("idle")
+      set_in_flight(false)
     }
   }
 
-  const in_flight = phase !== "idle"
-  const button_label =
-    phase === "signing"
-      ? "Waiting for wallet signature…"
-      : phase === "broadcasting"
-        ? "Broadcasting on Sepolia…"
-        : "send_message on Sepolia"
+  const button_label = in_flight
+    ? "Signing + broadcasting…"
+    : "Send message to OP Sepolia"
 
   return (
     <div>
@@ -324,7 +280,7 @@ export function BridgeSendMessageDemo() {
           to (L2 target)
           <input
             className="bridge-send-message-input"
-            value={to}
+            value={_to}
             onChange={(e) => set_to(e.currentTarget.value)}
           />
         </label>
@@ -332,7 +288,7 @@ export function BridgeSendMessageDemo() {
           value (hex wei) — L1 ETH locked, L2 ETH minted
           <input
             className="bridge-send-message-input"
-            value={value}
+            value={_value}
             onChange={(e) =>
               set_value(e.currentTarget.value)
             }
@@ -342,7 +298,7 @@ export function BridgeSendMessageDemo() {
           gas_limit (hex)
           <input
             className="bridge-send-message-input"
-            value={gas_limit}
+            value={_gas_limit}
             onChange={(e) =>
               set_gas_limit(e.currentTarget.value)
             }
@@ -362,7 +318,7 @@ export function BridgeSendMessageDemo() {
           data (hex)
           <textarea
             className="bridge-send-message-textarea"
-            value={data}
+            value={_data}
             onChange={(e) =>
               set_data(e.currentTarget.value)
             }
@@ -397,13 +353,6 @@ export function BridgeSendMessageDemo() {
       >
         {button_label}
       </Button>
-      {signed_bytes && (
-        <Row
-          label="signed bytes (from wallet)"
-          value={signed_bytes}
-          mono
-        />
-      )}
       {tx_hash && (
         <>
           <Row label="L1 tx hash" value={tx_hash} mono />
@@ -413,7 +362,7 @@ export function BridgeSendMessageDemo() {
           />
           <LinkRow
             label="L2 target on OP Sepolia"
-            href={`https://sepolia-optimism.etherscan.io/address/${to}`}
+            href={`https://sepolia-optimism.etherscan.io/address/${_to}`}
           />
         </>
       )}

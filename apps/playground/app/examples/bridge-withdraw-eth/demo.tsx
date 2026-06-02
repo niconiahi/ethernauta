@@ -6,22 +6,22 @@
 //      — the L2 burn landed; waiting for a dispute game to be
 //      proposed and resolved on L1.
 //   2. ready_to_prove — a resolved game now covers the
-//      withdrawal's L2 block. `fetch_message_proof` builds the
-//      OpMessageProof bundle; `prove_withdraw` submits it on L1.
+//      withdrawal's L2 block. `prove_withdraw` builds the
+//      MessageProof bundle via `fetch_message_proof` and
+//      submits it on L1.
 //   3. proof_pending_maturity — proof submitted; waiting for
 //      the portal's `proofMaturityDelaySeconds` +
 //      `disputeGameFinalityDelaySeconds` to elapse.
 //   4. ready_to_finalize → finalized — `execute_withdraw`
 //      releases the L1 ETH.
 //
-// `start_withdraw_eth` is composed directly via the bridge
-// bundle. After the L2 broadcast, the demo fetches the L2
-// receipt, decodes the `MessagePassed` event emitted by the
-// L2ToL1MessagePasser predeploy, and stores the resulting
-// `WithdrawalTransaction` + L2 block number in localStorage so
+// Each phase is a single verb call against the OP-wrapped
+// `create_bridge` factory. After the L2 burn the demo fetches
+// the receipt, decodes the `MessagePassed` event for the
+// `WithdrawalTransaction`, and persists it to localStorage so
 // the user can leave and come back hours later when proofs
-// mature. `get_status` is polled every 15s with the prover set
-// to the signed-in user's address.
+// mature. `get_status` polls every 15s with the prover set to
+// the signed-in user's address.
 
 import "./demo.css"
 import {
@@ -44,22 +44,18 @@ import {
 } from "@ethernauta/core"
 import { eth_getTransactionReceipt } from "@ethernauta/eth"
 import {
+  create_bridge,
   execute_withdraw,
   fetch_message_proof,
   get_status,
   L2_TO_L1_MESSAGE_PASSER_ADDRESS,
   type OpBridgeStatus,
-  type OpMessageProof,
   prove_withdraw,
   start_withdraw_eth,
   WithdrawalTransactionSchema,
 } from "@ethernauta/op"
 import { useProvider } from "@ethernauta/react"
-import {
-  create_bridge,
-  encode_chain_id,
-  http,
-} from "@ethernauta/transport"
+import { encode_chain_id, http } from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
 import {
   useCallback,
@@ -77,18 +73,18 @@ import { use_session } from "../../lib/auth/use-session"
 import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 import { Row } from "../send-calls/row"
 
-const SEPOLIA = encode_chain_id({
+const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155111.chainId,
 })
-const OP_SEPOLIA = encode_chain_id({
+const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155420.chainId,
 })
 
 const bridge = create_bridge([
   {
-    chainId: SEPOLIA,
+    chainId: SEPOLIA_CHAIN_ID,
     transports: [
       http("https://ethereum-sepolia-rpc.publicnode.com"),
       http("https://sepolia.gateway.tenderly.co"),
@@ -96,7 +92,7 @@ const bridge = create_bridge([
     ],
   },
   {
-    chainId: OP_SEPOLIA,
+    chainId: OP_SEPOLIA_CHAIN_ID,
     transports: [http("https://sepolia.optimism.io")],
   },
 ])
@@ -268,11 +264,11 @@ export function BridgeWithdrawEthDemo() {
   const session = use_session()
   const owner = session?.address ?? null
   const provider = useProvider({ key: PROVIDER_STORE_KEY })
-  const [recipient, set_recipient] = useState<string>(
+  const [_recipient, set_recipient] = useState<string>(
     owner ?? "0x000000000000000000000000000000000000dEaD",
   )
-  const [amount, set_amount] = useState(DEFAULT_AMOUNT_HEX)
-  const [min_gas, set_min_gas] = useState(
+  const [_amount, set_amount] = useState(DEFAULT_AMOUNT_HEX)
+  const [_min_gas, set_min_gas] = useState(
     DEFAULT_MIN_GAS_HEX,
   )
   const [persisted, set_persisted] =
@@ -293,19 +289,19 @@ export function BridgeWithdrawEthDemo() {
   useEffect(() => {
     if (
       owner &&
-      recipient.toLowerCase() ===
+      _recipient.toLowerCase() ===
         "0x000000000000000000000000000000000000dead"
     ) {
       set_recipient(owner)
     }
-  }, [owner, recipient])
+  }, [owner, _recipient])
 
   const refresh_status = useCallback(
     async (state: PersistedState, prover: Address) => {
       try {
-        const resolved = bridge({
-          origin: OP_SEPOLIA,
-          destination: SEPOLIA,
+        const transport = bridge({
+          l1: SEPOLIA_CHAIN_ID,
+          l2: OP_SEPOLIA_CHAIN_ID,
         })
         const next = await get_status({
           direction: "withdraw",
@@ -314,7 +310,7 @@ export function BridgeWithdrawEthDemo() {
           withdrawal_l2_block_number:
             state.withdrawal_l2_block_number,
           prover,
-        })(resolved)
+        })(transport)
         set_status(next)
       } catch (e) {
         set_error(format_error(e))
@@ -340,10 +336,10 @@ export function BridgeWithdrawEthDemo() {
   const preview = useMemo(() => {
     const recipient_result = safeParse(
       AddressSchema,
-      recipient,
+      _recipient,
     )
-    const amount_result = safeParse(Uint256Schema, amount)
-    const min_gas_result = safeParse(Uint32Schema, min_gas)
+    const amount_result = safeParse(Uint256Schema, _amount)
+    const min_gas_result = safeParse(Uint32Schema, _min_gas)
     if (
       !recipient_result.success ||
       !amount_result.success ||
@@ -355,9 +351,9 @@ export function BridgeWithdrawEthDemo() {
       recipient: recipient_result.output,
       amount: amount_result.output,
       min_gas_limit: min_gas_result.output,
-      amount_label: format_wei(amount),
+      amount_label: format_wei(_amount),
     }
-  }, [recipient, amount, min_gas])
+  }, [_recipient, _amount, _min_gas])
 
   if (!owner) return <SignInHint />
 
@@ -366,22 +362,24 @@ export function BridgeWithdrawEthDemo() {
     set_error(null)
     try {
       set_phase("starting")
-      const resolved = bridge({
-        origin: OP_SEPOLIA,
-        destination: SEPOLIA,
-        signer: ({ chain_id }) => {
-          const [signer] = provider.signer({ chain_id })
-          return signer
-        },
+      const transport = bridge({
+        l1: SEPOLIA_CHAIN_ID,
+        l2: OP_SEPOLIA_CHAIN_ID,
+        signer: provider.signer({
+          chain_id: OP_SEPOLIA_CHAIN_ID,
+        }),
       })
       const l2_tx_hash = await start_withdraw_eth({
         to: preview.recipient,
         amount: preview.amount,
         min_gas_limit: preview.min_gas_limit,
-      })(resolved)
+      })(transport)
       const receipt = await eth_getTransactionReceipt([
         l2_tx_hash,
-      ])([resolved.origin.reader, { chain_id: OP_SEPOLIA }])
+      ])([
+        transport.l2.reader,
+        { chain_id: OP_SEPOLIA_CHAIN_ID },
+      ])
       if (receipt === null) {
         throw new Error(
           "L2 receipt not yet available — try again",
@@ -463,24 +461,22 @@ export function BridgeWithdrawEthDemo() {
     set_error(null)
     try {
       set_phase("proving")
-      const resolved = bridge({
-        origin: OP_SEPOLIA,
-        destination: SEPOLIA,
-        signer: ({ chain_id }) => {
-          const [signer] = provider.signer({ chain_id })
-          return signer
-        },
+      const transport = bridge({
+        l1: SEPOLIA_CHAIN_ID,
+        l2: OP_SEPOLIA_CHAIN_ID,
+        signer: provider.signer({
+          chain_id: SEPOLIA_CHAIN_ID,
+        }),
       })
-      const proof: OpMessageProof =
-        await fetch_message_proof({
-          withdrawal_transaction:
-            persisted.withdrawal_transaction,
-          withdrawal_l2_block_number:
-            persisted.withdrawal_l2_block_number,
-        })(resolved)
-      const l1_tx_hash = await prove_withdraw({ proof })(
-        resolved,
-      )
+      const message_proof = await fetch_message_proof({
+        withdrawal_transaction:
+          persisted.withdrawal_transaction,
+        withdrawal_l2_block_number:
+          persisted.withdrawal_l2_block_number,
+      })(transport)
+      const l1_tx_hash = await prove_withdraw({
+        proof: message_proof,
+      })(transport)
       const next: PersistedState = {
         ...persisted,
         prove_l1_tx_hash: l1_tx_hash,
@@ -501,17 +497,16 @@ export function BridgeWithdrawEthDemo() {
     set_error(null)
     try {
       set_phase("finalizing")
-      const resolved = bridge({
-        origin: OP_SEPOLIA,
-        destination: SEPOLIA,
-        signer: ({ chain_id }) => {
-          const [signer] = provider.signer({ chain_id })
-          return signer
-        },
+      const transport = bridge({
+        l1: SEPOLIA_CHAIN_ID,
+        l2: OP_SEPOLIA_CHAIN_ID,
+        signer: provider.signer({
+          chain_id: SEPOLIA_CHAIN_ID,
+        }),
       })
       const l1_tx_hash = await execute_withdraw({
         message: persisted.withdrawal_transaction,
-      })(resolved)
+      })(transport)
       const next: PersistedState = {
         ...persisted,
         finalize_l1_tx_hash: l1_tx_hash,
@@ -564,7 +559,7 @@ export function BridgeWithdrawEthDemo() {
               to (L1 recipient)
               <input
                 className="bridge-withdraw-eth-input"
-                value={recipient}
+                value={_recipient}
                 onChange={(e) =>
                   set_recipient(e.currentTarget.value)
                 }
@@ -574,7 +569,7 @@ export function BridgeWithdrawEthDemo() {
               amount (hex wei)
               <input
                 className="bridge-withdraw-eth-input"
-                value={amount}
+                value={_amount}
                 onChange={(e) =>
                   set_amount(e.currentTarget.value)
                 }
@@ -584,7 +579,7 @@ export function BridgeWithdrawEthDemo() {
               min_gas_limit (hex)
               <input
                 className="bridge-withdraw-eth-input"
-                value={min_gas}
+                value={_min_gas}
                 onChange={(e) =>
                   set_min_gas(e.currentTarget.value)
                 }
@@ -604,7 +599,7 @@ export function BridgeWithdrawEthDemo() {
             >
               {phase === "starting"
                 ? "Starting on OP Sepolia…"
-                : "start_withdraw_eth on OP Sepolia"}
+                : "Start withdrawal on OP Sepolia"}
             </Button>
           </div>
         </div>
@@ -666,7 +661,7 @@ export function BridgeWithdrawEthDemo() {
               >
                 {phase === "proving"
                   ? "Building proof + waiting for wallet…"
-                  : "prove_withdraw on Sepolia"}
+                  : "Prove withdrawal on Sepolia"}
               </Button>
               <Button
                 onClick={finalize}
@@ -678,7 +673,7 @@ export function BridgeWithdrawEthDemo() {
               >
                 {phase === "finalizing"
                   ? "Finalizing on Sepolia…"
-                  : "execute_withdraw on Sepolia"}
+                  : "Finalize withdrawal on Sepolia"}
               </Button>
               <Button variant="ghost" onClick={reset}>
                 Reset (forget this withdrawal)
