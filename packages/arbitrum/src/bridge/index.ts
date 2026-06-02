@@ -13,8 +13,15 @@
 // `cancel_retryable`) land in slice 3b. Read-only verbs ignore
 // the signer field.
 //
-// Slice 3a ships `send_eth` only; siblings land in 3b/3c.
+// Slice 3a ships `send_eth`; slice 3b adds `send_erc20`,
+// `send_message`, `redeem_retryable`, `cancel_retryable`;
+// slice 3c lands the withdraw family + `get_status` +
+// `fetch_message_proof`.
 
 export * from "./bridge"
+export * from "./cancel-retryable"
 export * from "./errors"
+export * from "./redeem-retryable"
+export * from "./send-erc20"
 export * from "./send-eth"
+export * from "./send-message"

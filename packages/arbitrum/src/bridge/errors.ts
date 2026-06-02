@@ -24,13 +24,18 @@
 //
 // `ArbitrumBridgeErrorSchema` is a discriminated union over
 // the failure modes a dapp meaningfully wants to recover from.
-// Slice 3a declares the two variants the rollup's proof +
-// retryable surfaces will exercise; the selector table is
-// intentionally empty until slice 3b lands `redeem_retryable`
-// / `cancel_retryable` and slice 3c lands `execute_withdraw` —
-// those verbs surface the canonical custom-error selectors
-// from `Outbox` / `ArbRetryableTx` and the table is populated
-// at that point.
+// Slice 3a declared the two variants the rollup's proof +
+// retryable surfaces exercise; slice 3b populates the
+// `ArbRetryableTx.NoTicketWithID` selector → `RetryableExpired`
+// mapping (the precompile reverts with this selector whenever
+// `redeem` / `cancel` / `getTimeout` are called on a ticket
+// that no longer exists in retryable storage — expired past
+// `getLifetime`, already redeemed, or already cancelled).
+// `ArbRetryableTx.NotCallable` is intentionally **not** mapped:
+// it surfaces a target-wasn't-callable problem at ticket
+// creation time, which a dapp cannot recover from at redeem
+// time — it bubbles up as a plain RPC error. Slice 3c will
+// add the `Outbox` selectors that map to `ProofUnavailable`.
 //
 //   - `ProofUnavailable` — `Outbox.executeTransaction` reverts
 //     because the send-root the caller's proof anchors to
@@ -53,6 +58,7 @@
 //
 // Slice 3a of phase 05 — see tmp/plans/05_bridge_package/.
 
+import { function_selector } from "@ethernauta/abi"
 import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   Reader,
@@ -85,14 +91,21 @@ export class ArbitrumBridgeFailure extends Error {
   }
 }
 
-// Selector table is intentionally empty in slice 3a. The
-// canonical custom-error selectors from `Outbox`
-// (`ProofTooLong`, `PathNotMinimal`, `UnknownRoot`, …) and
-// `ArbRetryableTx` are wired in slice 3b/3c alongside the
-// verbs that surface them.
+// Selector table. Slice 3b wires the `ArbRetryableTx`
+// custom-error surface for the `redeem_retryable` /
+// `cancel_retryable` verbs; slice 3c will add the `Outbox`
+// selectors (`ProofTooLong`, `PathNotMinimal`, `UnknownRoot`,
+// …) for `execute_withdraw`.
+const NO_TICKET_WITH_ID_SELECTOR = function_selector(
+  "NoTicketWithID",
+  [],
+)
+
 function selector_to_kind(
-  _selector: string,
+  selector: string,
 ): ArbitrumBridgeError["kind"] | null {
+  if (selector === NO_TICKET_WITH_ID_SELECTOR)
+    return "RetryableExpired"
   return null
 }
 
