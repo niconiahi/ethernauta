@@ -3,13 +3,11 @@ import { object, parse } from "valibot"
 
 import { ChainIdSchema } from "./chain/chain-id"
 import {
-  create_dispatcher,
-  type Dispatcher,
-} from "./dispatcher"
-import {
   type ChainEntry,
+  create_dispatcher,
+  type Reader,
   require_chain,
-} from "./require-chain"
+} from "./reader"
 
 export const WriteContextSchema = object({
   chain_id: ChainIdSchema,
@@ -18,7 +16,7 @@ export type WriteContext = InferOutput<
   typeof WriteContextSchema
 >
 
-export type ResolvedWriter = [Dispatcher, WriteContext]
+export type ResolvedWriter = [Reader, WriteContext]
 
 export type Writable<T> = (
   _resolved: ResolvedWriter,

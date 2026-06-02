@@ -3,11 +3,11 @@ import { parse } from "valibot"
 
 import { CallSchema } from "./call"
 import type { Callable } from "./contract"
-import { create_dispatcher } from "./dispatcher"
 import {
   type ChainEntry,
+  create_dispatcher,
   require_chain,
-} from "./require-chain"
+} from "./reader"
 
 export function create_read(
   chains: ChainEntry[],

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest"
 
 import type { Call } from "./call"
-import {
-  create_dispatcher,
-  type DispatcherStrategy,
-} from "./dispatcher"
 import type { Http } from "./http"
 import type { Response } from "./json-rpc"
+import {
+  create_dispatcher,
+  type ReaderStrategy,
+} from "./reader"
 
 function ok_transport(result: string): Http {
   return async (_call: Call): Promise<Response> => ({
@@ -49,8 +49,8 @@ function tracking_transport(
 }
 
 const CALL: Call = ["eth_blockNumber"]
-const PARALLEL: DispatcherStrategy = { type: "parallel" }
-const SEQUENTIAL: DispatcherStrategy = {
+const PARALLEL: ReaderStrategy = { type: "parallel" }
+const SEQUENTIAL: ReaderStrategy = {
   type: "sequential",
 }
 

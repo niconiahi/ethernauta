@@ -28,11 +28,11 @@ import {
 import { CallSchema as RpcCallSchema } from "./call"
 import { ChainIdSchema } from "./chain/chain-id"
 import type { Callable } from "./contract"
-import { create_dispatcher } from "./dispatcher"
 import {
   type ChainEntry,
+  create_dispatcher,
   require_chain,
-} from "./require-chain"
+} from "./reader"
 
 // Canonical Multicall deployment (mds1/multicall, deployed via CREATE2
 // to the same address on every mainstream EVM chain). For chains where

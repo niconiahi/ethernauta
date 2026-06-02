@@ -14,14 +14,15 @@ import {
 } from "valibot"
 
 import type { Call } from "./call"
+import type { Http } from "./http"
+import type { Response } from "./json-rpc"
 import {
   create_dispatcher,
   DEFAULT_STRATEGY,
-} from "./dispatcher"
-import type { Http } from "./http"
-import type { Response } from "./json-rpc"
-import type { ReadContext, ResolvedReader } from "./reader"
-import { ReadContextSchema } from "./reader"
+  type ReadContext,
+  ReadContextSchema,
+  type ResolvedReader,
+} from "./reader"
 import type {
   ResolvedSigner,
   SignContext,
