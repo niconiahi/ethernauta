@@ -471,8 +471,7 @@ export function Sign() {
             )
             const nonce = await get_nonce(
               address,
-              reader,
-              chain_id,
+              reader({ chain_id }),
             )
             const signed_transaction =
               await sign_transaction({

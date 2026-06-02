@@ -19,7 +19,7 @@ import {
   eth_getTransactionCount,
   GenericTransactionSchema,
 } from "@ethernauta/eth"
-import type { ChainId, Reader } from "@ethernauta/transport"
+import type { ResolvedReader } from "@ethernauta/transport"
 import { hex_to_bytes } from "@ethernauta/utils"
 import {
   array,
@@ -101,16 +101,13 @@ export function compose_y_parity(
 
 export async function get_nonce(
   address: Address,
-  reader: Reader,
-  chain_id: ChainId,
+  resolved: ResolvedReader,
 ): Promise<bigint> {
   const readable = eth_getTransactionCount([
     address,
     "latest",
   ])
-  const transaction_count = await readable(
-    reader({ chain_id }),
-  )
+  const transaction_count = await readable(resolved)
   return hex_to_big(transaction_count)
 }
 

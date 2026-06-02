@@ -271,8 +271,7 @@ describe("transaction.ts", () => {
     const address = private_key_to_address(private_key)
     const nonce = await get_nonce(
       address,
-      reader,
-      sepolia_chain_id,
+      reader({ chain_id: sepolia_chain_id }),
     )
     const account = privateKeyToAccount(private_key_hex)
     const method = "transfer"

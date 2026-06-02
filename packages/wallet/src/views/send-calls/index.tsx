@@ -166,8 +166,7 @@ export function SendCalls() {
               )
               const start_nonce = await get_nonce(
                 address,
-                reader,
-                chain_id,
+                reader({ chain_id }),
               )
               const transaction_hashes: Hash32[] = []
               for (const [

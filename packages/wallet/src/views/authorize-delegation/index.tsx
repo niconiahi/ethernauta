@@ -114,8 +114,7 @@ export function AuthorizeDelegation() {
                 AddressSchema,
                 active_account.value.address,
               ),
-              reader,
-              chain_id,
+              reader({ chain_id }),
             )
             // Self-sponsored 7702: each auth's nonce is the
             // outer tx nonce + 1 + i (auth signatures are
