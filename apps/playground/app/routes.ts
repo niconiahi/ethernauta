@@ -117,5 +117,17 @@ export default [
       "bridge-send-eth",
       "./routes/examples/bridge-send-eth.mdx",
     ),
+    route(
+      "bridge-send-erc20",
+      "./routes/examples/bridge-send-erc20.mdx",
+    ),
+    route(
+      "bridge-send-message",
+      "./routes/examples/bridge-send-message.mdx",
+    ),
+    route(
+      "bridge-withdraw-eth",
+      "./routes/examples/bridge-withdraw-eth.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

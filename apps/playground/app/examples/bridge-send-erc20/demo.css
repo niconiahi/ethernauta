@@ -1,0 +1,51 @@
+.bridge-send-erc20-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bridge-send-erc20-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.bridge-send-erc20-input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.bridge-send-erc20-error {
+  margin-top: 12px;
+  color: #c0392b;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.bridge-send-erc20-link {
+  color: var(--link, #4ea1ff);
+  text-decoration: underline;
+}
+
+.bridge-send-erc20-link:hover {
+  color: var(--link-hover, #82bfff);
+}
+
+.bridge-send-erc20-note {
+  margin: 8px 0 16px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  color: var(--text);
+}

@@ -1,0 +1,63 @@
+.bridge-send-message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bridge-send-message-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.bridge-send-message-input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.bridge-send-message-textarea {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+  min-height: 64px;
+  resize: vertical;
+}
+
+.bridge-send-message-checkbox-label {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text);
+  align-items: center;
+}
+
+.bridge-send-message-error {
+  margin-top: 12px;
+  color: #c0392b;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.bridge-send-message-link {
+  color: var(--link, #4ea1ff);
+  text-decoration: underline;
+}
+
+.bridge-send-message-link:hover {
+  color: var(--link-hover, #82bfff);
+}

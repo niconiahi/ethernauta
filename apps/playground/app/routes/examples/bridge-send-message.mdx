@@ -1,0 +1,34 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-send-message/demo.tsx?highlighted"
+import { BridgeSendMessageDemo } from "../../examples/bridge-send-message/demo"
+
+# Bridge — `send_message` (Sepolia → OP Sepolia)
+
+`send_message({ to, value, gas_limit, is_creation, data })` is
+the OP-stack L1→L2 arbitrary-message verb. It composes:
+
+1. `depositTransaction(address,uint256,uint64,bool,bytes)`
+   calldata encoded against the canonical OptimismPortal ABI.
+2. The `OptimismPortalProxy` address looked up from the
+   destination L2 chain id via `require_deploy_addresses`.
+3. `eth_signTransaction` issued through the bridge bundle's
+   origin-side signer with `msg.value` mirroring the `value`
+   ABI parameter — L1 ETH locked equals L2 ETH minted (the
+   standard L1-ETH-locked = L2-mint case). For a pure
+   no-value message, leave `value` at `0x0`.
+4. `eth_sendRawTransaction` issued through the origin-side
+   reader to broadcast (path-2 per M3 — wallet signs, dapp
+   sends).
+
+The verb returns the L1 transaction hash. The deposit is
+replayed on L2 as a system transaction ~1 minute after L1
+inclusion, calling `to(data)` with `value` ETH attached.
+
+<BridgeSendMessageDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-send-message/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

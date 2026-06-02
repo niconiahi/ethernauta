@@ -1,0 +1,53 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-withdraw-eth/demo.tsx?highlighted"
+import { BridgeWithdrawEthDemo } from "../../examples/bridge-withdraw-eth/demo"
+
+# Bridge — `withdraw_eth` (OP Sepolia → Sepolia)
+
+The OP-stack ETH withdrawal under fault proofs is a multi-step
+ritual. This demo walks the full lifecycle through one screen
+and persists the handle to localStorage so you can leave the
+page and come back hours (or days) later when the proof
+matures.
+
+The composed flow:
+
+1. `start_withdraw_eth({ to, amount, min_gas_limit })` burns
+   the L2 ETH via `L2StandardBridge.withdrawTo` (with the
+   legacy ETH sentinel as `_l2Token`). The L2 receipt's
+   `MessagePassed` event from the `L2ToL1MessagePasser`
+   predeploy yields the `WithdrawalTransaction` struct and the
+   L2 block number that `fetch_message_proof` needs.
+2. `get_status({ direction: "withdraw", withdrawal_transaction,
+   withdrawal_l2_block_number, prover })` is polled every 15s
+   against the L1 portal + dispute-game factory + anchor
+   registry. The UI badge tracks the eight withdraw states the
+   verb's union exposes — `initiated_l2`,
+   `awaiting_game_proposal`, `game_in_progress`,
+   `ready_to_prove`, `proof_pending_maturity`,
+   `ready_to_finalize`, `finalized`, `game_invalidated`.
+3. When status reaches `ready_to_prove`,
+   `fetch_message_proof` walks the dispute-game factory for a
+   resolved game covering the withdrawal's L2 block and reads
+   `eth_getProof` against `L2ToL1MessagePasser`. The bundle is
+   handed to `prove_withdraw`, which signs +
+   `OptimismPortal.proveWithdrawalTransaction` on L1.
+4. When status reaches `ready_to_finalize`, `execute_withdraw`
+   replays the message on L1 via
+   `OptimismPortal.finalizeWithdrawalTransaction`, releasing
+   the ETH.
+
+If the portal reverts with one of the known custom errors,
+the verbs throw an `OpBridgeFailure` carrying the parsed
+`{ kind: "ProofNotMature" | "GameUnresolved" |
+"GameInvalidated" | "ProofUnavailable" }` variant — see
+`errors.ts`.
+
+<BridgeWithdrawEthDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-withdraw-eth/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

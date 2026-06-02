@@ -114,6 +114,18 @@ const RECIPE_EXAMPLES = [
     to: "/examples/bridge-send-eth",
     title: "Bridge — send_eth (OP)",
   },
+  {
+    to: "/examples/bridge-send-erc20",
+    title: "Bridge — send_erc20 (OP)",
+  },
+  {
+    to: "/examples/bridge-send-message",
+    title: "Bridge — send_message (OP)",
+  },
+  {
+    to: "/examples/bridge-withdraw-eth",
+    title: "Bridge — withdraw_eth (OP)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [

@@ -1,0 +1,84 @@
+.bridge-withdraw-eth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bridge-withdraw-eth-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.bridge-withdraw-eth-input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.bridge-withdraw-eth-error {
+  margin-top: 12px;
+  color: #c0392b;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.bridge-withdraw-eth-link {
+  color: var(--link, #4ea1ff);
+  text-decoration: underline;
+}
+
+.bridge-withdraw-eth-link:hover {
+  color: var(--link-hover, #82bfff);
+}
+
+.bridge-withdraw-eth-section {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.bridge-withdraw-eth-section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bridge-withdraw-eth-state {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--background);
+  border: 1px solid var(--surface-strong);
+  display: inline-block;
+}
+
+.bridge-withdraw-eth-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.bridge-withdraw-eth-note {
+  margin: 8px 0 16px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  color: var(--text);
+}

@@ -1,0 +1,33 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-send-erc20/demo.tsx?highlighted"
+import { BridgeSendErc20Demo } from "../../examples/bridge-send-erc20/demo"
+
+# Bridge — `send_erc20` (Sepolia → OP Sepolia)
+
+`send_erc20({ l1_token, l2_token, to, amount, min_gas_limit })`
+is the OP-stack L1→L2 ERC-20 deposit verb. It composes:
+
+1. `bridgeERC20To(address,address,address,uint256,uint32,bytes)`
+   calldata encoded against the canonical L1StandardBridge ABI.
+2. The `L1StandardBridgeProxy` address looked up from the
+   destination L2 chain id via `require_deploy_addresses`.
+3. `eth_signTransaction` issued through the bridge bundle's
+   origin-side signer with `msg.value = 0` — the token leaves
+   the user's wallet through ERC-20 `transferFrom` inside the
+   bridge, so the user must `approve(L1StandardBridgeProxy,
+   amount)` on the L1 token contract beforehand.
+4. `eth_sendRawTransaction` issued through the origin-side
+   reader to broadcast (path-2 per M3 — wallet signs, dapp
+   sends).
+
+The verb returns the L1 transaction hash. The L2 mint lands
+~1 minute after L1 inclusion.
+
+<BridgeSendErc20Demo />
+
+<GithubLink path="apps/playground/app/examples/bridge-send-erc20/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />
