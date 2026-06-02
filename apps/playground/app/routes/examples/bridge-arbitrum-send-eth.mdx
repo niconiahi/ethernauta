@@ -1,0 +1,42 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-arbitrum-send-eth/demo.tsx?highlighted"
+import { BridgeArbitrumSendEthDemo } from "../../examples/bridge-arbitrum-send-eth/demo"
+
+# Bridge — `send_eth` (Sepolia → Arbitrum Sepolia)
+
+`send_eth({ amount })` is the Arbitrum L1→L2 ETH deposit verb.
+It composes:
+
+1. `depositEth()` calldata (selector `0x439370b1`, no args)
+   encoded against the canonical `Inbox` ABI vendored from
+   `@arbitrum/nitro-contracts@3.2.0`.
+2. The `Inbox` proxy address looked up from the destination
+   L2 chain id via
+   `require_deploy_addresses(l2.chain_id).contracts.inbox`.
+3. `eth_signTransaction` issued through the bridge bundle's
+   top-level signer, followed by `eth_sendRawTransaction`
+   broadcast on L1 (path 2 per M3 — wallet signs, dapp sends).
+
+The verb returns the L1 transaction hash. The L2 credit lands
+on the caller's L2-aliased address
+(`aliasL1Address(msg.sender)`); `Inbox.depositEth()` has no
+recipient parameter, so to credit a different L2 account use
+`send_message` (slice 3b), which composes
+`Inbox.createRetryableTicket` and surfaces the additional
+retryable parameters (`maxSubmissionCost`, `gasLimit`,
+`maxFeePerGas`, refund addresses) that path requires.
+
+The bridge wiring is the same shape every OP / Arbitrum /
+zkSync verb takes: `create_bridge(CHAINS)` returns a resolver,
+each call picks `{ l1, l2, signer? }`, and the verb sees a
+`ResolvedBridge` bundle with per-side `reader` and (optional)
+`signer`.
+
+<BridgeArbitrumSendEthDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-arbitrum-send-eth/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

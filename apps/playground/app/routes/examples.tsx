@@ -126,6 +126,10 @@ const RECIPE_EXAMPLES = [
     to: "/examples/bridge-withdraw-eth",
     title: "Bridge — withdraw_eth (OP)",
   },
+  {
+    to: "/examples/bridge-arbitrum-send-eth",
+    title: "Bridge — send_eth (Arbitrum)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [

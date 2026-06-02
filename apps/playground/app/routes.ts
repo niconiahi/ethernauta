@@ -129,5 +129,9 @@ export default [
       "bridge-withdraw-eth",
       "./routes/examples/bridge-withdraw-eth.mdx",
     ),
+    route(
+      "bridge-arbitrum-send-eth",
+      "./routes/examples/bridge-arbitrum-send-eth.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
