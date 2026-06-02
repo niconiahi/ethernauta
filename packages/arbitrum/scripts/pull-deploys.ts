@@ -280,6 +280,7 @@ function parse_eth_bridge_block(
 function parse_token_bridge_block(block: string): {
   parentGatewayRouter: string
   parentErc20Gateway: string
+  childGatewayRouter: string
 } | null {
   // networks.ts uses either `parentGatewayRouter` (v4) or the
   // deprecated `l1GatewayRouter` (v3). Try both.
@@ -289,10 +290,17 @@ function parse_token_bridge_block(block: string): {
   const erc20 =
     safe_string_field(block, "parentErc20Gateway") ??
     safe_string_field(block, "l1ERC20Gateway")
-  if (!router || !erc20) return null
+  // L2 router lives under `childGatewayRouter` (v4) or
+  // `l2GatewayRouter` (v3). `start_withdraw_erc20` reads it from
+  // the registry — Arbitrum's L2 router is not a fixed predeploy.
+  const child_router =
+    safe_string_field(block, "childGatewayRouter") ??
+    safe_string_field(block, "l2GatewayRouter")
+  if (!router || !erc20 || !child_router) return null
   return {
     parentGatewayRouter: router,
     parentErc20Gateway: erc20,
+    childGatewayRouter: child_router,
   }
 }
 
@@ -400,6 +408,8 @@ function parse_canonical(source: string): ReadonlyArray<{
             l1GatewayRouter:
               token_bridge.parentGatewayRouter,
             l1Erc20Gateway: token_bridge.parentErc20Gateway,
+            l2GatewayRouter:
+              token_bridge.childGatewayRouter,
           }
         : undefined
     const deploys = parse(ArbitrumDeploysSchema, {
@@ -542,6 +552,7 @@ function format_deploys_file(
       `    inbox: "${d.contracts.inbox}",`,
       `    l1GatewayRouter: "${d.contracts.l1GatewayRouter}",`,
       `    l1Erc20Gateway: "${d.contracts.l1Erc20Gateway}",`,
+      `    l2GatewayRouter: "${d.contracts.l2GatewayRouter}",`,
       "  },",
     )
   }

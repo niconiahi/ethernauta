@@ -22,6 +22,8 @@ export const eip155_421614_deploys = parse(
         "0xcE18836b233C83325Cc8848CA4487e94C6288264",
       l1Erc20Gateway:
         "0x902b3E5f8F19571859F4AB1003B960a5dF693aFF",
+      l2GatewayRouter:
+        "0x9fDD1C4E4AA24EEc1d913FABea4b0Bf2C0c30B62",
     },
     confirmPeriodBlocks: 20,
     isTestnet: true,

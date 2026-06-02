@@ -34,6 +34,7 @@ const ArbitrumContractsSchema = object({
   inbox: AddressSchema,
   l1GatewayRouter: AddressSchema,
   l1Erc20Gateway: AddressSchema,
+  l2GatewayRouter: AddressSchema,
 })
 
 export const ArbitrumDeploysSchema = object({
