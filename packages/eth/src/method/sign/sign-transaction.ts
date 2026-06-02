@@ -8,22 +8,26 @@ import type { InferOutput } from "valibot"
 import { object, parse, tuple, union } from "valibot"
 import { GenericTransactionSchema } from "../../core/transaction"
 
-const ParametersSchema = union([
+export const EthSignTransactionParametersSchema = union([
   tuple([GenericTransactionSchema]),
   object({ transaction: GenericTransactionSchema }),
 ])
-type Parameters = InferOutput<typeof ParametersSchema>
 /**
  * @returns RLP encoded transaction
  */
 export function eth_signTransaction(
-  _parameters: Parameters,
+  _parameters: InferOutput<
+    typeof EthSignTransactionParametersSchema
+  >,
 ): Signable<Bytes> {
   return async ([
     signer,
     _sign_context,
   ]: ResolvedSigner): Promise<Bytes> => {
-    const parameters = parse(ParametersSchema, _parameters)
+    const parameters = parse(
+      EthSignTransactionParametersSchema,
+      _parameters,
+    )
     const result = await signer(
       "eth_signTransaction",
       parameters,
