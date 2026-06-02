@@ -81,6 +81,8 @@ const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: eip155_11155420.chainId,
 })
+const SEPOLIA_HEX = `0x${eip155_11155111.chainId.toString(16)}`
+const OP_SEPOLIA_HEX = `0x${eip155_11155420.chainId.toString(16)}`
 
 const bridge = create_bridge([
   {
@@ -287,6 +289,24 @@ export function BridgeWithdrawEthDemo() {
   }, [])
 
   useEffect(() => {
+    if (!provider) return
+    const eip1193 = provider.provider_detail.provider
+    function on_chain_changed(chain_id: unknown) {
+      console.log(
+        "[dapp] chainChanged →",
+        chain_id,
+      )
+    }
+    eip1193.on("chainChanged", on_chain_changed)
+    return () => {
+      eip1193.removeListener(
+        "chainChanged",
+        on_chain_changed,
+      )
+    }
+  }, [provider])
+
+  useEffect(() => {
     if (
       owner &&
       _recipient.toLowerCase() ===
@@ -357,11 +377,22 @@ export function BridgeWithdrawEthDemo() {
 
   if (!owner) return <SignInHint />
 
+  async function ensure_chain(
+    chain_id_hex: string,
+  ): Promise<void> {
+    if (!provider) return
+    await provider.provider_detail.provider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chain_id_hex }],
+    })
+  }
+
   async function start_withdraw() {
     if (!provider || !preview) return
     set_error(null)
     try {
       set_phase("starting")
+      await ensure_chain(OP_SEPOLIA_HEX)
       const transport = bridge({
         l1: SEPOLIA_CHAIN_ID,
         l2: OP_SEPOLIA_CHAIN_ID,
@@ -461,6 +492,7 @@ export function BridgeWithdrawEthDemo() {
     set_error(null)
     try {
       set_phase("proving")
+      await ensure_chain(SEPOLIA_HEX)
       const transport = bridge({
         l1: SEPOLIA_CHAIN_ID,
         l2: OP_SEPOLIA_CHAIN_ID,
@@ -497,6 +529,7 @@ export function BridgeWithdrawEthDemo() {
     set_error(null)
     try {
       set_phase("finalizing")
+      await ensure_chain(SEPOLIA_HEX)
       const transport = bridge({
         l1: SEPOLIA_CHAIN_ID,
         l2: OP_SEPOLIA_CHAIN_ID,
