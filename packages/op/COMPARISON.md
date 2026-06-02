@@ -1,20 +1,22 @@
-# Ethernauta Bridge vs viem/op-stack vs @eth-optimism/sdk — Feature Comparison
+# `@ethernauta/op` vs `viem/op-stack` vs `@eth-optimism/sdk` — Feature Comparison
 
-Companion to `BRIDGE.md` (mental model) and `COMPARISON.md`
-(library-wide feature comparison). Same legend:
+Per-package companion to the repo-root `../../BRIDGE.md` (bridge
+mental model) and `../../COMPARISON.md` (library-wide feature
+comparison). Same legend:
 
 - ✅ first-class / built-in
 - ⚠️ partial / via add-on / awkward
 - ❌ not provided
 - 📦 separate package (same vendor)
 
-**Scope.** OP-stack rollups only. Arbitrum and zkSync columns
-land with slices 3 and 4 of the bridge phase; the placeholder
-sections at the bottom record the comparator surface so the
-slices can fill the Ethernauta column without restructuring.
-Every Ethernauta verb cell in the OP tables below maps 1:1 to
-a shipped export from `packages/op/src/bridge/index.ts` —
-there are no aspirational entries.
+**Scope.** This file scores the OP rollup family only —
+`@ethernauta/op/bridge` against `viem/op-stack` and
+`@eth-optimism/sdk`. Sibling packages will carry their own
+`COMPARISON.md` files (`packages/arbitrum/COMPARISON.md`,
+`packages/zksync/COMPARISON.md`) when their bridge slices land.
+Every Ethernauta verb cell below maps 1:1 to a shipped export
+from `packages/op/src/bridge/index.ts` — no aspirational
+entries.
 
 The two comparators:
 
@@ -199,42 +201,7 @@ axis.
 
 ---
 
-## 10. Arbitrum, zkSync — placeholder
-
-These rows record the comparator surface so slices 3 and 4 can
-fill the Ethernauta column without restructuring the file. The
-slice-6 close-gate requires every comparator entry to reflect
-the comparator's currently published version when its row is
-filled; nothing in §11 / §12 below is being scored yet.
-
-### 11. Arbitrum — pending slice 3
-
-Comparator: `@arbitrum/sdk` — `ParentToChildMessageGasEstimator`,
-`Erc20Bridger`, `EthBridger`, `ChildToParentMessage*` family,
-`L1ToL2MessageStatus` / `L2ToL1MessageStatus` enums, retryable
-lifecycle ops (`redeem` / `cancel`).
-
-Verbs the slice will add to `packages/arbitrum/src/bridge/`:
-`send_eth`, `send_erc20`, `send_message`, `start_withdraw_eth`,
-`start_withdraw_erc20`, `start_withdraw_message`,
-`fetch_message_proof`, `execute_withdraw`, `redeem_retryable`,
-`cancel_retryable`, `get_status`, `errors.ts`.
-
-### 12. zkSync — pending slice 4
-
-Comparators: `zksync-ethers` (`Wallet.deposit`, `.withdraw`,
-`.claimFailedDeposit`, `.finalizeWithdrawal`) and `viem/zksync`
-(chain-extending module mirroring its op-stack sibling).
-
-Verbs the slice will add to `packages/zksync/src/bridge/`:
-`send_eth`, `send_erc20`, `send_message`, `start_withdraw_eth`,
-`start_withdraw_erc20`, `start_withdraw_message`,
-`fetch_message_proof`, `execute_withdraw`,
-`claim_failed_deposit`, `get_status`, `errors.ts`.
-
----
-
-## Gap Reading (OP slice)
+## Gap Reading
 
 - The L1-receipt-derived L2 tx hash gap (§9.1) is the one
   honest deposit-side gap; the path is documented in
@@ -253,13 +220,18 @@ Verbs the slice will add to `packages/zksync/src/bridge/`:
 
 ## Suggested Order of Operations
 
-1. **Land Arbitrum (slice 3) and zkSync (slice 4)** before
-   investing in OP-specific UX helpers. Fill the comparator
-   columns in §11 / §12 as those slices close.
-2. **Then** decide whether to ship the L1-receipt L2-hash
-   derivation, the standalone timing helpers, and a polling
-   helper for the playground — these are minor surface
-   additions, not architectural commitments.
-3. **Last:** revisit the `game_invalidated` collapse (`01-scope.md`
-   notes it may split back out) once at least one dapp has
-   shipped a recovery UX against it.
+1. **Hold OP UX-helper additions** (L1-receipt L2-hash
+   derivation, standalone timing helpers, a polling helper for
+   the playground) until at least one dapp asks. They are
+   minor surface additions, not architectural commitments, and
+   shipping them speculatively widens the surface without a
+   user-validated shape.
+2. **Revisit the `game_invalidated` collapse** once a dapp has
+   shipped a recovery UX against it — the variant union may
+   split back out into `challenger_won` / `blacklisted` /
+   `retired_game_type` if the call site needs to discriminate.
+3. **Resurvey this file when sibling rollup `COMPARISON.md`s
+   land** (Arbitrum at slice 3, zkSync at slice 4). Comparator
+   versions drift; the rule is "the comparator column reflects
+   the comparator's currently published version at resurvey
+   time, not a cached impression."
