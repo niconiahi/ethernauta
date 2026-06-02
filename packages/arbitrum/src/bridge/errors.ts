@@ -24,18 +24,32 @@
 //
 // `ArbitrumBridgeErrorSchema` is a discriminated union over
 // the failure modes a dapp meaningfully wants to recover from.
-// Slice 3a declared the two variants the rollup's proof +
-// retryable surfaces exercise; slice 3b populates the
-// `ArbRetryableTx.NoTicketWithID` selector → `RetryableExpired`
-// mapping (the precompile reverts with this selector whenever
-// `redeem` / `cancel` / `getTimeout` are called on a ticket
-// that no longer exists in retryable storage — expired past
-// `getLifetime`, already redeemed, or already cancelled).
+// Slice 3a declared the two proof/retryable variants; slice 3b
+// wired the `ArbRetryableTx.NoTicketWithID` selector →
+// `RetryableExpired` mapping. Slice 3c adds the `Outbox` revert
+// surface for `execute_withdraw`:
+//   - `Outbox.UnknownRoot(bytes32 sendRoot)` →
+//     `ProofUnavailable`. The Outbox doesn't have a matching
+//     entry for the caller's `sendRoot` — the covering Rollup
+//     assertion has not yet been confirmed (and may never be).
+//     Dapps treat this as "wait + retry once `get_status`
+//     reports `executable`".
+//   - `Outbox.OutboxEntryDoesntExist(bytes32,bytes32,uint256)`
+//     → `ProofUnavailable`. Same kind from a different code
+//     path inside `executeTransaction`.
+//   - `Outbox.AlreadySpent(uint256 index)` → `AlreadyExecuted`.
+//     The withdrawal at this leaf index has already been
+//     redeemed; replaying is a no-op the dapp can ignore.
+//
 // `ArbRetryableTx.NotCallable` is intentionally **not** mapped:
 // it surfaces a target-wasn't-callable problem at ticket
 // creation time, which a dapp cannot recover from at redeem
-// time — it bubbles up as a plain RPC error. Slice 3c will
-// add the `Outbox` selectors that map to `ProofUnavailable`.
+// time — it bubbles up as a plain RPC error. Other
+// `Outbox` reverts (`MerkleProofTooLong`, `PathNotMinimal`,
+// `BridgeCallFailed`, `WriteOnUnconfirmedBranch`) are
+// proof-bundle-malformation or target-call failures that the
+// dapp can't recover from inline; they pass through as plain
+// RPC errors so callers see the upstream message verbatim.
 //
 //   - `ProofUnavailable` — `Outbox.executeTransaction` reverts
 //     because the send-root the caller's proof anchors to
@@ -47,6 +61,9 @@
 //     `getLifetime()` (default 7 days; configurable per chain
 //     via `retryableLifetimeSeconds` on the ArbitrumNetwork
 //     entry) and was garbage-collected from retryable storage.
+//   - `AlreadyExecuted` — `Outbox.executeTransaction` reverts
+//     because the withdrawal at this leaf index has already
+//     been redeemed (the bit in `Outbox.spent` is set).
 //
 // `ArbitrumBridgeFailure` is a plain `Error` subclass carrying
 // the parsed variant on `.data`. Verbs themselves never call
@@ -58,7 +75,11 @@
 //
 // Slice 3a of phase 05 — see tmp/plans/05_bridge_package/.
 
-import { function_selector } from "@ethernauta/abi"
+import {
+  bytes32 as bytes32_codec,
+  function_selector,
+  uint256 as uint256_codec,
+} from "@ethernauta/abi"
 import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   Reader,
@@ -77,6 +98,7 @@ import {
 export const ArbitrumBridgeErrorSchema = variant("kind", [
   object({ kind: literal("ProofUnavailable") }),
   object({ kind: literal("RetryableExpired") }),
+  object({ kind: literal("AlreadyExecuted") }),
 ])
 export type ArbitrumBridgeError = InferOutput<
   typeof ArbitrumBridgeErrorSchema
@@ -91,14 +113,28 @@ export class ArbitrumBridgeFailure extends Error {
   }
 }
 
-// Selector table. Slice 3b wires the `ArbRetryableTx`
+// Selector table. Slice 3b wired the `ArbRetryableTx`
 // custom-error surface for the `redeem_retryable` /
-// `cancel_retryable` verbs; slice 3c will add the `Outbox`
-// selectors (`ProofTooLong`, `PathNotMinimal`, `UnknownRoot`,
-// …) for `execute_withdraw`.
+// `cancel_retryable` verbs; slice 3c adds the `Outbox`
+// selectors for `execute_withdraw`. The signatures below
+// match `OffchainLabs/nitro-contracts/blob/v3.2.0/src/bridge/Outbox.sol`.
 const NO_TICKET_WITH_ID_SELECTOR = function_selector(
   "NoTicketWithID",
   [],
+)
+const UNKNOWN_ROOT_SELECTOR = function_selector(
+  "UnknownRoot",
+  [bytes32_codec()],
+)
+const OUTBOX_ENTRY_DOESNT_EXIST_SELECTOR =
+  function_selector("OutboxEntryDoesntExist", [
+    bytes32_codec(),
+    bytes32_codec(),
+    uint256_codec(),
+  ])
+const ALREADY_SPENT_SELECTOR = function_selector(
+  "AlreadySpent",
+  [uint256_codec()],
 )
 
 function selector_to_kind(
@@ -106,6 +142,12 @@ function selector_to_kind(
 ): ArbitrumBridgeError["kind"] | null {
   if (selector === NO_TICKET_WITH_ID_SELECTOR)
     return "RetryableExpired"
+  if (selector === UNKNOWN_ROOT_SELECTOR)
+    return "ProofUnavailable"
+  if (selector === OUTBOX_ENTRY_DOESNT_EXIST_SELECTOR)
+    return "ProofUnavailable"
+  if (selector === ALREADY_SPENT_SELECTOR)
+    return "AlreadyExecuted"
   return null
 }
 
