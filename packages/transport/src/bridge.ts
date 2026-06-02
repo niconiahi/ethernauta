@@ -6,79 +6,78 @@ import {
   ChainIdSchema,
 } from "./chain/chain-id"
 import {
-  create_dispatcher,
-  type Dispatcher,
-} from "./dispatcher"
-import {
   type ChainEntry,
+  create_dispatcher,
+  type Reader,
   require_chain,
-} from "./require-chain"
-import type { Signer } from "./signer"
+} from "./reader"
+import type { ResolvedSigner, Signer } from "./signer"
 
 export const BridgeInputSchema = object({
-  origin: ChainIdSchema,
-  destination: ChainIdSchema,
+  l1: ChainIdSchema,
+  l2: ChainIdSchema,
 })
 export type BridgeInput = InferOutput<
   typeof BridgeInputSchema
 >
 
-// Function-bearing DI contract — Dispatcher / Signer are
-// function shapes Valibot can't capture. The Readonly<{...}>
-// form satisfies R4's narrow exception list. `chain_id`
-// rides alongside so verbs can resolve per-chain config
-// (bridge contract addresses, gas params, …) the same way
-// ResolvedReader carries ReadContext for chain reads.
+// Function-bearing DI contract — Reader is a function
+// shape Valibot can't capture. The Readonly<{...}> form
+// satisfies R4's narrow exception list. `chain_id` rides
+// alongside so verbs can resolve per-chain config
+// (registry lookups, etc.) the same way ResolvedReader
+// carries ReadContext for chain reads.
 export type ResolvedBridgeSide = Readonly<{
   chain_id: ChainId
-  reader: Dispatcher
-  signer?: Signer
+  reader: Reader
 }>
 
-// Function-bearing DI contract — see ResolvedBridgeSide.
+// Cross-chain shape — L1 + L2 readers in the same call
+// (status, withdrawal-proof construction) plus an
+// optional signer for mutation verbs. The signer rides at
+// top-level (not per-side): verbs build their own
+// SignContext per call, with the chain_id of whichever
+// side they broadcast on. Read-only verbs ignore it.
 export type ResolvedBridge = Readonly<{
-  origin: ResolvedBridgeSide
-  destination: ResolvedBridgeSide
+  signer?: Signer
+  l1: ResolvedBridgeSide
+  l2: ResolvedBridgeSide
 }>
 
 export type Bridgeable<T> = (
   _resolved: ResolvedBridge,
 ) => Promise<T>
 
-export function create_bridge(chains: ChainEntry[]): (
-  _input: BridgeInput & {
-    signer?: (_input: { chain_id: ChainId }) => Signer
-  },
+export function create_bridge(
+  chains: ChainEntry[],
+): (
+  _input: BridgeInput & { signer?: ResolvedSigner },
 ) => ResolvedBridge {
-  return (_input): ResolvedBridge => {
+  return ({
+    signer: resolved_signer,
+    ..._input
+  }): ResolvedBridge => {
     const input = parse(BridgeInputSchema, _input)
-    const origin_chain = require_chain(chains, input.origin)
-    const destination_chain = require_chain(
-      chains,
-      input.destination,
-    )
-    const origin_signer = _input.signer
-      ? _input.signer({ chain_id: input.origin })
-      : undefined
-    const destination_signer = _input.signer
-      ? _input.signer({ chain_id: input.destination })
+    const l1 = require_chain(chains, input.l1)
+    const l2 = require_chain(chains, input.l2)
+    const signer = resolved_signer
+      ? resolved_signer[0]
       : undefined
     return {
-      origin: {
-        chain_id: input.origin,
+      signer,
+      l1: {
+        chain_id: input.l1,
         reader: create_dispatcher(
-          origin_chain.transports,
-          origin_chain.strategy,
+          l1.transports,
+          l1.strategy,
         ),
-        signer: origin_signer,
       },
-      destination: {
-        chain_id: input.destination,
+      l2: {
+        chain_id: input.l2,
         reader: create_dispatcher(
-          destination_chain.transports,
-          destination_chain.strategy,
+          l2.transports,
+          l2.strategy,
         ),
-        signer: destination_signer,
       },
     }
   }

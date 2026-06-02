@@ -1,4 +1,5 @@
-import { parse, ValiError } from "valibot"
+import { AddressSchema } from "@ethernauta/core"
+import { parse, string, ValiError } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -10,14 +11,14 @@ import type { Call } from "./call"
 import { encode_chain_id } from "./chain"
 import type { Http } from "./http"
 import type { Response } from "./json-rpc"
-import type { ChainEntry } from "./require-chain"
+import type { ChainEntry } from "./reader"
 import type { Signer } from "./signer"
 
-const SEPOLIA = encode_chain_id({
+const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "11155111",
 })
-const OP_SEPOLIA = encode_chain_id({
+const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "11155420",
 })
@@ -32,30 +33,30 @@ function labelled_transport(label: string): Http {
 
 const CHAINS: ChainEntry[] = [
   {
-    chainId: SEPOLIA,
+    chainId: SEPOLIA_CHAIN_ID,
     transports: [labelled_transport("sepolia")],
   },
   {
-    chainId: OP_SEPOLIA,
+    chainId: OP_SEPOLIA_CHAIN_ID,
     transports: [labelled_transport("op-sepolia")],
   },
 ]
 
 describe("BridgeInputSchema", () => {
-  it("accepts a valid origin + destination pair", () => {
+  it("accepts a valid l1 + l2 pair", () => {
     const input = parse(BridgeInputSchema, {
-      origin: SEPOLIA,
-      destination: OP_SEPOLIA,
+      l1: SEPOLIA_CHAIN_ID,
+      l2: OP_SEPOLIA_CHAIN_ID,
     })
-    expect(input.origin).toBe(SEPOLIA)
-    expect(input.destination).toBe(OP_SEPOLIA)
+    expect(input.l1).toBe(SEPOLIA_CHAIN_ID)
+    expect(input.l2).toBe(OP_SEPOLIA_CHAIN_ID)
   })
 
   it("rejects a malformed chain id", () => {
     expect(() =>
       parse(BridgeInputSchema, {
-        origin: "not a chain id",
-        destination: OP_SEPOLIA,
+        l1: "not a chain id",
+        l2: OP_SEPOLIA_CHAIN_ID,
       }),
     ).toThrow(ValiError)
   })
@@ -65,18 +66,19 @@ describe("create_bridge", () => {
   it("wires each side's reader to the matching chain entry", async () => {
     const bridge = create_bridge(CHAINS)
     const resolved = bridge({
-      origin: SEPOLIA,
-      destination: OP_SEPOLIA,
+      l1: SEPOLIA_CHAIN_ID,
+      l2: OP_SEPOLIA_CHAIN_ID,
     })
-    const origin_response = await resolved.origin.reader([
+    const l1_response = await resolved.l1.reader([
       "eth_blockNumber",
     ])
-    const destination_response =
-      await resolved.destination.reader(["eth_blockNumber"])
-    expect(origin_response).toMatchObject({
+    const l2_response = await resolved.l2.reader([
+      "eth_blockNumber",
+    ])
+    expect(l1_response).toMatchObject({
       result: "sepolia",
     })
-    expect(destination_response).toMatchObject({
+    expect(l2_response).toMatchObject({
       result: "op-sepolia",
     })
   })
@@ -84,49 +86,11 @@ describe("create_bridge", () => {
   it("carries chain_id on each side", () => {
     const bridge = create_bridge(CHAINS)
     const resolved = bridge({
-      origin: SEPOLIA,
-      destination: OP_SEPOLIA,
+      l1: SEPOLIA_CHAIN_ID,
+      l2: OP_SEPOLIA_CHAIN_ID,
     })
-    expect(resolved.origin.chain_id).toBe(SEPOLIA)
-    expect(resolved.destination.chain_id).toBe(OP_SEPOLIA)
-  })
-
-  it("leaves both signers undefined when no signer factory is passed", () => {
-    const bridge = create_bridge(CHAINS)
-    const resolved = bridge({
-      origin: SEPOLIA,
-      destination: OP_SEPOLIA,
-    })
-    expect(resolved.origin.signer).toBeUndefined()
-    expect(resolved.destination.signer).toBeUndefined()
-  })
-
-  it("calls the signer factory once per side with each side's chain_id", async () => {
-    const seen_chain_ids: string[] = []
-    const signer_for = (chain_id: string): Signer => {
-      return async () => `signed:${chain_id}`
-    }
-    const bridge = create_bridge(CHAINS)
-    const resolved = bridge({
-      origin: SEPOLIA,
-      destination: OP_SEPOLIA,
-      signer: ({ chain_id }) => {
-        seen_chain_ids.push(chain_id)
-        return signer_for(chain_id)
-      },
-    })
-    expect(seen_chain_ids).toEqual([SEPOLIA, OP_SEPOLIA])
-    const origin_signer = resolved.origin.signer
-    const destination_signer = resolved.destination.signer
-    if (!origin_signer || !destination_signer) {
-      throw new Error("signers should be wired")
-    }
-    expect(
-      await origin_signer("eth_sendTransaction", []),
-    ).toBe(`signed:${SEPOLIA}`)
-    expect(
-      await destination_signer("eth_sendTransaction", []),
-    ).toBe(`signed:${OP_SEPOLIA}`)
+    expect(resolved.l1.chain_id).toBe(SEPOLIA_CHAIN_ID)
+    expect(resolved.l2.chain_id).toBe(OP_SEPOLIA_CHAIN_ID)
   })
 
   it("throws when a chain id has no entry in CHAINS", () => {
@@ -136,26 +100,80 @@ describe("create_bridge", () => {
       reference: "424242",
     })
     expect(() =>
-      bridge({ origin: SEPOLIA, destination: UNKNOWN }),
+      bridge({ l1: SEPOLIA_CHAIN_ID, l2: UNKNOWN }),
     ).toThrow(/no chain configured/)
   })
 })
 
 describe("Bridgeable<T>", () => {
-  it("verbs see signer = undefined when no signer factory was passed", async () => {
-    let seen_origin_signer: Signer | undefined
-    let seen_destination_signer: Signer | undefined
-    const probe: Bridgeable<void> = async (resolved) => {
-      seen_origin_signer = resolved.origin.signer
-      seen_destination_signer = resolved.destination.signer
+  it("invokes the verb with both readers", async () => {
+    const probe: Bridgeable<{ l1: string; l2: string }> =
+      async (resolved) => {
+        const l1_response = await resolved.l1.reader([
+          "eth_blockNumber",
+        ])
+        const l2_response = await resolved.l2.reader([
+          "eth_blockNumber",
+        ])
+        if (
+          !("result" in l1_response) ||
+          !("result" in l2_response)
+        ) {
+          throw new Error("both sides should return result")
+        }
+        return {
+          l1: parse(string(), l1_response.result),
+          l2: parse(string(), l2_response.result),
+        }
+      }
+    const bridge = create_bridge(CHAINS)
+    const resolved = bridge({
+      l1: SEPOLIA_CHAIN_ID,
+      l2: OP_SEPOLIA_CHAIN_ID,
+    })
+    const seen = await probe(resolved)
+    expect(seen.l1).toBe("sepolia")
+    expect(seen.l2).toBe("op-sepolia")
+  })
+})
+
+describe("create_bridge with signer", () => {
+  it("unpacks [signer, ctx] and stores only the function on top-level", async () => {
+    const captured: string[] = []
+    const signer: Signer = async (method) => {
+      captured.push(method)
+      return "0xdead"
+    }
+    const ctx = {
+      chain_id: SEPOLIA_CHAIN_ID,
+      to: parse(
+        AddressSchema,
+        "0x0000000000000000000000000000000000000001",
+      ),
     }
     const bridge = create_bridge(CHAINS)
     const resolved = bridge({
-      origin: SEPOLIA,
-      destination: OP_SEPOLIA,
+      l1: SEPOLIA_CHAIN_ID,
+      l2: OP_SEPOLIA_CHAIN_ID,
+      signer: [signer, ctx],
     })
-    await probe(resolved)
-    expect(seen_origin_signer).toBeUndefined()
-    expect(seen_destination_signer).toBeUndefined()
+    expect(typeof resolved.signer).toBe("function")
+    if (!resolved.signer) {
+      throw new Error("signer should be defined")
+    }
+    await resolved.signer("eth_signTransaction", [
+      { foo: "bar" },
+    ])
+    expect(captured.length).toBe(1)
+    expect(captured[0]).toBe("eth_signTransaction")
+  })
+
+  it("leaves signer undefined when no signer input is provided", () => {
+    const bridge = create_bridge(CHAINS)
+    const resolved = bridge({
+      l1: SEPOLIA_CHAIN_ID,
+      l2: OP_SEPOLIA_CHAIN_ID,
+    })
+    expect(resolved.signer).toBeUndefined()
   })
 })
