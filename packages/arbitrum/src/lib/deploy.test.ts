@@ -70,7 +70,9 @@ describe("require_deploy_addresses", () => {
   })
 
   it("returns Arbitrum One's well-known canonical addresses", () => {
-    const deploys = require_deploy_addresses(id_of(eip155_42161))
+    const deploys = require_deploy_addresses(
+      id_of(eip155_42161),
+    )
     expect(deploys.name).toBe("Arbitrum One")
     expect(deploys.parentChainId).toBe(1)
     expect(deploys.isBold).toBe(true)

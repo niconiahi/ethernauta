@@ -16,6 +16,13 @@ export const eip155_421614_deploys = parse(
       outbox: "0x65f07C7D521164a4d5DaC6eB8Fac8DA067A3B78F",
       rollup: "0xd80810638dbDF9081b72C1B33c65375e807281C8",
     },
+    contracts: {
+      inbox: "0xaAe29B0366299461418F5324a79Afc425BE5ae21",
+      l1GatewayRouter:
+        "0xcE18836b233C83325Cc8848CA4487e94C6288264",
+      l1Erc20Gateway:
+        "0x902b3E5f8F19571859F4AB1003B960a5dF693aFF",
+    },
     confirmPeriodBlocks: 20,
     isTestnet: true,
   },

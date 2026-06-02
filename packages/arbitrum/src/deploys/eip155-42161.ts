@@ -20,6 +20,13 @@ export const eip155_42161_deploys = parse(
         "0x760723CD2e632826c38Fef8CD438A4CC7E7E1A40": 30,
       },
     },
+    contracts: {
+      inbox: "0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f",
+      l1GatewayRouter:
+        "0x72Ce9c846789fdB6fC1f34aC4AD25Dd9ef7031ef",
+      l1Erc20Gateway:
+        "0xa3A7B6F88361F48403514059F1F16C8E78d60EeC",
+    },
     confirmPeriodBlocks: 45818,
     isBold: true,
     isTestnet: false,

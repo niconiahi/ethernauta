@@ -236,7 +236,7 @@ function ethbridge_ref(block: string): string | null {
 
 function parse_eth_bridge_block(
   block: string,
-): ArbitrumDeploys["ethBridge"] {
+): ArbitrumDeploys["ethBridge"] & { inbox?: string } {
   const bridge = string_field(block, "bridge")
   const sequencerInbox = string_field(
     block,
@@ -244,12 +244,21 @@ function parse_eth_bridge_block(
   )
   const outbox = string_field(block, "outbox")
   const rollup = string_field(block, "rollup")
+  // `inbox` is present in newer networks.ts dumps. Carry it
+  // out of the parser so the canonical block can hoist it into
+  // the top-level `contracts` field on `ArbitrumDeploys`.
+  let inbox: string | undefined
+  try {
+    inbox = string_field(block, "inbox")
+  } catch {
+    inbox = undefined
+  }
   // classicOutboxes (Arbitrum One only): { '0x...': 0, '0x...': 30 }
   const co_m = /classicOutboxes\s*:\s*\{([^}]*)\}/.exec(
     block,
   )
   if (!co_m) {
-    return { bridge, sequencerInbox, outbox, rollup }
+    return { bridge, sequencerInbox, outbox, rollup, inbox }
   }
   const entries: Record<string, number> = {}
   const entry_re = /'(0x[0-9a-fA-F]{40})'\s*:\s*(\d+)/g
@@ -264,6 +273,37 @@ function parse_eth_bridge_block(
     outbox,
     rollup,
     classicOutboxes: entries,
+    inbox,
+  }
+}
+
+function parse_token_bridge_block(block: string): {
+  parentGatewayRouter: string
+  parentErc20Gateway: string
+} | null {
+  // networks.ts uses either `parentGatewayRouter` (v4) or the
+  // deprecated `l1GatewayRouter` (v3). Try both.
+  const router =
+    safe_string_field(block, "parentGatewayRouter") ??
+    safe_string_field(block, "l1GatewayRouter")
+  const erc20 =
+    safe_string_field(block, "parentErc20Gateway") ??
+    safe_string_field(block, "l1ERC20Gateway")
+  if (!router || !erc20) return null
+  return {
+    parentGatewayRouter: router,
+    parentErc20Gateway: erc20,
+  }
+}
+
+function safe_string_field(
+  block: string,
+  key: string,
+): string | undefined {
+  try {
+    return string_field(block, key)
+  } catch {
+    return undefined
   }
 }
 
@@ -316,7 +356,7 @@ function parse_canonical(source: string): ReadonlyArray<{
     }
     const isBold = boolean_field(block_text, "isBold")
     const ref = ethbridge_ref(block_text)
-    const ethBridge = ref
+    const ethBridge_full = ref
       ? parse_eth_bridge_block(
           read_top_level_const(source, ref),
         )
@@ -326,10 +366,47 @@ function parse_canonical(source: string): ReadonlyArray<{
             block_at_key(block_text, "ethBridge").end,
           ),
         )
+    const { inbox: inbox_from_bridge, ...ethBridge } =
+      ethBridge_full
+    const tb_ref =
+      /tokenBridge\s*:\s*([A-Za-z_][A-Za-z0-9_]*)/.exec(
+        block_text,
+      )
+    let token_bridge: {
+      parentGatewayRouter: string
+      parentErc20Gateway: string
+    } | null = null
+    if (tb_ref) {
+      token_bridge = parse_token_bridge_block(
+        read_top_level_const(source, tb_ref[1]),
+      )
+    } else {
+      try {
+        const tb_block = block_at_key(
+          block_text,
+          "tokenBridge",
+        )
+        token_bridge = parse_token_bridge_block(
+          block_text.slice(tb_block.start, tb_block.end),
+        )
+      } catch {
+        token_bridge = null
+      }
+    }
+    const contracts =
+      inbox_from_bridge && token_bridge
+        ? {
+            inbox: inbox_from_bridge,
+            l1GatewayRouter:
+              token_bridge.parentGatewayRouter,
+            l1Erc20Gateway: token_bridge.parentErc20Gateway,
+          }
+        : undefined
     const deploys = parse(ArbitrumDeploysSchema, {
       name,
       parentChainId,
       ethBridge,
+      ...(contracts ? { contracts } : {}),
       confirmPeriodBlocks,
       ...(isBold !== undefined ? { isBold } : {}),
       isTestnet,
@@ -458,8 +535,19 @@ function format_deploys_file(
     "  ethBridge: {",
     ethBridge,
     "  },",
-    `  confirmPeriodBlocks: ${d.confirmPeriodBlocks},`,
   ]
+  if (d.contracts) {
+    lines.push(
+      "  contracts: {",
+      `    inbox: "${d.contracts.inbox}",`,
+      `    l1GatewayRouter: "${d.contracts.l1GatewayRouter}",`,
+      `    l1Erc20Gateway: "${d.contracts.l1Erc20Gateway}",`,
+      "  },",
+    )
+  }
+  lines.push(
+    `  confirmPeriodBlocks: ${d.confirmPeriodBlocks},`,
+  )
   if (d.isBold !== undefined) {
     lines.push(`  isBold: ${d.isBold},`)
   }
