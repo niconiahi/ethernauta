@@ -40,7 +40,7 @@ import { bytes_to_hex } from "@ethernauta/utils"
 import { keccak_256 } from "@noble/hashes/sha3"
 import { parse } from "valibot"
 
-import type { WithdrawalTransaction } from "../op-message-proof"
+import type { WithdrawalTransaction } from "./op-message-proof"
 
 const WITHDRAWAL_CODECS = [
   tuple({

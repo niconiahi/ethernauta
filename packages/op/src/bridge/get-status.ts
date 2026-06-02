@@ -80,16 +80,16 @@ import { require_deploy_addresses } from "../lib/deploy"
 import { isGameBlacklisted } from "./anchor-state-registry/methods/is-game-blacklisted"
 import { gameAtIndex } from "./dispute-game-factory/methods/game-at-index"
 import { gameCount } from "./dispute-game-factory/methods/game-count"
-import { l2BlockNumber } from "./fault-dispute-game/methods/l2-block-number"
-import { resolvedAt } from "./fault-dispute-game/methods/resolved-at"
-import { status as fault_game_status } from "./fault-dispute-game/methods/status"
-import { wasRespectedGameTypeWhenCreated } from "./fault-dispute-game/methods/was-respected-game-type-when-created"
 import {
   compute_l2_deposit_tx_hash,
   type DepositLog,
   DepositLogSchema,
-} from "./helpers/encode-deposit-tx"
-import { compute_withdrawal_hash } from "./helpers/encode-withdrawal-proof"
+} from "./encode-deposit-tx"
+import { compute_withdrawal_hash } from "./encode-withdrawal-proof"
+import { l2BlockNumber } from "./fault-dispute-game/methods/l2-block-number"
+import { resolvedAt } from "./fault-dispute-game/methods/resolved-at"
+import { status as fault_game_status } from "./fault-dispute-game/methods/status"
+import { wasRespectedGameTypeWhenCreated } from "./fault-dispute-game/methods/was-respected-game-type-when-created"
 import {
   type WithdrawalTransaction,
   WithdrawalTransactionSchema,

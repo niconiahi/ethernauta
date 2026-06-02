@@ -32,9 +32,8 @@ import { encode_chain_id } from "@ethernauta/transport"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { object, parse, tuple } from "valibot"
 import { describe, expect, it } from "vitest"
-
+import { compute_l2_deposit_tx_hash } from "./encode-deposit-tx"
 import { get_status } from "./get-status"
-import { compute_l2_deposit_tx_hash } from "./helpers/encode-deposit-tx"
 
 const OP_SEPOLIA = encode_chain_id({
   namespace: "eip155",
