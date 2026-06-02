@@ -2,7 +2,7 @@ import {
   type ChainEntry,
   ChainIdSchema,
   create_dispatcher,
-  type Dispatcher,
+  type Reader,
   require_chain,
 } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
@@ -23,7 +23,7 @@ type TrackInput = InferOutput<typeof TrackContextSchema>
  */
 export type TrackContext = TrackInput & { store: Store }
 
-export type ResolvedTracker = [Dispatcher, TrackContext]
+export type ResolvedTracker = [Reader, TrackContext]
 
 /**
  * Verbs that complete with a value go through this shape.

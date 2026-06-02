@@ -18,12 +18,12 @@ import {
 } from "@ethernauta/core"
 import {
   CallSchema,
-  type Dispatcher,
+  type Reader,
 } from "@ethernauta/transport"
 import { parse } from "valibot"
 
 export async function read_address_slot(
-  dispatcher: Dispatcher,
+  dispatcher: Reader,
   address: Address,
   slot: Bytes32,
 ): Promise<Address | NotFound> {

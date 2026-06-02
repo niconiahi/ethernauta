@@ -7,8 +7,8 @@ import {
 } from "@ethernauta/core"
 import {
   CallSchema,
-  type Dispatcher,
   type Readable,
+  type Reader,
   type ResolvedReader,
 } from "@ethernauta/transport"
 import { parse } from "valibot"
@@ -36,7 +36,7 @@ export function matches_runtime(code: string): boolean {
 }
 
 async function get_code(
-  dispatcher: Dispatcher,
+  dispatcher: Reader,
   address: Address,
 ): Promise<string> {
   const call = parse(CallSchema, [
