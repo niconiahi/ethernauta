@@ -1,0 +1,47 @@
+.bridge-arbitrum-send-erc20-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bridge-arbitrum-send-erc20-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.bridge-arbitrum-send-erc20-input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.bridge-arbitrum-send-erc20-note {
+  margin: 8px 0 16px;
+  font-size: 13px;
+  color: var(--text-muted, var(--text));
+  line-height: 1.5;
+}
+
+.bridge-arbitrum-send-erc20-error {
+  margin-top: 12px;
+  color: #c0392b;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.bridge-arbitrum-send-erc20-link {
+  color: var(--link, #4ea1ff);
+  text-decoration: underline;
+}
+
+.bridge-arbitrum-send-erc20-link:hover {
+  color: var(--link-hover, #82bfff);
+}

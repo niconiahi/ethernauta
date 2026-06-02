@@ -130,6 +130,14 @@ const RECIPE_EXAMPLES = [
     to: "/examples/bridge-arbitrum-send-eth",
     title: "Bridge — send_eth (Arbitrum)",
   },
+  {
+    to: "/examples/bridge-arbitrum-send-erc20",
+    title: "Bridge — send_erc20 (Arbitrum)",
+  },
+  {
+    to: "/examples/bridge-arbitrum-retryable",
+    title: "Bridge — retryable lifecycle (Arbitrum)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [

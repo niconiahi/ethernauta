@@ -133,5 +133,13 @@ export default [
       "bridge-arbitrum-send-eth",
       "./routes/examples/bridge-arbitrum-send-eth.mdx",
     ),
+    route(
+      "bridge-arbitrum-send-erc20",
+      "./routes/examples/bridge-arbitrum-send-erc20.mdx",
+    ),
+    route(
+      "bridge-arbitrum-retryable",
+      "./routes/examples/bridge-arbitrum-retryable.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

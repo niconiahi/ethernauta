@@ -1,0 +1,51 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-arbitrum-retryable/demo.tsx?highlighted"
+import { BridgeArbitrumRetryableDemo } from "../../examples/bridge-arbitrum-retryable/demo"
+
+# Bridge — Arbitrum retryable lifecycle
+
+Every Arbitrum L1→L2 deposit that targets an arbitrary
+recipient or carries calldata is routed through a **retryable
+ticket** — a delayed L2 transaction the L1
+`Inbox.createRetryableTicket` reserves and the L2 sequencer
+auto-redeems shortly after. When auto-redeem fails (out of gas,
+target reverted), the dapp has the ticket's lifetime (default
+7 days) to either:
+
+- **`redeem_retryable({ ticket_id })`** — retry the failed L2
+  call with fresh gas, signed on L2 against the
+  `ArbRetryableTx` precompile.
+- **`cancel_retryable({ ticket_id })`** — abandon the ticket;
+  the L1 callvalue refunds to `callValueRefundAddress` and
+  the submission fee is forfeited.
+
+This demo walks the two-phase flow end-to-end:
+
+1. Phase 1 (L1): `send_message({...})` composes
+   `Inbox.createRetryableTicket(target, l2CallValue,
+   maxSubmissionCost, refunds, gasLimit, maxFeePerGas, data)`
+   and broadcasts on Sepolia. `msg.value =
+   l2_call_value + max_submission_cost + gas_limit *
+   max_fee_per_gas` is computed by the verb.
+2. Phase 2 (L2): paste the ticket id from Arbiscan's
+   Cross-Chain Messages tab, then sign either
+   `redeem_retryable` or `cancel_retryable` on Arb Sepolia.
+
+The bridge resolver is rebuilt per phase because the signer's
+`chain_id` switches from Sepolia at creation time to Arb
+Sepolia at redeem/cancel time. The L1 tx hash and the pasted
+ticket id are persisted to localStorage so the dapp can be
+closed and reopened later in the ticket's lifetime.
+
+Picking the ticket id manually keeps the demo small — a future
+helper will derive it from the L1 receipt's
+`InboxMessageDelivered` event directly.
+
+<BridgeArbitrumRetryableDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-arbitrum-retryable/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

@@ -1,0 +1,51 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-arbitrum-send-erc20/demo.tsx?highlighted"
+import { BridgeArbitrumSendErc20Demo } from "../../examples/bridge-arbitrum-send-erc20/demo"
+
+# Bridge — `send_erc20` (Sepolia → Arbitrum Sepolia)
+
+`send_erc20({ l1_token, to, amount, max_gas, gas_price_bid,
+max_submission_cost })` is the Arbitrum L1→L2 ERC-20 deposit
+verb. It composes:
+
+1. A pre-call `L1GatewayRouter.getGateway(l1_token)` read on
+   `l1.reader` — surfaces the canonical or custom gateway
+   address for the token, and throws if no gateway is
+   registered (the deposit would otherwise revert downstream
+   with no actionable info).
+2. `outboundTransfer(address,address,uint256,uint256,uint256,bytes)`
+   calldata encoded against the canonical `L1GatewayRouter`
+   ABI vendored from `@arbitrum/token-bridge-contracts@1.2.5`.
+   The trailing `bytes` is the standard-gateway data tuple
+   `abi.encode(maxSubmissionCost, extraData)` — the verb
+   encodes it from `max_submission_cost` + an empty
+   `extraData`.
+3. `msg.value = max_submission_cost + max_gas *
+   gas_price_bid` — the L1 ETH cost of submitting the L2
+   retryable and paying for its gas, on top of the ERC-20
+   amount (which leaves the user's wallet via
+   `transferFrom` inside the gateway).
+4. `eth_signTransaction` issued through the bridge bundle's
+   top-level signer, followed by `eth_sendRawTransaction`
+   broadcast on L1 (path 2 per M3 — wallet signs, dapp sends).
+
+The user must `approve(gateway, amount)` on the **gateway**
+returned by `getGateway` (not on the L1GatewayRouter itself)
+before calling — the router internally forwards to the
+gateway, and the gateway is the contract that calls
+`transferFrom`.
+
+The verb returns the L1 transaction hash. The L2 mint lands
+~10–15 minutes after L1 inclusion under normal conditions; if
+the retryable's L2 auto-redeem runs out of gas, the dapp can
+manually `redeem_retryable` or `cancel_retryable` within the
+ticket's lifetime (default 7 days).
+
+<BridgeArbitrumSendErc20Demo />
+
+<GithubLink path="apps/playground/app/examples/bridge-arbitrum-send-erc20/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />
