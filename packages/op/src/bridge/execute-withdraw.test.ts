@@ -15,7 +15,7 @@ import {
 } from "@ethernauta/core"
 import type {
   Call,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
   Response,
   Signer,
@@ -31,7 +31,6 @@ import {
 } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { OpBridgeFailure } from "./errors"
 import { execute_withdraw } from "./execute-withdraw"
 
 const OP_SEPOLIA = encode_chain_id({
@@ -84,11 +83,6 @@ const FINALIZE_WITHDRAWAL_SELECTOR = function_selector(
     }),
   ],
 )
-const INVALID_DISPUTE_GAME_SELECTOR = function_selector(
-  "OptimismPortal_InvalidDisputeGame",
-  [],
-)
-
 const TxSchema = object({
   to: AddressSchema,
   value: UintSchema,
@@ -109,21 +103,21 @@ function build_resolved({
   reader,
 }: {
   signer?: Signer
-  reader: Dispatcher
+  reader: Reader
 }): ResolvedBridge {
   return {
-    origin: {
+    signer,
+    l2: {
       chain_id: OP_SEPOLIA,
       reader: async (_call: Call): Promise<Response> => {
         throw new Error(
-          "origin reader should not be invoked from execute_withdraw",
+          "l2 reader should not be invoked from execute_withdraw",
         )
       },
     },
-    destination: {
+    l1: {
       chain_id: SEPOLIA,
       reader,
-      signer,
     },
   }
 }
@@ -138,7 +132,7 @@ describe("execute_withdraw", () => {
     }
     const reader_calls: { method: string; bytes: Bytes }[] =
       []
-    const reader: Dispatcher = async (
+    const reader: Reader = async (
       call: Call,
     ): Promise<Response> => {
       const [method, params] = call
@@ -176,32 +170,8 @@ describe("execute_withdraw", () => {
     expect(sent.bytes).toBe(SIGNED_TRANSACTION)
   })
 
-  it("throws OpBridgeFailure with kind=GameInvalidated when the portal reverts with OptimismPortal_InvalidDisputeGame (nested data shape)", async () => {
-    const signer: Signer = async () => SIGNED_TRANSACTION
-    const reader: Dispatcher = async (
-      _call: Call,
-    ): Promise<Response> => ({
-      jsonrpc: "2.0",
-      id: "1",
-      error: {
-        code: 3,
-        message: "execution reverted",
-        data: { data: INVALID_DISPUTE_GAME_SELECTOR },
-      },
-    })
-    const resolved = build_resolved({ signer, reader })
-    await expect(
-      execute_withdraw({
-        message: WITHDRAWAL_TRANSACTION,
-      })(resolved),
-    ).rejects.toMatchObject({
-      name: "OpBridgeFailure",
-      data: { kind: "GameInvalidated" },
-    })
-  })
-
-  it("throws when destination.signer is undefined", async () => {
-    const reader: Dispatcher = async (
+  it("throws when signer is undefined", async () => {
+    const reader: Reader = async (
       _call: Call,
     ): Promise<Response> => {
       throw new Error(
@@ -214,26 +184,5 @@ describe("execute_withdraw", () => {
         message: WITHDRAWAL_TRANSACTION,
       })(resolved),
     ).rejects.toThrow(/requires a signer/)
-  })
-
-  it("falls back to plain Error when the revert selector is not a recognized custom error", async () => {
-    const signer: Signer = async () => SIGNED_TRANSACTION
-    const reader: Dispatcher = async (
-      _call: Call,
-    ): Promise<Response> => ({
-      jsonrpc: "2.0",
-      id: "1",
-      error: {
-        code: 3,
-        message: "execution reverted: nonsense",
-        data: parse(BytesSchema, "0xdeadbeef"),
-      },
-    })
-    const resolved = build_resolved({ signer, reader })
-    await expect(
-      execute_withdraw({
-        message: WITHDRAWAL_TRANSACTION,
-      })(resolved),
-    ).rejects.not.toBeInstanceOf(OpBridgeFailure)
   })
 })

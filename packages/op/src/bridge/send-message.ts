@@ -49,17 +49,18 @@ export function send_message(
   _parameters: Parameters,
 ): Bridgeable<Hash32> {
   return async ({
-    origin,
-    destination,
+    signer,
+    l1,
+    l2,
   }: ResolvedBridge): Promise<Hash32> => {
-    if (!origin.signer) {
+    if (!signer) {
       throw new Error(
         "send_message requires a signer — pass signer to bridge({...})",
       )
     }
     const parameters = parse(ParametersSchema, _parameters)
     const portal_address = require_deploy_addresses(
-      destination.chain_id,
+      l2.chain_id,
     ).contracts.OptimismPortalProxy
     const signed_transaction = await depositTransaction([
       parameters.to,
@@ -68,16 +69,16 @@ export function send_message(
       parameters.is_creation,
       parameters.data,
     ])([
-      origin.signer,
+      signer,
       {
-        chain_id: origin.chain_id,
+        chain_id: l1.chain_id,
         to: portal_address,
         value: parse(UintSchema, parameters.value),
       },
     ])
     return eth_sendRawTransaction([signed_transaction])([
-      origin.reader,
-      { chain_id: origin.chain_id },
+      l1.reader,
+      { chain_id: l1.chain_id },
     ])
   }
 }

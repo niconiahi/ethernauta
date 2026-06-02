@@ -50,9 +50,10 @@ export function start_withdraw_message(
   _parameters: Parameters,
 ): Bridgeable<Hash32> {
   return async ({
-    origin,
+    signer,
+    l2,
   }: ResolvedBridge): Promise<Hash32> => {
-    if (!origin.signer) {
+    if (!signer) {
       throw new Error(
         "start_withdraw_message requires a signer — pass signer to bridge({...})",
       )
@@ -63,16 +64,16 @@ export function start_withdraw_message(
       parameters.gas_limit,
       parameters.data,
     ])([
-      origin.signer,
+      signer,
       {
-        chain_id: origin.chain_id,
+        chain_id: l2.chain_id,
         to: L2_TO_L1_MESSAGE_PASSER_ADDRESS,
         value: parse(UintSchema, parameters.value),
       },
     ])
     return eth_sendRawTransaction([signed_transaction])([
-      origin.reader,
-      { chain_id: origin.chain_id },
+      l2.reader,
+      { chain_id: l2.chain_id },
     ])
   }
 }

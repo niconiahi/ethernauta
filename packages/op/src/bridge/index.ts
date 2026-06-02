@@ -7,7 +7,16 @@
 // generated identifiers (`paused`, `version`, `initialize`,
 // …) collide across contracts — consumers reach into
 // `@ethernauta/op/bridge/<contract>` for those.
+//
+// Bridge verbs ride `Bridgeable<T>` (one shape for reads and
+// mutations alike, with an optional signer at top-level). The
+// eight mutation verbs share their names with their
+// Arbitrum / zkSync siblings (`send_eth`, `send_erc20`,
+// `send_message`, `start_withdraw_*`, `prove_withdraw`,
+// `execute_withdraw`); read-only verbs (`get_status`,
+// `fetch_message_proof`) ignore the signer field.
 
+export * from "./bridge"
 export * from "./errors"
 export * from "./execute-withdraw"
 export * from "./get-status"

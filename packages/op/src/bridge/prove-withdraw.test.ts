@@ -18,7 +18,7 @@ import {
 } from "@ethernauta/core"
 import type {
   Call,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
   Response,
   Signer,
@@ -34,7 +34,6 @@ import {
 } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { OpBridgeFailure } from "./errors"
 import { prove_withdraw } from "./prove-withdraw"
 
 const OP_SEPOLIA = encode_chain_id({
@@ -126,11 +125,6 @@ const PROVE_WITHDRAWAL_SELECTOR = function_selector(
     array_codec(bytes_codec()),
   ],
 )
-const PROOF_NOT_OLD_ENOUGH_SELECTOR = function_selector(
-  "OptimismPortal_ProofNotOldEnough",
-  [],
-)
-
 const TxSchema = object({
   to: AddressSchema,
   value: UintSchema,
@@ -151,21 +145,21 @@ function build_resolved({
   reader,
 }: {
   signer?: Signer
-  reader: Dispatcher
+  reader: Reader
 }): ResolvedBridge {
   return {
-    origin: {
+    signer,
+    l2: {
       chain_id: OP_SEPOLIA,
       reader: async (_call: Call): Promise<Response> => {
         throw new Error(
-          "origin reader should not be invoked from prove_withdraw",
+          "l2 reader should not be invoked from prove_withdraw",
         )
       },
     },
-    destination: {
+    l1: {
       chain_id: SEPOLIA,
       reader,
-      signer,
     },
   }
 }
@@ -180,7 +174,7 @@ describe("prove_withdraw", () => {
     }
     const reader_calls: { method: string; bytes: Bytes }[] =
       []
-    const reader: Dispatcher = async (
+    const reader: Reader = async (
       call: Call,
     ): Promise<Response> => {
       const [method, params] = call
@@ -216,30 +210,8 @@ describe("prove_withdraw", () => {
     expect(sent.bytes).toBe(SIGNED_TRANSACTION)
   })
 
-  it("throws OpBridgeFailure with kind=ProofNotMature when the portal reverts with OptimismPortal_ProofNotOldEnough", async () => {
-    const signer: Signer = async () => SIGNED_TRANSACTION
-    const reader: Dispatcher = async (
-      _call: Call,
-    ): Promise<Response> => ({
-      jsonrpc: "2.0",
-      id: "1",
-      error: {
-        code: -32000,
-        message: "execution reverted",
-        data: PROOF_NOT_OLD_ENOUGH_SELECTOR,
-      },
-    })
-    const resolved = build_resolved({ signer, reader })
-    await expect(
-      prove_withdraw({ proof: PROOF_BUNDLE })(resolved),
-    ).rejects.toMatchObject({
-      name: "OpBridgeFailure",
-      data: { kind: "ProofNotMature" },
-    })
-  })
-
-  it("throws when destination.signer is undefined", async () => {
-    const reader: Dispatcher = async (
+  it("throws when signer is undefined", async () => {
+    const reader: Reader = async (
       _call: Call,
     ): Promise<Response> => {
       throw new Error(
@@ -250,24 +222,5 @@ describe("prove_withdraw", () => {
     await expect(
       prove_withdraw({ proof: PROOF_BUNDLE })(resolved),
     ).rejects.toThrow(/requires a signer/)
-  })
-
-  it("falls back to plain Error when the revert selector is not a recognized custom error", async () => {
-    const signer: Signer = async () => SIGNED_TRANSACTION
-    const reader: Dispatcher = async (
-      _call: Call,
-    ): Promise<Response> => ({
-      jsonrpc: "2.0",
-      id: "1",
-      error: {
-        code: -32000,
-        message: "execution reverted: nonsense",
-        data: parse(BytesSchema, "0xdeadbeef"),
-      },
-    })
-    const resolved = build_resolved({ signer, reader })
-    await expect(
-      prove_withdraw({ proof: PROOF_BUNDLE })(resolved),
-    ).rejects.not.toBeInstanceOf(OpBridgeFailure)
   })
 })

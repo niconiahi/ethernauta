@@ -51,17 +51,18 @@ export function send_erc20(
   _parameters: Parameters,
 ): Bridgeable<Hash32> {
   return async ({
-    origin,
-    destination,
+    signer,
+    l1,
+    l2,
   }: ResolvedBridge): Promise<Hash32> => {
-    if (!origin.signer) {
+    if (!signer) {
       throw new Error(
         "send_erc20 requires a signer — pass signer to bridge({...})",
       )
     }
     const parameters = parse(ParametersSchema, _parameters)
     const bridge_address = require_deploy_addresses(
-      destination.chain_id,
+      l2.chain_id,
     ).contracts.L1StandardBridgeProxy
     const extra_data = parameters.extra_data ?? EMPTY_BYTES
     const signed_transaction = await bridgeERC20To([
@@ -72,15 +73,15 @@ export function send_erc20(
       parameters.min_gas_limit,
       extra_data,
     ])([
-      origin.signer,
+      signer,
       {
-        chain_id: origin.chain_id,
+        chain_id: l1.chain_id,
         to: bridge_address,
       },
     ])
     return eth_sendRawTransaction([signed_transaction])([
-      origin.reader,
-      { chain_id: origin.chain_id },
+      l1.reader,
+      { chain_id: l1.chain_id },
     ])
   }
 }

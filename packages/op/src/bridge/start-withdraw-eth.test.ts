@@ -17,7 +17,7 @@ import {
 } from "@ethernauta/core"
 import type {
   Call,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
   Response,
   Signer,
@@ -92,19 +92,19 @@ function build_resolved({
   reader,
 }: {
   signer?: Signer
-  reader: Dispatcher
+  reader: Reader
 }): ResolvedBridge {
   return {
-    origin: {
+    signer,
+    l2: {
       chain_id: OP_SEPOLIA,
       reader,
-      signer,
     },
-    destination: {
+    l1: {
       chain_id: SEPOLIA,
       reader: async (_call: Call): Promise<Response> => {
         throw new Error(
-          "destination reader should not be invoked from start_withdraw_eth",
+          "l1 reader should not be invoked from start_withdraw_eth",
         )
       },
     },
@@ -121,7 +121,7 @@ describe("start_withdraw_eth", () => {
     }
     const reader_calls: { method: string; bytes: Bytes }[] =
       []
-    const reader: Dispatcher = async (
+    const reader: Reader = async (
       call: Call,
     ): Promise<Response> => {
       const [method, params] = call
@@ -188,8 +188,8 @@ describe("start_withdraw_eth", () => {
     expect(sent.bytes).toBe(SIGNED_TRANSACTION)
   })
 
-  it("throws when origin.signer is undefined", async () => {
-    const reader: Dispatcher = async (
+  it("throws when signer is undefined", async () => {
+    const reader: Reader = async (
       _call: Call,
     ): Promise<Response> => {
       throw new Error(
