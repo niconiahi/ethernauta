@@ -4,14 +4,19 @@
 // Read-only verb (no signer). Direction-discriminated input:
 //
 //   - direction: "deposit" — L1→L2. Caller supplies the L1
-//     deposit tx hash. The verb reads the L1 receipt and
-//     reports the L1-side state (`submitted_l1`, `included_l1`,
-//     `in_progress_l2`). Reaching `succeeded_l2` / `failed_l2`
-//     requires deriving the L2 user-deposit hash from the L1
-//     `TransactionDeposited` event and reading the L2 receipt;
-//     that derivation lands in a follow-up. The state union
-//     is fully declared here so dapps can `switch` over it
-//     exhaustively.
+//     deposit tx hash. The verb reads the L1 receipt; if the
+//     receipt is missing it reports `submitted_l1`; if the
+//     receipt reverted it reports `included_l1`. On a
+//     successful receipt it scans the logs for
+//     `OptimismPortal2.TransactionDeposited` and recovers the
+//     L2 user-deposit hash via `compute_l2_deposit_tx_hash`
+//     (source hash from L1 block hash + log index, RLP of the
+//     type-0x7e deposit tx). It then reads the L2 receipt of
+//     the derived deposit via the destination reader and
+//     reports `succeeded_l2` / `failed_l2` from its status, or
+//     `in_progress_l2` if the L2 receipt isn't available yet
+//     (or no TransactionDeposited log was emitted, e.g. the
+//     L1 tx didn't go through the portal).
 //
 //   - direction: "withdraw" — L2→L1. Caller supplies the
 //     L2 `MessagePassed` payload (already known to the dapp
@@ -35,6 +40,13 @@
 // Slice 2 of phase 05 — see tmp/plans/05_bridge_package/.
 
 import {
+  address as address_codec,
+  bytes as bytes_codec,
+  decode_event_log,
+  event_topic_hash,
+  uint256 as uint256_codec,
+} from "@ethernauta/abi"
+import {
   type Address,
   AddressSchema,
   Bytes32Schema,
@@ -44,6 +56,7 @@ import {
   type Uint256,
   Uint256Schema,
 } from "@ethernauta/core"
+import type { Log } from "@ethernauta/eth"
 import {
   eth_getBlockByNumber,
   eth_getTransactionReceipt,
@@ -71,6 +84,11 @@ import { l2BlockNumber } from "./fault-dispute-game/methods/l2-block-number"
 import { resolvedAt } from "./fault-dispute-game/methods/resolved-at"
 import { status as fault_game_status } from "./fault-dispute-game/methods/status"
 import { wasRespectedGameTypeWhenCreated } from "./fault-dispute-game/methods/was-respected-game-type-when-created"
+import {
+  compute_l2_deposit_tx_hash,
+  type DepositLog,
+  DepositLogSchema,
+} from "./helpers/encode-deposit-tx"
 import { compute_withdrawal_hash } from "./helpers/encode-withdrawal-proof"
 import {
   type WithdrawalTransaction,
@@ -163,6 +181,24 @@ const GAME_STATUS_DEFENDER_WINS = 2n
 // Bound on how many games to walk back during the L1 scan.
 const MAX_GAMES_SCAN = 256n
 
+// OptimismPortal2.TransactionDeposited(address indexed from,
+// address indexed to, uint256 indexed version, bytes opaqueData).
+// Used to recover the L2 deposit hash from the L1 receipt so
+// `succeeded_l2` / `failed_l2` can be derived from the L2
+// receipt of the derived deposit.
+const TRANSACTION_DEPOSITED_CODECS = [
+  address_codec(),
+  address_codec(),
+  uint256_codec(),
+  bytes_codec(),
+] as const
+const TRANSACTION_DEPOSITED_INDEXED = [
+  true,
+  true,
+  true,
+  false,
+]
+
 export function get_status(
   _parameters: Parameters,
 ): Bridgeable<OpBridgeStatus> {
@@ -175,6 +211,8 @@ export function get_status(
       return read_deposit_status({
         l1_reader: origin.reader,
         l1_chain_id: origin.chain_id,
+        l2_reader: destination.reader,
+        l2_chain_id: destination.chain_id,
         l1_tx_hash: parameters.l1_tx_hash,
       })
     }
@@ -194,6 +232,8 @@ export function get_status(
 async function read_deposit_status(input: {
   l1_reader: Dispatcher
   l1_chain_id: ChainId
+  l2_reader: Dispatcher
+  l2_chain_id: ChainId
   l1_tx_hash: Hash32
 }): Promise<OpBridgeStatus> {
   const receipt = await eth_getTransactionReceipt([
@@ -214,10 +254,80 @@ async function read_deposit_status(input: {
       l1_tx_hash: input.l1_tx_hash,
     })
   }
-  return parse(OpBridgeStatusSchema, {
-    state: "in_progress_l2",
-    l1_tx_hash: input.l1_tx_hash,
+  const portal_address = require_deploy_addresses(
+    input.l2_chain_id,
+  ).contracts.OptimismPortalProxy
+  const deposit_log_event = find_deposit_log({
+    portal_address,
+    receipt_logs: receipt.logs,
+    l1_block_hash: receipt.blockHash,
   })
+  if (!deposit_log_event) {
+    return parse(OpBridgeStatusSchema, {
+      state: "in_progress_l2",
+      l1_tx_hash: input.l1_tx_hash,
+    })
+  }
+  const l2_deposit_hash = compute_l2_deposit_tx_hash(
+    deposit_log_event,
+  )
+  const l2_receipt = await eth_getTransactionReceipt([
+    l2_deposit_hash,
+  ])([input.l2_reader, { chain_id: input.l2_chain_id }])
+  if (l2_receipt === null) {
+    return parse(OpBridgeStatusSchema, {
+      state: "in_progress_l2",
+      l1_tx_hash: input.l1_tx_hash,
+    })
+  }
+  const l2_status_hex = l2_receipt.status
+  if (
+    l2_status_hex !== undefined &&
+    hex_to_bigint(l2_status_hex) === 0n
+  ) {
+    return parse(OpBridgeStatusSchema, {
+      state: "failed_l2",
+      l1_tx_hash: input.l1_tx_hash,
+      l2_tx_hash: l2_deposit_hash,
+    })
+  }
+  return parse(OpBridgeStatusSchema, {
+    state: "succeeded_l2",
+    l1_tx_hash: input.l1_tx_hash,
+    l2_tx_hash: l2_deposit_hash,
+  })
+}
+
+function find_deposit_log(input: {
+  portal_address: Address
+  receipt_logs: readonly Log[]
+  l1_block_hash: Hash32
+}): DepositLog | null {
+  const portal_lower = input.portal_address.toLowerCase()
+  const topic0 = event_topic_hash(
+    "TransactionDeposited",
+    TRANSACTION_DEPOSITED_CODECS,
+  )
+  for (const log of input.receipt_logs) {
+    if (log.address.toLowerCase() !== portal_lower) continue
+    if (log.topics[0] !== topic0) continue
+    const decoded = decode_event_log({
+      name: "TransactionDeposited",
+      args: TRANSACTION_DEPOSITED_CODECS,
+      indexed: TRANSACTION_DEPOSITED_INDEXED,
+      topics: log.topics,
+      data: log.data,
+    })
+    const [from, to, , opaque_data] = decoded.args
+    return parse(DepositLogSchema, {
+      from,
+      to,
+      opaque_data,
+      l1_block_hash: input.l1_block_hash,
+      log_index: log.logIndex,
+    })
+  }
+  return null
 }
 
 async function read_withdraw_status(input: {

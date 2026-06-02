@@ -1,8 +1,10 @@
 import {
   address as address_codec,
   bool as bool_codec,
+  bytes as bytes_codec,
   bytes32 as bytes32_codec,
   encode_sequence,
+  event_topic_hash,
   function_selector,
   uint8 as uint8_codec,
   uint32 as uint32_codec,
@@ -11,6 +13,7 @@ import {
 } from "@ethernauta/abi"
 import {
   AddressSchema,
+  Bytes32Schema,
   BytesSchema,
   Hash32Schema,
   Uint8Schema,
@@ -31,6 +34,7 @@ import { object, parse, tuple } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import { get_status } from "./get-status"
+import { compute_l2_deposit_tx_hash } from "./helpers/encode-deposit-tx"
 
 const OP_SEPOLIA = encode_chain_id({
   namespace: "eip155",
@@ -520,8 +524,63 @@ describe("get_status (withdraw)", () => {
 const ReceiptTxHash = GET_TX_RECEIPT_HASH
 const GetReceiptParamsSchema = tuple([Hash32Schema])
 
+const OP_SEPOLIA_PORTAL = parse(
+  AddressSchema,
+  "0x16Fc5058F25648194471939df75CF27A2fdC48BC",
+)
+const L1_BLOCK_HASH = parse(
+  Hash32Schema,
+  `0x${"c".repeat(64)}`,
+)
+const DEPOSIT_LOG_INDEX = parse(UintSchema, "0x3")
+const TRANSACTION_DEPOSITED_TOPIC0 = event_topic_hash(
+  "TransactionDeposited",
+  [
+    address_codec(),
+    address_codec(),
+    uint256_codec(),
+    bytes_codec(),
+  ],
+)
+const PAD12 = "0".repeat(24)
+const OPAQUE_DATA = parse(
+  BytesSchema,
+  `0x${"00".repeat(73)}`,
+)
+const DEPOSIT_LOG_DATA = parse(
+  BytesSchema,
+  bytes_to_hex(
+    encode_sequence([bytes_codec()], [OPAQUE_DATA]),
+  ),
+)
+const FROM_TOPIC = parse(
+  Bytes32Schema,
+  `0x${PAD12}${SENDER.slice(2).toLowerCase()}`,
+)
+const TO_TOPIC = parse(
+  Bytes32Schema,
+  `0x${PAD12}${TARGET.slice(2).toLowerCase()}`,
+)
+const VERSION_TOPIC = parse(
+  Bytes32Schema,
+  `0x${"00".repeat(32)}`,
+)
+const L2_DEPOSIT_HASH = compute_l2_deposit_tx_hash({
+  from: SENDER,
+  to: TARGET,
+  opaque_data: OPAQUE_DATA,
+  l1_block_hash: L1_BLOCK_HASH,
+  log_index: DEPOSIT_LOG_INDEX,
+})
+
+type DepositReceipt =
+  | "missing"
+  | "success_no_log"
+  | "success_with_log"
+  | "reverted"
+
 function build_deposit_l1_reader(opts: {
-  receipt: "missing" | "success" | "reverted"
+  receipt: DepositReceipt
 }): Dispatcher {
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
@@ -532,13 +591,34 @@ function build_deposit_l1_reader(opts: {
     }
     parse(GetReceiptParamsSchema, params)
     if (opts.receipt === "missing") return ok_response(null)
+    const reverted = opts.receipt === "reverted"
+    const include_log = opts.receipt === "success_with_log"
     return ok_response({
-      blockHash: parse(Hash32Schema, `0x${"c".repeat(64)}`),
+      blockHash: L1_BLOCK_HASH,
       blockNumber: parse(UintSchema, "0x1"),
       from: SENDER,
       cumulativeGasUsed: parse(UintSchema, "0x5208"),
       gasUsed: parse(UintSchema, "0x5208"),
-      logs: [],
+      logs: include_log
+        ? [
+            {
+              removed: false,
+              logIndex: DEPOSIT_LOG_INDEX,
+              transactionIndex: parse(UintSchema, "0x0"),
+              transactionHash: ReceiptTxHash,
+              blockHash: L1_BLOCK_HASH,
+              blockNumber: parse(UintSchema, "0x1"),
+              address: OP_SEPOLIA_PORTAL,
+              data: DEPOSIT_LOG_DATA,
+              topics: [
+                TRANSACTION_DEPOSITED_TOPIC0,
+                FROM_TOPIC,
+                TO_TOPIC,
+                VERSION_TOPIC,
+              ],
+            },
+          ]
+        : [],
       logsBloom: parse(
         BytesSchema,
         `0x${"00".repeat(256)}`,
@@ -548,9 +628,47 @@ function build_deposit_l1_reader(opts: {
       effectiveGasPrice: parse(UintSchema, "0x1"),
       to: TARGET,
       contractAddress: null,
+      status: parse(UintSchema, reverted ? "0x0" : "0x1"),
+    })
+  }
+}
+
+function build_deposit_l2_reader(opts: {
+  status: "missing" | "success" | "reverted"
+}): Dispatcher {
+  return async (call: Call): Promise<Response> => {
+    const [method, params] = call
+    if (method !== "eth_getTransactionReceipt") {
+      throw new Error(
+        `unexpected method: ${String(method)}`,
+      )
+    }
+    const [hash] = parse(GetReceiptParamsSchema, params)
+    if (hash !== L2_DEPOSIT_HASH) {
+      throw new Error(
+        `unexpected L2 hash: ${hash} (want ${L2_DEPOSIT_HASH})`,
+      )
+    }
+    if (opts.status === "missing") return ok_response(null)
+    return ok_response({
+      blockHash: parse(Hash32Schema, `0x${"e".repeat(64)}`),
+      blockNumber: parse(UintSchema, "0x2"),
+      from: SENDER,
+      cumulativeGasUsed: parse(UintSchema, "0x5208"),
+      gasUsed: parse(UintSchema, "0x5208"),
+      logs: [],
+      logsBloom: parse(
+        BytesSchema,
+        `0x${"00".repeat(256)}`,
+      ),
+      transactionHash: L2_DEPOSIT_HASH,
+      transactionIndex: parse(UintSchema, "0x0"),
+      effectiveGasPrice: parse(UintSchema, "0x1"),
+      to: TARGET,
+      contractAddress: null,
       status: parse(
         UintSchema,
-        opts.receipt === "success" ? "0x1" : "0x0",
+        opts.status === "success" ? "0x1" : "0x0",
       ),
     })
   }
@@ -558,16 +676,19 @@ function build_deposit_l1_reader(opts: {
 
 function build_deposit_resolved(
   l1: Dispatcher,
+  l2?: Dispatcher,
 ): ResolvedBridge {
   return {
     origin: { chain_id: SEPOLIA, reader: l1 },
     destination: {
       chain_id: OP_SEPOLIA,
-      reader: async (_call: Call): Promise<Response> => {
-        throw new Error(
-          "destination reader should not be invoked in deposit status",
-        )
-      },
+      reader:
+        l2 ??
+        (async (_call: Call): Promise<Response> => {
+          throw new Error(
+            "destination reader should not be invoked in deposit status",
+          )
+        }),
     },
   }
 }
@@ -585,13 +706,15 @@ describe("get_status (deposit)", () => {
     expect(status.state).toBe("submitted_l1")
   })
 
-  it("returns in_progress_l2 when the L1 receipt succeeded", async () => {
+  it("returns in_progress_l2 when the L1 receipt succeeded with no portal log", async () => {
     const status = await get_status({
       direction: "deposit",
       l1_tx_hash: ReceiptTxHash,
     })(
       build_deposit_resolved(
-        build_deposit_l1_reader({ receipt: "success" }),
+        build_deposit_l1_reader({
+          receipt: "success_no_log",
+        }),
       ),
     )
     expect(status.state).toBe("in_progress_l2")
@@ -607,5 +730,56 @@ describe("get_status (deposit)", () => {
       ),
     )
     expect(status.state).toBe("included_l1")
+  })
+
+  it("returns in_progress_l2 when the L1 log is present but L2 receipt is missing", async () => {
+    const status = await get_status({
+      direction: "deposit",
+      l1_tx_hash: ReceiptTxHash,
+    })(
+      build_deposit_resolved(
+        build_deposit_l1_reader({
+          receipt: "success_with_log",
+        }),
+        build_deposit_l2_reader({ status: "missing" }),
+      ),
+    )
+    expect(status.state).toBe("in_progress_l2")
+  })
+
+  it("returns succeeded_l2 when the L2 deposit receipt has status=1", async () => {
+    const status = await get_status({
+      direction: "deposit",
+      l1_tx_hash: ReceiptTxHash,
+    })(
+      build_deposit_resolved(
+        build_deposit_l1_reader({
+          receipt: "success_with_log",
+        }),
+        build_deposit_l2_reader({ status: "success" }),
+      ),
+    )
+    expect(status.state).toBe("succeeded_l2")
+    if (status.state === "succeeded_l2") {
+      expect(status.l2_tx_hash).toBe(L2_DEPOSIT_HASH)
+    }
+  })
+
+  it("returns failed_l2 when the L2 deposit receipt has status=0", async () => {
+    const status = await get_status({
+      direction: "deposit",
+      l1_tx_hash: ReceiptTxHash,
+    })(
+      build_deposit_resolved(
+        build_deposit_l1_reader({
+          receipt: "success_with_log",
+        }),
+        build_deposit_l2_reader({ status: "reverted" }),
+      ),
+    )
+    expect(status.state).toBe("failed_l2")
+    if (status.state === "failed_l2") {
+      expect(status.l2_tx_hash).toBe(L2_DEPOSIT_HASH)
+    }
   })
 })
