@@ -3,6 +3,13 @@
 // nitro-contracts) and OffchainLabs/nitro-contracts at a pinned
 // SHA / tag, then compile each to canonical ABI JSON via foundry.
 //
+// Bridge ABIs come from npm-published hardhat-artifact tarballs
+// (`@arbitrum/nitro-contracts`, `@arbitrum/token-bridge-contracts`)
+// because the bridge contracts pull in transitive imports that
+// would force a heavyweight git-clone-plus-forge-build path. The
+// npm packages ship pre-compiled artifacts with an `abi` field
+// matching Ethernauta's `DescriptionSchema`.
+//
 // Usage:  pnpm --filter @ethernauta/arbitrum pull-contracts
 //
 // Outputs:
@@ -11,6 +18,7 @@
 //   packages/arbitrum/src/precompiles/<kebab>/index.ts
 //   packages/arbitrum/src/precompiles/index.ts
 //   packages/arbitrum/src/precompiles/SOURCES.md
+//   packages/arbitrum/src/bridge/<kebab>/<Pascal>.abi.json
 //
 // After running, regenerate method bindings:
 //   pnpm --filter @ethernauta/cli build
@@ -46,6 +54,10 @@ import {
 const NITRO_CONTRACTS_TAG = "v3.2.0"
 const NITRO_PRECOMPILE_INTERFACES_SHA =
   "f49a4889b486fd804a7901203f5f663cfd1581c8"
+// npm tarball versions for bridge ABIs. Mirrored in
+// packages/arbitrum/src/bridge/SOURCES.md.
+const NITRO_CONTRACTS_NPM_VERSION = "3.2.0"
+const TOKEN_BRIDGE_CONTRACTS_NPM_VERSION = "1.2.5"
 
 const PRECOMPILE_BASE_URL = `https://raw.githubusercontent.com/OffchainLabs/nitro-precompile-interfaces/${NITRO_PRECOMPILE_INTERFACES_SHA}`
 const NITRO_CONTRACTS_BASE_URL = `https://raw.githubusercontent.com/OffchainLabs/nitro-contracts/${NITRO_CONTRACTS_TAG}`
@@ -169,6 +181,64 @@ const RECIPES: Recipe[] = [
 // dapp call reverts unconditionally. See D2-3 in the plan.
 const ARBOS_ACTS_URL = `${PRECOMPILE_BASE_URL}/ArbosActs.sol`
 
+// Hardhat artifact slice we extract from npm tarballs — the `abi`
+// field matches Ethernauta's `DescriptionSchema` directly.
+const HardhatArtifactSchema = object({
+  abi: array(DescriptionSchema),
+})
+
+const BridgeRecipeSchema = object({
+  pascal: string(),
+  kebab: string(),
+  npm_package: string(),
+  npm_version: string(),
+  // Path inside the tarball *after* its leading `package/` segment is
+  // stripped. The tarball convention is `package/<rest>`.
+  artifact_path: string(),
+})
+type BridgeRecipe = InferOutput<typeof BridgeRecipeSchema>
+
+// Slice 3a vendors `Inbox` + `Outbox` from `@arbitrum/nitro-contracts`
+// (the rollup-stack bridge entrypoints), plus `L1GatewayRouter` +
+// `L2GatewayRouter` from `@arbitrum/token-bridge-contracts` (the
+// ERC-20 gateway routing layer). These four cover slice 3a's
+// `send_eth` plus slices 3b/3c's `send_erc20` / `send_message` /
+// `start_withdraw_*` / `execute_withdraw`.
+const BRIDGE_RECIPES: BridgeRecipe[] = [
+  parse(BridgeRecipeSchema, {
+    pascal: "Inbox",
+    kebab: "inbox",
+    npm_package: "@arbitrum/nitro-contracts",
+    npm_version: NITRO_CONTRACTS_NPM_VERSION,
+    artifact_path:
+      "build/contracts/src/bridge/Inbox.sol/Inbox.json",
+  }),
+  parse(BridgeRecipeSchema, {
+    pascal: "Outbox",
+    kebab: "outbox",
+    npm_package: "@arbitrum/nitro-contracts",
+    npm_version: NITRO_CONTRACTS_NPM_VERSION,
+    artifact_path:
+      "build/contracts/src/bridge/Outbox.sol/Outbox.json",
+  }),
+  parse(BridgeRecipeSchema, {
+    pascal: "L1GatewayRouter",
+    kebab: "l1-gateway-router",
+    npm_package: "@arbitrum/token-bridge-contracts",
+    npm_version: TOKEN_BRIDGE_CONTRACTS_NPM_VERSION,
+    artifact_path:
+      "build/contracts/contracts/tokenbridge/ethereum/gateway/L1GatewayRouter.sol/L1GatewayRouter.json",
+  }),
+  parse(BridgeRecipeSchema, {
+    pascal: "L2GatewayRouter",
+    kebab: "l2-gateway-router",
+    npm_package: "@arbitrum/token-bridge-contracts",
+    npm_version: TOKEN_BRIDGE_CONTRACTS_NPM_VERSION,
+    artifact_path:
+      "build/contracts/contracts/tokenbridge/arbitrum/gateway/L2GatewayRouter.sol/L2GatewayRouter.json",
+  }),
+]
+
 const AbiSchema = array(DescriptionSchema)
 
 async function fetch_text(url: string): Promise<string> {
@@ -179,6 +249,67 @@ async function fetch_text(url: string): Promise<string> {
     )
   }
   return await response.text()
+}
+
+async function fetch_bytes(url: string): Promise<Buffer> {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(
+      `failed to fetch ${url}: ${response.status} ${response.statusText}`,
+    )
+  }
+  const ab = await response.arrayBuffer()
+  return Buffer.from(ab)
+}
+
+// Extract a single file from an npm tarball (gzipped tar). The
+// tarball's top-level directory is always `package/`; the caller
+// supplies the rest of the path. Uses the system `tar` binary so
+// we don't pull in a tar-parsing dependency just for this script.
+function extract_npm_artifact(
+  tarball: Buffer,
+  artifact_path: string,
+): string {
+  const stdout = execFileSync(
+    "tar",
+    ["-xzO", "-f", "-", `package/${artifact_path}`],
+    {
+      input: tarball,
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+    },
+  )
+  return stdout
+}
+
+async function vendor_npm_artifact(
+  recipe: BridgeRecipe,
+  target_root: string,
+): Promise<{ kept: number }> {
+  const tarball_url = `https://registry.npmjs.org/${recipe.npm_package}/-/${recipe.npm_package.split("/").pop()}-${recipe.npm_version}.tgz`
+  const tarball = await fetch_bytes(tarball_url)
+  const raw = extract_npm_artifact(
+    tarball,
+    recipe.artifact_path,
+  )
+  const artifact = parse(
+    HardhatArtifactSchema,
+    JSON.parse(raw),
+  )
+  const out_dir = join(target_root, recipe.kebab)
+  mkdirSync(out_dir, { recursive: true })
+  const out_path = join(
+    out_dir,
+    `${recipe.pascal}.abi.json`,
+  )
+  writeFileSync(
+    out_path,
+    `${JSON.stringify(artifact.abi, null, 2)}\n`,
+  )
+  const fn_count = artifact.abi.filter(
+    (e) => e.type === "function",
+  ).length
+  return { kept: fn_count }
 }
 
 function write_foundry_toml(root: string): void {
@@ -325,6 +456,7 @@ async function main() {
     "src",
     "precompiles",
   )
+  const bridge_root = resolve(package_root, "src", "bridge")
 
   console.log(
     "Pulling Arbitrum precompiles + NodeInterface from",
@@ -407,6 +539,21 @@ async function main() {
 
     emit_root_index(precompiles_root, RECIPES)
     emit_sources_md(precompiles_root, RECIPES)
+
+    console.log("")
+    console.log(
+      `Pulling bridge ABIs from npm tarballs (nitro-contracts ${NITRO_CONTRACTS_NPM_VERSION}, token-bridge-contracts ${TOKEN_BRIDGE_CONTRACTS_NPM_VERSION})`,
+    )
+    mkdirSync(bridge_root, { recursive: true })
+    for (const recipe of BRIDGE_RECIPES) {
+      const { kept } = await vendor_npm_artifact(
+        recipe,
+        bridge_root,
+      )
+      console.log(
+        `  ${recipe.pascal} → bridge/${recipe.kebab}/${recipe.pascal}.abi.json — ${kept} functions`,
+      )
+    }
 
     console.log("")
     console.log("Done. Next steps:")
