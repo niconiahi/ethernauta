@@ -23,15 +23,16 @@
 //
 // Slice 2 of phase 05 — see tmp/plans/05_bridge_package/.
 
-import type { Hash32 } from "@ethernauta/core"
-import { eth_sendRawTransaction } from "@ethernauta/eth"
+import { type Hash32, Hash32Schema } from "@ethernauta/core"
 import type {
   Bridgeable,
   ResolvedBridge,
 } from "@ethernauta/transport"
+import { CallSchema } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, parse } from "valibot"
 import { require_deploy_addresses } from "../lib/deploy"
+import { try_decode_op_bridge_failure } from "./errors"
 import { WithdrawalTransactionSchema } from "./op-message-proof"
 import { finalizeWithdrawalTransaction } from "./optimism-portal"
 
@@ -66,9 +67,18 @@ export function execute_withdraw(
           to: portal_address,
         },
       ])
-    return eth_sendRawTransaction([signed_transaction])([
-      destination.reader,
-      { chain_id: destination.chain_id },
+    const call = parse(CallSchema, [
+      "eth_sendRawTransaction",
+      [signed_transaction],
     ])
+    const response = await destination.reader(call)
+    if ("error" in response) {
+      const failure = try_decode_op_bridge_failure(
+        response.error,
+      )
+      if (failure) throw failure
+      throw new Error(response.error.message)
+    }
+    return parse(Hash32Schema, response.result)
   }
 }
