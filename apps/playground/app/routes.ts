@@ -141,5 +141,9 @@ export default [
       "bridge-arbitrum-retryable",
       "./routes/examples/bridge-arbitrum-retryable.mdx",
     ),
+    route(
+      "bridge-arbitrum-withdraw-eth",
+      "./routes/examples/bridge-arbitrum-withdraw-eth.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

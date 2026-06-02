@@ -1,0 +1,52 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-arbitrum-withdraw-eth/demo.tsx?highlighted"
+import { BridgeArbitrumWithdrawEthDemo } from "../../examples/bridge-arbitrum-withdraw-eth/demo"
+
+# Bridge — Arbitrum withdraw_eth lifecycle
+
+Arbitrum L2→L1 withdrawals are validity-proof finalized on L1
+through the Outbox contract. There is no separate "prove" step
+the way OP under fault proofs needs — the L1 `Outbox.executeTransaction`
+call validates the merkle proof and releases funds atomically.
+What you wait for is the **covering Rollup assertion** to be
+**confirmed** on L1 (about 6.4 days on Arbitrum One, ~1 hour
+on Arbitrum Sepolia).
+
+This demo walks the four-state union surfaced by `get_status`:
+
+1. `initiated_l2` — the L2 burn (`ArbSys.withdrawEth`) landed
+   but the L2→L1 message isn't yet reflected in the send
+   merkle tree.
+2. `confirming` — the message is in the tree, but the covering
+   Rollup assertion has not yet been confirmed by the Rollup
+   contract on L1.
+3. `executable` — `Outbox.roots(sendRoot)` is non-zero;
+   `fetch_message_proof` + `execute_withdraw` can ship.
+4. `executed` — the L1 Outbox transaction landed.
+
+Each phase rebuilds the bridge resolver because the signer's
+`chain_id` switches from Arb Sepolia (L2 burn) to Sepolia (L1
+execute). State is persisted to localStorage so the dapp can be
+closed and reopened during the confirmation window.
+
+`fetch_message_proof` composes `ArbSys.sendMerkleTreeState` +
+`NodeInterface.constructOutboxProof` on L2 plus an
+`Outbox.roots` read on L1; if the send-root isn't published
+yet the verb throws and the dapp keeps polling
+`get_status` until `executable`. Then `execute_withdraw`
+broadcasts a single L1 transaction carrying the proof, the
+leaf index, and the replayed message.
+
+The user pastes the message fields from Arbiscan's
+"L2 → L1 messages" tab on the initiating L2 tx — a future
+helper will derive this from the L2 receipt's `L2ToL1Tx`
+event directly.
+
+<BridgeArbitrumWithdrawEthDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-arbitrum-withdraw-eth/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

@@ -138,6 +138,10 @@ const RECIPE_EXAMPLES = [
     to: "/examples/bridge-arbitrum-retryable",
     title: "Bridge — retryable lifecycle (Arbitrum)",
   },
+  {
+    to: "/examples/bridge-arbitrum-withdraw-eth",
+    title: "Bridge — withdraw_eth lifecycle (Arbitrum)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [
