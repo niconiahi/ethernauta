@@ -1,7 +1,30 @@
-// L2→L1 withdrawal proof bundle builder for OP-stack
-// rollups under fault proofs.
+// L2→L1 withdrawal proof bundle — schema + builder.
 //
-// Read-only verb (no signer needed). Composes:
+// `MessageProofSchema` shapes the bundle a dapp needs to redeem a
+// withdrawal on L1; `fetch_message_proof` is the read-only verb
+// that builds one from chain state. Both live here because the
+// bundle and its construction are the same concern.
+//
+// Bundle shape:
+//   - `withdrawalTransaction` — the `MessagePassed`-shaped struct
+//     the L2ToL1MessagePasser emitted at withdraw-initiation time;
+//     replayed verbatim on L1 by `prove_withdraw` and
+//     `execute_withdraw`.
+//   - `disputeGameIndex` — points at the `DisputeGameFactory`
+//     entry whose `rootClaim` covers `withdrawalTransaction`'s L2
+//     block. Under OP fault proofs (op-contracts/v3.0.0 on
+//     Sepolia, v6.0.0 on Mainnet), the portal validates the proof
+//     against the game referenced by this index — there is no
+//     `L2OutputOracle` anymore.
+//   - `outputRootProof` — the four-field struct that lets L1
+//     re-derive the output root from `(stateRoot,
+//     messagePasserStorageRoot, latestBlockhash)` at version
+//     `0x000…0`.
+//   - `withdrawalProof` — the RLP-encoded MPT branch from
+//     `eth_getProof` proving the withdrawal hash is recorded in
+//     `L2ToL1MessagePasser.sentMessages`.
+//
+// `fetch_message_proof` composes:
 //   - L1 read pass to pick a usable dispute game:
 //     `OptimismPortal.respectedGameType()` →
 //     `DisputeGameFactory.gameCount()` →
@@ -17,20 +40,16 @@
 //     `eth_getBlockByNumber` for state root + block hash,
 //     `eth_getProof` against `L2ToL1MessagePasser` for the
 //     `sentMessages[withdrawal_hash]` storage slot.
-//   - Bundles the result into the `OpMessageProof` shape
-//     `prove_withdraw` consumes:
-//       `{ withdrawalTransaction, disputeGameIndex,
-//         outputRootProof, withdrawalProof }`.
 //
-// Path-2 composition (per M3): pure JS + RPC reads; no
-// signer touched. The bundle is the dapp's hand-off to
-// `prove_withdraw`, which then asks the wallet to sign
-// the L1 prove call.
+// Path-2 composition (per M3): pure JS + RPC reads; no signer
+// touched. The bundle is the dapp's hand-off to `prove_withdraw`,
+// which then asks the wallet to sign the L1 prove call.
 //
 // Slice 2 of phase 05 — see tmp/plans/05_bridge_package/.
 
 import {
   type Address,
+  AddressSchema,
   Bytes32Schema,
   BytesMax32Schema,
   BytesSchema,
@@ -47,7 +66,7 @@ import type {
   Bridgeable,
   Callable,
   ChainId,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
 } from "@ethernauta/transport"
 import { CallSchema } from "@ethernauta/transport"
@@ -56,7 +75,7 @@ import {
   hex_to_bigint,
 } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
-import { object, parse } from "valibot"
+import { array, object, parse } from "valibot"
 
 import { require_deploy_addresses } from "../lib/deploy"
 import { isGameBlacklisted } from "./anchor-state-registry/methods/is-game-blacklisted"
@@ -71,12 +90,39 @@ import { l2BlockNumber } from "./fault-dispute-game/methods/l2-block-number"
 import { status as fault_game_status } from "./fault-dispute-game/methods/status"
 import { wasRespectedGameTypeWhenCreated } from "./fault-dispute-game/methods/was-respected-game-type-when-created"
 import { L2_TO_L1_MESSAGE_PASSER_ADDRESS } from "./l2-to-l1-message-passer"
-import {
-  type OpMessageProof,
-  OpMessageProofSchema,
-  WithdrawalTransactionSchema,
-} from "./op-message-proof"
 import { respectedGameType } from "./optimism-portal/methods/respected-game-type"
+
+export const WithdrawalTransactionSchema = object({
+  nonce: Uint256Schema,
+  sender: AddressSchema,
+  target: AddressSchema,
+  value: Uint256Schema,
+  gasLimit: Uint256Schema,
+  data: BytesSchema,
+})
+export type WithdrawalTransaction = InferOutput<
+  typeof WithdrawalTransactionSchema
+>
+
+export const OutputRootProofSchema = object({
+  version: Bytes32Schema,
+  stateRoot: Bytes32Schema,
+  messagePasserStorageRoot: Bytes32Schema,
+  latestBlockhash: Bytes32Schema,
+})
+export type OutputRootProof = InferOutput<
+  typeof OutputRootProofSchema
+>
+
+export const MessageProofSchema = object({
+  withdrawalTransaction: WithdrawalTransactionSchema,
+  disputeGameIndex: Uint256Schema,
+  outputRootProof: OutputRootProofSchema,
+  withdrawalProof: array(BytesSchema),
+})
+export type MessageProof = InferOutput<
+  typeof MessageProofSchema
+>
 
 const ParametersSchema = object({
   withdrawal_transaction: WithdrawalTransactionSchema,
@@ -94,11 +140,11 @@ const MAX_GAMES_SCAN = 256n
 
 export function fetch_message_proof(
   _parameters: Parameters,
-): Bridgeable<OpMessageProof> {
+): Bridgeable<MessageProof> {
   return async ({
-    origin,
-    destination,
-  }: ResolvedBridge): Promise<OpMessageProof> => {
+    l1,
+    l2,
+  }: ResolvedBridge): Promise<MessageProof> => {
     const parameters = parse(ParametersSchema, _parameters)
     const withdrawal_hash = compute_withdrawal_hash(
       parameters.withdrawal_transaction,
@@ -106,25 +152,25 @@ export function fetch_message_proof(
     const storage_slot =
       compute_sent_messages_storage_slot(withdrawal_hash)
     const deploys = require_deploy_addresses(
-      origin.chain_id,
+      l2.chain_id,
     ).contracts
     const expected_game_type = await dispatch_call(
-      destination.reader,
+      l1.reader,
       respectedGameType()({
-        chain_id: destination.chain_id,
+        chain_id: l1.chain_id,
         to: deploys.OptimismPortalProxy,
       }),
     )
     const game_count_value = await dispatch_call(
-      destination.reader,
+      l1.reader,
       gameCount()({
-        chain_id: destination.chain_id,
+        chain_id: l1.chain_id,
         to: deploys.DisputeGameFactoryProxy,
       }),
     )
     const picked = await pick_dispute_game({
-      reader: destination.reader,
-      chain_id: destination.chain_id,
+      reader: l1.reader,
+      chain_id: l1.chain_id,
       factory: deploys.DisputeGameFactoryProxy,
       anchor_registry: deploys.AnchorStateRegistryProxy,
       expected_game_type: hex_to_bigint(expected_game_type),
@@ -139,24 +185,24 @@ export function fetch_message_proof(
     const block = await eth_getBlockByNumber([
       block_number_uint,
       false,
-    ])([origin.reader, { chain_id: origin.chain_id }])
+    ])([l2.reader, { chain_id: l2.chain_id }])
     if (block === null) {
       throw new Error(
-        `fetch_message_proof: L2 block ${block_number_uint} not found on origin`,
+        `fetch_message_proof: L2 block ${block_number_uint} not found on l2 reader`,
       )
     }
     const account_proof = await eth_getProof([
       L2_TO_L1_MESSAGE_PASSER_ADDRESS,
       [parse(BytesMax32Schema, storage_slot)],
       block_number_uint,
-    ])([origin.reader, { chain_id: origin.chain_id }])
+    ])([l2.reader, { chain_id: l2.chain_id }])
     const slot_proof = account_proof.storageProof[0]
     if (!slot_proof) {
       throw new Error(
         "fetch_message_proof: eth_getProof returned no storage proof for the withdrawal slot",
       )
     }
-    return parse(OpMessageProofSchema, {
+    return parse(MessageProofSchema, {
       withdrawalTransaction:
         parameters.withdrawal_transaction,
       disputeGameIndex: picked.index,
@@ -175,7 +221,7 @@ export function fetch_message_proof(
 }
 
 async function pick_dispute_game(input: {
-  reader: Dispatcher
+  reader: Reader
   chain_id: ChainId
   factory: Address
   anchor_registry: Address
@@ -259,7 +305,7 @@ async function pick_dispute_game(input: {
 }
 
 async function dispatch_call<T>(
-  dispatcher: Dispatcher,
+  dispatcher: Reader,
   callable: Callable<T>,
 ): Promise<T> {
   const call = parse(CallSchema, [

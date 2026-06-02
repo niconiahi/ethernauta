@@ -65,7 +65,7 @@ import type {
   Bridgeable,
   Callable,
   ChainId,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
 } from "@ethernauta/transport"
 import { CallSchema } from "@ethernauta/transport"
@@ -93,7 +93,7 @@ import { wasRespectedGameTypeWhenCreated } from "./fault-dispute-game/methods/wa
 import {
   type WithdrawalTransaction,
   WithdrawalTransactionSchema,
-} from "./op-message-proof"
+} from "./message-proof"
 import { disputeGameFinalityDelaySeconds } from "./optimism-portal/methods/dispute-game-finality-delay-seconds"
 import { finalizedWithdrawals } from "./optimism-portal/methods/finalized-withdrawals"
 import { proofMaturityDelaySeconds } from "./optimism-portal/methods/proof-maturity-delay-seconds"
@@ -203,23 +203,23 @@ export function get_status(
   _parameters: Parameters,
 ): Bridgeable<OpBridgeStatus> {
   return async ({
-    origin,
-    destination,
+    l1,
+    l2,
   }: ResolvedBridge): Promise<OpBridgeStatus> => {
     const parameters = parse(ParametersSchema, _parameters)
     if (parameters.direction === "deposit") {
       return read_deposit_status({
-        l1_reader: origin.reader,
-        l1_chain_id: origin.chain_id,
-        l2_reader: destination.reader,
-        l2_chain_id: destination.chain_id,
+        l1_reader: l1.reader,
+        l1_chain_id: l1.chain_id,
+        l2_reader: l2.reader,
+        l2_chain_id: l2.chain_id,
         l1_tx_hash: parameters.l1_tx_hash,
       })
     }
     return read_withdraw_status({
-      l1_reader: destination.reader,
-      l1_chain_id: destination.chain_id,
-      l2_chain_id: origin.chain_id,
+      l1_reader: l1.reader,
+      l1_chain_id: l1.chain_id,
+      l2_chain_id: l2.chain_id,
       withdrawal_transaction:
         parameters.withdrawal_transaction,
       withdrawal_l2_block_number:
@@ -230,9 +230,9 @@ export function get_status(
 }
 
 async function read_deposit_status(input: {
-  l1_reader: Dispatcher
+  l1_reader: Reader
   l1_chain_id: ChainId
-  l2_reader: Dispatcher
+  l2_reader: Reader
   l2_chain_id: ChainId
   l1_tx_hash: Hash32
 }): Promise<OpBridgeStatus> {
@@ -331,7 +331,7 @@ function find_deposit_log(input: {
 }
 
 async function read_withdraw_status(input: {
-  l1_reader: Dispatcher
+  l1_reader: Reader
   l1_chain_id: ChainId
   l2_chain_id: ChainId
   withdrawal_transaction: WithdrawalTransaction
@@ -397,7 +397,7 @@ async function read_withdraw_status(input: {
 }
 
 async function read_pre_prove_status(input: {
-  l1_reader: Dispatcher
+  l1_reader: Reader
   l1_chain_id: ChainId
   factory: Address
   anchor_registry: Address
@@ -458,7 +458,7 @@ async function read_pre_prove_status(input: {
 }
 
 async function read_post_prove_status(input: {
-  l1_reader: Dispatcher
+  l1_reader: Reader
   l1_chain_id: ChainId
   portal: Address
   anchor_registry: Address
@@ -558,7 +558,7 @@ type Candidate =
   | { kind: "in_progress"; proxy: Address }
 
 async function find_candidate_game(input: {
-  reader: Dispatcher
+  reader: Reader
   chain_id: ChainId
   factory: Address
   anchor_registry: Address
@@ -643,7 +643,7 @@ async function find_candidate_game(input: {
 }
 
 async function read_latest_l1_timestamp(input: {
-  reader: Dispatcher
+  reader: Reader
   chain_id: ChainId
 }): Promise<bigint> {
   const block = await eth_getBlockByNumber([
@@ -659,7 +659,7 @@ async function read_latest_l1_timestamp(input: {
 }
 
 async function dispatch_call<T>(
-  dispatcher: Dispatcher,
+  dispatcher: Reader,
   callable: Callable<T>,
 ): Promise<T> {
   const call = parse(CallSchema, [

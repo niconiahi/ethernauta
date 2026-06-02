@@ -28,7 +28,7 @@ import {
 } from "@ethernauta/eth"
 import type {
   Call,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
   Response,
 } from "@ethernauta/transport"
@@ -43,13 +43,13 @@ import {
 } from "valibot"
 import { describe, expect, it } from "vitest"
 
-import { fetch_message_proof } from "./fetch-message-proof"
+import { fetch_message_proof } from "./message-proof"
 
-const OP_SEPOLIA = encode_chain_id({
+const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "11155420",
 })
-const SEPOLIA = encode_chain_id({
+const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "11155111",
 })
@@ -250,7 +250,7 @@ function build_l1_reader(options: {
   blacklisted: boolean
   was_respected: boolean
   game_l2_block: typeof GAME_L2_BLOCK
-}): Dispatcher {
+}): Reader {
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
     if (method !== "eth_call") {
@@ -311,11 +311,11 @@ function build_l1_reader(options: {
 }
 
 function build_l2_reader(): {
-  reader: Dispatcher
+  reader: Reader
   calls: string[]
 } {
   const calls: string[] = []
-  const reader: Dispatcher = async (
+  const reader: Reader = async (
     call: Call,
   ): Promise<Response> => {
     const [method, params] = call
@@ -344,17 +344,17 @@ function build_l2_reader(): {
 }
 
 function build_resolved(input: {
-  l1: Dispatcher
-  l2: Dispatcher
+  l1: Reader
+  l2: Reader
 }): ResolvedBridge {
   return {
-    origin: { chain_id: OP_SEPOLIA, reader: input.l2 },
-    destination: { chain_id: SEPOLIA, reader: input.l1 },
+    l1: { chain_id: SEPOLIA_CHAIN_ID, reader: input.l1 },
+    l2: { chain_id: OP_SEPOLIA_CHAIN_ID, reader: input.l2 },
   }
 }
 
 describe("fetch_message_proof", () => {
-  it("returns the OpMessageProof for the latest resolved respected game covering the withdrawal", async () => {
+  it("returns the MessageProof for the latest resolved respected game covering the withdrawal", async () => {
     const l1_reader = build_l1_reader({
       game_status: STATUS_DEFENDER_WINS,
       blacklisted: false,

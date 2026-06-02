@@ -24,7 +24,7 @@ import {
 } from "@ethernauta/core"
 import type {
   Call,
-  Dispatcher,
+  Reader,
   ResolvedBridge,
   Response,
 } from "@ethernauta/transport"
@@ -35,11 +35,11 @@ import { describe, expect, it } from "vitest"
 import { compute_l2_deposit_tx_hash } from "./encode-deposit-tx"
 import { get_status } from "./get-status"
 
-const OP_SEPOLIA = encode_chain_id({
+const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "11155420",
 })
-const SEPOLIA = encode_chain_id({
+const SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
   reference: "11155111",
 })
@@ -162,7 +162,7 @@ const STATUS_CHALLENGER_WINS_BYTE = parse(
 )
 const RESPECTED_GAME_TYPE = parse(Uint32Schema, "0x1")
 
-function build_l1_reader(opts: L1Behavior): Dispatcher {
+function build_l1_reader(opts: L1Behavior): Reader {
   const finalized = opts.finalized ?? false
   const proven_game = opts.proven_game ?? ZERO_ADDRESS
   const proven_timestamp =
@@ -379,17 +379,17 @@ function build_l1_reader(opts: L1Behavior): Dispatcher {
   }
 }
 
-function build_resolved(l1: Dispatcher): ResolvedBridge {
+function build_resolved(l1_reader: Reader): ResolvedBridge {
   return {
-    origin: {
-      chain_id: OP_SEPOLIA,
+    l1: { chain_id: SEPOLIA_CHAIN_ID, reader: l1_reader },
+    l2: {
+      chain_id: OP_SEPOLIA_CHAIN_ID,
       reader: async (_call: Call): Promise<Response> => {
         throw new Error(
-          "origin reader should not be invoked from withdraw status",
+          "l2 reader should not be invoked from withdraw status",
         )
       },
     },
-    destination: { chain_id: SEPOLIA, reader: l1 },
   }
 }
 
@@ -580,7 +580,7 @@ type DepositReceipt =
 
 function build_deposit_l1_reader(opts: {
   receipt: DepositReceipt
-}): Dispatcher {
+}): Reader {
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
     if (method !== "eth_getTransactionReceipt") {
@@ -634,7 +634,7 @@ function build_deposit_l1_reader(opts: {
 
 function build_deposit_l2_reader(opts: {
   status: "missing" | "success" | "reverted"
-}): Dispatcher {
+}): Reader {
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
     if (method !== "eth_getTransactionReceipt") {
@@ -674,18 +674,18 @@ function build_deposit_l2_reader(opts: {
 }
 
 function build_deposit_resolved(
-  l1: Dispatcher,
-  l2?: Dispatcher,
+  l1_reader: Reader,
+  l2_reader?: Reader,
 ): ResolvedBridge {
   return {
-    origin: { chain_id: SEPOLIA, reader: l1 },
-    destination: {
-      chain_id: OP_SEPOLIA,
+    l1: { chain_id: SEPOLIA_CHAIN_ID, reader: l1_reader },
+    l2: {
+      chain_id: OP_SEPOLIA_CHAIN_ID,
       reader:
-        l2 ??
+        l2_reader ??
         (async (_call: Call): Promise<Response> => {
           throw new Error(
-            "destination reader should not be invoked in deposit status",
+            "l2 reader should not be invoked in deposit status",
           )
         }),
     },

@@ -10,10 +10,9 @@
 
 export * from "./errors"
 export * from "./execute-withdraw"
-export * from "./fetch-message-proof"
 export * from "./get-status"
 export { L2_TO_L1_MESSAGE_PASSER_ADDRESS } from "./l2-to-l1-message-passer"
-export * from "./op-message-proof"
+export * from "./message-proof"
 export * from "./prove-withdraw"
 export * from "./send-erc20"
 export * from "./send-eth"

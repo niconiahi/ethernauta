@@ -44,7 +44,10 @@
 
 import { function_selector } from "@ethernauta/abi"
 import { type Bytes, BytesSchema } from "@ethernauta/core"
-import type { RpcError } from "@ethernauta/transport"
+import type {
+  Reader,
+  RpcError,
+} from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import {
   literal,
@@ -153,4 +156,31 @@ export function try_decode_op_bridge_failure(
   const decoded = decode_op_bridge_error(inner.output)
   if (decoded === null) return null
   return new OpBridgeFailure(decoded)
+}
+
+// Transport-layer decorator: wraps any Reader so that an
+// RPC error carrying a recognized OP-portal custom-error
+// selector becomes a thrown `OpBridgeFailure`. Unrecognized
+// errors pass through unchanged — downstream methods still
+// see them as plain `error` responses and decide how to
+// throw. Compose at the call site: e.g.
+//
+//   const reader = with_op_errors(resolved.l1.reader)
+//   await eth_sendRawTransaction([signed])(
+//     [reader, { chain_id }],
+//   )
+//
+// Sibling pattern shipped by other rollup packages:
+// `with_arbitrum_errors`, `with_zksync_errors`, etc.
+export function with_op_errors(reader: Reader): Reader {
+  return async (call) => {
+    const response = await reader(call)
+    if ("error" in response) {
+      const failure = try_decode_op_bridge_failure(
+        response.error,
+      )
+      if (failure) throw failure
+    }
+    return response
+  }
 }
