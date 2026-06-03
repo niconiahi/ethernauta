@@ -4,16 +4,17 @@
 //   source: "snapshot-json"      — fetch the pre-compiled ABI JSON
 //                                   from `ethereum-optimism/optimism`'s
 //                                   `packages/contracts-bedrock/snapshots/abi/`
-//                                   folder. Used for every contract the OP
-//                                   team chose to snapshot.
-//   source: "forge-from-github"  — download a repo tarball at a pinned
-//                                   ref, extract a source subtree into a
-//                                   temp foundry workspace, optionally
-//                                   `forge install` OpenZeppelin, and
-//                                   `forge inspect <Pascal> abi --json`.
-//                                   Used for contracts the OP team did not
-//                                   snapshot (WETH9, EAS, …) and for
-//                                   non-OP repos.
+//                                   folder. Cheap, no foundry needed.
+//   source: "forge-from-github"  — download the upstream repo tarball
+//                                   at a pinned ref, drop pinned-ref
+//                                   lib tarballs alongside under
+//                                   `lib/`, write our own foundry.toml,
+//                                   and `forge inspect <Pascal> abi
+//                                   --json`. Required when the upstream
+//                                   isn't snapshotted (EAS), and used
+//                                   for the OP-side sweep in
+//                                   op_completeness_pass S2 to exercise
+//                                   the mode end-to-end.
 //
 // Usage:  pnpm --filter @ethernauta/op pull-contracts
 //
@@ -60,8 +61,6 @@ const OP_CONTRACTS_SHA =
 
 const SNAPSHOT_ABI_BASE_URL = `https://raw.githubusercontent.com/ethereum-optimism/optimism/${OP_CONTRACTS_SHA}/packages/contracts-bedrock/snapshots/abi`
 
-const DEFAULT_SOLC = "0.8.25"
-
 const AbiSchema = array(DescriptionSchema)
 
 const SnapshotJsonRecipeSchema = object({
@@ -74,22 +73,40 @@ type SnapshotJsonRecipe = InferOutput<
   typeof SnapshotJsonRecipeSchema
 >
 
+const ForgeLibSchema = object({
+  repo: string(), // "owner/name"
+  ref: string(), // SHA or tag
+  // Folder name under <project>/lib/. Lets two pins of the same
+  // upstream repo coexist (e.g. `openzeppelin-contracts` and
+  // `openzeppelin-contracts-v5`).
+  dest: string(),
+})
+
 const ForgeFromGithubRecipeSchema = object({
   source: literal("forge-from-github"),
   pascal: string(),
   kebab: string(),
-  repo: string(), // "owner/name"
-  ref: string(), // SHA or tag — pinned for reproducibility
-  // Subtree of the tarball that becomes foundry's `src/`. Example:
-  // "packages/contracts-bedrock/src". The contract being inspected
-  // lives somewhere underneath; all intra-repo imports resolve to
-  // siblings under this subtree.
-  src_subtree: string(),
+  repo: string(),
+  ref: string(),
+  // Subdir of the tarball that becomes the foundry project root.
+  // Our foundry.toml is written here; libs land under
+  // <project>/lib/. Use "." for the tarball root.
+  project_subtree: string(),
+  // Foundry's `src` setting, relative to the project root.
+  src_dir: string(),
+  // Optional solc pin. When omitted, foundry auto-resolves per-file
+  // pragma — required for the OP workspace which mixes 0.8.15 and
+  // 0.8.25 across the predeploy set.
   solc: optional(string()),
-  // OpenZeppelin git ref for `forge install`. Set only when the
-  // contract imports `@openzeppelin/contracts/*`. Default skips the
-  // install entirely.
-  oz_pin: optional(string()),
+  // Libraries vendored as tarballs into <project>/lib/<dest>/. No
+  // `forge install`, no git submodule — just an extract.
+  libs: optional(array(ForgeLibSchema)),
+  // Foundry remappings, written verbatim into foundry.toml.
+  remappings: optional(array(string())),
+  // Path-qualified `forge inspect` argument. When omitted, falls
+  // back to `pascal` alone; set to disambiguate when multiple
+  // contracts share a name.
+  contract_ref: optional(string()),
   function_allowlist: optional(array(string())),
 })
 type ForgeFromGithubRecipe = InferOutput<
@@ -101,6 +118,111 @@ const RecipeSchema = variant("source", [
   ForgeFromGithubRecipeSchema,
 ])
 type Recipe = InferOutput<typeof RecipeSchema>
+
+// OP submodule pins at OP_CONTRACTS_SHA, harvested from
+// https://api.github.com/repos/ethereum-optimism/optimism/contents/packages/contracts-bedrock/lib?ref=<sha>.
+// All submodules are vendored — even ones the 10 predeploys in the
+// sweep don't import — because foundry compiles every file under
+// `src` + `scripts` (test/ is trimmed) and `src/libraries/Predeploys.sol`
+// pulls in `scripts/libraries/Config.sol`, which transitively touches
+// most of the lib set. Mirror OP's foundry.toml remappings verbatim.
+const OP_WORKSPACE = {
+  repo: "ethereum-optimism/optimism",
+  ref: OP_CONTRACTS_SHA,
+  project_subtree: "packages/contracts-bedrock",
+  src_dir: "src",
+  libs: [
+    {
+      repo: "OpenZeppelin/openzeppelin-contracts",
+      ref: "ecd2ca2cd7cac116f7a37d0e474bbb3d7d5e1c4d",
+      dest: "openzeppelin-contracts",
+    },
+    {
+      repo: "OpenZeppelin/openzeppelin-contracts-upgradeable",
+      ref: "0a2cb9a445c365870ed7a8ab461b12acf3e27d63",
+      dest: "openzeppelin-contracts-upgradeable",
+    },
+    {
+      repo: "OpenZeppelin/openzeppelin-contracts",
+      ref: "dbb6104ce834628e473d2173bbc9d47f81a9eec3",
+      dest: "openzeppelin-contracts-v5",
+    },
+    {
+      repo: "transmissions11/solmate",
+      ref: "8f9b23f8838670afda0fd8983f2c41e8037ae6bc",
+      dest: "solmate",
+    },
+    {
+      repo: "ethereum-optimism/lib-keccak",
+      ref: "3b1e7bbb4cc23e9228097cfebe42aedaf3b8f2b9",
+      dest: "lib-keccak",
+    },
+    {
+      repo: "Vectorized/solady",
+      ref: "502cc1ea718e6fa73b380635ee0868b0740595f0",
+      dest: "solady",
+    },
+    {
+      repo: "Vectorized/solady",
+      ref: "e0ef35adb0ccd1032794731a995cb599bba7b537",
+      dest: "solady-v0.0.245",
+    },
+    {
+      repo: "foundry-rs/forge-std",
+      ref: "6853b9ec7df5dc0c213b05ae67785ad4f4baa0ea",
+      dest: "forge-std",
+    },
+    {
+      repo: "safe-global/safe-contracts",
+      ref: "bf943f80fec5ac647159d26161446ac5d716a294",
+      dest: "safe-contracts",
+    },
+    {
+      repo: "runtimeverification/kontrol-cheatcodes",
+      ref: "2c48ae1ab44228c199dca29414c0b4b18a3434e6",
+      dest: "kontrol-cheatcodes",
+    },
+  ],
+  remappings: [
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts",
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
+    "@openzeppelin/contracts-v5/=lib/openzeppelin-contracts-v5/contracts",
+    "@rari-capital/solmate/=lib/solmate",
+    "@lib-keccak/=lib/lib-keccak/contracts/lib",
+    "@solady/=lib/solady/src",
+    "@solady-v0.0.245/=lib/solady-v0.0.245/src",
+    "forge-std/=lib/forge-std/src",
+    "ds-test/=lib/forge-std/lib/ds-test/src",
+    "safe-contracts/=lib/safe-contracts/contracts",
+    "kontrol-cheatcodes/=lib/kontrol-cheatcodes/src",
+    "interfaces/=interfaces",
+  ],
+}
+
+// EAS v1.4.0 ships its production layout under `contracts/`. The
+// foundry.toml in the tarball pins solc 0.8.28 with a single OZ
+// remapping; we match the OZ version EAS itself pins
+// (`@openzeppelin/contracts@5.2.0`).
+const EAS_CONTRACTS_TAG = "v1.4.0"
+const EAS_OZ_REF = "v5.2.0"
+
+const EAS_WORKSPACE = {
+  repo: "ethereum-attestation-service/eas-contracts",
+  ref: EAS_CONTRACTS_TAG,
+  project_subtree: ".",
+  src_dir: "contracts",
+  solc: "0.8.28",
+  libs: [
+    {
+      repo: "OpenZeppelin/openzeppelin-contracts",
+      ref: EAS_OZ_REF,
+      dest: "openzeppelin-contracts",
+    },
+  ],
+  remappings: [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+  ],
+}
 
 const PREDEPLOY_RECIPES: Recipe[] = [
   parse(RecipeSchema, {
@@ -132,6 +254,102 @@ const PREDEPLOY_RECIPES: Recipe[] = [
     source: "snapshot-json",
     pascal: "SequencerFeeVault",
     kebab: "sequencer-fee-vault",
+  }),
+  // op_completeness_pass S2 — vendored via foundry+tarball to
+  // exercise the forge-from-github mode end-to-end. The same ABIs
+  // are also available in OP's `snapshots/abi/` at this SHA; we
+  // build from source by design to validate the new mode.
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "WETH",
+    kebab: "weth",
+    contract_ref: "src/L2/WETH.sol:WETH",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "OptimismMintableERC20Factory",
+    kebab: "optimism-mintable-erc20-factory",
+    contract_ref:
+      "src/universal/OptimismMintableERC20Factory.sol:OptimismMintableERC20Factory",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "L1BlockNumber",
+    kebab: "l1-block-number",
+    contract_ref:
+      "src/legacy/L1BlockNumber.sol:L1BlockNumber",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "L2ERC721Bridge",
+    kebab: "l2-erc721-bridge",
+    contract_ref:
+      "src/L2/L2ERC721Bridge.sol:L2ERC721Bridge",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "OptimismMintableERC721Factory",
+    kebab: "optimism-mintable-erc721-factory",
+    contract_ref:
+      "src/L2/OptimismMintableERC721Factory.sol:OptimismMintableERC721Factory",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "ProxyAdmin",
+    kebab: "proxy-admin",
+    contract_ref: "src/universal/ProxyAdmin.sol:ProxyAdmin",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "BaseFeeVault",
+    kebab: "base-fee-vault",
+    contract_ref: "src/L2/BaseFeeVault.sol:BaseFeeVault",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "GovernanceToken",
+    kebab: "governance-token",
+    contract_ref:
+      "src/governance/GovernanceToken.sol:GovernanceToken",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "LegacyMessagePasser",
+    kebab: "legacy-message-passer",
+    contract_ref:
+      "src/legacy/LegacyMessagePasser.sol:LegacyMessagePasser",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...OP_WORKSPACE,
+    pascal: "DeployerWhitelist",
+    kebab: "deployer-whitelist",
+    contract_ref:
+      "src/legacy/DeployerWhitelist.sol:DeployerWhitelist",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...EAS_WORKSPACE,
+    pascal: "SchemaRegistry",
+    kebab: "schema-registry",
+    contract_ref:
+      "contracts/SchemaRegistry.sol:SchemaRegistry",
+  }),
+  parse(RecipeSchema, {
+    source: "forge-from-github",
+    ...EAS_WORKSPACE,
+    pascal: "EAS",
+    kebab: "eas",
+    contract_ref: "contracts/EAS.sol:EAS",
   }),
 ]
 
@@ -265,51 +483,69 @@ async function ensure_forge_workspace(
   FORGE_WORKSPACE_PATHS.push(work)
   const tarball_url = `https://codeload.github.com/${recipe.repo}/tar.gz/${recipe.ref}`
   const tarball = await fetch_bytes(tarball_url)
-  const repo_dir = join(work, "repo")
-  mkdirSync(repo_dir, { recursive: true })
   execFileSync(
     "tar",
-    ["-xzf", "-", "-C", repo_dir, "--strip-components=1"],
+    ["-xzf", "-", "-C", work, "--strip-components=1"],
     { input: tarball, maxBuffer: 512 * 1024 * 1024 },
   )
-  const src_path = join(repo_dir, recipe.src_subtree)
-  if (!existsSync(src_path)) {
+  const project =
+    recipe.project_subtree === "."
+      ? work
+      : join(work, recipe.project_subtree)
+  if (!existsSync(project)) {
     throw new Error(
-      `subtree ${recipe.src_subtree} missing from ${recipe.repo}@${recipe.ref}`,
+      `project_subtree ${recipe.project_subtree} missing from ${recipe.repo}@${recipe.ref}`,
     )
   }
-  const remappings: string[] = []
-  if (recipe.oz_pin) {
-    // forge install needs the workspace to look like a git repo when
-    // we don't pass --no-git, and we don't want to leave one behind.
+  // Foundry compiles every Solidity file under `src` + `script` +
+  // `test` by default. OP's `src/libraries/Predeploys.sol` imports
+  // from `scripts/libraries/Config.sol` so the scripts/ tree is part
+  // of the compile graph and can't be trimmed; only `test/` is safe
+  // to drop. `forge-artifacts/` and `cache/` won't exist in a fresh
+  // tarball.
+  const test_path = join(project, "test")
+  if (existsSync(test_path)) {
+    rmSync(test_path, { recursive: true, force: true })
+  }
+  const lib_dir = join(project, "lib")
+  mkdirSync(lib_dir, { recursive: true })
+  for (const lib of recipe.libs ?? []) {
+    const lib_path = join(lib_dir, lib.dest)
+    // The OP tarball ships empty `lib/<submodule>/` placeholders for
+    // every gitlinked submodule. Wipe them before extracting our
+    // pinned tarball into the same path.
+    if (existsSync(lib_path)) {
+      rmSync(lib_path, { recursive: true, force: true })
+    }
+    mkdirSync(lib_path, { recursive: true })
+    const lib_tarball = await fetch_bytes(
+      `https://codeload.github.com/${lib.repo}/tar.gz/${lib.ref}`,
+    )
     execFileSync(
-      "forge",
-      [
-        "install",
-        "--no-commit",
-        "--no-git",
-        `OpenZeppelin/openzeppelin-contracts@${recipe.oz_pin}`,
-      ],
-      { cwd: work, stdio: "inherit" },
-    )
-    remappings.push(
-      "@openzeppelin/=lib/openzeppelin-contracts/",
+      "tar",
+      ["-xzf", "-", "-C", lib_path, "--strip-components=1"],
+      { input: lib_tarball, maxBuffer: 256 * 1024 * 1024 },
     )
   }
-  const src_rel = `repo/${recipe.src_subtree}`
-  const solc = recipe.solc ?? DEFAULT_SOLC
-  writeFileSync(
-    join(work, "foundry.toml"),
-    [
-      "[profile.default]",
-      `src = "${src_rel}"`,
-      'out = "out"',
-      `solc = "${solc}"`,
-      `remappings = [${remappings.map((r) => `"${r}"`).join(", ")}]`,
-      "",
-    ].join("\n"),
+  const remappings = recipe.remappings ?? []
+  const lines = [
+    "[profile.default]",
+    `src = "${recipe.src_dir}"`,
+    'out = "out"',
+  ]
+  if (recipe.solc) lines.push(`solc = "${recipe.solc}"`)
+  lines.push(
+    `remappings = [${remappings.map((r) => `"${r}"`).join(", ")}]`,
+    "",
   )
-  const workspace = { root: work, src_path }
+  writeFileSync(
+    join(project, "foundry.toml"),
+    lines.join("\n"),
+  )
+  const workspace = {
+    root: project,
+    src_path: join(project, recipe.src_dir),
+  }
   FORGE_WORKSPACES.set(key, workspace)
   return workspace
 }
@@ -319,9 +555,10 @@ async function vendor_forge_from_github(
   target_root: string,
 ): Promise<VendorResult> {
   const workspace = await ensure_forge_workspace(recipe)
+  const arg = recipe.contract_ref ?? recipe.pascal
   const stdout = execFileSync(
     "forge",
-    ["inspect", recipe.pascal, "abi", "--json"],
+    ["inspect", arg, "abi", "--json"],
     { cwd: workspace.root, encoding: "utf8" },
   )
   const upstream = parse(AbiSchema, JSON.parse(stdout))

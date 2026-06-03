@@ -1,0 +1,124 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getSchema",
+    "inputs": [
+      {
+        "name": "uid",
+        "type": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "uid",
+            "type": "bytes32"
+          },
+          {
+            "name": "resolver",
+            "type": "address"
+          },
+          {
+            "name": "revocable",
+            "type": "bool"
+          },
+          {
+            "name": "schema",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "register",
+    "inputs": [
+      {
+        "name": "schema",
+        "type": "string"
+      },
+      {
+        "name": "resolver",
+        "type": "address"
+      },
+      {
+        "name": "revocable",
+        "type": "bool"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "version",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "Registered",
+    "inputs": [
+      {
+        "name": "uid",
+        "type": "bytes32",
+        "indexed": true
+      },
+      {
+        "name": "registerer",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "schema",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "uid",
+            "type": "bytes32"
+          },
+          {
+            "name": "resolver",
+            "type": "address"
+          },
+          {
+            "name": "revocable",
+            "type": "bool"
+          },
+          {
+            "name": "schema",
+            "type": "string"
+          }
+        ],
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "AlreadyExists",
+    "inputs": []
+  }
+]
