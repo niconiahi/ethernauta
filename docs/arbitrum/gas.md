@@ -107,7 +107,7 @@ When in doubt, trust `NodeInterface.gasEstimateComponents` — it's the chain's 
 - [`/op/gas`](/op/gas) — the sibling OP-Stack fee model.
 - [`/eips/1559`](/eips/1559) — EIP-1559 base-fee arithmetic.
 - [`/eth/overview`](/eth/overview) — substrate `eth_*` methods.
-- [`/zksync/overview`](/zksync/overview) — the sibling zkSync fee model.
+- [zkSync Era fee model](https://docs.zksync.io/zk-stack/concepts/transaction-lifecycle/fee-model) — the sibling zkSync fee model.
 - [Arbitrum gas + fees — Arbitrum docs](https://docs.arbitrum.io/how-arbitrum-works/gas-fees) — authoritative.
 - [`NodeInterface` source](https://github.com/OffchainLabs/nitro-contracts/blob/main/src/node-interface/NodeInterface.sol)
 - [`ArbGasInfo` source](https://github.com/OffchainLabs/nitro-contracts/blob/main/src/precompiles/ArbGasInfo.sol)

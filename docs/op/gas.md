@@ -140,7 +140,7 @@ When in doubt, trust `GasPriceOracle.getL1Fee` — it's the chain's own statemen
 - [`/eips/1559`](/eips/1559) — EIP-1559 base-fee arithmetic.
 - [`/eth/overview`](/eth/overview) — `eth_feeHistory`, `eth_estimateGas`, `eth_getTransactionCount`.
 - [`/arbitrum/gas`](/arbitrum/gas) — Arbitrum's L1+L2 split.
-- [`/zksync/overview`](/zksync/overview) — zkSync's pubdata-priced fee model.
+- [zkSync Era fee model](https://docs.zksync.io/zk-stack/concepts/transaction-lifecycle/fee-model) — zkSync's pubdata-priced fee model.
 - [OP Stack fee-mechanism spec](https://specs.optimism.io/protocol/exec-engine.html#fee-mechanism) — authoritative.
 - [`GasPriceOracle` source](https://github.com/ethereum-optimism/optimism/blob/develop/packages/contracts-bedrock/src/L2/GasPriceOracle.sol)
 - [`L1Block` source](https://github.com/ethereum-optimism/optimism/blob/develop/packages/contracts-bedrock/src/L2/L1Block.sol)

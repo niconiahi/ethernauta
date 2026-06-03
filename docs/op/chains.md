@@ -33,8 +33,7 @@ Base (8453) and Base Sepolia (84532) are not in the superchain-registry
 future bump once a secondary source is wired in.
 
 The two `?`-marked contracts have legitimate normative reasons to be
-absent on some chains — see [Optional contracts](#optional-contracts)
-below.
+absent on some chains — see the **Optional contracts** section below.
 
 ## Lookup
 
