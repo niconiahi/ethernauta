@@ -1,0 +1,52 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-zksync-withdraw-eth/demo.tsx?highlighted"
+import { BridgeZksyncWithdrawEthDemo } from "../../examples/bridge-zksync-withdraw-eth/demo"
+
+# Bridge — zkSync withdraw_eth lifecycle
+
+zkSync Era L2→L1 withdrawals are validity-proof finalized on L1
+through the L1Nullifier contract. There is no separate "prove"
+step — `L1Nullifier.finalizeDeposit` validates the L2→L1 log
+merkle proof and releases the L1-locked ETH atomically. The
+entrypoint is named "Deposit" because the asset-router treats
+every L2→L1 unlock as the L1 completion of a prior deposit/
+withdrawal pair (post-v26 era-contracts API).
+
+This demo walks the four-state withdraw union surfaced by
+`get_status`:
+
+1. `initiated_l2` — the L2 burn (`L2BaseToken.withdraw`)
+   landed but the L2→L1 log isn't yet indexed by the L2 node.
+2. `batch_pending` — the log is indexed; the originating batch
+   hasn't yet been committed + verified on L1 (~5 min on Era
+   Sepolia, ~10 hours on mainnet).
+3. `ready_to_finalize` — `zks_getL2ToL1LogProof` returns a
+   bundle; `fetch_message_proof` + `execute_withdraw` can ship.
+4. `finalized` — `L1Nullifier.isWithdrawalFinalized` is `true`;
+   the L1 transfer landed.
+
+Each phase rebuilds the bridge resolver because the signer's
+`chain_id` switches from Era Sepolia (L2 burn) to Sepolia (L1
+execute). State is persisted to localStorage so the dapp can be
+closed and reopened during the multi-hour confirm window.
+
+`fetch_message_proof` composes a single `zks_getL2ToL1LogProof`
+read; if it returns `null` the verb throws and the dapp keeps
+polling `get_status` until `ready_to_finalize`. Then
+`execute_withdraw` broadcasts a single L1 transaction carrying
+the proof bundle and the L2 sender (the `L2BaseToken` predeploy
+at `0x800a` for ETH withdrawals).
+
+The user pastes `l2_to_l1_log_index`, `l2_tx_number_in_batch`
+and the raw `message` bytes from the L2 receipt + L1Messenger
+event — a future helper will derive them from the L2 receipt
+directly.
+
+<BridgeZksyncWithdrawEthDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-zksync-withdraw-eth/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

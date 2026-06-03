@@ -17,19 +17,29 @@
 //
 // `ZksyncBridgeErrorSchema` is a discriminated union over the
 // failure modes a dapp meaningfully wants to recover from.
-// Slice 4a ships the one nominal variant per
-// `01-scope.md`'s locked spec; the empty selector table
-// matches arbitrum 3a's foundation cadence — `send_eth`'s
-// Bridgehub reverts are validation-style cases (`wrong chainId`,
-// `insufficient mintValue`, `pubdata limit mismatch`) that are
-// not user-actionable, so they surface as plain RPC errors
-// with the upstream message verbatim. Slices 4b / 4c populate
-// the table when the matching reverts become reachable.
+// Slice 4a shipped the nominal `ProofUnavailable` variant per
+// `01-scope.md`'s locked spec with an empty selector table.
+// Slice 4c adds `AlreadyExecuted` for the
+// `L1Nullifier.WithdrawalAlreadyFinalized` selector — mirrors
+// Arbitrum 3c's `Outbox.AlreadySpent` → `AlreadyExecuted`
+// mapping for cross-rollup naming consistency.
+//
+// Other L1Nullifier custom errors (`Unauthorized`,
+// `EmptyDeposit`, `MerkleProofVerificationFailed`,
+// `MalformedMessage`, …) are intentionally not mapped — they
+// are proof-malformation / validation-style failures the dapp
+// can't recover from inline; they surface as plain RPC errors
+// with the upstream message verbatim.
 //
 //   - `ProofUnavailable` — `L1Nullifier.finalizeDeposit`
 //     reverts because the message proof the caller supplied
 //     anchors to a batch whose covering state-diff has not
-//     yet been verified on L1 (slice 4c).
+//     yet been verified on L1.
+//   - `AlreadyExecuted` —
+//     `L1Nullifier.finalizeDeposit` reverts because the L2→L1
+//     unlock at `(chainId, l2BatchNumber, l2MessageIndex)` has
+//     already been finalized. Replaying is a no-op the dapp
+//     can ignore.
 //
 // Cross-rollup unification of `ProofUnavailable` is
 // intentionally out of scope per `01-scope.md` — each rollup
@@ -48,6 +58,7 @@
 //
 // Slice 4a of phase 05 — see tmp/plans/05_bridge_package/.
 
+import { function_selector } from "@ethernauta/abi"
 import { type Bytes, BytesSchema } from "@ethernauta/core"
 import type {
   Reader,
@@ -65,6 +76,7 @@ import {
 
 export const ZksyncBridgeErrorSchema = variant("kind", [
   object({ kind: literal("ProofUnavailable") }),
+  object({ kind: literal("AlreadyExecuted") }),
 ])
 export type ZksyncBridgeError = InferOutput<
   typeof ZksyncBridgeErrorSchema
@@ -79,16 +91,25 @@ export class ZksyncBridgeFailure extends Error {
   }
 }
 
-// Selector table. Empty at 4a — every Bridgehub revert reachable
-// from `send_eth` is validation-style and surfaces as a plain
-// RPC error with the upstream message verbatim, mirroring the
-// arbitrum 3a cadence before 3b / 3c populated the
-// `ArbRetryableTx` + `Outbox` selectors. Slices 4b / 4c append
-// `claimFailedDeposit` failure modes + `WithdrawalAlreadyFinalized`
-// (→ `AlreadyExecuted`, a new variant) here.
+// Selector table. Slice 4c wires the
+// `L1Nullifier.WithdrawalAlreadyFinalized` custom error
+// surfaced by `execute_withdraw` retries. The signature below
+// matches
+// `matter-labs/era-contracts/blob/v0.29.2/l1-contracts/contracts/bridge/L1Nullifier.sol`.
+// `ProofUnavailable` stays unmapped — the upstream revert is
+// not a custom error but a require-string thrown by
+// `L1Messenger.proveL2MessageInclusionShared` inside
+// `finalizeDeposit`'s validation path; surfaces as a plain RPC
+// error with the upstream message verbatim until the L1Nullifier
+// migrates to a typed selector.
+const WITHDRAWAL_ALREADY_FINALIZED_SELECTOR =
+  function_selector("WithdrawalAlreadyFinalized", [])
+
 function selector_to_kind(
-  _selector: string,
+  selector: string,
 ): ZksyncBridgeError["kind"] | null {
+  if (selector === WITHDRAWAL_ALREADY_FINALIZED_SELECTOR)
+    return "AlreadyExecuted"
   return null
 }
 

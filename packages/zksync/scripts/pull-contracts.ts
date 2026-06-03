@@ -36,6 +36,7 @@ import {
   array,
   type InferOutput,
   object,
+  optional,
   parse,
   string,
 } from "valibot"
@@ -54,12 +55,22 @@ const RecipeSchema = object({
   pascal: string(),
   kebab: string(),
   workspace: string(),
+  // Per-workspace artifact root. `l1-contracts` ships foundry's
+  // `out/` directory; `system-contracts` ships zksolc's
+  // `zkout/` directory because L2 system contracts target zkEVM
+  // bytecode. The ABI shape is compile-target-independent in
+  // both cases. Defaults to `"out"` to keep the L1 recipes
+  // unchanged.
+  subdir: optional(string()),
 })
 type Recipe = InferOutput<typeof RecipeSchema>
 
 // Slice 4a vendors the three L1-side bridge contracts from
-// the `l1-contracts` workspace tarball. Slices 4b / 4c consume
-// the same files (no new vendoring needed).
+// the `l1-contracts` workspace tarball. Slice 4c adds two L2
+// recipes for the withdraw side: `L2BaseToken` (ETH burn on
+// L2) from the `system-contracts` tarball under `zkout/`, and
+// `L2AssetRouter` (ERC-20 burn on L2) from the same
+// `l1-contracts` tarball under the L2 path.
 const RECIPES: Recipe[] = [
   parse(RecipeSchema, {
     pascal: "Bridgehub",
@@ -74,6 +85,17 @@ const RECIPES: Recipe[] = [
   parse(RecipeSchema, {
     pascal: "L1AssetRouter",
     kebab: "l1-asset-router",
+    workspace: "l1-contracts",
+  }),
+  parse(RecipeSchema, {
+    pascal: "L2BaseToken",
+    kebab: "l2-base-token",
+    workspace: "system-contracts",
+    subdir: "zkout",
+  }),
+  parse(RecipeSchema, {
+    pascal: "L2AssetRouter",
+    kebab: "l2-asset-router",
     workspace: "l1-contracts",
   }),
 ]
@@ -116,8 +138,9 @@ function extract_artifact(
   tarball: Buffer,
   workspace: string,
   pascal: string,
+  subdir: string,
 ): string {
-  const entry = `./${workspace}/out/${pascal}.sol/${pascal}.json`
+  const entry = `./${workspace}/${subdir}/${pascal}.sol/${pascal}.json`
   const stdout = execFileSync(
     "tar",
     ["-xzO", "-f", "-", entry],
@@ -139,6 +162,7 @@ async function vendor_github_artifact(
     tarball,
     recipe.workspace,
     recipe.pascal,
+    recipe.subdir ?? "out",
   )
   const artifact = parse(
     HardhatArtifactSchema,

@@ -157,5 +157,9 @@ export default [
       "bridge-zksync-claim-failed-deposit",
       "./routes/examples/bridge-zksync-claim-failed-deposit.mdx",
     ),
+    route(
+      "bridge-zksync-withdraw-eth",
+      "./routes/examples/bridge-zksync-withdraw-eth.mdx",
+    ),
   ]),
 ] satisfies RouteConfig
