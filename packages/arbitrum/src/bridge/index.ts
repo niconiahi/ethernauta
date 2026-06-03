@@ -20,6 +20,7 @@
 
 export * from "./bridge"
 export * from "./cancel-retryable"
+export * from "./encode-retryable-tx"
 export * from "./errors"
 export * from "./execute-withdraw"
 export * from "./get-status"

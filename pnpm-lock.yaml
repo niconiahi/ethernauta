@@ -260,6 +260,9 @@ importers:
       '@ethernauta/utils':
         specifier: workspace:*
         version: link:../utils
+      '@noble/hashes':
+        specifier: ^1.8.0
+        version: 1.8.0
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
@@ -671,6 +674,9 @@ importers:
       '@ethernauta/abi':
         specifier: workspace:*
         version: link:../abi
+      '@ethernauta/chain':
+        specifier: workspace:*
+        version: link:../chain
       '@ethernauta/core':
         specifier: workspace:*
         version: link:../core

@@ -45,7 +45,8 @@
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/transport": "workspace:*",
-    "@ethernauta/utils": "workspace:*"
+    "@ethernauta/utils": "workspace:*",
+    "@noble/hashes": "^1.8.0"
   },
   "peerDependencies": {
     "valibot": "^1.1.0"
