@@ -12,21 +12,21 @@
 //      `fetch_message_proof` + `execute_withdraw` can ship.
 //   4. executed — the L1 Outbox transaction landed.
 //
-// The user pastes the L2 `L2ToL1Tx` message fields from
-// Arbiscan's "L2 → L1 messages" tab on the initiating L2 tx.
-// That paste-then-persist shape mirrors the retryable demo's
-// ticket-id flow; a future helper will decode the L2 receipt's
-// `L2ToL1Tx` event directly. The bridge resolver is rebuilt
-// per phase because the signer switches from Arb Sepolia at
-// initiation to Sepolia at execution.
+// Once the L2 burn lands, the demo fetches the L2 receipt and
+// decodes its `ArbSys.L2ToL1Tx` event via
+// `decode_l2_to_l1_tx_from_receipt` to recover the canonical
+// `WithdrawalTransaction` payload. The bridge resolver is
+// rebuilt per phase because the signer switches from Arb
+// Sepolia at initiation to Sepolia at execution.
 
 import "./demo.css"
 import {
+  type ArbitrumBridgeStatus,
   create_bridge,
+  decode_l2_to_l1_tx_from_receipt,
   execute_withdraw,
   fetch_message_proof,
   get_status,
-  type ArbitrumBridgeStatus,
   start_withdraw_eth,
   WithdrawalTransactionSchema,
 } from "@ethernauta/arbitrum"
@@ -37,8 +37,12 @@ import {
   Hash32Schema,
   UintSchema,
 } from "@ethernauta/core"
+import { eth_getTransactionReceipt } from "@ethernauta/eth"
 import { useProvider } from "@ethernauta/react"
-import { encode_chain_id, http } from "@ethernauta/transport"
+import {
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
 import {
   useCallback,
@@ -182,7 +186,9 @@ function LinkRow({
   )
 }
 
-function status_label(status: ArbitrumBridgeStatus): string {
+function status_label(
+  status: ArbitrumBridgeStatus,
+): string {
   switch (status.state) {
     case "submitted_l1":
       return "submitted on L1"
@@ -213,9 +219,6 @@ export function BridgeArbitrumWithdrawEthDemo() {
     owner ?? "0x000000000000000000000000000000000000dEaD",
   )
   const [_amount, set_amount] = useState(DEFAULT_AMOUNT_HEX)
-  const [_message_input, set_message_input] = useState(
-    "",
-  )
   const [persisted, set_persisted] =
     useState<PersistedState | null>(null)
   const [status, set_status] =
@@ -277,6 +280,57 @@ export function BridgeArbitrumWithdrawEthDemo() {
     }
   }, [persisted, refresh_status])
 
+  // Auto-decode the WithdrawalTransaction from the L2 receipt
+  // once the L2 burn is mined. Replaces the older paste-from-
+  // explorer idiom.
+  useEffect(() => {
+    if (!persisted || persisted.message !== null) return
+    let cancelled = false
+    let timer_id: number | null = null
+    const attempt = async (): Promise<void> => {
+      try {
+        const transport = bridge({
+          l1: SEPOLIA_CHAIN_ID,
+          l2: ARB_SEPOLIA_CHAIN_ID,
+        })
+        const receipt = await eth_getTransactionReceipt([
+          persisted.l2_tx_hash,
+        ])([
+          transport.l2.reader,
+          { chain_id: ARB_SEPOLIA_CHAIN_ID },
+        ])
+        if (cancelled) return
+        if (receipt === null) {
+          timer_id = window.setTimeout(attempt, 15_000)
+          return
+        }
+        const decoded = decode_l2_to_l1_tx_from_receipt({
+          logs: receipt.logs,
+        })
+        if (cancelled) return
+        if (decoded === null) {
+          set_error(
+            "L2 receipt contained no L2ToL1Tx event — verify the L2 tx hash",
+          )
+          return
+        }
+        const next: PersistedState = {
+          ...persisted,
+          message: decoded,
+        }
+        write_persisted(next)
+        set_persisted(next)
+      } catch (e) {
+        if (!cancelled) set_error(format_error(e))
+      }
+    }
+    attempt()
+    return () => {
+      cancelled = true
+      if (timer_id !== null) window.clearTimeout(timer_id)
+    }
+  }, [persisted])
+
   const preview = useMemo(() => {
     const recipient_result = safeParse(
       AddressSchema,
@@ -291,19 +345,6 @@ export function BridgeArbitrumWithdrawEthDemo() {
       amount_label: format_wei(_amount),
     }
   }, [_recipient, _amount])
-
-  const parsed_message = useMemo(() => {
-    try {
-      const decoded = JSON.parse(_message_input)
-      const result = safeParse(
-        WithdrawalTransactionSchema,
-        decoded,
-      )
-      return result.success ? result.output : null
-    } catch {
-      return null
-    }
-  }, [_message_input])
 
   if (!owner) return <SignInHint />
 
@@ -351,18 +392,9 @@ export function BridgeArbitrumWithdrawEthDemo() {
     }
   }
 
-  function save_message() {
-    if (!persisted || !parsed_message) return
-    const next: PersistedState = {
-      ...persisted,
-      message: parsed_message,
-    }
-    write_persisted(next)
-    set_persisted(next)
-  }
-
   async function do_execute() {
-    if (!provider || !persisted || !persisted.message) return
+    if (!provider || !persisted || !persisted.message)
+      return
     set_error(null)
     try {
       set_phase("executing")
@@ -410,18 +442,22 @@ export function BridgeArbitrumWithdrawEthDemo() {
   return (
     <div>
       <Row label="Origin" value="Arbitrum Sepolia (L2)" />
-      <Row label="Destination" value="Ethereum Sepolia (L1)" />
+      <Row
+        label="Destination"
+        value="Ethereum Sepolia (L1)"
+      />
       <Row label="Account" value={owner} mono />
       <div className="bridge-arbitrum-withdraw-eth-note">
-        Arbitrum withdrawals go through the canonical
-        L2→L1 message path: burn on L2 via{" "}
-        <code>ArbSys.withdrawEth</code>, wait for the covering
-        Rollup assertion to be confirmed on L1 (~6.4 days on
-        mainnet / ~1 hour on Sepolia), then redeem on L1 via{" "}
+        Arbitrum withdrawals go through the canonical L2→L1
+        message path: burn on L2 via{" "}
+        <code>ArbSys.withdrawEth</code>, wait for the
+        covering Rollup assertion to be confirmed on L1
+        (~6.4 days on mainnet / ~1 hour on Sepolia), then
+        redeem on L1 via{" "}
         <code>Outbox.executeTransaction</code> with a merkle
         proof. The send-root the proof anchors to has to be
-        present in <code>Outbox.roots</code> for the L1 redeem
-        to succeed — <code>get_status</code> surfaces{" "}
+        present in <code>Outbox.roots</code> for the L1
+        redeem to succeed — <code>get_status</code> surfaces{" "}
         <code>confirming</code> until that lands, then{" "}
         <code>executable</code>.
       </div>
@@ -495,49 +531,33 @@ export function BridgeArbitrumWithdrawEthDemo() {
           </div>
 
           <div className="bridge-arbitrum-withdraw-eth-section">
-            <h3>3 · Paste WithdrawalTransaction</h3>
+            <h3>3 · Decoded WithdrawalTransaction</h3>
             <div className="bridge-arbitrum-withdraw-eth-note">
-              From Arbiscan's L2→L1 messages tab on the L2
-              tx, copy the message fields into the JSON box
-              below. Shape:{" "}
-              <code>
-                {"{ position, l2Sender, to, l2Block, l1Block, l2Timestamp, value, data }"}
-              </code>{" "}
-              — every field hex-encoded
-              (`0x`-prefixed). A future helper will derive this
-              from the L2 receipt's <code>L2ToL1Tx</code> event
-              automatically.
+              Recovered directly from the L2 receipt's{" "}
+              <code>ArbSys.L2ToL1Tx</code> event via{" "}
+              <code>decode_l2_to_l1_tx_from_receipt</code> —
+              no paste-from-explorer step.
             </div>
-            <div className="bridge-arbitrum-withdraw-eth-form">
-              <label className="bridge-arbitrum-withdraw-eth-label">
-                message (JSON)
-                <textarea
-                  className="bridge-arbitrum-withdraw-eth-input"
-                  value={
-                    persisted.message
-                      ? JSON.stringify(
-                          persisted.message,
-                          null,
-                          2,
-                        )
-                      : _message_input
-                  }
-                  onChange={(e) =>
-                    set_message_input(e.currentTarget.value)
-                  }
-                  readOnly={persisted.message !== null}
-                  rows={10}
-                />
-              </label>
-            </div>
-            {persisted.message === null && (
-              <div className="bridge-arbitrum-withdraw-eth-actions">
-                <Button
-                  onClick={save_message}
-                  disabled={!parsed_message}
-                >
-                  Save message
-                </Button>
+            {persisted.message === null ? (
+              <div className="bridge-arbitrum-withdraw-eth-status">
+                waiting for the L2 receipt + decoding the
+                L2ToL1Tx event…
+              </div>
+            ) : (
+              <div className="bridge-arbitrum-withdraw-eth-form">
+                <label className="bridge-arbitrum-withdraw-eth-label">
+                  message
+                  <textarea
+                    className="bridge-arbitrum-withdraw-eth-input"
+                    value={JSON.stringify(
+                      persisted.message,
+                      null,
+                      2,
+                    )}
+                    readOnly
+                    rows={10}
+                  />
+                </label>
               </div>
             )}
           </div>
