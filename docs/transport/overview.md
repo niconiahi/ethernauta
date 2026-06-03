@@ -194,12 +194,13 @@ Use these if you're building a custom transport (e.g. an in-memory mock for test
 | `Readable<T>` | `(_resolved: ResolvedReader) => Promise<T>` |
 | `Writable<T>` | `(_resolved: ResolvedWriter) => Promise<T>` |
 | `Callable<T>` | composable read against a contract |
+| `Bridgeable<T>` | `(_resolved: ResolvedBridge) => Promise<T>` — pairs of (L1, L2) chain transports, consumed by per-rollup bridge verbs in `@ethernauta/op`, `@ethernauta/arbitrum`, `@ethernauta/zksync`. Produced by `create_bridge(CHAINS)({ l1_chain_id, l2_chain_id })`. |
 | `Http`, `HttpOptions`, `HttpRetryOptions`, `HttpBatchOptions` | HTTP transport types |
 | `Reader`, `Writer`, `Multicall` | factory return shapes |
 | `Call`, `ContractContext` | for `Callable<T>` builders |
 | `RequestArguments`, `Request`, `Response` | JSON-RPC wire types |
 | `ProviderRpcError` | EIP-1193 error type |
-| `Dispatcher`, `DispatcherStrategy` | per-chain transport strategy — see [strategy page](/concepts/transport-strategy) |
+| `Dispatcher`, `ReaderStrategy` | per-chain transport strategy — see [strategy page](/concepts/transport-strategy) |
 
 ## See also
 

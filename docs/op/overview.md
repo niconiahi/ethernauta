@@ -23,7 +23,7 @@ OP Stack chains are EVM-equivalent at the execution layer. What differs from L1:
 - **Two-dimensional fee model.** Users pay L2 EIP-1559 execution gas *plus* an L1 calldata surcharge collected by the [`GasPriceOracle` predeploy](https://specs.optimism.io/protocol/predeploys.html#gaspriceoracle) at `0x420…000F`. See [`/op/gas`](/op/gas).
 - **Predeploys.** A fixed set of contracts live at well-known `0x420…` addresses on every OP Stack chain — `GasPriceOracle`, `L1Block`, `L2StandardBridge`, `L2CrossDomainMessenger`, etc. See [`/op/predeploys`](/op/predeploys).
 - **Op-node JSON-RPC.** A small `optimism_*` namespace exposing sync state, the active rollup config, and output roots. Separate from the execution-client `eth_*` namespace. See [`/op/rpc-methods`](/op/rpc-methods).
-- **Deposit transaction type `0x7E`.** L1 → L2 forced inclusion. Out of scope for now — lands with the bridge phase.
+- **Deposit transaction type `0x7E`.** L1 → L2 forced inclusion. Encoded by `@ethernauta/op/bridge` and consumed by the deposit verbs (`send_eth`, `send_erc20`, `send_message`) — see [`/bridge/op`](/bridge/op).
 
 ## Surface
 
@@ -35,6 +35,7 @@ OP Stack chains are EVM-equivalent at the execution layer. What differs from L1:
 | `optimism_version` | `Readable<string>` | Answering op-node's version string. |
 | `estimate_op_fees` | `Readable<OpFees>` | 1559 fee triple + L1 calldata fee, composed in one call. |
 | `require_deploy_addresses` | `(chain: Chain) => OpDeploys` | Per-chain L1 deployment addresses (portal, dispute factory, batcher, etc) for the six supported OP Stack chains. See [`/op/chains`](/op/chains). |
+| Bridge verbs — `send_eth` / `send_erc20` / `send_message` / `start_withdraw_*` / `prove_withdraw` / `execute_withdraw` / `get_status` / `fetch_message_proof` | `Bridgeable<T>` | L1↔L2 deposit + 3-phase withdrawal flow. See [`/bridge/op`](/bridge/op). |
 
 Response sub-types — `OutputResponse`, `RollupConfig`, `SyncStatus`, `L1BlockRef`, `L2BlockRef`, `SystemConfig`, `Genesis`, `OpDeploys` — are exported from the root and from `@ethernauta/op/core`.
 

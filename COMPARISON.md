@@ -386,9 +386,9 @@ Same legend as above.
 
 | Feature | Ethernauta | viem | ethers.js |
 |---|---|---|---|
-| OP Stack deposit/withdraw helpers | ❌ | ✅ `viem/op-stack` | ❌ |
-| Arbitrum L1→L2 message helpers | ❌ | ❌ | 📦 `@arbitrum/sdk` |
-| zkSync deposit/withdraw | ❌ | ✅ `viem/zksync` | 📦 `zksync-ethers` |
+| OP Stack deposit/withdraw helpers | ✅ `@ethernauta/op/bridge` (send_eth, send_erc20, send_message, start_withdraw_*, prove_withdraw, execute_withdraw, get_status, fetch_message_proof) | ✅ `viem/op-stack` | ❌ |
+| Arbitrum L1→L2 message helpers | ✅ `@ethernauta/arbitrum/bridge` (send_eth, send_erc20, send_message, retryable redeem/cancel, start_withdraw_*, fetch_message_proof, get_status) | ❌ | 📦 `@arbitrum/sdk` |
+| zkSync deposit/withdraw | ✅ `@ethernauta/zksync/bridge` (send_eth, send_erc20, send_message, claim_failed_deposit, fetch_failed_deposit_proof, withdraw flow, get_status) | ✅ `viem/zksync` | 📦 `zksync-ethers` |
 | CCIP-Read for L2 ENS (depends on EIP-3668 above) | ✅ via `@ethernauta/ens` routed through `eth_call_ccip` | ✅ | ⚠️ partial |
 
 ---

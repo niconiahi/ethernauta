@@ -50,15 +50,19 @@ Signing, writing, contract reads and EIP-6963 wallet discovery follow the same `
 | ERCs 20 / 137 / 165 / 181 / 634 / 721 / 1155 / 1577 / 2304 / 2612 / 2981 / 3156 / 4494 / 4626 / 5564 / 5805 / 6372 / 7683 | [`@ethernauta/erc`](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) |
 | ENS resolution + ENSIP-15 normalisation | [`@ethernauta/ens`](https://github.com/niconiahi/ethernauta/tree/main/packages/ens) |
 | ABI codec + code generator (`Callable` / `Signable` methods) | [`@ethernauta/abi`](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) |
-| CLI — `ethernauta abi`, `ethernauta registry` | [`@ethernauta/cli`](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) |
+| CLI — `ethernauta abi` (walker mode), `ethernauta registry` | [`@ethernauta/cli`](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) |
 | Cross-spec signature / SIWE verification + key derivation | [`@ethernauta/crypto`](https://github.com/niconiahi/ethernauta/tree/main/packages/crypto) |
 | Lifecycle tracker (`pending` → `mined` / `reverted`) | [`@ethernauta/transaction`](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) |
+| OP-Stack — predeploys, fees, `op-node` RPC, per-chain L1 deploys, deposit / withdraw / prove / execute / get_status bridge verbs | [`@ethernauta/op`](https://github.com/niconiahi/ethernauta/tree/main/packages/op) |
+| Arbitrum — 16 precompiles, `arb_*` RPC, orbit registry, L1 deploys, retryable lifecycle + bridge verbs, timeboost | [`@ethernauta/arbitrum`](https://github.com/niconiahi/ethernauta/tree/main/packages/arbitrum) |
+| zkSync Era — system contracts, `zks_*` RPC, 0x71 (EIP-712) tx encoder + signer, L1 deploys, deposit / withdraw / claim bridge verbs | [`@ethernauta/zksync`](https://github.com/niconiahi/ethernauta/tree/main/packages/zksync) |
 | React hooks (`useProvider`, `useProviderDetail`) | [`@ethernauta/react`](https://github.com/niconiahi/ethernauta/tree/main/packages/react) |
 | Chrome MV3 wallet | [`@ethernauta/wallet`](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet) |
 
 ## Modules
 
 - [abi](https://github.com/niconiahi/ethernauta/tree/main/packages/abi) [[NPM](https://www.npmjs.com/package/@ethernauta/abi)]
+- [arbitrum](https://github.com/niconiahi/ethernauta/tree/main/packages/arbitrum) [[NPM](https://www.npmjs.com/package/@ethernauta/arbitrum)]
 - [chain](https://github.com/niconiahi/ethernauta/tree/main/packages/chain) [[NPM](https://www.npmjs.com/package/@ethernauta/chain)]
 - [cli](https://github.com/niconiahi/ethernauta/tree/main/packages/cli) [[NPM](https://www.npmjs.com/package/@ethernauta/cli)]
 - [core](https://github.com/niconiahi/ethernauta/tree/main/packages/core) [[NPM](https://www.npmjs.com/package/@ethernauta/core)]
@@ -67,11 +71,13 @@ Signing, writing, contract reads and EIP-6963 wallet discovery follow the same `
 - [ens](https://github.com/niconiahi/ethernauta/tree/main/packages/ens) [[NPM](https://www.npmjs.com/package/@ethernauta/ens)]
 - [erc](https://github.com/niconiahi/ethernauta/tree/main/packages/erc) [[NPM](https://www.npmjs.com/package/@ethernauta/erc)]
 - [eth](https://github.com/niconiahi/ethernauta/tree/main/packages/eth) [[NPM](https://www.npmjs.com/package/@ethernauta/eth)]
+- [op](https://github.com/niconiahi/ethernauta/tree/main/packages/op) [[NPM](https://www.npmjs.com/package/@ethernauta/op)]
 - [react](https://github.com/niconiahi/ethernauta/tree/main/packages/react) [[NPM](https://www.npmjs.com/package/@ethernauta/react)]
 - [transaction](https://github.com/niconiahi/ethernauta/tree/main/packages/transaction) [[NPM](https://www.npmjs.com/package/@ethernauta/transaction)]
 - [transport](https://github.com/niconiahi/ethernauta/tree/main/packages/transport) [[NPM](https://www.npmjs.com/package/@ethernauta/transport)]
 - [utils](https://github.com/niconiahi/ethernauta/tree/main/packages/utils) [[NPM](https://www.npmjs.com/package/@ethernauta/utils)]
 - [wallet](https://github.com/niconiahi/ethernauta/tree/main/packages/wallet)
+- [zksync](https://github.com/niconiahi/ethernauta/tree/main/packages/zksync) [[NPM](https://www.npmjs.com/package/@ethernauta/zksync)]
 
 ## A real production dapp: Animatronik
 

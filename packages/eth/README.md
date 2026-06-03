@@ -198,10 +198,30 @@ import {
   ReceiptInfoSchema,
   RECEIPT_STATUS,
   is_post_byzantium,
+  EthSignTransactionParametersSchema,
   // block / transaction / withdrawal / filter schemas …
 } from "@ethernauta/eth"
 
 import { encode_rlp, type RLPInput } from "@ethernauta/eth"
 ```
 
-The `lib` subtree exposes the post-Byzantium receipt helper (`is_post_byzantium`, `RECEIPT_STATUS`, `ReceiptStatusSchema`, `PostByzantiumReceiptSchema`) plus the typed RLP encoder used by transaction-builders.
+The `lib` subtree exposes the post-Byzantium receipt helper (`is_post_byzantium`, `RECEIPT_STATUS`, `ReceiptStatusSchema`, `PostByzantiumReceiptSchema`) plus the typed RLP encoder used by transaction-builders. `EthSignTransactionParametersSchema` is the parameter shape consumed by both `eth_signTransaction` (path 2) and the wallet's `eth_sendTransaction` handler.
+
+### Gas + 1559 fee math
+
+The `gas` subtree concentrates the L1-mainnet fee primitives previously housed in a separate `@ethernauta/gas` package (now retired). Composing these helpers on top of `eth_feeHistory` / `eth_maxPriorityFeePerGas` / `eth_estimateGas` is path 2 territory — no wallet involved.
+
+```ts
+import {
+  estimate_1559_fees,        // base-fee math + priority fee + buffer
+  estimate_priority_fee,     // priority-fee suggestion from eth_feeHistory
+  buffer_gas_limit,          // multiply estimateGas result by a safety factor
+  type Fees1559,
+} from "@ethernauta/eth"
+```
+
+L2-specific fee math lives in the matching rollup package:
+
+- OP-Stack — `estimate_op_fees` in [`@ethernauta/op`](https://github.com/niconiahi/ethernauta/tree/main/packages/op).
+- Arbitrum — `estimate_arbitrum_fees` in [`@ethernauta/arbitrum`](https://github.com/niconiahi/ethernauta/tree/main/packages/arbitrum).
+- zkSync Era — gas surface in [`@ethernauta/zksync`](https://github.com/niconiahi/ethernauta/tree/main/packages/zksync).

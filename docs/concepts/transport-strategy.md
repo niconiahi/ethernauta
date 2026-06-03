@@ -119,7 +119,7 @@ Cross-endpoint **agreement** (return only when N transports return the same resu
 
 | Type | Description |
 |---|---|
-| `DispatcherStrategy` | `{ type: "parallel" \| "sequential" }` — the policy declaration |
+| `ReaderStrategy` | `{ type: "parallel" \| "sequential" }` — the policy declaration |
 | `Dispatcher` | `(_call: Call) => Promise<Response>` — what the factories produce internally from `transports` + `strategy` |
 | `DEFAULT_STRATEGY` | `{ type: "parallel" }` — used when `ChainEntry.strategy` is omitted |
-| `create_dispatcher` | `(transports: Http[], strategy: DispatcherStrategy) => Dispatcher` — exposed for testing helpers and the 1193 provider adapter |
+| `create_dispatcher` | `(transports: Http[], strategy: ReaderStrategy) => Dispatcher` — exposed for testing helpers and the 1193 provider adapter |

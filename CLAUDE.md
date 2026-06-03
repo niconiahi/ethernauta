@@ -6,7 +6,7 @@ Guidance for Claude Code working on the Ethernauta monorepo. This file is a **ro
 
 A pnpm workspace that ships:
 
-1. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`) that dapps or wallets' authors consume to talk to the wallet and the chain, respectively
+1. A set of published packages (`@ethernauta/core`, `@ethernauta/utils`, `@ethernauta/crypto`, `@ethernauta/abi`, `@ethernauta/chain`, `@ethernauta/eth`, `@ethernauta/transport`, `@ethernauta/transaction`, `@ethernauta/eip`, `@ethernauta/erc`, `@ethernauta/ens`, `@ethernauta/op`, `@ethernauta/arbitrum`, `@ethernauta/zksync`, `@ethernauta/react`) that dapps or wallets' authors consume to talk to the wallet and the chain, respectively. L2 bridge verbs (deposit / withdraw / prove / execute / claim / get_status) live per-rollup under `packages/op/src/bridge/`, `packages/arbitrum/src/bridge/`, `packages/zksync/src/bridge/` and share the `Bridgeable<T>` shape + `create_bridge` factory from `@ethernauta/transport`
 2. A Chrome MV3 wallet extension (`packages/wallet/`, private) that holds an encrypted mnemonic in IndexedDB and signs requests from dapps via a `window.postMessage` ↔ `chrome.runtime` bridge
 
 ## Important information
@@ -80,6 +80,7 @@ Match the task at hand against this table **before** you start planning. If a sk
 | Write a vitest-anvil test against the library | `skills/testing/SKILL.md` | The `ethernauta_anvil()` plugin, `anvil()`, `create_testing_provider`, account derivation, snapshot/revert isolation, or anything else under `packages/testing/` |
 | Write a helper function anywhere | `skills/utils/SKILL.md` | Decide "utils vs colocated" using the rubric. Default to colocation |
 | Build a dapp consuming `@ethernauta/*` | `skills/ethernauta/SKILL.md` | Factories / resolvers / methods, chain wiring, reads, contract calls, sign + broadcast, transaction tracking, EIP-6963 discovery, error shapes |
+| Add or modify L2 rollup support (OP / Arbitrum / zkSync) — predeploys, precompiles, fee math, bridge verbs, RPC method bindings | `skills/ethernauta/SKILL.md` + the matching `packages/<op\|arbitrum\|zksync>/COMPARISON.md` | Anything under `packages/op/`, `packages/arbitrum/`, `packages/zksync/`. Bridge verbs live under each `src/bridge/` and resolve via `create_bridge` from `@ethernauta/transport` |
 
 ## Planning protocol
 
@@ -115,16 +116,24 @@ These bind regardless of task. They are surfaced here so they cannot be missed e
 packages/
   core/         primitive Valibot schemas (skills/core)
   utils/        pure dependency-free helpers (skills/utils)
+  crypto/       cross-spec signature / SIWE verification + HD key derivation
   abi/          ABI encode/decode codecs
   chain/        500+ EIP-155 chain definitions
-  eth/          eth_* JSON-RPC methods (Readable / Writable / Signable)
-  transport/    Readable/Writable/Signable/Callable, resolvers, http
+  eth/          eth_* JSON-RPC methods (Readable / Writable / Signable) + 1559 fee math + buffer-gas-limit
+  transport/    Readable/Writable/Signable/Callable/Bridgeable, resolvers, http, create_bridge, create_provider adapter
   eip/          EIPs as importable subpaths (skills/eip)
   erc/          ERC method bindings as importable subpaths (skills/erc)
   ens/          ENS-specific primitives (ENSIP normalize, etc.)
+  transaction/  lifecycle tracker (pending → mined / reverted)
+  op/           OP-Stack: predeploys, fees (estimate_op_fees), op-node rpc, per-chain L1 deploys, bridge verbs
+  arbitrum/     Arbitrum: 16 precompiles, fees (estimate_arbitrum_fees), arb_* rpc, orbit chains, bridge verbs, timeboost
+  zksync/       zkSync Era: system contracts, zks_* rpc, 0x71 (EIP-712) tx encoder + signer, L1 deploys, bridge verbs
   testing/      vitest plugin + anvil spawner (skills/testing)
   wallet/       Chrome MV3 extension, PRIVATE (skills/wallet)
-  cli/          codegen + registry tooling
+  cli/          codegen (walker mode) + registry tooling
+  react/        React hooks (useProvider, useProviderDetail)
+
+  (Solidity sources are colocated inside each package's `src/` — there is no top-level `contracts/` directory.)
 
 apps/
   playground/   React Router dapp used for live testing
@@ -135,6 +144,7 @@ docs/
 
 skills/
   conventions/  Valibot-first typing — read first, always
+  no-violations/no-`as` / no-redundant-annotation / no-escape-hatches baseline
   core/         catalog of @ethernauta/core primitives
   utils/        catalog of @ethernauta/utils + utils-vs-colocated rubric
   eip/          guidelines for adding/modifying EIPs

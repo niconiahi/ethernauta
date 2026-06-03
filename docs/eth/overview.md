@@ -59,6 +59,14 @@ Each method returns a resolver-shaped curried function. The first call binds the
 - `eth_createAccessList` — EIP-2930 access list builder.
 - `eth_feeHistory` — historical base fees / priority fees.
 
+### 1559 fee helpers + gas buffer
+
+Composable wrappers over the raw RPC, exported from the package's `gas` subtree. Previously housed in a separate `@ethernauta/gas` package — now retired; the L1 helpers live here, L2 helpers live in the matching rollup package (`@ethernauta/op`, `@ethernauta/arbitrum`, `@ethernauta/zksync`).
+
+- `estimate_1559_fees` — `(reader, { headroom, multiplier }) => Fees1559` — calls `eth_feeHistory` + `eth_maxPriorityFeePerGas`, returns a `{ maxFeePerGas, maxPriorityFeePerGas }` pair.
+- `estimate_priority_fee` — priority-fee suggestion from `eth_feeHistory` percentiles.
+- `buffer_gas_limit` — multiplies an `eth_estimateGas` result by a safety factor (default 1.2×) and parses back through the bytes-hex schema.
+
 ### Submit
 
 - `eth_sendTransaction` → `Signable<Hash32>` (path 1).
