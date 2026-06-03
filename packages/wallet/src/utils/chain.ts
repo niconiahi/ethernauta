@@ -18,6 +18,7 @@ import {
   safeParse,
   string,
 } from "valibot"
+import { CHAIN_LOADERS, type ChainModule } from "./chain-loaders"
 import { make_notification } from "./event"
 
 // Wallet-side Chain shape — the *materialized* form persisted
@@ -124,20 +125,36 @@ export function to_provider_chain_id(
   return `0x${chain.id.toString(16)}`
 }
 
-// Lazy loaders for every chain shipped under
-// `@ethernauta/chain/src/chain/eip155/`. `import.meta.glob`
-// produces one dynamic-import per match — Vite/Rollup
-// code-splits each chain into its own chunk, so the wallet's
-// initial bundle stays small and we only pay the per-chain
-// cost on first lookup. Bare-specifier `import(\`@scope/pkg
-// /sub-${id}\`)` would semantically be cleaner but doesn't
-// code-split in production builds because subpath exports
-// can't be statically enumerated by the bundler — the glob
-// against the workspace-relative source path is what makes
-// the lazy-load actually work end-to-end (dev + prod).
-const CHAIN_LOADERS = import.meta.glob<
-  Record<string, unknown>
->("../../../chain/src/chain/eip155/eip155-*.ts")
+// `chain-loaders.ts` ships an `import.meta.glob` over the
+// chain registry — Vite/Rollup code-splits each chain into
+// its own chunk in production, so the wallet's initial
+// bundle stays small and we only pay the per-chain cost on
+// first lookup. Bare-specifier `import(\`@scope/pkg/sub-${id}\`)`
+// would semantically be cleaner but doesn't code-split in
+// production builds because subpath exports can't be
+// statically enumerated by the bundler.
+//
+// In dev (`vite build --watch --mode development`), the
+// extension's `vite.extension.config.ts` adds a manualChunks
+// rule that groups every chain module into a single
+// `chains` chunk — so the dev build emits 1 chain chunk
+// instead of ~2,600 per-chain chunks. Trade-off: all chains
+// load together (~268 KB), acceptable for the dev iteration
+// loop. Production keeps per-chain splitting.
+async function load_chain_module(
+  chain_id: number,
+): Promise<ChainModule | undefined> {
+  const loader =
+    CHAIN_LOADERS[
+      `../../../chain/src/chain/eip155/eip155-${chain_id}.ts`
+    ]
+  if (!loader) return undefined
+  try {
+    return await loader()
+  } catch {
+    return undefined
+  }
+}
 
 // Dynamic lookup against `@ethernauta/chain`'s 2,600+ chain
 // registry. Returns undefined when the id has no registry
@@ -146,13 +163,9 @@ const CHAIN_LOADERS = import.meta.glob<
 export async function find_chain(
   chain_id: number,
 ): Promise<Chain | undefined> {
-  const loader =
-    CHAIN_LOADERS[
-      `../../../chain/src/chain/eip155/eip155-${chain_id}.ts`
-    ]
-  if (!loader) return undefined
+  const raw_module = await load_chain_module(chain_id)
+  if (!raw_module) return undefined
   try {
-    const raw_module = await loader()
     const ModuleSchema = record(
       string(),
       RegistryChainSchema,
