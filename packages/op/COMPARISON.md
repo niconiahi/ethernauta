@@ -36,7 +36,7 @@ The two comparators:
 
 | Dimension | Ethernauta `@ethernauta/op/bridge` | `viem/op-stack` | `@eth-optimism/sdk` |
 |---|---|---|---|
-| Call shape | ✅ Curried `verb(args)(bridge)` — same `Bridgeable<T>` shape across all 11 OP verbs | ⚠️ Per-action `wallet.writeContract` / `public.readContract` calls, action-name-per-method | ⚠️ Class methods on `CrossChainMessenger` instance |
+| Call shape | ✅ Curried `verb(args)(bridge)` — same `Bridgeable<T>` shape across all 10 OP verbs | ⚠️ Per-action `wallet.writeContract` / `public.readContract` calls, action-name-per-method | ⚠️ Class methods on `CrossChainMessenger` instance |
 | Validation at boundaries | ✅ Valibot `parse` on every input + envelope | ⚠️ TS-only types, internal asserts | ⚠️ runtime checks, no schemas |
 | Sign-then-broadcast (M3 path 2) | ✅ default — verbs compose `eth_signTransaction` + `eth_sendRawTransaction` so the wallet only signs | ⚠️ possible via raw tx but uncommon; default is wallet-broadcast | ⚠️ possible via raw tx but uncommon; default is wallet-broadcast |
 | Reads work with **no** wallet attached | ✅ `Bridgeable<T>` resolvers split per-side; reads run through `origin.reader` / `destination.reader` | ✅ public-action subset | ⚠️ class wants both signers + providers; reads work with providers only |
