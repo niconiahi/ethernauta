@@ -1,3 +1,5 @@
+export { eth_getBlockByNumber } from "./eth-get-block-by-number"
+export { eth_getTransactionReceipt } from "./eth-get-transaction-receipt"
 export { optimism_outputAtBlock } from "./optimism-output-at-block"
 export { optimism_rollupConfig } from "./optimism-rollup-config"
 export { optimism_safeHeadAtL1Block } from "./optimism-safe-head-at-l1-block"

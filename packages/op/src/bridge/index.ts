@@ -17,6 +17,10 @@
 // `fetch_message_proof`) ignore the signer field.
 
 export * from "./bridge"
+export * from "./compute-deposit-source-hash"
+export * from "./decode-deposit-tx"
+export * from "./derive-l2-tx-hashes-from-l1-receipt"
+export * from "./encode-deposit-tx"
 export * from "./errors"
 export * from "./execute-withdraw"
 export * from "./get-status"

@@ -11,9 +11,27 @@ export {
   OpDeploysSchema,
 } from "./deploys"
 export {
+  type DepositTx,
+  DepositTxSchema,
+} from "./deposit-tx"
+export {
   type Genesis,
   GenesisSchema,
 } from "./genesis"
+export {
+  type OpBlock,
+  OpBlockSchema,
+} from "./op-block"
+export {
+  type OpReceiptInfo,
+  OpReceiptInfoSchema,
+} from "./op-receipt"
+export {
+  type OpDepositTxInfo,
+  OpDepositTxInfoSchema,
+  type OpTransactionInfo,
+  OpTransactionInfoSchema,
+} from "./op-transaction"
 export {
   type OutputResponse,
   OutputResponseSchema,
