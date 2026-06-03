@@ -20,6 +20,7 @@
 
 export * from "./bridge"
 export * from "./cancel-retryable"
+export * from "./decode-l2-to-l1-tx"
 export * from "./encode-retryable-tx"
 export * from "./errors"
 export * from "./execute-withdraw"
