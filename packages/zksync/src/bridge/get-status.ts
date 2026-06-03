@@ -58,6 +58,7 @@ import { decode_chain_id } from "@ethernauta/transport"
 import {
   bigint_to_hex,
   hex_to_bigint,
+  type ObjectValues,
 } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import {
@@ -72,6 +73,10 @@ import {
   type L2ToL1LogProof,
   zks_getL2ToL1LogProof,
 } from "../methods/zks-get-l2-to-l1-log-proof"
+import {
+  decode_new_priority_request_from_receipt,
+  l2_hash_of_priority_request,
+} from "./decode-new-priority-request"
 import { isWithdrawalFinalized } from "./l1-nullifier/methods/is-withdrawal-finalized"
 
 const DepositInputSchema = object({
@@ -89,30 +94,53 @@ const ParametersSchema = variant("direction", [
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
 
+export const ZKSYNC_BRIDGE_STATE = {
+  SUBMITTED_L1: "submitted_l1",
+  INCLUDED_L1: "included_l1",
+  IN_PROGRESS_L2: "in_progress_l2",
+  SUCCEEDED_L2: "succeeded_l2",
+  FAILED_L2: "failed_l2",
+  INITIATED_L2: "initiated_l2",
+  BATCH_PENDING: "batch_pending",
+  READY_TO_FINALIZE: "ready_to_finalize",
+  FINALIZED: "finalized",
+} as const
+export type ZksyncBridgeState = ObjectValues<
+  typeof ZKSYNC_BRIDGE_STATE
+>
+
 export const ZksyncBridgeStatusSchema = variant("state", [
-  object({ state: literal("submitted_l1") }),
   object({
-    state: literal("included_l1"),
+    state: literal(ZKSYNC_BRIDGE_STATE.SUBMITTED_L1),
+  }),
+  object({
+    state: literal(ZKSYNC_BRIDGE_STATE.INCLUDED_L1),
     l1_tx_hash: Hash32Schema,
   }),
   object({
-    state: literal("in_progress_l2"),
+    state: literal(ZKSYNC_BRIDGE_STATE.IN_PROGRESS_L2),
     l1_tx_hash: Hash32Schema,
   }),
   object({
-    state: literal("succeeded_l2"),
+    state: literal(ZKSYNC_BRIDGE_STATE.SUCCEEDED_L2),
+    l1_tx_hash: Hash32Schema,
+    l2_tx_hash: Hash32Schema,
+  }),
+  object({
+    state: literal(ZKSYNC_BRIDGE_STATE.FAILED_L2),
     l1_tx_hash: Hash32Schema,
     l2_tx_hash: Hash32Schema,
   }),
   object({
-    state: literal("failed_l2"),
-    l1_tx_hash: Hash32Schema,
-    l2_tx_hash: Hash32Schema,
+    state: literal(ZKSYNC_BRIDGE_STATE.INITIATED_L2),
   }),
-  object({ state: literal("initiated_l2") }),
-  object({ state: literal("batch_pending") }),
-  object({ state: literal("ready_to_finalize") }),
-  object({ state: literal("finalized") }),
+  object({
+    state: literal(ZKSYNC_BRIDGE_STATE.BATCH_PENDING),
+  }),
+  object({
+    state: literal(ZKSYNC_BRIDGE_STATE.READY_TO_FINALIZE),
+  }),
+  object({ state: literal(ZKSYNC_BRIDGE_STATE.FINALIZED) }),
 ])
 export type ZksyncBridgeStatus = InferOutput<
   typeof ZksyncBridgeStatusSchema
@@ -130,6 +158,8 @@ export function get_status(
       return read_deposit_status({
         l1_reader: l1.reader,
         l1_chain_id: l1.chain_id,
+        l2_reader: l2.reader,
+        l2_chain_id: l2.chain_id,
         l1_tx_hash: parameters.l1_tx_hash,
       })
     }
@@ -157,6 +187,8 @@ export function get_status(
 async function read_deposit_status(input: {
   l1_reader: Reader
   l1_chain_id: ChainId
+  l2_reader: Reader
+  l2_chain_id: ChainId
   l1_tx_hash: Hash32
 }): Promise<ZksyncBridgeStatus> {
   const receipt = await eth_getTransactionReceipt([
@@ -164,7 +196,7 @@ async function read_deposit_status(input: {
   ])([input.l1_reader, { chain_id: input.l1_chain_id }])
   if (receipt === null) {
     return parse(ZksyncBridgeStatusSchema, {
-      state: "submitted_l1",
+      state: ZKSYNC_BRIDGE_STATE.SUBMITTED_L1,
     })
   }
   if (
@@ -172,13 +204,46 @@ async function read_deposit_status(input: {
     hex_to_bigint(receipt.status) === 0n
   ) {
     return parse(ZksyncBridgeStatusSchema, {
-      state: "included_l1",
+      state: ZKSYNC_BRIDGE_STATE.INCLUDED_L1,
       l1_tx_hash: input.l1_tx_hash,
     })
   }
+  const priority_request =
+    decode_new_priority_request_from_receipt({
+      logs: receipt.logs,
+    })
+  if (priority_request === null) {
+    return parse(ZksyncBridgeStatusSchema, {
+      state: ZKSYNC_BRIDGE_STATE.IN_PROGRESS_L2,
+      l1_tx_hash: input.l1_tx_hash,
+    })
+  }
+  const l2_tx_hash = l2_hash_of_priority_request(
+    priority_request,
+  )
+  const l2_receipt = await eth_getTransactionReceipt([
+    l2_tx_hash,
+  ])([input.l2_reader, { chain_id: input.l2_chain_id }])
+  if (l2_receipt === null) {
+    return parse(ZksyncBridgeStatusSchema, {
+      state: ZKSYNC_BRIDGE_STATE.IN_PROGRESS_L2,
+      l1_tx_hash: input.l1_tx_hash,
+    })
+  }
+  if (
+    l2_receipt.status !== undefined &&
+    hex_to_bigint(l2_receipt.status) === 0n
+  ) {
+    return parse(ZksyncBridgeStatusSchema, {
+      state: ZKSYNC_BRIDGE_STATE.FAILED_L2,
+      l1_tx_hash: input.l1_tx_hash,
+      l2_tx_hash,
+    })
+  }
   return parse(ZksyncBridgeStatusSchema, {
-    state: "in_progress_l2",
+    state: ZKSYNC_BRIDGE_STATE.SUCCEEDED_L2,
     l1_tx_hash: input.l1_tx_hash,
+    l2_tx_hash,
   })
 }
 
@@ -200,12 +265,12 @@ async function read_withdraw_status(input: {
   })
   if (log_proof === "no_tx") {
     return parse(ZksyncBridgeStatusSchema, {
-      state: "initiated_l2",
+      state: ZKSYNC_BRIDGE_STATE.INITIATED_L2,
     })
   }
   if (log_proof === null) {
     return parse(ZksyncBridgeStatusSchema, {
-      state: "batch_pending",
+      state: ZKSYNC_BRIDGE_STATE.BATCH_PENDING,
     })
   }
   const batch_number = parse(
@@ -230,11 +295,11 @@ async function read_withdraw_status(input: {
   const finalized = finalized_call.decode(finalized_bytes)
   if (finalized) {
     return parse(ZksyncBridgeStatusSchema, {
-      state: "finalized",
+      state: ZKSYNC_BRIDGE_STATE.FINALIZED,
     })
   }
   return parse(ZksyncBridgeStatusSchema, {
-    state: "ready_to_finalize",
+    state: ZKSYNC_BRIDGE_STATE.READY_TO_FINALIZE,
   })
 }
 

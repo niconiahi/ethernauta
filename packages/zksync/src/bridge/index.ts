@@ -30,6 +30,7 @@
 export * from "./bridge"
 export * from "./claim-failed-deposit"
 export * from "./decode-l1-message-sent"
+export * from "./decode-new-priority-request"
 export * from "./errors"
 export * from "./execute-withdraw"
 export * from "./failed-deposit-proof"

@@ -1,16 +1,20 @@
 import {
   bool as bool_codec,
   encode_sequence,
+  event_topic_hash,
   function_selector,
   uint256 as uint256_codec,
 } from "@ethernauta/abi"
 import {
   AddressSchema,
   BytesSchema,
+  type Hash32,
   Hash32Schema,
   Uint64Schema,
+  Uint256Schema,
   UintSchema,
 } from "@ethernauta/core"
+import type { Log } from "@ethernauta/eth"
 import type {
   Call,
   Reader,
@@ -25,6 +29,10 @@ import {
 import { object, parse, tuple } from "valibot"
 import { describe, expect, it } from "vitest"
 
+import {
+  type L2CanonicalTransaction,
+  NEW_PRIORITY_REQUEST_CODECS,
+} from "./decode-new-priority-request"
 import { get_status } from "./get-status"
 
 const ERA_SEPOLIA = encode_chain_id({
@@ -91,7 +99,10 @@ function build_resolved(input: {
 }
 
 function build_deposit_l1_reader(input: {
-  receipt: null | { status: `0x${string}` }
+  receipt: null | {
+    status: `0x${string}`
+    logs?: readonly Log[]
+  }
 }): Reader {
   return async (call: Call): Promise<Response> => {
     const [method, params] = call
@@ -113,6 +124,46 @@ function build_deposit_l1_reader(input: {
       effectiveGasPrice: parse(UintSchema, "0x1"),
       gasUsed: parse(UintSchema, "0x5208"),
       contractAddress: null,
+      logs: input.receipt.logs ?? [],
+      logsBloom: parse(
+        BytesSchema,
+        `0x${"00".repeat(256)}`,
+      ),
+      type: parse(UintSchema, "0x2"),
+      status: input.receipt.status,
+    })
+  }
+}
+
+function build_deposit_l2_reader(input: {
+  expected_l2_tx_hash: Hash32
+  receipt: null | { status: `0x${string}` }
+}): Reader {
+  return async (call: Call): Promise<Response> => {
+    const [method, params] = call
+    if (method !== "eth_getTransactionReceipt") {
+      throw new Error(
+        `unexpected L2 method: ${String(method)}`,
+      )
+    }
+    const [hash] = parse(GetReceiptParamsSchema, params)
+    if (hash !== input.expected_l2_tx_hash) {
+      throw new Error(
+        `unexpected L2 receipt hash: got ${hash}, expected ${input.expected_l2_tx_hash}`,
+      )
+    }
+    if (input.receipt === null) return ok_response(null)
+    return ok_response({
+      blockHash: parse(Hash32Schema, `0x${"2".repeat(64)}`),
+      blockNumber: parse(UintSchema, "0x1"),
+      transactionHash: input.expected_l2_tx_hash,
+      transactionIndex: parse(UintSchema, "0x0"),
+      from: FROM,
+      to: TO,
+      cumulativeGasUsed: parse(UintSchema, "0x5208"),
+      effectiveGasPrice: parse(UintSchema, "0x1"),
+      gasUsed: parse(UintSchema, "0x5208"),
+      contractAddress: null,
       logs: [],
       logsBloom: parse(
         BytesSchema,
@@ -121,6 +172,68 @@ function build_deposit_l1_reader(input: {
       type: parse(UintSchema, "0x2"),
       status: input.receipt.status,
     })
+  }
+}
+
+const PRIORITY_TOPIC0 = event_topic_hash(
+  "NewPriorityRequest",
+  NEW_PRIORITY_REQUEST_CODECS,
+)
+
+function build_canonical(
+  overrides?: Partial<L2CanonicalTransaction>,
+): L2CanonicalTransaction {
+  const zero_u256 = parse(Uint256Schema, "0x0")
+  const empty_bytes = parse(BytesSchema, "0x")
+  return {
+    txType: zero_u256,
+    from: zero_u256,
+    to: zero_u256,
+    gasLimit: zero_u256,
+    gasPerPubdataByteLimit: zero_u256,
+    maxFeePerGas: zero_u256,
+    maxPriorityFeePerGas: zero_u256,
+    paymaster: zero_u256,
+    nonce: zero_u256,
+    value: zero_u256,
+    reserved: [zero_u256, zero_u256, zero_u256, zero_u256],
+    data: empty_bytes,
+    signature: empty_bytes,
+    factoryDeps: [],
+    paymasterInput: empty_bytes,
+    reservedDynamic: empty_bytes,
+    ...overrides,
+  }
+}
+
+function build_priority_log(input: {
+  l2_tx_hash: Hash32
+}): Log {
+  const data = parse(
+    BytesSchema,
+    bytes_to_hex(
+      encode_sequence(NEW_PRIORITY_REQUEST_CODECS, [
+        parse(Uint256Schema, "0x1"),
+        input.l2_tx_hash,
+        parse(Uint64Schema, "0x64"),
+        build_canonical(),
+        [],
+      ]),
+    ),
+  )
+  return {
+    removed: false,
+    logIndex: parse(UintSchema, "0x0"),
+    transactionIndex: parse(UintSchema, "0x0"),
+    transactionHash: L1_TX,
+    blockHash: parse(Hash32Schema, `0x${"1".repeat(64)}`),
+    blockNumber: parse(UintSchema, "0x1"),
+    address: parse(
+      AddressSchema,
+      "0x9999999999999999999999999999999999999999",
+    ),
+    data,
+    topics: [PRIORITY_TOPIC0],
   }
 }
 
@@ -227,7 +340,7 @@ describe("get_status (deposit direction)", () => {
     })
   })
 
-  it("returns in_progress_l2 when the L1 receipt succeeded", async () => {
+  it("returns in_progress_l2 when L1 succeeded but no NewPriorityRequest log is present", async () => {
     const resolved = build_resolved({
       l1: build_deposit_l1_reader({
         receipt: { status: parse(UintSchema, "0x1") },
@@ -241,6 +354,77 @@ describe("get_status (deposit direction)", () => {
     expect(status).toEqual({
       state: "in_progress_l2",
       l1_tx_hash: L1_TX,
+    })
+  })
+
+  it("returns in_progress_l2 when the L1 log is present but the L2 receipt is missing", async () => {
+    const resolved = build_resolved({
+      l1: build_deposit_l1_reader({
+        receipt: {
+          status: parse(UintSchema, "0x1"),
+          logs: [build_priority_log({ l2_tx_hash: L2_TX })],
+        },
+      }),
+      l2: build_deposit_l2_reader({
+        expected_l2_tx_hash: L2_TX,
+        receipt: null,
+      }),
+    })
+    const status = await get_status({
+      direction: "deposit",
+      l1_tx_hash: L1_TX,
+    })(resolved)
+    expect(status).toEqual({
+      state: "in_progress_l2",
+      l1_tx_hash: L1_TX,
+    })
+  })
+
+  it("returns succeeded_l2 when the L2 priority receipt has status=1", async () => {
+    const resolved = build_resolved({
+      l1: build_deposit_l1_reader({
+        receipt: {
+          status: parse(UintSchema, "0x1"),
+          logs: [build_priority_log({ l2_tx_hash: L2_TX })],
+        },
+      }),
+      l2: build_deposit_l2_reader({
+        expected_l2_tx_hash: L2_TX,
+        receipt: { status: parse(UintSchema, "0x1") },
+      }),
+    })
+    const status = await get_status({
+      direction: "deposit",
+      l1_tx_hash: L1_TX,
+    })(resolved)
+    expect(status).toEqual({
+      state: "succeeded_l2",
+      l1_tx_hash: L1_TX,
+      l2_tx_hash: L2_TX,
+    })
+  })
+
+  it("returns failed_l2 when the L2 priority receipt has status=0", async () => {
+    const resolved = build_resolved({
+      l1: build_deposit_l1_reader({
+        receipt: {
+          status: parse(UintSchema, "0x1"),
+          logs: [build_priority_log({ l2_tx_hash: L2_TX })],
+        },
+      }),
+      l2: build_deposit_l2_reader({
+        expected_l2_tx_hash: L2_TX,
+        receipt: { status: parse(UintSchema, "0x0") },
+      }),
+    })
+    const status = await get_status({
+      direction: "deposit",
+      l1_tx_hash: L1_TX,
+    })(resolved)
+    expect(status).toEqual({
+      state: "failed_l2",
+      l1_tx_hash: L1_TX,
+      l2_tx_hash: L2_TX,
     })
   })
 })
