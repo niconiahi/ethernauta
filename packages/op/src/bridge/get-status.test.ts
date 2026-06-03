@@ -33,7 +33,7 @@ import { bytes_to_hex } from "@ethernauta/utils"
 import { object, parse, tuple } from "valibot"
 import { describe, expect, it } from "vitest"
 import { compute_l2_deposit_tx_hash } from "./encode-deposit-tx"
-import { get_status } from "./get-status"
+import { get_status, OP_BRIDGE_STATE } from "./get-status"
 
 const OP_SEPOLIA_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -402,7 +402,7 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("finalized")
+    expect(status.state).toBe(OP_BRIDGE_STATE.FINALIZED)
   })
 
   it("returns ready_to_prove when no proof yet but a resolved respected game covers the withdrawal block", async () => {
@@ -418,7 +418,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("ready_to_prove")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.READY_TO_PROVE,
+    )
   })
 
   it("returns game_in_progress when the only candidate game is still in progress", async () => {
@@ -434,7 +436,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("game_in_progress")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.GAME_IN_PROGRESS,
+    )
   })
 
   it("returns awaiting_game_proposal when no resolved or in-progress game covers the block", async () => {
@@ -450,7 +454,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("awaiting_game_proposal")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.AWAITING_GAME_PROPOSAL,
+    )
   })
 
   it("returns proof_pending_maturity when proof recorded but window not elapsed", async () => {
@@ -468,7 +474,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("proof_pending_maturity")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.PROOF_PENDING_MATURITY,
+    )
   })
 
   it("returns ready_to_finalize after both maturity and finality windows elapsed", async () => {
@@ -486,7 +494,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("ready_to_finalize")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.READY_TO_FINALIZE,
+    )
   })
 
   it("returns game_invalidated when the proven game is blacklisted", async () => {
@@ -501,7 +511,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("game_invalidated")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.GAME_INVALIDATED,
+    )
   })
 
   it("returns game_invalidated when the proven game resolved against the proposer", async () => {
@@ -516,7 +528,9 @@ describe("get_status (withdraw)", () => {
       withdrawal_l2_block_number: WITHDRAWAL_L2_BLOCK,
       prover: PROVER,
     })(build_resolved(reader))
-    expect(status.state).toBe("game_invalidated")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.GAME_INVALIDATED,
+    )
   })
 })
 
@@ -702,7 +716,7 @@ describe("get_status (deposit)", () => {
         build_deposit_l1_reader({ receipt: "missing" }),
       ),
     )
-    expect(status.state).toBe("submitted_l1")
+    expect(status.state).toBe(OP_BRIDGE_STATE.SUBMITTED_L1)
   })
 
   it("returns in_progress_l2 when the L1 receipt succeeded with no portal log", async () => {
@@ -716,7 +730,9 @@ describe("get_status (deposit)", () => {
         }),
       ),
     )
-    expect(status.state).toBe("in_progress_l2")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.IN_PROGRESS_L2,
+    )
   })
 
   it("returns included_l1 when the L1 receipt reverted (status=0)", async () => {
@@ -728,7 +744,7 @@ describe("get_status (deposit)", () => {
         build_deposit_l1_reader({ receipt: "reverted" }),
       ),
     )
-    expect(status.state).toBe("included_l1")
+    expect(status.state).toBe(OP_BRIDGE_STATE.INCLUDED_L1)
   })
 
   it("returns in_progress_l2 when the L1 log is present but L2 receipt is missing", async () => {
@@ -743,7 +759,9 @@ describe("get_status (deposit)", () => {
         build_deposit_l2_reader({ status: "missing" }),
       ),
     )
-    expect(status.state).toBe("in_progress_l2")
+    expect(status.state).toBe(
+      OP_BRIDGE_STATE.IN_PROGRESS_L2,
+    )
   })
 
   it("returns succeeded_l2 when the L2 deposit receipt has status=1", async () => {
@@ -758,8 +776,8 @@ describe("get_status (deposit)", () => {
         build_deposit_l2_reader({ status: "success" }),
       ),
     )
-    expect(status.state).toBe("succeeded_l2")
-    if (status.state === "succeeded_l2") {
+    expect(status.state).toBe(OP_BRIDGE_STATE.SUCCEEDED_L2)
+    if (status.state === OP_BRIDGE_STATE.SUCCEEDED_L2) {
       expect(status.l2_tx_hash).toBe(L2_DEPOSIT_HASH)
     }
   })
@@ -776,8 +794,8 @@ describe("get_status (deposit)", () => {
         build_deposit_l2_reader({ status: "reverted" }),
       ),
     )
-    expect(status.state).toBe("failed_l2")
-    if (status.state === "failed_l2") {
+    expect(status.state).toBe(OP_BRIDGE_STATE.FAILED_L2)
+    if (status.state === OP_BRIDGE_STATE.FAILED_L2) {
       expect(status.l2_tx_hash).toBe(L2_DEPOSIT_HASH)
     }
   })

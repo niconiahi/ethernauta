@@ -72,6 +72,7 @@ import { CallSchema } from "@ethernauta/transport"
 import {
   bigint_to_hex,
   hex_to_bigint,
+  type ObjectValues,
 } from "@ethernauta/utils"
 import type { InferOutput } from "valibot"
 import { literal, object, parse, variant } from "valibot"
@@ -116,58 +117,77 @@ const ParametersSchema = variant("direction", [
 ])
 type Parameters = InferOutput<typeof ParametersSchema>
 
+export const OP_BRIDGE_STATE = {
+  SUBMITTED_L1: "submitted_l1",
+  INCLUDED_L1: "included_l1",
+  IN_PROGRESS_L2: "in_progress_l2",
+  SUCCEEDED_L2: "succeeded_l2",
+  FAILED_L2: "failed_l2",
+  INITIATED_L2: "initiated_l2",
+  AWAITING_GAME_PROPOSAL: "awaiting_game_proposal",
+  GAME_IN_PROGRESS: "game_in_progress",
+  READY_TO_PROVE: "ready_to_prove",
+  PROOF_PENDING_MATURITY: "proof_pending_maturity",
+  READY_TO_FINALIZE: "ready_to_finalize",
+  FINALIZED: "finalized",
+  GAME_INVALIDATED: "game_invalidated",
+} as const
+export type OpBridgeState = ObjectValues<
+  typeof OP_BRIDGE_STATE
+>
+
 export const OpBridgeStatusSchema = variant("state", [
-  object({ state: literal("submitted_l1") }),
+  object({ state: literal(OP_BRIDGE_STATE.SUBMITTED_L1) }),
   object({
-    state: literal("included_l1"),
+    state: literal(OP_BRIDGE_STATE.INCLUDED_L1),
     l1_tx_hash: Hash32Schema,
   }),
   object({
-    state: literal("in_progress_l2"),
+    state: literal(OP_BRIDGE_STATE.IN_PROGRESS_L2),
     l1_tx_hash: Hash32Schema,
   }),
   object({
-    state: literal("succeeded_l2"),
-    l1_tx_hash: Hash32Schema,
-    l2_tx_hash: Hash32Schema,
-  }),
-  object({
-    state: literal("failed_l2"),
+    state: literal(OP_BRIDGE_STATE.SUCCEEDED_L2),
     l1_tx_hash: Hash32Schema,
     l2_tx_hash: Hash32Schema,
   }),
   object({
-    state: literal("initiated_l2"),
+    state: literal(OP_BRIDGE_STATE.FAILED_L2),
+    l1_tx_hash: Hash32Schema,
+    l2_tx_hash: Hash32Schema,
+  }),
+  object({
+    state: literal(OP_BRIDGE_STATE.INITIATED_L2),
     withdrawal_hash: Hash32Schema,
   }),
   object({
-    state: literal("awaiting_game_proposal"),
+    state: literal(OP_BRIDGE_STATE.AWAITING_GAME_PROPOSAL),
     withdrawal_hash: Hash32Schema,
   }),
   object({
-    state: literal("game_in_progress"),
+    state: literal(OP_BRIDGE_STATE.GAME_IN_PROGRESS),
     withdrawal_hash: Hash32Schema,
     game_proxy: AddressSchema,
   }),
   object({
-    state: literal("ready_to_prove"),
+    state: literal(OP_BRIDGE_STATE.READY_TO_PROVE),
     withdrawal_hash: Hash32Schema,
   }),
   object({
-    state: literal("proof_pending_maturity"),
+    state: literal(OP_BRIDGE_STATE.PROOF_PENDING_MATURITY),
     withdrawal_hash: Hash32Schema,
     mature_at_seconds: Uint256Schema,
   }),
   object({
-    state: literal("ready_to_finalize"),
+    state: literal(OP_BRIDGE_STATE.READY_TO_FINALIZE),
     withdrawal_hash: Hash32Schema,
   }),
   object({
-    state: literal("finalized"),
+    state: literal(OP_BRIDGE_STATE.FINALIZED),
     withdrawal_hash: Hash32Schema,
   }),
   object({
-    state: literal("game_invalidated"),
+    state: literal(OP_BRIDGE_STATE.GAME_INVALIDATED),
     withdrawal_hash: Hash32Schema,
   }),
 ])
@@ -241,7 +261,7 @@ async function read_deposit_status(input: {
   ])([input.l1_reader, { chain_id: input.l1_chain_id }])
   if (receipt === null) {
     return parse(OpBridgeStatusSchema, {
-      state: "submitted_l1",
+      state: OP_BRIDGE_STATE.SUBMITTED_L1,
     })
   }
   const status_hex = receipt.status
@@ -250,7 +270,7 @@ async function read_deposit_status(input: {
     hex_to_bigint(status_hex) === 0n
   ) {
     return parse(OpBridgeStatusSchema, {
-      state: "included_l1",
+      state: OP_BRIDGE_STATE.INCLUDED_L1,
       l1_tx_hash: input.l1_tx_hash,
     })
   }
@@ -264,7 +284,7 @@ async function read_deposit_status(input: {
   })
   if (!deposit_log_event) {
     return parse(OpBridgeStatusSchema, {
-      state: "in_progress_l2",
+      state: OP_BRIDGE_STATE.IN_PROGRESS_L2,
       l1_tx_hash: input.l1_tx_hash,
     })
   }
@@ -276,7 +296,7 @@ async function read_deposit_status(input: {
   ])([input.l2_reader, { chain_id: input.l2_chain_id }])
   if (l2_receipt === null) {
     return parse(OpBridgeStatusSchema, {
-      state: "in_progress_l2",
+      state: OP_BRIDGE_STATE.IN_PROGRESS_L2,
       l1_tx_hash: input.l1_tx_hash,
     })
   }
@@ -286,13 +306,13 @@ async function read_deposit_status(input: {
     hex_to_bigint(l2_status_hex) === 0n
   ) {
     return parse(OpBridgeStatusSchema, {
-      state: "failed_l2",
+      state: OP_BRIDGE_STATE.FAILED_L2,
       l1_tx_hash: input.l1_tx_hash,
       l2_tx_hash: l2_deposit_hash,
     })
   }
   return parse(OpBridgeStatusSchema, {
-    state: "succeeded_l2",
+    state: OP_BRIDGE_STATE.SUCCEEDED_L2,
     l1_tx_hash: input.l1_tx_hash,
     l2_tx_hash: l2_deposit_hash,
   })
@@ -358,7 +378,7 @@ async function read_withdraw_status(input: {
   )
   if (finalized) {
     return parse(OpBridgeStatusSchema, {
-      state: "finalized",
+      state: OP_BRIDGE_STATE.FINALIZED,
       withdrawal_hash,
     })
   }
@@ -440,19 +460,19 @@ async function read_pre_prove_status(input: {
   })
   if (candidate.kind === "ready") {
     return parse(OpBridgeStatusSchema, {
-      state: "ready_to_prove",
+      state: OP_BRIDGE_STATE.READY_TO_PROVE,
       withdrawal_hash: input.withdrawal_hash,
     })
   }
   if (candidate.kind === "in_progress") {
     return parse(OpBridgeStatusSchema, {
-      state: "game_in_progress",
+      state: OP_BRIDGE_STATE.GAME_IN_PROGRESS,
       withdrawal_hash: input.withdrawal_hash,
       game_proxy: candidate.proxy,
     })
   }
   return parse(OpBridgeStatusSchema, {
-    state: "awaiting_game_proposal",
+    state: OP_BRIDGE_STATE.AWAITING_GAME_PROPOSAL,
     withdrawal_hash: input.withdrawal_hash,
   })
 }
@@ -516,14 +536,14 @@ async function read_post_prove_status(input: {
   ])
   if (blacklisted) {
     return parse(OpBridgeStatusSchema, {
-      state: "game_invalidated",
+      state: OP_BRIDGE_STATE.GAME_INVALIDATED,
       withdrawal_hash: input.withdrawal_hash,
     })
   }
   const game_status = hex_to_bigint(game_status_hex)
   if (game_status !== GAME_STATUS_DEFENDER_WINS) {
     return parse(OpBridgeStatusSchema, {
-      state: "game_invalidated",
+      state: OP_BRIDGE_STATE.GAME_INVALIDATED,
       withdrawal_hash: input.withdrawal_hash,
     })
   }
@@ -538,7 +558,7 @@ async function read_post_prove_status(input: {
       : mature_at_game
   if (now_seconds < mature_at) {
     return parse(OpBridgeStatusSchema, {
-      state: "proof_pending_maturity",
+      state: OP_BRIDGE_STATE.PROOF_PENDING_MATURITY,
       withdrawal_hash: input.withdrawal_hash,
       mature_at_seconds: parse(
         Uint256Schema,
@@ -547,7 +567,7 @@ async function read_post_prove_status(input: {
     })
   }
   return parse(OpBridgeStatusSchema, {
-    state: "ready_to_finalize",
+    state: OP_BRIDGE_STATE.READY_TO_FINALIZE,
     withdrawal_hash: input.withdrawal_hash,
   })
 }
