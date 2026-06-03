@@ -27,6 +27,11 @@ Keep this file in lockstep with the constant there.
 | `eip155-1868.ts` | Soneium | 1868 | 23 |
 | `eip155-34443.ts` | Mode | 34443 | 22 |
 | `eip155-7777777.ts` | Zora | 7777777 | 22 |
+| `eip155-1135.ts` | Lisk | 1135 | 22 |
+| `eip155-57073.ts` | Ink | 57073 | 24 |
+| `eip155-130.ts` | Unichain | 130 | 24 |
+| `eip155-7560.ts` | Cyber | 7560 | 22 |
+| `eip155-60808.ts` | BOB | 60808 | 22 |
 
 Each file is the union of two upstream-derived groupings:
 
@@ -59,12 +64,29 @@ Every other field in the schema is required for every chain we
 ship and the `parse(OpDeploysSchema, …)` call at the top of
 each `eip155-*.ts` enforces it.
 
-## Why Base is absent
+## Chains intentionally absent
 
-Base (8453) and Base Sepolia (84532) are not Superchain members
-in the registry's strict sense and do not appear in
-`addresses.json`. They will land in a future bump once a
-secondary source is wired in.
+Five OP-stack chains we'd otherwise ship are deferred to a
+follow-up:
+
+- **Base (8453) + Base Sepolia (84532)** — not Superchain-Registry
+  members, addresses live outside `addresses.json` (Base
+  publishes them in `base/docs` at
+  `docs/base-chain/network-information/base-contracts.mdx`).
+  Wiring them in requires a secondary source path plus
+  schema-name normalization (Base uses unproxied names —
+  `OptimismPortal`, `L1StandardBridge` — while upstream
+  `addresses.json` uses `Proxy`-suffixed names).
+- **Fraxtal (252) + Redstone (690)** — pre-fault-proof OP stack.
+  Upstream ships `L2OutputOracleProxy` in place of
+  `DisputeGameFactoryProxy` / `MIPS` / `PreimageOracle` /
+  `PermissionedDisputeGame`, and no `Challenger` role. Adding
+  them requires loosening `OpDeploysSchema` (more `optional()`
+  fields) plus adding `L2OutputOracleProxy` as a valid
+  pre-fault-proof field.
+
+See `tmp/plans/op_completeness_pass/NOTES.md` §7 for the
+deferred-design tracking.
 
 ## Bump cadence
 

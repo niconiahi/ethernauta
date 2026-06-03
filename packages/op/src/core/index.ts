@@ -23,6 +23,10 @@ export {
   RollupConfigSchema,
 } from "./rollup-config"
 export {
+  type SafeHeadAtL1Block,
+  SafeHeadAtL1BlockSchema,
+} from "./safe-head-at-l1-block"
+export {
   type SyncStatus,
   SyncStatusSchema,
 } from "./sync-status"

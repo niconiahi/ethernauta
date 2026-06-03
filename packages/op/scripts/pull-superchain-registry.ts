@@ -34,6 +34,21 @@ const CHAIN_IDS = [
   1868, // Soneium
   34443, // Mode
   7777777, // Zora
+  // op_completeness_pass additions. Three of the originally-
+  // scoped nine chains are deferred to a follow-up — see
+  // tmp/plans/op_completeness_pass/NOTES.md "Chain coverage —
+  // PR3 deferrals" for full context:
+  //   - 8453 / 84532 (Base, Base Sepolia): not Superchain-Registry
+  //     members, addresses live outside addresses.json.
+  //   - 252 / 690 (Fraxtal, Redstone): pre-fault-proof OP stack;
+  //     ship L2OutputOracleProxy in place of DisputeGameFactory +
+  //     MIPS + PreimageOracle + PermissionedDisputeGame, so
+  //     OpDeploysSchema would need a loosening pass first.
+  1135, // Lisk
+  57073, // Ink
+  130, // Unichain
+  7560, // Cyber
+  60808, // BOB
 ] as const
 
 // Field-name routing. Anything in upstream's flat addresses.json
