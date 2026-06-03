@@ -1,0 +1,56 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-zksync-send-eth/demo.tsx?highlighted"
+import { BridgeZksyncSendEthDemo } from "../../examples/bridge-zksync-send-eth/demo"
+
+# Bridge — `send_eth` (Sepolia → Era Sepolia)
+
+`send_eth({ to, amount })` is the zkSync L1→L2 ETH deposit
+verb. It composes:
+
+1. A pre-call read of `Bridgehub.l2TransactionBaseCost(
+   chainId, l1GasPrice, l2GasLimit,
+   l2GasPerPubdataByteLimit)` on L1 — the destination chain's
+   per-call L2 base cost at the current L1 gas price, needed
+   to compute `mintValue = amount + base_cost`.
+2. ABI-encodes the 9-field `L2TransactionRequestDirect`
+   struct against the canonical `Bridgehub` ABI vendored from
+   `matter-labs/era-contracts@v0.29.2`. Defaults fill the
+   non-input fields: `l2Calldata = 0x`,
+   `l2GasPerPubdataByteLimit = 0x320` (the era-contracts
+   `REQUIRED_L2_GAS_PRICE_PER_PUBDATA` constant — Bridgehub
+   reverts on any other value), `factoryDeps = []`,
+   `refundRecipient = to`, `l2GasLimit = 1_000_000` (~5.7×
+   the era-contracts `L1_TX_MIN_L2_GAS_BASE` minimum).
+3. The `Bridgehub` proxy address looked up from the
+   destination L2 chain id via
+   `require_deploy_addresses(l2.chain_id).l1.bridgehub`.
+4. `eth_signTransaction` issued through the bridge bundle's
+   top-level signer, followed by `eth_sendRawTransaction`
+   broadcast on L1 (path 2 per M3 — wallet signs, dapp
+   sends).
+
+The verb returns the L1 transaction hash. The L2 credit
+lands on the supplied `to` address on Era Sepolia.
+
+zkSync's `send_eth` also enforces an **ETH-base-token
+guard** — it reads `deploys.l1.baseToken` and throws when
+the destination chain pays gas in a non-ETH token. Era +
+Era Sepolia both use ETH as the base token, so the guard
+is a no-op here; future hyperchains with non-ETH base
+tokens route deposits through `send_erc20` (slice 4b)
+against the L2 ETH representation.
+
+The bridge wiring is the same shape every OP / Arbitrum /
+zkSync verb takes: `create_bridge(CHAINS)` returns a
+resolver, each call picks `{ l1, l2, signer? }`, and the
+verb sees a `ResolvedBridge` bundle with per-side `reader`
+and (optional) `signer`.
+
+<BridgeZksyncSendEthDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-zksync-send-eth/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

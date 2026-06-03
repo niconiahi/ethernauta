@@ -142,6 +142,10 @@ const RECIPE_EXAMPLES = [
     to: "/examples/bridge-arbitrum-withdraw-eth",
     title: "Bridge — withdraw_eth lifecycle (Arbitrum)",
   },
+  {
+    to: "/examples/bridge-zksync-send-eth",
+    title: "Bridge — send_eth (zkSync)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [
