@@ -18,7 +18,10 @@ import {
   safeParse,
   string,
 } from "valibot"
-import { CHAIN_LOADERS, type ChainModule } from "./chain-loaders"
+import {
+  CHAIN_LOADERS,
+  type ChainModule,
+} from "./chain-loaders"
 import { make_notification } from "./event"
 
 // Wallet-side Chain shape — the *materialized* form persisted

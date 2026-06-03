@@ -17,9 +17,8 @@ const package_json = JSON.parse(
 // script passes to `vite build --watch`.
 const is_dev_mode =
   process.argv.includes("--mode") &&
-  process.argv[
-    process.argv.indexOf("--mode") + 1
-  ] === "development"
+  process.argv[process.argv.indexOf("--mode") + 1] ===
+    "development"
 
 export default defineConfig({
   plugins: [preact(), tsconfigPaths(), tailwindcss()],

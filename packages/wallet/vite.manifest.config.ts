@@ -12,9 +12,8 @@ import tsconfigPaths from "vite-tsconfig-paths"
 // same `--mode development` flag the dev script passes.
 const is_dev_mode =
   process.argv.includes("--mode") &&
-  process.argv[
-    process.argv.indexOf("--mode") + 1
-  ] === "development"
+  process.argv[process.argv.indexOf("--mode") + 1] ===
+    "development"
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
