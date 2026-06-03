@@ -1,0 +1,58 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-zksync-send-erc20/demo.tsx?highlighted"
+import { BridgeZksyncSendErc20Demo } from "../../examples/bridge-zksync-send-erc20/demo"
+
+# Bridge — `send_erc20` (Sepolia → Era Sepolia)
+
+`send_erc20({ l1_token, to, amount, l2_gas_limit? })` is the
+zkSync L1→L2 ERC-20 deposit verb. It composes the post-v26
+"two bridges" pattern that Era's Bridgehub exposes:
+
+1. A pre-call read of `Bridgehub.l2TransactionBaseCost` on
+   L1 — same shape as `send_eth`. The deposit pays
+   `mintValue = base_cost` for L2 gas; no callvalue is
+   needed because the bridged asset is the ERC-20.
+2. ABI-encodes the 9-field
+   `L2TransactionRequestTwoBridgesOuter` struct with the
+   L1AssetRouter wired as `secondBridgeAddress` and the
+   inner asset payload as `secondBridgeCalldata =
+   abi.encode(l1_token, amount, to)`. The AssetRouter is the
+   contract that enforces NTV-bridged ERC-20 invariants; the
+   TwoBridges pattern lets dapps stay out of the asset-
+   registration plumbing.
+3. The `Bridgehub` proxy address looked up from the
+   destination L2 chain id via
+   `require_deploy_addresses(l2.chain_id).l1.bridgehub`;
+   the L1AssetRouter address via `.l1.assetRouter`.
+4. `eth_signTransaction` issued through the bridge bundle's
+   top-level signer, followed by `eth_sendRawTransaction`
+   broadcast on L1 (path 2 per M3 — wallet signs, dapp
+   sends).
+
+**Approval reminder.** The L1AssetRouter forwards to the
+L1NativeTokenVault, which is the contract that calls
+`transferFrom`. The user must approve the **NativeTokenVault
+address** (not the AssetRouter, not the Bridgehub) for the
+deposit amount of `l1_token` before calling. The verb does
+**not** do this approval for you.
+
+**No pre-call read for asset registration.** The
+L1AssetRouter auto-registers ERC-20s on first deposit via
+`NativeTokenVault.tryRegisterTokenFromBurnData`. If a future
+hyperchain disables auto-registration, the verb will need a
+`getAssetId`-style pre-call mirroring Arbitrum's `getGateway`
+pattern.
+
+The verb returns the L1 transaction hash. The L2 credit
+lands on the supplied `to` address on Era Sepolia after the
+L1→L2 priority op is sealed in a batch and executed (~5 min
+on Era Sepolia under normal conditions).
+
+<BridgeZksyncSendErc20Demo />
+
+<GithubLink path="apps/playground/app/examples/bridge-zksync-send-erc20/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

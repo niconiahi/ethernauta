@@ -149,5 +149,13 @@ export default [
       "bridge-zksync-send-eth",
       "./routes/examples/bridge-zksync-send-eth.mdx",
     ),
+    route(
+      "bridge-zksync-send-erc20",
+      "./routes/examples/bridge-zksync-send-erc20.mdx",
+    ),
+    route(
+      "bridge-zksync-claim-failed-deposit",
+      "./routes/examples/bridge-zksync-claim-failed-deposit.mdx",
+    ),
   ]),
 ] satisfies RouteConfig

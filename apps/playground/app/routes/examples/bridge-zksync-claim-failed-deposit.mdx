@@ -1,0 +1,55 @@
+import { DemoSource } from "../../components/demo-source"
+import { GithubLink } from "../../components/github-link"
+import demoHtml from "../../examples/bridge-zksync-claim-failed-deposit/demo.tsx?highlighted"
+import { BridgeZksyncClaimFailedDepositDemo } from "../../examples/bridge-zksync-claim-failed-deposit/demo"
+
+# Bridge — `claim_failed_deposit` (Sepolia ↔ Era Sepolia)
+
+`claim_failed_deposit({ proof })` is zkSync's L1-side
+recovery primitive for L1→L2 deposits whose L2 execution
+reverted. The L1Nullifier verifies the supplied proof of
+failure and credits the depositor back from the L1 escrow.
+
+The flow:
+
+1. **Submit a failing deposit** — `send_erc20` with
+   `l2_gas_limit` deliberately set below the era-contracts
+   `L1_TX_MIN_L2_GAS_BASE` (= 173_484). The L1→L2 priority
+   op lands on L2 but reverts with out-of-gas, ending up in
+   the failed-deposit queue.
+2. **Wait for batch inclusion** — Era seals batches every
+   few minutes on Sepolia; the failed op needs to be sealed
+   before its merkle proof is fetchable.
+3. **Assemble the proof** — off-band via two RPCs against
+   `l2.reader`:
+   - `zks_getL2ToL1LogProof(l2TxHash, logIndex)` → gives
+     `batchNumber`, `id` (= `l2MessageIndex`), `proof`
+     (= `merkleProof`).
+   - `zks_getTransactionDetails(l2TxHash)` → gives
+     `l2TxNumberInBatch`.
+   The remaining fields (`chainIdNumeric`, `depositSender`,
+   `l1Token`, `amount`, `l2TxHash`) come from the original
+   deposit context. A future `fetch_failed_deposit_proof`
+   helper will package this — for now the demo expects the
+   pasted JSON.
+4. **Claim on L1** — `claim_failed_deposit` signs
+   `L1Nullifier.claimFailedDeposit(...)` on L1 with the
+   9-field proof. The L1Nullifier walks the merkle tree
+   anchored at the sealed batch's root and unlocks the
+   escrow.
+
+**Naming.** zkSync calls the proof bundle a
+`FailedDepositProof` — distinct from the withdraw-side
+`MessageProof` (slice 4c) because the failed-deposit case
+also carries the `(depositSender, l1Token, amount)` trio
+that the Nullifier needs to credit the L1 refund. Both
+compose `zks_getL2ToL1LogProof`, but their wire shapes are
+different.
+
+<BridgeZksyncClaimFailedDepositDemo />
+
+<GithubLink path="apps/playground/app/examples/bridge-zksync-claim-failed-deposit/demo.tsx" />
+
+## The code
+
+<DemoSource html={demoHtml} />

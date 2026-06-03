@@ -1,0 +1,65 @@
+.bridge-zksync-claim-failed-deposit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bridge-zksync-claim-failed-deposit-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.bridge-zksync-claim-failed-deposit-input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-strong);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.bridge-zksync-claim-failed-deposit-note {
+  margin: 8px 0 16px;
+  font-size: 13px;
+  color: var(--text-muted, var(--text));
+  line-height: 1.5;
+}
+
+.bridge-zksync-claim-failed-deposit-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--surface-strong);
+}
+
+.bridge-zksync-claim-failed-deposit-section h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.bridge-zksync-claim-failed-deposit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.bridge-zksync-claim-failed-deposit-error {
+  margin-top: 12px;
+  color: #c0392b;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.bridge-zksync-claim-failed-deposit-link {
+  color: var(--link, #4ea1ff);
+  text-decoration: underline;
+}
+
+.bridge-zksync-claim-failed-deposit-link:hover {
+  color: var(--link-hover, #82bfff);
+}

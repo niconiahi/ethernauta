@@ -146,6 +146,14 @@ const RECIPE_EXAMPLES = [
     to: "/examples/bridge-zksync-send-eth",
     title: "Bridge — send_eth (zkSync)",
   },
+  {
+    to: "/examples/bridge-zksync-send-erc20",
+    title: "Bridge — send_erc20 (zkSync)",
+  },
+  {
+    to: "/examples/bridge-zksync-claim-failed-deposit",
+    title: "Bridge — claim_failed_deposit lifecycle (zkSync)",
+  },
 ] as const
 
 const UTILITY_EXAMPLES = [

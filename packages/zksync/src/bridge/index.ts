@@ -17,5 +17,9 @@
 // withdraw family + `get_status` + `fetch_message_proof`.
 
 export * from "./bridge"
+export * from "./claim-failed-deposit"
 export * from "./errors"
+export * from "./failed-deposit-proof"
+export * from "./send-erc20"
 export * from "./send-eth"
+export * from "./send-message"
