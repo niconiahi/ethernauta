@@ -110,54 +110,69 @@ const RECIPE_EXAMPLES = [
     to: "/examples/sponsored-basename-transfer",
     title: "Sponsored basename transfer",
   },
+] as const
+
+const ROLLUP_OP_EXAMPLES = [
   {
     to: "/examples/bridge-send-eth",
-    title: "Bridge — send_eth (OP)",
+    title: "send_eth",
   },
   {
     to: "/examples/bridge-send-erc20",
-    title: "Bridge — send_erc20 (OP)",
+    title: "send_erc20",
   },
   {
     to: "/examples/bridge-send-message",
-    title: "Bridge — send_message (OP)",
+    title: "send_message",
   },
   {
     to: "/examples/bridge-withdraw-eth",
-    title: "Bridge — withdraw_eth (OP)",
+    title: "withdraw_eth",
   },
+] as const
+
+const ROLLUP_ARBITRUM_EXAMPLES = [
   {
     to: "/examples/bridge-arbitrum-send-eth",
-    title: "Bridge — send_eth (Arbitrum)",
+    title: "send_eth",
   },
   {
     to: "/examples/bridge-arbitrum-send-erc20",
-    title: "Bridge — send_erc20 (Arbitrum)",
+    title: "send_erc20",
   },
   {
     to: "/examples/bridge-arbitrum-retryable",
-    title: "Bridge — retryable lifecycle (Arbitrum)",
+    title: "retryable lifecycle",
   },
   {
     to: "/examples/bridge-arbitrum-withdraw-eth",
-    title: "Bridge — withdraw_eth lifecycle (Arbitrum)",
+    title: "withdraw_eth lifecycle",
   },
+] as const
+
+const ROLLUP_ZKSYNC_EXAMPLES = [
   {
     to: "/examples/bridge-zksync-send-eth",
-    title: "Bridge — send_eth (zkSync)",
+    title: "send_eth",
   },
   {
     to: "/examples/bridge-zksync-send-erc20",
-    title: "Bridge — send_erc20 (zkSync)",
+    title: "send_erc20",
   },
   {
     to: "/examples/bridge-zksync-claim-failed-deposit",
-    title: "Bridge — claim_failed_deposit lifecycle (zkSync)",
+    title: "claim_failed_deposit lifecycle",
   },
   {
     to: "/examples/bridge-zksync-withdraw-eth",
-    title: "Bridge — withdraw_eth lifecycle (zkSync)",
+    title: "withdraw_eth lifecycle",
   },
+] as const
+
+const ROLLUP_SUBSECTIONS = [
+  { heading: "OP", items: ROLLUP_OP_EXAMPLES },
+  { heading: "Arbitrum", items: ROLLUP_ARBITRUM_EXAMPLES },
+  { heading: "zkSync", items: ROLLUP_ZKSYNC_EXAMPLES },
 ] as const
 
 const UTILITY_EXAMPLES = [
@@ -184,13 +199,36 @@ const UTILITY_EXAMPLES = [
   },
 ] as const
 
-const SECTIONS = [
-  { heading: "Recipes", items: RECIPE_EXAMPLES },
+const TAIL_SECTIONS = [
   { heading: "Utilities", items: UTILITY_EXAMPLES },
   { heading: "ERCs", items: ERC_EXAMPLES },
   { heading: "EIPs", items: EIP_EXAMPLES },
   { heading: "Others", items: OTHER_EXAMPLES },
 ] as const
+
+function ExamplesNav({
+  items,
+}: {
+  items: ReadonlyArray<{ to: string; title: string }>
+}) {
+  return (
+    <nav className="examples-nav">
+      {items.map((e) => (
+        <NavLink
+          key={e.to}
+          to={e.to}
+          className={({ isActive }) =>
+            isActive
+              ? "examples-nav-link is-active"
+              : "examples-nav-link"
+          }
+        >
+          {e.title}
+        </NavLink>
+      ))}
+    </nav>
+  )
+}
 
 export default function ExamplesLayout() {
   return (
@@ -200,7 +238,25 @@ export default function ExamplesLayout() {
           label="Star on GitHub"
           className="examples-sidebar-github"
         />
-        {SECTIONS.map((section) => (
+        <div className="examples-section">
+          <h2 className="examples-section-title">Recipes</h2>
+          <ExamplesNav items={RECIPE_EXAMPLES} />
+        </div>
+        <div className="examples-section">
+          <h2 className="examples-section-title">Rollups</h2>
+          {ROLLUP_SUBSECTIONS.map((sub) => (
+            <div
+              key={sub.heading}
+              className="examples-subsection"
+            >
+              <h3 className="examples-subsection-title">
+                {sub.heading}
+              </h3>
+              <ExamplesNav items={sub.items} />
+            </div>
+          ))}
+        </div>
+        {TAIL_SECTIONS.map((section) => (
           <div
             key={section.heading}
             className="examples-section"
@@ -208,21 +264,7 @@ export default function ExamplesLayout() {
             <h2 className="examples-section-title">
               {section.heading}
             </h2>
-            <nav className="examples-nav">
-              {section.items.map((e) => (
-                <NavLink
-                  key={e.to}
-                  to={e.to}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "examples-nav-link is-active"
-                      : "examples-nav-link"
-                  }
-                >
-                  {e.title}
-                </NavLink>
-              ))}
-            </nav>
+            <ExamplesNav items={section.items} />
           </div>
         ))}
       </aside>
