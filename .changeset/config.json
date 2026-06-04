@@ -5,7 +5,27 @@
     { "repo": "niconiahi/ethernauta" }
   ],
   "commit": false,
-  "fixed": [["@ethernauta/*"]],
+  "fixed": [
+    [
+      "@ethernauta/abi",
+      "@ethernauta/arbitrum",
+      "@ethernauta/chain",
+      "@ethernauta/cli",
+      "@ethernauta/core",
+      "@ethernauta/crypto",
+      "@ethernauta/eip",
+      "@ethernauta/ens",
+      "@ethernauta/erc",
+      "@ethernauta/eth",
+      "@ethernauta/op",
+      "@ethernauta/react",
+      "@ethernauta/testing",
+      "@ethernauta/transaction",
+      "@ethernauta/transport",
+      "@ethernauta/utils",
+      "@ethernauta/zksync"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
