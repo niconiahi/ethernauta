@@ -1,15 +1,56 @@
 name: publish
 
 on:
+  pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: publish-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read pnpm version from .tool-versions
+        id: tool_versions
+        run: |
+          pnpm_version=$(grep '^pnpm ' .tool-versions | awk '{print $2}')
+          echo "pnpm=${pnpm_version}" >> "$GITHUB_OUTPUT"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ steps.tool_versions.outputs.pnpm }}
+          run_install: false
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: No-escape-hatches ratchet
+        run: pnpm lint:ratchet
+
   publish:
+    needs: [validate]
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
