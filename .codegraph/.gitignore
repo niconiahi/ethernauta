@@ -14,3 +14,7 @@ cache/
 
 # Hook markers
 .dirty
+
+# Daemon runtime artifacts
+daemon.pid
+daemon.sock
