@@ -38,11 +38,13 @@
       "@ethernauta/eth": ["../../packages/eth/src"],
       "@ethernauta/op": ["../../packages/op/src"],
       "@ethernauta/react": ["../../packages/react/src"],
+      "@ethernauta/transaction": [
+        "../../packages/transaction/src"
+      ],
       "@ethernauta/transport": [
         "../../packages/transport/src"
       ],
       "@ethernauta/utils": ["../../packages/utils/src"],
-      "@ethernauta/wallet": ["../../packages/wallet/src"],
       "@ethernauta/zksync": ["../../packages/zksync/src"]
     },
     "esModuleInterop": true,
