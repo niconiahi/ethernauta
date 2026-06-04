@@ -9,14 +9,15 @@ comparison). Same legend:
 - ❌ not provided
 - 📦 separate package (same vendor)
 
-**Scope.** This file scores the OP rollup family only —
-`@ethernauta/op/bridge` against `viem/op-stack` and
-`@eth-optimism/sdk`. Sibling packages will carry their own
-`COMPARISON.md` files (`packages/arbitrum/COMPARISON.md`,
-`packages/zksync/COMPARISON.md`) when their bridge slices land.
-Every Ethernauta verb cell below maps 1:1 to a shipped export
-from `packages/op/src/bridge/index.ts` — no aspirational
-entries.
+**Scope.** This file scores the full `@ethernauta/op` package
+against `viem/op-stack` and `@eth-optimism/sdk`: the bridge
+slice (§§1–9), op-node RPC methods, vendored L2 predeploys,
+per-chain L1 deploy registries, and gas estimation (§10).
+Sibling packages carry their own `COMPARISON.md` files
+(`packages/arbitrum/COMPARISON.md`,
+`packages/zksync/COMPARISON.md`). Every Ethernauta cell below
+maps 1:1 to a shipped export from `packages/op/src/` — no
+aspirational entries.
 
 The two comparators:
 
@@ -84,7 +85,7 @@ SDK's vocabulary.
 |---|---|---|---|
 | `get_status` — direction-discriminated read | ✅ `Bridgeable<OpBridgeStatus>` returning a discriminated union (see §3) | ✅ `getWithdrawalStatus` (withdraw side only) | ✅ `getMessageStatus` (`MessageStatus` enum) |
 | Maturity-window timing helpers | ⚠️ surfaced as union variants on `get_status` (`proof_pending_maturity` / `ready_to_finalize`) | ✅ `getTimeToProve` / `getTimeToFinalize` actions | ✅ `estimateMessageWaitTimeSeconds` |
-| Derive L2 tx hash from L1 receipt | ❌ deposit side stops at `included_l1` / `in_progress_l2` / `succeeded_l2` / `failed_l2` (derived from the L2 receipt of the system tx) | ✅ `getL2TransactionHashes` | ✅ `getMessagesByTransaction` |
+| Derive L2 tx hash from L1 receipt | ✅ `derive_l2_tx_hashes_from_l1_receipt({ l1_receipt }) → Hash32[]` — topic-filtered, plural return shape handles multicall fan-out | ✅ `getL2TransactionHashes` | ✅ `getMessagesByTransaction` |
 | Wait helper (`waitForMessageStatus`) | ❌ — dapps poll `get_status` themselves (M3-aligned: the lifecycle is user-driven, not blocking) | ❌ | ✅ `waitForMessageStatus` |
 
 ---
@@ -177,61 +178,211 @@ axis.
    `fetch_message_proof`'s filter set is readable in one file;
    no rollup-vendor service is consulted.
 
-## 9. Where viem/op-stack and @eth-optimism/sdk Still Win
+## 9. Comparator surfaces Ethernauta intentionally omits
 
-1. **`getL2TransactionHashes` (viem) / `getMessagesByTransaction`
-   (sdk).** Deriving the L2 tx hash from an L1 deposit receipt
-   is a one-call helper in both comparators. Ethernauta's
-   `get_status` stops short of this on the deposit side
-   (`succeeded_l2` / `failed_l2` are derived from the L2 receipt
-   the wallet/dapp already holds; reconstructing it from the L1
-   `TransactionDeposited` event is a follow-up).
-2. **`waitForMessageStatus` (sdk).** A UX helper that blocks
-   until the message reaches a target status. Ethernauta
-   deliberately leaves polling to the dapp (the playground
-   `bridge-withdraw-eth` demo polls `get_status` every 15 s) —
-   blocking helpers fit awkwardly in `Bridgeable<T>`.
-3. **Per-side timing helpers (`getTimeToProve` /
-   `getTimeToFinalize`, viem).** Ethernauta surfaces these as
-   variant fields on `get_status` (`proof_pending_maturity` /
-   `ready_to_finalize`) rather than as standalone reads. The
-   information is equivalent; the call shape is less granular.
-4. **Ecosystem maturity.** Both comparators are years older
+The three entries below are design choices, not gaps. Each one
+maps to a comparator API that Ethernauta could expose, with a
+deliberate reason for the absent (or differently-shaped) export.
+
+1. **`waitForMessageStatus` (sdk).** A UX helper that blocks
+   until the message reaches a target status. **Intentionally
+   absent under M3.** The withdraw lifecycle spans hours to
+   days; a blocking helper imposes a polling cadence and a
+   cancellation policy on the dapp, which under path 2 owns
+   both. The playground `bridge-withdraw-eth` demo shows the
+   pattern (poll `get_status` every 15 s). Will not ship.
+2. **Per-side timing helpers (`getTimeToProve` /
+   `getTimeToFinalize`, viem).** **Information equivalent,
+   call shape different.** The timing fields already ride on
+   `get_status` variants:
+   `proof_pending_maturity.unlock_at` /
+   `ready_to_finalize` carry the maturity timestamp directly.
+   Comparators expose them as standalone reads;
+   Ethernauta rides them on the discriminated union so a
+   dapp doing an exhaustive `switch` already has the data.
+   Promote-to-standalone is a one-file follow-up if a dapp
+   asks.
+3. **Ecosystem maturity.** Both comparators are years older
    and embedded in dapp templates, tutorials, and dev tooling.
+
+---
+
+## 10. Beyond-bridge coverage
+
+§§1–9 scored the bridge slice. The rest of `@ethernauta/op`
+extends beyond that surface — op-node RPC bindings, vendored
+L2 predeploys, per-chain L1 deploy registries, and OP-aware
+gas estimation. Neither comparator competes on most of these
+axes; the sub-tables below score what each ships against
+Ethernauta's exports.
+
+### 10.1 op-node RPC methods
+
+| Method | Ethernauta | `viem/op-stack` | `@eth-optimism/sdk` |
+|---|---|---|---|
+| `optimism_outputAtBlock` | ✅ from `@ethernauta/op/methods` | ❌ | ❌ |
+| `optimism_syncStatus` | ✅ from `@ethernauta/op/methods` | ❌ | ❌ |
+| `optimism_rollupConfig` | ✅ from `@ethernauta/op/methods` | ❌ | ❌ |
+| `optimism_version` | ✅ from `@ethernauta/op/methods` | ❌ | ❌ |
+| `optimism_safeHeadAtL1Block` | ✅ from `@ethernauta/op/methods` | ❌ | ❌ |
+| OP-aware `eth_getBlockByNumber` (deposit-tx + L1 fields) | ✅ from `@ethernauta/op/methods` — `OpBlockSchema` recognises 0x7e deposit-tx envelopes and surfaces `l1BlockNumber` | ❌ (base viem block schema only) | ❌ |
+| OP-aware `eth_getTransactionReceipt` (deposit-receipt extras) | ✅ from `@ethernauta/op/methods` — `OpReceiptInfoSchema` extends with optional `depositNonce` / `depositReceiptVersion` | ❌ (base viem receipt schema only) | ❌ |
+
+The op-node JSON-RPC surface is unique to Ethernauta among
+the three libraries. Both `eth_*` overrides share names with
+their base `@ethernauta/eth` siblings — the package subpath
+(`@ethernauta/op/methods`) is the discriminator.
+
+### 10.2 L2 predeploys (vendored ABIs + method bindings)
+
+18 OP predeploys vendored under `packages/op/src/predeploys/`,
+each as its own subfolder with `address.ts`, `<Name>.abi.json`,
+and a generated `methods/` folder. Method bindings are reached
+via `@ethernauta/op/predeploys/<kebab>`; `predeploys/index.ts`
+is an address-only barrel because method names collide across
+predeploys (`paused`, `version`, `initialize`).
+
+| Predeploy | Address | Ethernauta | viem | sdk |
+|---|---|---|---|---|
+| `legacy-message-passer` | `0x42…0000` | ✅ | ❌ | ❌ |
+| `deployer-whitelist` | `0x42…0002` | ✅ | ❌ | ❌ |
+| `weth` | `0x42…0006` | ✅ | ❌ | ❌ |
+| `l2-cross-domain-messenger` | `0x42…0007` | ✅ | ❌ | ❌ |
+| `gas-price-oracle` | `0x42…000F` | ✅ | ⚠️ (inline ABI for fee math only) | ❌ |
+| `l2-standard-bridge` | `0x42…0010` | ✅ | ⚠️ (inline ABI inside bridge actions) | ⚠️ |
+| `sequencer-fee-vault` | `0x42…0011` | ✅ | ❌ | ❌ |
+| `optimism-mintable-erc20-factory` | `0x42…0012` | ✅ | ❌ | ❌ |
+| `l1-block-number` | `0x42…0013` | ✅ | ❌ | ❌ |
+| `l2-erc721-bridge` | `0x42…0014` | ✅ | ❌ | ❌ |
+| `l1-block` | `0x42…0015` | ✅ | ❌ | ❌ |
+| `optimism-mintable-erc721-factory` | `0x42…0017` | ✅ | ❌ | ❌ |
+| `proxy-admin` | `0x42…0018` | ✅ | ❌ | ❌ |
+| `base-fee-vault` | `0x42…0019` | ✅ | ❌ | ❌ |
+| `l1-fee-vault` | `0x42…001A` | ✅ | ❌ | ❌ |
+| `schema-registry` | `0x42…0020` | ✅ | ❌ | ❌ |
+| `eas` | `0x42…0021` | ✅ | ❌ | ❌ |
+| `governance-token` | `0x42…0042` | ✅ | ❌ | ❌ |
+
+`L2ToL1MessagePasser` (`0x42…0016`) is a 19th predeploy
+logically, but lives under `packages/op/src/bridge/` because
+its callers are bridge verbs — moving it would split the
+withdrawal-initiation flow across two subpaths. Intentional
+per D2-3.
+
+### 10.3 Per-chain L1 deploy registries
+
+11 OP-stack chains vendored under
+`packages/op/src/deploys/eip155-<chain_id>.ts`, each parsed
+against `OpDeploysSchema` at module load. Sourced from
+`ethereum-optimism/superchain-registry` at the pin recorded
+in `packages/op/src/deploys/SOURCES.md`. Consumers reach the
+addresses via `require_deploy_addresses(chain_id)` from the
+package root.
+
+| Chain | chain_id | Ethernauta | viem chain def | sdk |
+|---|---|---|---|---|
+| OP Mainnet | 10 | ✅ | ✅ (chain def only) | ✅ |
+| OP Sepolia | 11155420 | ✅ | ✅ | ✅ |
+| Unichain | 130 | ✅ | ✅ | ❌ |
+| Worldchain | 480 | ✅ | ✅ | ❌ |
+| Lisk | 1135 | ✅ | ✅ | ❌ |
+| Soneium | 1868 | ✅ | ✅ | ❌ |
+| Mode | 34443 | ✅ | ✅ | ❌ |
+| Ink | 57073 | ✅ | ✅ | ❌ |
+| Cyber | 7560 | ✅ | ✅ | ❌ |
+| BOB | 60808 | ✅ | ✅ | ❌ |
+| Zora | 7777777 | ✅ | ✅ | ❌ |
+
+viem ships chain definitions for many OP-stack chains but
+not the deployment addresses — its op-stack actions take the
+contract addresses as call-time parameters. Ethernauta ships
+both the chain definition (`@ethernauta/chain`) and the L1
+deploy bundle (`@ethernauta/op/deploys`) so verbs can resolve
+addresses from `chain_id` alone.
+
+**Deferred (tracked).** Four OP-stack chains are deferred
+to a follow-up sub-surface — call sites resolve `❌` rather
+than ✅ if invoked with these chain IDs:
+
+- **Base (8453) + Base Sepolia (84532)** — not Superchain-
+  Registry members. Addresses publish from `base-org/docs`
+  with unproxied schema names (`OptimismPortal` vs the
+  registry's `OptimismPortalProxy`). Needs a secondary
+  source path plus schema-name normalisation. (Deferral A,
+  `NOTES.md` §7.)
+- **Fraxtal (252) + Redstone (690)** — pre-fault-proof OP
+  stack. Ship `L2OutputOracleProxy` in place of
+  `DisputeGameFactoryProxy` + `MIPS` + `PreimageOracle` +
+  `PermissionedDisputeGame`, and no `Challenger` role.
+  Adding them requires loosening `OpDeploysSchema` (more
+  `optional()` fields) and recognising
+  `L2OutputOracleProxy` as a valid pre-fault-proof field.
+  (Deferral B, `NOTES.md` §7.)
+
+### 10.4 Gas estimation
+
+| Helper | Ethernauta | `viem/op-stack` | `@eth-optimism/sdk` |
+|---|---|---|---|
+| Aggregate OP fee estimate (1559 + L1 data + operator fee) | ✅ `estimate_op_fees` — 4-call parallel batch, operator-fee aware on Isthmus+ chains via `isIsthmus()` + `getOperatorFee(gasUsed)` | ⚠️ `estimateContract*` variants (encoding sugar over `getL1Fee`) | ⚠️ `estimateL2MessageGasLimit` / `estimateTotalGasCost` (partial) |
+| Pre-sign upper-bound (no nonce, no gas limit) | ✅ `estimate_op_fees_upper_bound` — 2-call parallel batch (1559 fees + `getL1FeeUpperBound`); 1 OP-stack RPC instead of 4 | ❌ | ❌ |
+| Direct L1-fee read against `GasPriceOracle` | ✅ `estimate_l1_fee` | ⚠️ via `estimateContract*` action chain | ⚠️ via SDK helper |
+
+**Note on viem's `estimateContract*` variants.** These are
+pure encoding sugar over the same primitives Ethernauta
+exposes — they encode the calldata for the caller and then
+call `GasPriceOracle.getL1Fee` on the result. Same numbers,
+same RPCs, fewer keystrokes. We do not ship a parallel
+variant because the encoding step is already a one-liner via
+`@ethernauta/abi` codecs at the call site; adding sugar over
+sugar widens the surface without adding capability. Promote
+on dapp ask.
 
 ---
 
 ## Gap Reading
 
-- The L1-receipt-derived L2 tx hash gap (§9.1) is the one
-  honest deposit-side gap; the path is documented in
-  `03-tracking.md` as a follow-up and the union already ships
-  the `succeeded_l2` / `failed_l2` variants so dapps that hold
-  the L2 receipt are not blocked.
-- The wait helper gap (§9.2) is intentional under M3 — dapps
-  drive their own polling cadence because the lifecycle spans
-  hours-to-days and a blocking helper is the wrong abstraction
-  in a per-call resolver shape.
-- The timing-helper granularity gap (§9.3) costs zero
-  information — the timing fields ride on the union — but
-  costs a call-site idiom comparator users are familiar with.
-  Promote-to-standalone is a one-file follow-up if a dapp
-  asks.
+- The wait-helper omission (§9.1) is intentional under M3 —
+  dapps drive their own polling cadence because the lifecycle
+  spans hours-to-days and a blocking helper is the wrong
+  abstraction in a per-call resolver shape.
+- The timing-helper granularity choice (§9.2) costs zero
+  information — the timing fields ride on the
+  `get_status` union — but costs a call-site idiom comparator
+  users are familiar with. Promote-to-standalone is a
+  one-file follow-up if a dapp asks.
 
-## Suggested Order of Operations
+## 11. Suggested Order of Operations
 
-1. **Hold OP UX-helper additions** (L1-receipt L2-hash
-   derivation, standalone timing helpers, a polling helper for
-   the playground) until at least one dapp asks. They are
-   minor surface additions, not architectural commitments, and
-   shipping them speculatively widens the surface without a
-   user-validated shape.
-2. **Revisit the `game_invalidated` collapse** once a dapp has
-   shipped a recovery UX against it — the variant union may
-   split back out into `challenger_won` / `blacklisted` /
-   `retired_game_type` if the call site needs to discriminate.
+1. **OP UX-helper additions — partially closed.** The
+   original bullet read "hold every UX-helper addition until
+   a dapp asks." Some of those landed because the cost-to-
+   ship was below the cost-of-asking:
+   - ✅ **L1-receipt L2-hash derivation** —
+     `derive_l2_tx_hashes_from_l1_receipt` shipped (closes
+     former §9.1).
+   - ✅ **Operator-fee accounting in `estimate_op_fees`** —
+     not a feature, a bug fix; every pre-Isthmus build was
+     under-counting fees.
+   - ✅ **Pre-sign upper-bound estimator
+     (`estimate_op_fees_upper_bound`)** — one new file, a
+     UX-validated wallet pattern (max-fee display before the
+     full envelope is known).
+   - ⏸️ **Standalone timing helpers** (`get_time_to_prove` /
+     `get_time_to_finalize`) — still on hold; the
+     information already rides on `get_status` variants.
+   - ⏸️ **Polling helper for the playground** — still on
+     hold; the playground polls inline.
+   - ⏸️ **`game_invalidated` variant split** — still on
+     hold; revisit once a dapp ships recovery UX against it.
+2. **Chain coverage follow-up.** §10.3's four deferred
+   chains (Base + Base Sepolia + Fraxtal + Redstone) land in
+   a future sub-surface — Base needs a secondary source path
+   + schema normalisation, Fraxtal/Redstone need an
+   `OpDeploysSchema` loosening pass for the pre-fault-proof
+   contract set.
 3. **Resurvey this file when sibling rollup `COMPARISON.md`s
-   land** (Arbitrum at slice 3, zkSync at slice 4). Comparator
-   versions drift; the rule is "the comparator column reflects
-   the comparator's currently published version at resurvey
-   time, not a cached impression."
+   land** (Arbitrum at slice 3, zkSync at slice 4 — both
+   already shipped). Comparator versions drift; the rule is
+   "the comparator column reflects the comparator's currently
+   published version at resurvey time, not a cached
+   impression."
