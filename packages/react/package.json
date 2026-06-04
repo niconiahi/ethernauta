@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/react",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "React hooks for Ethernauta — useProvider, useProviderDetail (EIP-6963 discovery).",
   "keywords": [
     "ethereum",

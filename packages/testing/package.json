@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/testing",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "Vitest plugin + anvil spawner for Ethernauta-based dapp tests.",
   "keywords": [
     "ethereum",

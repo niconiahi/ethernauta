@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/eip",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "EIP standards (191, 712, 1102, 1193, 1271, 2255, 3085, 4361, 5792, 6963, 7702, …) as importable subpaths for Ethernauta.",
   "keywords": [
     "ethereum",

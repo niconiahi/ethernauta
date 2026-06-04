@@ -1,5 +1,7 @@
 # @ethernauta/eth
 
+## 0.0.48
+
 ## 0.0.3
 
 ### Patch Changes

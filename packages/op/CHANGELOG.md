@@ -1,4 +1,4 @@
-# @ethernauta/transport
+# @ethernauta/op
 
 ## 0.0.48
 
@@ -8,28 +8,7 @@
   - @ethernauta/core@0.0.48
   - @ethernauta/abi@0.0.48
   - @ethernauta/eip@0.0.48
+  - @ethernauta/eth@0.0.48
+  - @ethernauta/transport@0.0.48
+  - @ethernauta/chain@0.0.48
   - @ethernauta/utils@0.0.48
-
-## 0.0.3
-
-### Patch Changes
-
-- 174f653: try four
-
-## 0.0.2
-
-### Patch Changes
-
-- 556003e: try four publish
-
-## 0.0.1
-
-### Patch Changes
-
-- 2029201: test prevent double publish
-
-## 0.0.1
-
-### Patch Changes
-
-- 910adf6: first release

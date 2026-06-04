@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/crypto",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "Cross-spec signature + SIWE verification + HD key derivation for Ethernauta.",
   "keywords": [
     "ethereum",

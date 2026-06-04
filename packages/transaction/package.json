@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/transaction",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "Transaction lifecycle tracker for Ethernauta — pending → mined / reverted via receipt polling.",
   "keywords": [
     "ethereum",
