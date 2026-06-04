@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/zksync",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "zkSync Era support for Ethernauta — bridge verbs, system contracts, zks_* RPC, 0x71 (EIP-712) tx encoder + signer.",
   "keywords": [
     "ethereum",

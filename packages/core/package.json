@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/core",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "Primitive Valibot schemas for Ethernauta — addresses, bytes, hashes, uints, hex.",
   "keywords": [
     "ethereum",

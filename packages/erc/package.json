@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/erc",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "ERC method bindings (20, 721, 1155, 4626, 5267, …) as importable subpaths for Ethernauta.",
   "keywords": [
     "ethereum",

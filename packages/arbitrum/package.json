@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/arbitrum",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "Arbitrum support for Ethernauta — bridge verbs, 16 precompiles, arb_* RPC, orbit chains, timeboost.",
   "keywords": [
     "ethereum",

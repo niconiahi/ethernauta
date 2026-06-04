@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/eth",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "eth_* JSON-RPC methods + EIP-1559 fee math + gas-limit buffering for Ethernauta.",
   "keywords": [
     "ethereum",
