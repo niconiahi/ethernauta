@@ -1,8 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/react",
-  "type": "module",
   "version": "0.0.47",
+  "description": "React hooks for Ethernauta — useProvider, useProviderDetail (EIP-6963 discovery).",
+  "keywords": [
+    "ethereum",
+    "react",
+    "hooks",
+    "eip-6963",
+    "wallet"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -27,12 +40,12 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
   "dependencies": {
     "@ethernauta/eip": "workspace:*",
     "@ethernauta/transport": "workspace:*"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

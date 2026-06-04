@@ -1,8 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/ens",
-  "type": "module",
   "version": "0.0.47",
+  "description": "ENS primitives for Ethernauta — ENSIP normalize + resolver helpers.",
+  "keywords": [
+    "ethereum",
+    "ens",
+    "ensip",
+    "namehash",
+    "resolver"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -27,6 +40,9 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",
     "@ethernauta/core": "workspace:*",
@@ -34,9 +50,6 @@
     "@ethernauta/erc": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

@@ -1,8 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/transaction",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Transaction lifecycle tracker for Ethernauta — pending → mined / reverted via receipt polling.",
+  "keywords": [
+    "ethereum",
+    "transaction",
+    "tracker",
+    "lifecycle",
+    "receipt"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -27,14 +40,14 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "tsdown": "^0.13.3"

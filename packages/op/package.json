@@ -1,8 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/op",
-  "type": "module",
   "version": "0.0.47",
+  "description": "OP-Stack support for Ethernauta — bridge verbs, 18 predeploys, per-chain L1 deploys, op-node RPC, fee estimation.",
+  "keywords": [
+    "ethereum",
+    "optimism",
+    "op-stack",
+    "rollup",
+    "l2",
+    "bridge",
+    "superchain"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -39,6 +54,9 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/chain": "workspace:*",
@@ -48,9 +66,6 @@
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*",
     "@noble/hashes": "^1.8.0"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@ethernauta/testing": "workspace:*",

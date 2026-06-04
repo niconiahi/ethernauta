@@ -1,8 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/arbitrum",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Arbitrum support for Ethernauta — bridge verbs, 16 precompiles, arb_* RPC, orbit chains, timeboost.",
+  "keywords": [
+    "ethereum",
+    "arbitrum",
+    "rollup",
+    "l2",
+    "bridge",
+    "precompiles",
+    "orbit"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -39,6 +54,9 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/chain": "workspace:*",
@@ -47,9 +65,6 @@
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*",
     "@noble/hashes": "^1.8.0"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@ethernauta/testing": "workspace:*",

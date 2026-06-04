@@ -1,8 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/chain",
-  "type": "module",
   "version": "0.0.47",
+  "description": "500+ EIP-155 chain definitions for Ethernauta, indexed by chain_id.",
+  "keywords": [
+    "ethereum",
+    "chain",
+    "eip-155",
+    "evm",
+    "mainnet",
+    "testnet"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },

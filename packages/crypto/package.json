@@ -1,8 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/crypto",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Cross-spec signature + SIWE verification + HD key derivation for Ethernauta.",
+  "keywords": [
+    "ethereum",
+    "crypto",
+    "siwe",
+    "hd-wallet",
+    "bip39",
+    "signature"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -27,6 +41,9 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eip": "workspace:*",
@@ -37,9 +54,6 @@
     "@noble/secp256k1": "^2.3.0",
     "@scure/bip32": "1.7.0",
     "@scure/bip39": "1.6.0"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@ethernauta/testing": "workspace:*",

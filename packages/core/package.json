@@ -1,8 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/core",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Primitive Valibot schemas for Ethernauta — addresses, bytes, hashes, uints, hex.",
+  "keywords": [
+    "ethereum",
+    "valibot",
+    "schema",
+    "primitives",
+    "address",
+    "hash"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },

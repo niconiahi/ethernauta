@@ -1,8 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/cli",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Code generator for Ethernauta — emits ABI method bindings from contract ABIs.",
+  "keywords": [
+    "ethereum",
+    "codegen",
+    "abi",
+    "cli",
+    "tooling"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -28,13 +41,13 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/core": "workspace:*",
     "@ethernauta/utils": "workspace:*"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

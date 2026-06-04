@@ -1,8 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/transport",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Resolver shapes (Readable / Writable / Signable / Callable / Bridgeable) + HTTP transport + EIP-1193 provider adapter for Ethernauta.",
+  "keywords": [
+    "ethereum",
+    "transport",
+    "json-rpc",
+    "eip-1193",
+    "resolver",
+    "http"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -27,14 +41,14 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/core": "workspace:*",
     "@ethernauta/eip": "workspace:*",
     "@ethernauta/utils": "workspace:*"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "tsdown": "^0.13.3"

@@ -1,8 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/testing",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Vitest plugin + anvil spawner for Ethernauta-based dapp tests.",
+  "keywords": [
+    "ethereum",
+    "testing",
+    "vitest",
+    "anvil",
+    "foundry"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -31,6 +44,10 @@
     "test:unit": "vitest",
     "test:integration": "vitest --config ./integration/vitest.config.mjs"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0",
+    "vitest": "^3.0.0"
+  },
   "dependencies": {
     "@ethernauta/core": "workspace:*",
     "@ethernauta/crypto": "workspace:*",
@@ -39,19 +56,15 @@
     "@ethernauta/utils": "workspace:*",
     "devalue": "^5.8.1"
   },
-  "peerDependencies": {
-    "valibot": "^1.1.0",
-    "vitest": "^3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "vitest": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@ethernauta/eth": "workspace:*",
     "@ethernauta/testing": "workspace:*",
     "tsdown": "^0.13.3",
     "valibot": "1.1.0"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
   }
 }

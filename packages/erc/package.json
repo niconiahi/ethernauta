@@ -1,8 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/erc",
-  "type": "module",
   "version": "0.0.47",
+  "description": "ERC method bindings (20, 721, 1155, 4626, 5267, …) as importable subpaths for Ethernauta.",
+  "keywords": [
+    "ethereum",
+    "erc",
+    "erc-20",
+    "erc-721",
+    "erc-1155",
+    "erc-4626",
+    "token"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -33,6 +48,9 @@
     "test:unit": "vitest",
     "test:integration": "echo no integration tests"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/core": "workspace:*",
@@ -43,9 +61,6 @@
     "@ethernauta/utils": "workspace:*",
     "@noble/hashes": "1.8.0",
     "@noble/secp256k1": "2.3.0"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@ethernauta/cli": "workspace:*",

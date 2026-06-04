@@ -1,8 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/utils",
-  "type": "module",
   "version": "0.0.47",
+  "description": "Pure dependency-free helpers for Ethernauta — hex, bytes, BigInt, type guards.",
+  "keywords": [
+    "ethereum",
+    "utils",
+    "hex",
+    "bytes",
+    "bigint"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },

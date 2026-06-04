@@ -1,8 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ethernauta/eth",
-  "type": "module",
   "version": "0.0.47",
+  "description": "eth_* JSON-RPC methods + EIP-1559 fee math + gas-limit buffering for Ethernauta.",
+  "keywords": [
+    "ethereum",
+    "json-rpc",
+    "eth",
+    "eip-1559",
+    "gas",
+    "fees"
+  ],
+  "homepage": "https://ethernauta-docs.pages.dev/",
+  "bugs": {
+    "url": "https://github.com/niconiahi/ethernauta/issues"
+  },
+  "license": "MIT",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -28,6 +42,9 @@
     "test:integration": "echo no integration tests",
     "test:cli": "bun src/compiler/cli.ts --abi src/erc/165/IERC165.abi.json --out src/erc/165"
   },
+  "peerDependencies": {
+    "valibot": "^1.1.0"
+  },
   "dependencies": {
     "@ethernauta/abi": "workspace:*",
     "@ethernauta/chain": "workspace:*",
@@ -35,9 +52,6 @@
     "@ethernauta/eip": "workspace:*",
     "@ethernauta/transport": "workspace:*",
     "@ethernauta/utils": "workspace:*"
-  },
-  "peerDependencies": {
-    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@ethernauta/testing": "workspace:*",
