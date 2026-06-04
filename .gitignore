@@ -15,3 +15,5 @@ tsconfig.docs-check.json
 foundry-out/
 foundry-cache/
 broadcast/
+
+packages/wallet/extension.zip
