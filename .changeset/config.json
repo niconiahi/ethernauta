@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "niconiahi/ethernauta" }
+  ],
+  "commit": false,
+  "fixed": [["@ethernauta/*"]],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@ethernauta/wallet",
+    "@ethernauta/playground",
+    "@ethernauta/docs"
+  ]
+}

@@ -3,6 +3,11 @@
   "name": "ethernauta",
   "type": "module",
   "scripts": {
+    "changeset": "changeset",
+    "version": "changeset version",
+    "publish": "pnpm build && changeset publish",
+    "publish:gh": "node scripts/publish-gh-packages.mjs",
+    "publish:dry": "changeset publish --dry-run",
     "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground --filter @ethernauta/docs run dev",
     "test:unit": "pnpm --recursive run test:unit",
     "test:integration": "pnpm --recursive run test:integration",
@@ -14,12 +19,12 @@
     "regen": "pnpm --filter @ethernauta/cli run build && node packages/cli/dist/bin.js abi && find packages -type d -name methods -not -path '*/node_modules/*' -not -path '*/dist/*' -print0 | xargs -0 pnpm exec biome check --write",
     "format": "pnpm --recursive run format",
     "typecheck": "pnpm --recursive --parallel run typecheck",
-    "publish": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish",
-    "publish:dry": "pnpm --filter '!@ethernauta/wallet' --filter '!@ethernauta/playground' --filter '!@ethernauta/docs' publish --dry-run",
     "deploy": "pnpm --filter @ethernauta/docs run deploy && pnpm --filter @ethernauta/playground run deploy"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
+    "@changesets/changelog-github": "^0.7.0",
+    "@changesets/cli": "^2.31.0",
     "@edge-runtime/vm": "^5.0.0",
     "@total-typescript/ts-reset": "0.6.1",
     "@total-typescript/tsconfig": "1.0.4",
