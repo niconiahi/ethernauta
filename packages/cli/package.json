@@ -32,6 +32,7 @@
     "src"
   ],
   "scripts": {
+    "prepare": "tsdown",
     "dev": "tsdown --watch",
     "build": "tsdown",
     "lint": "biome check .",
