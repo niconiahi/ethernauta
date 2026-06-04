@@ -1,56 +1,15 @@
-name: publish
+name: release
 
 on:
-  pull_request:
   push:
     branches: [main]
-  workflow_dispatch:
 
 concurrency:
-  group: publish-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: release-main
+  cancel-in-progress: false
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Read pnpm version from .tool-versions
-        id: tool_versions
-        run: |
-          pnpm_version=$(grep '^pnpm ' .tool-versions | awk '{print $2}')
-          echo "pnpm=${pnpm_version}" >> "$GITHUB_OUTPUT"
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ steps.tool_versions.outputs.pnpm }}
-          run_install: false
-
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .tool-versions
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: No-escape-hatches ratchet
-        run: pnpm lint:ratchet
-
-  publish:
-    needs: [validate]
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -93,7 +52,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm run publish
+          publish: pnpm run release
           version: pnpm run version
           commit: "chore: version packages"
           title: "chore: version packages"
@@ -112,6 +71,6 @@ jobs:
 
       - name: Publish to GitHub Packages
         if: steps.changesets.outputs.published == 'true'
-        run: pnpm run publish:gh
+        run: pnpm run release:gh
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

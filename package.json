@@ -5,9 +5,9 @@
   "scripts": {
     "changeset": "changeset",
     "version": "changeset version",
-    "publish": "pnpm build && changeset publish",
-    "publish:gh": "node scripts/publish-gh-packages.mjs",
-    "publish:dry": "changeset publish --dry-run",
+    "release": "pnpm build && changeset publish",
+    "release:gh": "node scripts/publish-gh-packages.mjs",
+    "release:dry": "changeset publish --dry-run",
     "dev": "pnpm --recursive --parallel --filter @ethernauta/wallet --filter @ethernauta/playground --filter @ethernauta/docs run dev",
     "test:unit": "pnpm --recursive run test:unit",
     "test:integration": "pnpm --recursive run test:integration",
