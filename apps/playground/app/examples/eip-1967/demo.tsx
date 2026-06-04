@@ -97,9 +97,7 @@ export function Eip1967Demo() {
         {loading && (
           <p className="eip-1967-loading">Loading…</p>
         )}
-        {error && (
-          <p className="eip-1967-error">{error}</p>
-        )}
+        {error && <p className="eip-1967-error">{error}</p>}
       </div>
       <Button onClick={run} disabled={loading}>
         {loading ? "Reading slots…" : "Re-read slots"}

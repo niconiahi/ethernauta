@@ -1,6 +1,9 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { AddressSchema, BytesSchema } from "@ethernauta/core"
+import {
+  AddressSchema,
+  BytesSchema,
+} from "@ethernauta/core"
 import { totalSupply } from "@ethernauta/erc/20"
 import { eth_call } from "@ethernauta/eth"
 import {
@@ -77,9 +80,7 @@ export function StateOverridesDemo() {
             { to: callable.to, input: callable.data },
           ])(resolved),
           eth_call(
-            [
-              { to: callable.to, input: callable.data },
-            ],
+            [{ to: callable.to, input: callable.data }],
             { [TARGET]: { code: RETURN_42_CODE } },
           )(resolved),
         ])

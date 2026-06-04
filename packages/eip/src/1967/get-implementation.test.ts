@@ -54,7 +54,9 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       `0x000000000000000000000000${IMPL.slice(2)}`,
     )
-    const result = await get_implementation(PROXY)(testing_reader(transport))
+    const result = await get_implementation(PROXY)(
+      testing_reader(transport),
+    )
     expect(result).toBe(IMPL)
   })
 
@@ -63,7 +65,9 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       IMPL,
     )
-    const result = await get_implementation(PROXY)(testing_reader(transport))
+    const result = await get_implementation(PROXY)(
+      testing_reader(transport),
+    )
     expect(result).toBe(IMPL)
   })
 
@@ -72,7 +76,9 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       "0x0",
     )
-    const result = await get_implementation(PROXY)(testing_reader(transport))
+    const result = await get_implementation(PROXY)(
+      testing_reader(transport),
+    )
     expect(result).toBeNull()
   })
 
@@ -81,7 +87,9 @@ describe("get_implementation", () => {
       IMPLEMENTATION_SLOT,
       `0x${"0".repeat(64)}`,
     )
-    const result = await get_implementation(PROXY)(testing_reader(transport))
+    const result = await get_implementation(PROXY)(
+      testing_reader(transport),
+    )
     expect(result).toBeNull()
   })
 })
@@ -92,7 +100,9 @@ describe("get_admin", () => {
       ADMIN_SLOT,
       `0x000000000000000000000000${ADMIN.slice(2)}`,
     )
-    const result = await get_admin(PROXY)(testing_reader(transport))
+    const result = await get_admin(PROXY)(
+      testing_reader(transport),
+    )
     expect(result).toBe(ADMIN)
   })
 })
@@ -103,7 +113,9 @@ describe("get_beacon", () => {
       BEACON_SLOT,
       `0x000000000000000000000000${BEACON.slice(2)}`,
     )
-    const result = await get_beacon(PROXY)(testing_reader(transport))
+    const result = await get_beacon(PROXY)(
+      testing_reader(transport),
+    )
     expect(result).toBe(BEACON)
   })
 })

@@ -1,8 +1,11 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { AddressSchema, BytesSchema } from "@ethernauta/core"
-import { eth_call } from "@ethernauta/eth"
+import {
+  AddressSchema,
+  BytesSchema,
+} from "@ethernauta/core"
 import { get_domain } from "@ethernauta/eip/5267"
+import { eth_call } from "@ethernauta/eth"
 import {
   contract,
   create_reader,
@@ -92,7 +95,8 @@ export function Eip5267Demo() {
             ? String(result.domain.chainId)
             : "(not in domain)",
         verifyingContract:
-          result.domain.verifyingContract ?? "(not in domain)",
+          result.domain.verifyingContract ??
+          "(not in domain)",
         salt: result.domain.salt ?? "(not in domain)",
         extensions: result.extensions.length
           ? result.extensions.join(", ")
@@ -128,9 +132,7 @@ export function Eip5267Demo() {
         {loading && (
           <p className="eip-5267-loading">Loading…</p>
         )}
-        {error && (
-          <p className="eip-5267-error">{error}</p>
-        )}
+        {error && <p className="eip-5267-error">{error}</p>}
       </div>
       <Button onClick={run} disabled={loading}>
         {loading ? "Fetching domain…" : "Re-fetch domain"}

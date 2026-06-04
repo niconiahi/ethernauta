@@ -41,7 +41,7 @@ import { build_callback_calldata } from "./build-callback-calldata"
 import { CcipLookupError } from "./errors"
 import { fetch_ccip } from "./fetch-ccip"
 import { parse_offchain_lookup_revert } from "./parse-offchain-lookup-revert"
-import { type OffchainLookupError } from "./schemas"
+import type { OffchainLookupError } from "./schemas"
 
 export const EthCallCcipParametersSchema = object({
   to: AddressSchema,

@@ -8,6 +8,7 @@
 // from the verify route — that's the consumer's policy, not
 // a property of `verify_siwe_message` itself.
 
+import type { Chain } from "@ethernauta/chain"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
 import { eip155_10 } from "@ethernauta/chain/eip155-10"
 import { eip155_324 } from "@ethernauta/chain/eip155-324"
@@ -15,7 +16,6 @@ import { eip155_8453 } from "@ethernauta/chain/eip155-8453"
 import { eip155_42161 } from "@ethernauta/chain/eip155-42161"
 import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { eip155_11155420 } from "@ethernauta/chain/eip155-11155420"
-import type { Chain } from "@ethernauta/chain"
 import {
   create_reader,
   encode_chain_id,

@@ -1,6 +1,7 @@
 // https://docs.ens.domains/ensip/5 — text(node, key)
 
 import { AddressSchema } from "@ethernauta/core"
+import { eth_call_ccip } from "@ethernauta/eip/3668"
 import {
   get_registry_address,
   namehash,
@@ -9,7 +10,6 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 import { text } from "@ethernauta/erc/634"
-import { eth_call_ccip } from "@ethernauta/eip/3668"
 import type {
   Readable,
   ResolvedReader,

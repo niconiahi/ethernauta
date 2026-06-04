@@ -9,14 +9,14 @@ import { CallSchema, http } from "@ethernauta/transport"
 import { parse, safeParse } from "valibot"
 import icon from "../public/icons/icon-128.png?inline"
 import {
+  compose_calls_status,
+  compose_capabilities,
+} from "../src/utils/calls-status"
+import {
   type Chain,
   find_chain,
   to_provider_chain_id,
 } from "../src/utils/chain"
-import {
-  compose_calls_status,
-  compose_capabilities,
-} from "../src/utils/calls-status"
 import { create_router } from "../src/utils/dispatch"
 import {
   make_request,

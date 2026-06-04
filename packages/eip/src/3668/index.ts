@@ -13,16 +13,10 @@
 // (e.g. `@ethernauta/ens` routes its resolver `eth_call` through
 // `eth_call_ccip` — that composition is not this folder's job).
 
-export {
-  type CcipResponse,
-  CcipResponseSchema,
-  type OffchainLookupError,
-  OffchainLookupErrorSchema,
-} from "./schemas"
 export { build_callback_calldata } from "./build-callback-calldata"
 export {
-  type CcipLookupErrorReason,
   CcipLookupError,
+  type CcipLookupErrorReason,
 } from "./errors"
 export {
   type EthCallCcipOptions,
@@ -39,4 +33,10 @@ export {
   fetch_ccip,
 } from "./fetch-ccip"
 export { parse_offchain_lookup_revert } from "./parse-offchain-lookup-revert"
+export {
+  type CcipResponse,
+  CcipResponseSchema,
+  type OffchainLookupError,
+  OffchainLookupErrorSchema,
+} from "./schemas"
 export { substitute_url } from "./substitute-url"

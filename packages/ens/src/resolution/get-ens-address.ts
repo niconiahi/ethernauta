@@ -7,6 +7,7 @@
 
 import type { Address } from "@ethernauta/core"
 import { AddressSchema } from "@ethernauta/core"
+import { eth_call_ccip } from "@ethernauta/eip/3668"
 import {
   addr,
   namehash,
@@ -14,7 +15,6 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 import { supportsInterface } from "@ethernauta/erc/165"
-import { eth_call_ccip } from "@ethernauta/eip/3668"
 import type {
   Readable,
   ResolvedReader,

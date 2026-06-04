@@ -8,13 +8,13 @@
 
 import type { Address } from "@ethernauta/core"
 import { AddressSchema } from "@ethernauta/core"
+import { eth_call_ccip } from "@ethernauta/eip/3668"
 import {
   get_registry_address,
   namehash,
   resolver as resolver_method,
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
-import { eth_call_ccip } from "@ethernauta/eip/3668"
 import type { ResolvedReader } from "@ethernauta/transport"
 import type { InferOutput } from "valibot"
 import { object, string } from "valibot"

@@ -17,7 +17,7 @@
 // wrapper repackages them only when it adds context (e.g. which
 // recursion depth they happened at).
 
-import { type OffchainLookupError } from "./schemas"
+import type { OffchainLookupError } from "./schemas"
 
 export type CcipLookupErrorReason =
   | "max-redirects"

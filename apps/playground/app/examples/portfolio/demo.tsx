@@ -1,6 +1,9 @@
 import "./demo.css"
 import { eip155_1 } from "@ethernauta/chain/eip155-1"
-import { AddressSchema, Uint256Schema } from "@ethernauta/core"
+import {
+  AddressSchema,
+  Uint256Schema,
+} from "@ethernauta/core"
 import { balanceOf } from "@ethernauta/erc/20"
 import {
   decimals,

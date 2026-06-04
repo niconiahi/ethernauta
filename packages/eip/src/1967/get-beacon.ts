@@ -5,9 +5,9 @@ import {
   AddressSchema,
   type NotFound,
 } from "@ethernauta/core"
-import {
-  type Readable,
-  type ResolvedReader,
+import type {
+  Readable,
+  ResolvedReader,
 } from "@ethernauta/transport"
 import { parse } from "valibot"
 

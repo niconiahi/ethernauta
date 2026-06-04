@@ -3,6 +3,7 @@
 
 import type { Address } from "@ethernauta/core"
 import { AddressSchema } from "@ethernauta/core"
+import { eth_call_ccip } from "@ethernauta/eip/3668"
 import {
   addr,
   get_registry_address,
@@ -12,7 +13,6 @@ import {
   ZERO_ADDRESS,
 } from "@ethernauta/erc/137"
 import { name as name_method } from "@ethernauta/erc/181"
-import { eth_call_ccip } from "@ethernauta/eip/3668"
 import type {
   Readable,
   ResolvedReader,

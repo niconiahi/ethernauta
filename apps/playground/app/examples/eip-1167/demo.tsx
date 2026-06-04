@@ -70,9 +70,8 @@ export function Eip1167Demo() {
         chain_id: MAINNET_CHAIN_ID,
       })
       const detected = await is_clone(NON_CLONE)(resolved)
-      const target = await get_clone_target(NON_CLONE)(
-        resolved,
-      )
+      const target =
+        await get_clone_target(NON_CLONE)(resolved)
       set_detection({
         is_clone: detected ? "yes" : "no",
         clone_target: target ?? "(n/a — not a clone)",
@@ -100,7 +99,10 @@ export function Eip1167Demo() {
           Detection — eth_getCode + 45-byte runtime match
         </p>
         <Row label="Address" value={NON_CLONE} />
-        <Row label="Is a 1167 clone?" value={detection.is_clone} />
+        <Row
+          label="Is a 1167 clone?"
+          value={detection.is_clone}
+        />
         <Row
           label="Clone target"
           value={detection.clone_target}
@@ -108,9 +110,7 @@ export function Eip1167Demo() {
         {loading && (
           <p className="eip-1167-loading">Loading…</p>
         )}
-        {error && (
-          <p className="eip-1167-error">{error}</p>
-        )}
+        {error && <p className="eip-1167-error">{error}</p>}
       </div>
 
       <div className="eip-1167-card">
@@ -125,10 +125,7 @@ export function Eip1167Demo() {
           label="Synthetic target"
           value={CLONE_DEMO_TARGET}
         />
-        <Row
-          label="Deploy bytecode"
-          value={generated}
-        />
+        <Row label="Deploy bytecode" value={generated} />
       </div>
 
       <Button onClick={run} disabled={loading}>

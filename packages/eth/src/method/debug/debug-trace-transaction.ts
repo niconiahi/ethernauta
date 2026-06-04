@@ -7,6 +7,8 @@
 // arguments differ (transaction hash + tracer config, no `from /
 // to / data` call object and no block argument — geth picks the
 // block from the tx hash).
+
+import { Hash32Schema } from "@ethernauta/core"
 import type {
   Readable,
   ResolvedReader,
@@ -15,7 +17,6 @@ import {
   CallSchema,
   RpcRequestError,
 } from "@ethernauta/transport"
-import { Hash32Schema } from "@ethernauta/core"
 import type { InferOutput } from "valibot"
 import {
   object,

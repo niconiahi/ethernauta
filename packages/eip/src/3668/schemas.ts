@@ -8,12 +8,12 @@
 
 import {
   AddressSchema,
-  BytesSchema,
   Bytes4Schema,
+  BytesSchema,
 } from "@ethernauta/core"
 import {
-  type InferOutput,
   array,
+  type InferOutput,
   object,
   string,
 } from "valibot"

@@ -86,12 +86,12 @@ type VaultSnapshot = InferOutput<typeof VaultSnapshotSchema>
 // Each multicall slice (one vault, 6 reads). Matches the call
 // order built inside `run()` below.
 const VaultCallResultsSchema = tuple([
-  string(),       // symbol()
-  Uint256Schema,  // decimals()
-  Uint256Schema,  // totalSupply()
-  Uint256Schema,  // totalAssets()
-  Uint256Schema,  // convertToAssets(1e18)
-  AddressSchema,  // asset()
+  string(), // symbol()
+  Uint256Schema, // decimals()
+  Uint256Schema, // totalSupply()
+  Uint256Schema, // totalAssets()
+  Uint256Schema, // convertToAssets(1e18)
+  AddressSchema, // asset()
 ])
 
 export function VaultsDemo() {

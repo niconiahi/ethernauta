@@ -4,10 +4,11 @@ import {
   to_selector,
 } from "@ethernauta/abi"
 import { AddressSchema } from "@ethernauta/core"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
 import { REGISTRY } from "@ethernauta/erc/registry"
 import {
   EthSignTransactionParametersSchema,
-  GenericTransactionSchema,
+  type GenericTransactionSchema,
 } from "@ethernauta/eth"
 import type { FunctionSignature } from "@ethernauta/transport"
 import { ParametersSchema } from "@ethernauta/transport"
@@ -18,7 +19,6 @@ import {
   type InferOutput,
   literal,
   object,
-  optional,
   parse,
   pipe,
   readonly,
@@ -31,7 +31,6 @@ import {
   get_reader,
   selected_chain,
 } from "../../utils/chain"
-import { ERROR_CODE } from "@ethernauta/eip/1193"
 import { make_error, make_success } from "../../utils/event"
 import { row_key } from "../../utils/row-key"
 import {

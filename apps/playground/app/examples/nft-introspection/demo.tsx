@@ -78,14 +78,14 @@ type Snapshot = InferOutput<typeof SnapshotSchema>
 // Result tuple matches the call order built inside `run()`:
 // [...INTERFACES.length × supportsInterface, name, totalSupply, ownerOf, tokenURI]
 const CallResultsSchema = tuple([
-  boolean(),     // supportsInterface — ERC-721
-  boolean(),     // supportsInterface — ERC-721 Metadata
-  boolean(),     // supportsInterface — ERC-721 Enumerable
-  boolean(),     // supportsInterface — ERC-2981 Royalty
-  string(),      // name()
+  boolean(), // supportsInterface — ERC-721
+  boolean(), // supportsInterface — ERC-721 Metadata
+  boolean(), // supportsInterface — ERC-721 Enumerable
+  boolean(), // supportsInterface — ERC-2981 Royalty
+  string(), // name()
   Uint256Schema, // totalSupply()
   AddressSchema, // ownerOf(1)
-  string(),      // tokenURI(1)
+  string(), // tokenURI(1)
 ])
 
 export function NftIntrospectionDemo() {

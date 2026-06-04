@@ -27,11 +27,12 @@ import {
   sign_user_op,
   type UserOperation,
 } from "@ethernauta/eip/4337"
+import { get_ens_address } from "@ethernauta/ens"
 import {
   apply_to_user_op,
+  type PaymasterUserOperation,
   pm_getPaymasterData,
   pm_getPaymasterStubData,
-  type PaymasterUserOperation,
 } from "@ethernauta/erc/7677"
 import type {
   CallFrame,
@@ -46,7 +47,6 @@ import {
   eth_sendTransaction,
   TRACER_TYPE,
 } from "@ethernauta/eth"
-import { get_ens_address } from "@ethernauta/ens"
 import { useProvider } from "@ethernauta/react"
 import {
   create_reader,
@@ -62,7 +62,8 @@ import { use_session } from "../../lib/auth/use-session"
 import { PROVIDER_STORE_KEY } from "../../lib/provider-store"
 
 const PIMLICO_URL = import.meta.env.VITE_PIMLICO_URL
-const DEBUG_SEPOLIA_URL = import.meta.env.VITE_DEBUG_SEPOLIA_URL
+const DEBUG_SEPOLIA_URL = import.meta.env
+  .VITE_DEBUG_SEPOLIA_URL
 
 const MAINNET_CHAIN_ID = encode_chain_id({
   namespace: "eip155",
@@ -122,7 +123,10 @@ const EXECUTE_CODECS = [
 ] as const
 const GET_ADDRESS_CODECS = [address(), uint256()] as const
 const GET_ADDRESS_OUTPUT_CODECS = [address()] as const
-const CREATE_ACCOUNT_CODECS = [address(), uint256()] as const
+const CREATE_ACCOUNT_CODECS = [
+  address(),
+  uint256(),
+] as const
 
 function encode_execute(
   target: Address,
@@ -235,7 +239,9 @@ async function wait_for_receipt(
       sepolia_ctx,
     )
     if (receipt !== null) return
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) =>
+      setTimeout(resolve, 2000),
+    )
   }
 }
 
@@ -245,11 +251,13 @@ async function wait_for_user_op_tx(
 ): Promise<string> {
   const hash = parse(Hash32Schema, user_op_hash)
   while (true) {
-    const receipt = await eth_getUserOperationReceipt(hash)(
-      bundler_ctx,
+    const receipt =
+      await eth_getUserOperationReceipt(hash)(bundler_ctx)
+    if (receipt !== null)
+      return receipt.receipt.transactionHash
+    await new Promise((resolve) =>
+      setTimeout(resolve, 2000),
     )
-    if (receipt !== null) return receipt.receipt.transactionHash
-    await new Promise((resolve) => setTimeout(resolve, 2000))
   }
 }
 
@@ -267,8 +275,10 @@ export function SponsoredBasenameTransferDemo() {
     useState<Address | null>(null)
   const [smart_account_balance, set_smart_account_balance] =
     useState<string | null>(null)
-  const [smart_account_deployed, set_smart_account_deployed] =
-    useState<boolean | null>(null)
+  const [
+    smart_account_deployed,
+    set_smart_account_deployed,
+  ] = useState<boolean | null>(null)
 
   const [busy, set_busy] = useState(false)
   const [status, set_status] = useState("")
@@ -304,7 +314,9 @@ export function SponsoredBasenameTransferDemo() {
         set_smart_account_balance(balance)
       } catch (e) {
         if (cancelled) return
-        set_error(e instanceof Error ? e.message : String(e))
+        set_error(
+          e instanceof Error ? e.message : String(e),
+        )
       }
     })()
     return () => {
@@ -333,7 +345,9 @@ export function SponsoredBasenameTransferDemo() {
         name: basename,
       })(mainnet_ctx)
       if (resolved === null) {
-        set_error("No address record found for that basename.")
+        set_error(
+          "No address record found for that basename.",
+        )
         return
       }
       const target = parse(AddressSchema, resolved)
@@ -362,9 +376,7 @@ export function SponsoredBasenameTransferDemo() {
             value: parse(UintSchema, AMOUNT_WEI),
             input: ZERO_BYTES,
           },
-        ])(
-          provider.signer({ chain_id: SEPOLIA_CHAIN_ID }),
-        )
+        ])(provider.signer({ chain_id: SEPOLIA_CHAIN_ID }))
         set_status("Waiting for funding confirmation…")
         await wait_for_receipt(fund_hash)
         const refreshed = await eth_getBalance([
@@ -512,9 +524,10 @@ export function SponsoredBasenameTransferDemo() {
         </h4>
         <p className="sbt-section-lead">
           Resolves a basename through ENSIP-10 + CCIP-Read,
-          then transfers {BigInt(AMOUNT_WEI).toString()} wei from your sponsored
-          SimpleAccount on Sepolia. Gas is paid by the
-          paymaster; you only fund the value being sent.
+          then transfers {BigInt(AMOUNT_WEI).toString()} wei
+          from your sponsored SimpleAccount on Sepolia. Gas
+          is paid by the paymaster; you only fund the value
+          being sent.
         </p>
 
         {PIMLICO_URL === undefined && (
@@ -560,7 +573,8 @@ export function SponsoredBasenameTransferDemo() {
 
         <div className="sbt-actions">
           <Button onClick={send} disabled={disabled}>
-            Send {BigInt(AMOUNT_WEI).toString()} wei to recipient
+            Send {BigInt(AMOUNT_WEI).toString()} wei to
+            recipient
           </Button>
         </div>
 

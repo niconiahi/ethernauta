@@ -49,9 +49,8 @@ const GeneratedSchema = object({
 type Generated = InferOutput<typeof GeneratedSchema>
 
 export function Stealth5564Demo() {
-  const [spending_priv, set_spending_priv] = useState<string>(
-    () => random_32_bytes_hex(),
-  )
+  const [spending_priv, set_spending_priv] =
+    useState<string>(() => random_32_bytes_hex())
   const [viewing_priv, set_viewing_priv] = useState<string>(
     () => random_32_bytes_hex(),
   )

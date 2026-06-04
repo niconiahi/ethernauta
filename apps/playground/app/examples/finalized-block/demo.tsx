@@ -41,8 +41,7 @@ const EMPTY: Snapshot = {
 }
 
 export function FinalizedBlockDemo() {
-  const [snapshot, set_snapshot] =
-    useState<Snapshot>(EMPTY)
+  const [snapshot, set_snapshot] = useState<Snapshot>(EMPTY)
   const [loading, set_loading] = useState(false)
   const [error, set_error] = useState<string | null>(null)
 

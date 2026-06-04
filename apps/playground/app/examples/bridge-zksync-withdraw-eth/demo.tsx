@@ -24,6 +24,8 @@
 // at execution.
 
 import "./demo.css"
+import { eip155_300 } from "@ethernauta/chain/eip155-300"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   AddressSchema,
   BytesSchema,
@@ -32,10 +34,11 @@ import {
   UintSchema,
 } from "@ethernauta/core"
 import { useProvider } from "@ethernauta/react"
-import { encode_chain_id, http } from "@ethernauta/transport"
+import {
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
-import { eip155_300 } from "@ethernauta/chain/eip155-300"
-import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import {
   create_bridge,
   execute_withdraw,
@@ -106,7 +109,9 @@ const WithdrawInputsSchema = object({
   l2_tx_number_in_batch: Uint16Schema,
   message: BytesSchema,
 })
-type WithdrawInputs = InferOutput<typeof WithdrawInputsSchema>
+type WithdrawInputs = InferOutput<
+  typeof WithdrawInputsSchema
+>
 
 const PersistedStateSchema = object({
   recipient: AddressSchema,
@@ -310,18 +315,19 @@ export function BridgeZksyncWithdrawEthDemo() {
     }
   }, [_recipient, _amount])
 
-  const parsed_inputs = useMemo<WithdrawInputs | null>(() => {
-    try {
-      const decoded = JSON.parse(_inputs_input)
-      const result = safeParse(
-        WithdrawInputsSchema,
-        decoded,
-      )
-      return result.success ? result.output : null
-    } catch {
-      return null
-    }
-  }, [_inputs_input])
+  const parsed_inputs =
+    useMemo<WithdrawInputs | null>(() => {
+      try {
+        const decoded = JSON.parse(_inputs_input)
+        const result = safeParse(
+          WithdrawInputsSchema,
+          decoded,
+        )
+        return result.success ? result.output : null
+      } catch {
+        return null
+      }
+    }, [_inputs_input])
 
   if (!owner) return <SignInHint />
 
@@ -436,7 +442,10 @@ export function BridgeZksyncWithdrawEthDemo() {
   return (
     <div>
       <Row label="Origin" value="zkSync Era Sepolia (L2)" />
-      <Row label="Destination" value="Ethereum Sepolia (L1)" />
+      <Row
+        label="Destination"
+        value="Ethereum Sepolia (L1)"
+      />
       <Row label="Account" value={owner} mono />
       <Row
         label="L2BaseToken predeploy (l2Sender for finalize)"
@@ -444,13 +453,14 @@ export function BridgeZksyncWithdrawEthDemo() {
         mono
       />
       <div className="bridge-zksync-withdraw-eth-note">
-        zkSync withdrawals are validity-proof finalized on L1 via{" "}
-        <code>L1Nullifier.finalizeDeposit</code> ("Deposit" by
-        name because the asset-router treats every L2→L1 unlock
-        as the L1 completion of a prior deposit/withdrawal pair).
-        Burn on L2 via <code>L2BaseToken.withdraw</code>, wait
-        for the covering batch to be committed + verified on L1
-        (~5 min on Era Sepolia, ~10 hours on mainnet), then
+        zkSync withdrawals are validity-proof finalized on
+        L1 via <code>L1Nullifier.finalizeDeposit</code>{" "}
+        ("Deposit" by name because the asset-router treats
+        every L2→L1 unlock as the L1 completion of a prior
+        deposit/withdrawal pair). Burn on L2 via{" "}
+        <code>L2BaseToken.withdraw</code>, wait for the
+        covering batch to be committed + verified on L1 (~5
+        min on Era Sepolia, ~10 hours on mainnet), then
         redeem on L1 carrying the proof bundle returned by{" "}
         <code>zks_getL2ToL1LogProof</code>.
       </div>
@@ -526,28 +536,29 @@ export function BridgeZksyncWithdrawEthDemo() {
           <div className="bridge-zksync-withdraw-eth-section">
             <h3>3 · Paste withdraw inputs</h3>
             <div className="bridge-zksync-withdraw-eth-note">
-              From the L2 receipt + the L1Messenger event the L2
-              burn emitted, assemble:
+              From the L2 receipt + the L1Messenger event
+              the L2 burn emitted, assemble:
               <ul>
                 <li>
-                  <code>l2_to_l1_log_index</code> — index of the
-                  L2→L1 log inside the receipt's{" "}
+                  <code>l2_to_l1_log_index</code> — index of
+                  the L2→L1 log inside the receipt's{" "}
                   <code>l2ToL1Logs</code> array (usually{" "}
-                  <code>0</code> for a single-message withdraw)
+                  <code>0</code> for a single-message
+                  withdraw)
                 </li>
                 <li>
-                  <code>l2_tx_number_in_batch</code> — receipt's{" "}
-                  <code>l1BatchTxIndex</code> (hex,{" "}
-                  <code>uint16</code>)
+                  <code>l2_tx_number_in_batch</code> —
+                  receipt's <code>l1BatchTxIndex</code>{" "}
+                  (hex, <code>uint16</code>)
                 </li>
                 <li>
-                  <code>message</code> — bytes payload from the
-                  L1Messenger <code>L1MessageSent</code> event
-                  (hex, <code>0x</code>-prefixed)
+                  <code>message</code> — bytes payload from
+                  the L1Messenger <code>L1MessageSent</code>{" "}
+                  event (hex, <code>0x</code>-prefixed)
                 </li>
               </ul>
-              A future helper will derive this from the L2 receipt
-              automatically.
+              A future helper will derive this from the L2
+              receipt automatically.
             </div>
             <div className="bridge-zksync-withdraw-eth-form">
               <label className="bridge-zksync-withdraw-eth-label">

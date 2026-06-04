@@ -13,8 +13,8 @@
 
 import { ByteSchema } from "@ethernauta/core"
 import {
-  type InferOutput,
   boolean,
+  type InferOutput,
   object,
   parse,
 } from "valibot"

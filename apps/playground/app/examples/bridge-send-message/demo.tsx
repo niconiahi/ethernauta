@@ -32,7 +32,10 @@ import {
   send_message,
 } from "@ethernauta/op"
 import { useProvider } from "@ethernauta/react"
-import { encode_chain_id, http } from "@ethernauta/transport"
+import {
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bigint,
@@ -68,9 +71,7 @@ const bridge = create_bridge([
     chainId: OP_SEPOLIA_CHAIN_ID,
     transports: [
       http("https://sepolia.optimism.io"),
-      http(
-        "https://optimism-sepolia.gateway.tenderly.co",
-      ),
+      http("https://optimism-sepolia.gateway.tenderly.co"),
     ],
   },
 ])

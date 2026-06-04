@@ -239,11 +239,15 @@ export default function ExamplesLayout() {
           className="examples-sidebar-github"
         />
         <div className="examples-section">
-          <h2 className="examples-section-title">Recipes</h2>
+          <h2 className="examples-section-title">
+            Recipes
+          </h2>
           <ExamplesNav items={RECIPE_EXAMPLES} />
         </div>
         <div className="examples-section">
-          <h2 className="examples-section-title">Rollups</h2>
+          <h2 className="examples-section-title">
+            Rollups
+          </h2>
           {ROLLUP_SUBSECTIONS.map((sub) => (
             <div
               key={sub.heading}

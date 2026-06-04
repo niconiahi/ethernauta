@@ -4,11 +4,11 @@ import {
   BytesSchema,
   UintSchema,
 } from "@ethernauta/core"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
 import {
   sign_authorization,
   sign_set_code_transaction,
 } from "@ethernauta/eip/7702"
-import { ERROR_CODE } from "@ethernauta/eip/1193"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import { bytes_to_hex } from "@ethernauta/utils"
 import { parse } from "valibot"

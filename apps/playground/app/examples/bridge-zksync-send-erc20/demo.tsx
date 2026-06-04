@@ -91,7 +91,8 @@ const ERA_DEPLOYS = require_deploy_addresses(
 )
 const L1_BRIDGEHUB = ERA_DEPLOYS.l1.bridgehub
 const L1_ASSET_ROUTER = ERA_DEPLOYS.l1.assetRouter
-const L1_NATIVE_TOKEN_VAULT = ERA_DEPLOYS.l1.nativeTokenVault
+const L1_NATIVE_TOKEN_VAULT =
+  ERA_DEPLOYS.l1.nativeTokenVault
 
 function format_uint(hex: string): string {
   try {

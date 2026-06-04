@@ -318,11 +318,11 @@ export function BridgeZksyncClaimFailedDepositDemo() {
       />
       <div className="bridge-zksync-claim-failed-deposit-note">
         zkSync's failed-deposit lifecycle is its L1→L2
-        counterpart to Arbitrum's retryable-redeem path: when
-        the L2-side execution of a priority deposit reverts
-        (out-of-gas, target revert, etc.), the deposited
-        tokens are stuck in the L1 escrow until the depositor
-        proves the failure on L1 and calls{" "}
+        counterpart to Arbitrum's retryable-redeem path:
+        when the L2-side execution of a priority deposit
+        reverts (out-of-gas, target revert, etc.), the
+        deposited tokens are stuck in the L1 escrow until
+        the depositor proves the failure on L1 and calls{" "}
         <code>L1Nullifier.claimFailedDeposit</code>. This
         demo deliberately triggers an L2 OOG by setting{" "}
         <code>l2_gas_limit</code> to{" "}
@@ -407,27 +407,29 @@ export function BridgeZksyncClaimFailedDepositDemo() {
               the JSON below. The fields come from:
               <ul>
                 <li>
-                  <code>chainIdNumeric</code> = <code>0x12c</code>{" "}
-                  (300)
+                  <code>chainIdNumeric</code> ={" "}
+                  <code>0x12c</code> (300)
                 </li>
                 <li>
-                  <code>depositSender</code> = your L1 address
+                  <code>depositSender</code> = your L1
+                  address
                 </li>
                 <li>
-                  <code>l1Token</code>, <code>amount</code> = the
-                  same values you submitted above
+                  <code>l1Token</code>, <code>amount</code>{" "}
+                  = the same values you submitted above
                 </li>
                 <li>
-                  <code>l2TxHash</code> = canonical L2 hash of
-                  the failed priority op (derivable from the L1
-                  receipt's <code>NewPriorityRequest</code> event
-                  — slice 4c will surface a helper)
+                  <code>l2TxHash</code> = canonical L2 hash
+                  of the failed priority op (derivable from
+                  the L1 receipt's{" "}
+                  <code>NewPriorityRequest</code> event —
+                  slice 4c will surface a helper)
                 </li>
                 <li>
                   <code>l2BatchNumber</code>,{" "}
-                  <code>l2MessageIndex</code> (= <code>id</code>),{" "}
-                  <code>merkleProof</code> = from{" "}
-                  <code>zks_getL2ToL1LogProof</code>
+                  <code>l2MessageIndex</code> (={" "}
+                  <code>id</code>), <code>merkleProof</code>{" "}
+                  = from <code>zks_getL2ToL1LogProof</code>
                 </li>
                 <li>
                   <code>l2TxNumberInBatch</code> = from{" "}

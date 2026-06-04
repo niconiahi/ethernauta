@@ -107,25 +107,27 @@ describe("create_bridge", () => {
 
 describe("Bridgeable<T>", () => {
   it("invokes the verb with both readers", async () => {
-    const probe: Bridgeable<{ l1: string; l2: string }> =
-      async (resolved) => {
-        const l1_response = await resolved.l1.reader([
-          "eth_blockNumber",
-        ])
-        const l2_response = await resolved.l2.reader([
-          "eth_blockNumber",
-        ])
-        if (
-          !("result" in l1_response) ||
-          !("result" in l2_response)
-        ) {
-          throw new Error("both sides should return result")
-        }
-        return {
-          l1: parse(string(), l1_response.result),
-          l2: parse(string(), l2_response.result),
-        }
+    const probe: Bridgeable<{
+      l1: string
+      l2: string
+    }> = async (resolved) => {
+      const l1_response = await resolved.l1.reader([
+        "eth_blockNumber",
+      ])
+      const l2_response = await resolved.l2.reader([
+        "eth_blockNumber",
+      ])
+      if (
+        !("result" in l1_response) ||
+        !("result" in l2_response)
+      ) {
+        throw new Error("both sides should return result")
       }
+      return {
+        l1: parse(string(), l1_response.result),
+        l2: parse(string(), l2_response.result),
+      }
+    }
     const bridge = create_bridge(CHAINS)
     const resolved = bridge({
       l1: SEPOLIA_CHAIN_ID,

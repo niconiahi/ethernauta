@@ -33,9 +33,9 @@ import type {
 import { bytes_to_hex } from "@ethernauta/utils"
 import {
   type InferOutput,
-  array as v_array,
   object,
   parse,
+  array as v_array,
 } from "valibot"
 
 import {

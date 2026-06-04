@@ -9,12 +9,7 @@
 // Supported tracers (callTracer, prestateTracer, 4byteTracer, and
 // the default struct logger) are emulated by reth, erigon, and
 // anvil; 4byteTracer is geth-specific but widely available.
-export {
-  CallFrameLogSchema,
-  CallFrameSchema,
-  CallTracerConfigSchema,
-  CallTypeSchema,
-} from "./call"
+
 export type {
   CallFrame,
   CallFrameLog,
@@ -22,25 +17,24 @@ export type {
   CallType,
 } from "./call"
 export {
-  TracerConfigOptionsSchema,
-  TracerConfigSchema,
-} from "./config"
+  CallFrameLogSchema,
+  CallFrameSchema,
+  CallTracerConfigSchema,
+  CallTypeSchema,
+} from "./call"
 export type {
   TracerConfig,
   TracerConfigOptions,
 } from "./config"
+export {
+  TracerConfigOptionsSchema,
+  TracerConfigSchema,
+} from "./config"
 export { debug_traceBlockByNumber } from "./debug-trace-block-by-number"
 export { debug_traceCall } from "./debug-trace-call"
 export { debug_traceTransaction } from "./debug-trace-transaction"
-export { FourByteTraceSchema } from "./fourbyte"
 export type { FourByteTrace } from "./fourbyte"
-export {
-  AccountStateSchema,
-  PreStateDiffSchema,
-  PreStateMapSchema,
-  PreStateSchema,
-  PreStateTracerConfigSchema,
-} from "./prestate"
+export { FourByteTraceSchema } from "./fourbyte"
 export type {
   AccountState,
   PreState,
@@ -49,19 +43,26 @@ export type {
   PreStateTracerConfig,
 } from "./prestate"
 export {
+  AccountStateSchema,
+  PreStateDiffSchema,
+  PreStateMapSchema,
+  PreStateSchema,
+  PreStateTracerConfigSchema,
+} from "./prestate"
+export type { BlockTraceEntry, TraceResult } from "./result"
+export {
   BlockTraceEntrySchema,
   TraceResultSchema,
 } from "./result"
-export type { BlockTraceEntry, TraceResult } from "./result"
-export {
-  STRUCT_TYPE,
-  StructLogResultSchema,
-  StructLogSchema,
-} from "./struct"
 export type {
   StructLog,
   StructLogResult,
   StructType,
 } from "./struct"
-export { TRACER_TYPE, TracerTypeSchema } from "./tracer"
+export {
+  STRUCT_TYPE,
+  StructLogResultSchema,
+  StructLogSchema,
+} from "./struct"
 export type { TracerType } from "./tracer"
+export { TRACER_TYPE, TracerTypeSchema } from "./tracer"

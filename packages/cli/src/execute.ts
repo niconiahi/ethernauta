@@ -83,7 +83,10 @@ function load_abi_source(path: string): Description[] {
       ["inspect", target, "abi"],
       { encoding: "utf8" },
     )
-    return parse(array(DescriptionSchema), JSON.parse(stdout))
+    return parse(
+      array(DescriptionSchema),
+      JSON.parse(stdout),
+    )
   }
   return parse(array(DescriptionSchema), load_abi(path))
 }
@@ -128,7 +131,10 @@ function write_barrel(
     if (seen.has(js_name)) continue
     if (!generated_emit_names.has(js_name)) continue
     seen.add(js_name)
-    const file_basename = emit_file_basename_for(f, functions)
+    const file_basename = emit_file_basename_for(
+      f,
+      functions,
+    )
     lines.push(`export * from "./${file_basename}"`)
   }
   writeFileSync(
@@ -202,11 +208,7 @@ export function execute_abi(args: string[]): void {
   }
 }
 
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  ".git",
-])
+const SKIP_DIRS = new Set(["node_modules", "dist", ".git"])
 
 function find_workspace_root(start: string): string {
   let dir = start
@@ -224,7 +226,9 @@ function find_workspace_root(start: string): string {
   }
 }
 
-function discover_abi_sources(packages_root: string): string[] {
+function discover_abi_sources(
+  packages_root: string,
+): string[] {
   const found: string[] = []
   const stack = [packages_root]
   while (stack.length > 0) {
@@ -288,7 +292,9 @@ export function execute_walk(): void {
   }
   const sources = discover_abi_sources(packages_root)
   if (sources.length === 0) {
-    console.log("no .abi.json or .abi files found under packages/")
+    console.log(
+      "no .abi.json or .abi files found under packages/",
+    )
     return
   }
   const groups = group_by_directory(sources)

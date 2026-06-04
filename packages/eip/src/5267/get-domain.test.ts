@@ -20,12 +20,12 @@ import { parse } from "valibot"
 import { describe, expect, it } from "vitest"
 
 import {
+  decode_fields,
   FIELD_CHAIN_ID,
   FIELD_NAME,
   FIELD_SALT,
   FIELD_VERIFYING_CONTRACT,
   FIELD_VERSION,
-  decode_fields,
 } from "./fields"
 import { get_domain } from "./get-domain"
 

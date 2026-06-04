@@ -47,7 +47,9 @@ describe("eth_feeHistory", () => {
         ["0x3b9aca00", "0x77359400"],
       ],
     }
-    const resolved = testing_reader(stub_http(result_payload))
+    const resolved = testing_reader(
+      stub_http(result_payload),
+    )
     const result = await eth_feeHistory({
       blockCount: BLOCK_COUNT_4,
       newestBlock: "latest",
@@ -64,7 +66,9 @@ describe("eth_feeHistory", () => {
       gasUsedRatio: [0.5],
       reward: [[25, 75]],
     }
-    const resolved = testing_reader(stub_http(result_payload))
+    const resolved = testing_reader(
+      stub_http(result_payload),
+    )
     await expect(
       eth_feeHistory({
         blockCount: BLOCK_COUNT_1,
@@ -81,7 +85,9 @@ describe("eth_feeHistory", () => {
       gasUsedRatio: [0],
       reward: [["0x1"]],
     }
-    const resolved = testing_reader(stub_http(result_payload))
+    const resolved = testing_reader(
+      stub_http(result_payload),
+    )
     await expect(
       eth_feeHistory([BLOCK_COUNT_1, "latest", [50]])(
         resolved,

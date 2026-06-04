@@ -22,14 +22,14 @@ import {
   require_deploy_addresses,
   send_eth,
 } from "@ethernauta/arbitrum"
-import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
 import { eip155_421614 } from "@ethernauta/chain/eip155-421614"
-import {
-  type Hash32,
-  UintSchema,
-} from "@ethernauta/core"
+import { eip155_11155111 } from "@ethernauta/chain/eip155-11155111"
+import { type Hash32, UintSchema } from "@ethernauta/core"
 import { useProvider } from "@ethernauta/react"
-import { encode_chain_id, http } from "@ethernauta/transport"
+import {
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import {
   bytes_to_hex,
   hex_to_bigint,

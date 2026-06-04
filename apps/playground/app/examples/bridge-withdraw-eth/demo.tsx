@@ -55,7 +55,10 @@ import {
   WithdrawalTransactionSchema,
 } from "@ethernauta/op"
 import { useProvider } from "@ethernauta/react"
-import { encode_chain_id, http } from "@ethernauta/transport"
+import {
+  encode_chain_id,
+  http,
+} from "@ethernauta/transport"
 import { hex_to_bigint } from "@ethernauta/utils"
 import {
   useCallback,
@@ -292,10 +295,7 @@ export function BridgeWithdrawEthDemo() {
     if (!provider) return
     const eip1193 = provider.provider_detail.provider
     function on_chain_changed(chain_id: unknown) {
-      console.log(
-        "[dapp] chainChanged →",
-        chain_id,
-      )
+      console.log("[dapp] chainChanged →", chain_id)
     }
     eip1193.on("chainChanged", on_chain_changed)
     return () => {

@@ -2,8 +2,8 @@ import "./demo.css"
 import {
   ANNOUNCE_EVENT,
   clear_provider_detail,
-  Eip6963ProviderDetailSchema,
   type EIP6963ProviderDetail,
+  Eip6963ProviderDetailSchema,
   get_provider_detail,
   REQUEST_EVENT,
   type Store,

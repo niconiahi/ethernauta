@@ -175,9 +175,7 @@ describe("eth-call-ccip.ts", () => {
       { to: CONTRACT, input: INITIAL_INPUT },
       undefined,
       fetch_mock,
-    )(testing_reader(transport)).catch(
-      (e) => e,
-    )
+    )(testing_reader(transport)).catch((e) => e)
     expect(error).toBeInstanceOf(RpcRequestError)
     expect(transport).toHaveBeenCalledOnce()
     expect(fetch_mock).not.toHaveBeenCalled()
@@ -200,9 +198,7 @@ describe("eth-call-ccip.ts", () => {
       { to: CONTRACT, input: INITIAL_INPUT },
       { max_redirects: 2 },
       fetch_mock,
-    )(testing_reader(transport)).catch(
-      (e) => e,
-    )
+    )(testing_reader(transport)).catch((e) => e)
     expect(error).toBeInstanceOf(CcipLookupError)
     if (error instanceof CcipLookupError) {
       expect(error.reason).toBe("max-redirects")
@@ -228,9 +224,7 @@ describe("eth-call-ccip.ts", () => {
       { to: CONTRACT, input: INITIAL_INPUT },
       undefined,
       fetch_mock,
-    )(testing_reader(transport)).catch(
-      (e) => e,
-    )
+    )(testing_reader(transport)).catch((e) => e)
     expect(error).toBeInstanceOf(CcipLookupError)
     // initial + 4 redirects = 5 eth_calls before the 5th throws
     expect(transport).toHaveBeenCalledTimes(5)

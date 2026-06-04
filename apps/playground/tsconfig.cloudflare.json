@@ -23,7 +23,9 @@
     "paths": {
       "~/*": ["./app/*"],
       "@ethernauta/abi": ["../../packages/abi/src"],
-      "@ethernauta/arbitrum": ["../../packages/arbitrum/src"],
+      "@ethernauta/arbitrum": [
+        "../../packages/arbitrum/src"
+      ],
       "@ethernauta/chain": ["../../packages/chain/src"],
       "@ethernauta/chain/*": [
         "../../packages/chain/src/chain/eip155/*"

@@ -39,7 +39,7 @@ describe("dns_encode", () => {
 
   it("rejects a label over 63 bytes", () => {
     expect(() =>
-      dns_encode("a".repeat(64) + ".eth"),
+      dns_encode(`${"a".repeat(64)}.eth`),
     ).toThrow(/exceeds 63 bytes/)
   })
 })

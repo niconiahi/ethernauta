@@ -23,8 +23,8 @@ import {
   BytesSchema,
 } from "@ethernauta/core"
 import {
-  type InferOutput,
   array,
+  type InferOutput,
   object,
   parse,
   string,

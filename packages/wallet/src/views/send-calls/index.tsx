@@ -6,6 +6,7 @@ import {
   type Hash32,
   UintSchema,
 } from "@ethernauta/core"
+import { ERROR_CODE } from "@ethernauta/eip/1193"
 import type { SendCallsResult } from "@ethernauta/eip/5792"
 import { eth_sendRawTransaction } from "@ethernauta/eth"
 import {
@@ -30,7 +31,6 @@ import {
   get_private_key,
   hex_to_big,
 } from "../../utils/crypto"
-import { ERROR_CODE } from "@ethernauta/eip/1193"
 import { make_error, make_success } from "../../utils/event"
 import {
   type Eip1559TransactionUnsigned,

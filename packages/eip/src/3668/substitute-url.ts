@@ -9,7 +9,7 @@
 // expected to already be 0x-prefixed lowercase hex (the format
 // every `Bytes` value in `@ethernauta/core` is normalized to).
 
-import { type Address, type Bytes } from "@ethernauta/core"
+import type { Address, Bytes } from "@ethernauta/core"
 
 export function substitute_url(
   _url_template: string,

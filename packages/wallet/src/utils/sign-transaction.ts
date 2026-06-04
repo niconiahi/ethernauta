@@ -14,9 +14,9 @@ import type {
 } from "@ethernauta/crypto"
 import { keccak_256, sign_digest } from "@ethernauta/crypto"
 import {
+  EthSignTransactionParametersSchema,
   encode_rlp,
   eth_getTransactionCount,
-  EthSignTransactionParametersSchema,
   GenericTransactionSchema,
 } from "@ethernauta/eth"
 import type { ResolvedReader } from "@ethernauta/transport"
